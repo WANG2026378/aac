@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="注音學習">
+<meta name="theme-color" content="#10B981">
+<link rel="apple-touch-icon" href="icons/learn-180.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/learn-180.png?v=1">
+<link rel="apple-touch-icon" sizes="512x512" href="icons/learn-512.png?v=1">
+<link rel="icon" type="image/png" href="icons/learn-512.png?v=1">
+<title>皮克敏注音學習島</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow-x: hidden; }
+body {
+  font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
+  background: linear-gradient(180deg, #87CEEB 0%, #B8E0D2 40%, #F5E6A8 80%, #FFE4B5 100%);
+  color: #2D3748;
+  min-height: 100vh;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+/* ========== Screens ========== */
+.screen { display: none; min-height: 100vh; padding: 16px; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ========== Top bar ========== */
+.topbar {
+  background: rgba(255,255,255,0.92);
+  border-radius: 16px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.topbar h2 { font-size: 18px; color: #047857; margin-right: auto; }
+.topbar-stat {
+  background: white;
+  border: 2px solid #BBF7D0;
+  border-radius: 10px;
+  padding: 4px 10px;
+  font-weight: bold;
+  font-size: 14px;
+}
+.topbar-stat .val { color: #10B981; font-size: 18px; }
+.icon-btn {
+  background: white;
+  border: 2px solid #BBF7D0;
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+/* ========== INTRO ========== */
+#intro { align-items: center; justify-content: center; text-align: center; padding: 30px 20px; }
+#intro h1 {
+  font-size: clamp(36px, 6vw, 56px);
+  color: #047857;
+  text-shadow: 3px 3px 0 #fff, 6px 6px 0 rgba(0,0,0,0.1);
+  margin-bottom: 12px;
+}
+#intro .sub {
+  font-size: 18px;
+  color: #047857;
+  background: rgba(255,255,255,0.7);
+  padding: 10px 22px;
+  border-radius: 18px;
+  margin-bottom: 28px;
+  max-width: 600px;
+}
+.pikmin-row {
+  display: flex;
+  gap: 16px;
+  margin: 30px 0;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.pikmin-icon {
+  width: 70px;
+  height: 90px;
+}
+.name-input {
+  font-size: 18px;
+  color: #047857;
+  margin: 20px 0;
+}
+.name-input input {
+  font-size: 22px;
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: 3px solid #10B981;
+  text-align: center;
+  width: 200px;
+  font-family: inherit;
+  background: white;
+}
+.start-btn {
+  background: linear-gradient(180deg, #34D399, #10B981);
+  color: white;
+  border: none;
+  padding: 18px 48px;
+  font-size: 24px;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #047857, 0 8px 14px rgba(0,0,0,0.2);
+  font-weight: bold;
+  font-family: inherit;
+  margin: 20px 0;
+}
+.start-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #047857; }
+
+/* ========== MAP ========== */
+.map-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+.level-card {
+  background: rgba(255,255,255,0.95);
+  border-radius: 20px;
+  padding: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 4px solid transparent;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  position: relative;
+}
+.level-card.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(0.7);
+}
+.level-card.cleared {
+  background: linear-gradient(135deg, #ECFDF5, #FFFFFF);
+}
+.level-card:not(.locked):hover {
+  transform: translateY(-4px);
+  border-color: currentColor;
+}
+.level-card h3 {
+  font-size: 22px;
+  color: var(--c, #047857);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.level-card .pikmin-mascot {
+  width: 60px;
+  height: 80px;
+  float: right;
+  margin: -10px 0 0 10px;
+}
+.level-card .symbols-preview {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+  font-size: 28px;
+  font-family: "標楷體", serif;
+  color: var(--c, #047857);
+}
+.level-card .progress {
+  background: #E5E7EB;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+.level-card .progress .bar {
+  background: var(--c, #10B981);
+  height: 100%;
+  transition: width 0.4s;
+}
+.level-card .status {
+  font-size: 13px;
+  color: #6B7280;
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+}
+.level-card .lock-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 60px;
+  color: white;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+.level-card.cleared::after {
+  content: '✓';
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: #10B981;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.final-test-card {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #FBBF24, #F59E0B);
+  color: white;
+  border-radius: 20px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 12px;
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+  border: 4px solid transparent;
+}
+.final-test-card.locked { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.6); }
+.final-test-card:not(.locked):hover { transform: translateY(-4px); border-color: #F59E0B; }
+.final-test-card h3 { font-size: 28px; margin-bottom: 6px; }
+.final-test-card p { font-size: 16px; opacity: 0.95; }
+.final-test-card .trophy { font-size: 48px; margin-bottom: 8px; }
+
+/* ========== LEARN STAGE ========== */
+.learn-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 700px;
+  margin: 0 auto;
+  width: 100%;
+}
+.stage-progress {
+  display: flex;
+  gap: 6px;
+  margin: 10px 0;
+}
+.stage-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #E5E7EB;
+}
+.stage-dot.done { background: #10B981; }
+.stage-dot.current { background: #FBBF24; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.3); } }
+
+.symbol-big {
+  background: white;
+  border: 5px solid var(--c, #10B981);
+  border-radius: 28px;
+  padding: 30px 40px;
+  font-size: clamp(120px, 25vw, 220px);
+  font-family: "標楷體", serif;
+  font-weight: bold;
+  color: var(--c, #047857);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  line-height: 1;
+  text-align: center;
+  min-width: 200px;
+  position: relative;
+}
+.symbol-big .play-mini {
+  position: absolute;
+  bottom: -16px;
+  right: -16px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #FBBF24;
+  border: 4px solid white;
+  color: white;
+  font-size: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  animation: bounce 2s infinite;
+}
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.example {
+  background: linear-gradient(135deg, #FEF3C7, #FFFFFF);
+  border-radius: 16px;
+  padding: 16px 20px;
+  text-align: center;
+  font-size: 20px;
+  color: #92400E;
+}
+.example .emoji { font-size: 56px; display: block; margin-bottom: 6px; }
+.example .word { font-size: 28px; font-weight: bold; color: #B45309; }
+.example .word .target { color: var(--c, #047857); }
+
+.instruction {
+  text-align: center;
+  font-size: 18px;
+  color: #6B7280;
+  background: white;
+  padding: 12px 20px;
+  border-radius: 14px;
+  border: 2px dashed var(--c, #10B981);
+  max-width: 500px;
+}
+.instruction.success { background: #ECFDF5; color: #047857; border-color: #10B981; }
+.instruction.error { background: #FEF2F2; color: #B91C1C; border-color: #EF4444; }
+
+.btn-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn {
+  padding: 14px 28px;
+  border-radius: 14px;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: inherit;
+  transition: transform 0.1s;
+}
+.btn:active { transform: translateY(2px); }
+.btn-primary { background: #10B981; color: white; box-shadow: 0 4px 0 #047857; }
+.btn-secondary { background: white; color: #6B7280; border: 2px solid #E5E7EB; box-shadow: 0 4px 0 #E5E7EB; }
+.btn-success { background: #34D399; color: white; box-shadow: 0 4px 0 #10B981; }
+.btn-warning { background: #F59E0B; color: white; box-shadow: 0 4px 0 #B45309; }
+.btn-child { background: #FB7185; color: white; box-shadow: 0 4px 0 #BE123C; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; transform: none; }
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  max-width: 600px;
+  width: 100%;
+}
+.option-btn {
+  background: white;
+  border: 4px solid var(--c, #DDD6FE);
+  border-radius: 18px;
+  padding: 20px 12px;
+  cursor: pointer;
+  font-family: "標楷體", serif;
+  font-size: 56px;
+  font-weight: bold;
+  color: var(--c, #047857);
+  transition: all 0.15s;
+  min-height: 110px;
+}
+.option-btn:hover:not(.correct):not(.wrong) {
+  transform: translateY(-4px);
+  background: #F9FAFB;
+}
+.option-btn.correct { background: #D1FAE5; border-color: #10B981; animation: pop 0.4s; }
+.option-btn.wrong { background: #FEE2E2; border-color: #EF4444; animation: shake 0.4s; }
+@keyframes pop { 0%,100% { transform:scale(1); } 50% { transform:scale(1.15); } }
+@keyframes shake { 0%,100% { transform:translateX(0); } 25% { transform:translateX(-8px); } 75% { transform:translateX(8px); } }
+
+/* ========== FINAL TEST ========== */
+.test-progress {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  max-width: 600px;
+  margin: 10px auto;
+}
+.test-progress .pip {
+  flex: 1;
+  height: 8px;
+  background: #E5E7EB;
+  border-radius: 4px;
+}
+.test-progress .pip.done { background: #10B981; }
+.test-progress .pip.wrong { background: #EF4444; }
+.test-progress .pip.current { background: #FBBF24; }
+
+/* ========== Result modal ========== */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+.modal-bg.show { display: flex; }
+.modal {
+  background: white;
+  border-radius: 28px;
+  padding: 36px 28px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: pop 0.5s;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal h2 { color: #047857; font-size: 32px; margin-bottom: 12px; }
+.modal .big-emoji { font-size: 80px; margin: 12px 0; display: block; }
+.modal .pikmin-reward { font-size: 100px; margin: 16px 0; }
+.modal p { color: #4B5563; font-size: 17px; line-height: 1.7; margin-bottom: 8px; }
+.modal .grade {
+  font-size: 56px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #FBBF24, #F97316);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 10px 0;
+}
+.modal .scoreboard {
+  background: #F3F4F6;
+  padding: 14px;
+  border-radius: 14px;
+  margin: 14px 0;
+  font-size: 15px;
+}
+.modal .scoreboard .num {
+  font-size: 24px;
+  font-weight: bold;
+  color: #10B981;
+}
+
+/* Confetti */
+.confetti {
+  position: fixed;
+  width: 12px;
+  height: 12px;
+  background: var(--c, #10B981);
+  pointer-events: none;
+  border-radius: 2px;
+  animation: fall 1.5s linear forwards;
+  z-index: 90;
+}
+@keyframes fall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+/* ========== Voice toggle ========== */
+.voice-toggle {
+  display: flex;
+  gap: 4px;
+  background: white;
+  border-radius: 10px;
+  padding: 3px;
+  border: 2px solid #BBF7D0;
+}
+.voice-toggle button {
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 7px;
+  cursor: pointer;
+  font-family: inherit;
+  color: #6B7280;
+}
+.voice-toggle button.active { background: #10B981; color: white; }
+
+/* ========== Collection ========== */
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 8px;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+.col-symbol {
+  aspect-ratio: 1;
+  background: white;
+  border: 3px solid #E5E7EB;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: "標楷體", serif;
+  font-weight: bold;
+  color: #9CA3AF;
+  font-size: 32px;
+  opacity: 0.6;
+}
+.col-symbol.learned {
+  background: linear-gradient(135deg, #FEF3C7, #FFFFFF);
+  border-color: #10B981;
+  color: #047857;
+  opacity: 1;
+}
+.col-symbol .acc {
+  font-size: 11px;
+  margin-top: 2px;
+  color: #6B7280;
+}
+</style>
+</head>
+<body>
+
+<!-- ============ INTRO ============ -->
+<div class="screen active" id="intro">
+  <h1>🌱 皮克敏注音學習島 🌱</h1>
+  <p class="sub">學會 37 個注音符號 · 收集 7 種皮克敏 · 闖關+測驗</p>
+  <div class="pikmin-row" id="introPikmin"></div>
+  <div class="name-input">
+    📛 名字：<input type="text" id="playerName" value="梅梅" maxlength="8">
+  </div>
+  <button class="start-btn" onclick="goMap()">🌱 開始學習</button>
+  <p style="color:#6B7280;font-size:14px;margin-top:14px;">
+    💡 共 7 個關卡，每關學一組注音。全部完成可挑戰最終測驗
+  </p>
+</div>
+
+<!-- ============ MAP ============ -->
+<div class="screen" id="map">
+  <div class="topbar">
+    <h2 id="mapTitle">🗺️ 學習地圖</h2>
+    <div class="topbar-stat">🌱 皮克敏 <span class="val" id="pikminCount">0</span>/7</div>
+    <div class="topbar-stat">📚 學會 <span class="val" id="symbolCount">0</span>/37</div>
+    <button class="icon-btn" onclick="showCollection()">📔 收藏</button>
+    <button class="icon-btn" onclick="goIntro()">🏠 首頁</button>
+  </div>
+  <div class="map-grid" id="mapGrid"></div>
+</div>
+
+<!-- ============ LEARN ============ -->
+<div class="screen" id="learn">
+  <div class="topbar">
+    <button class="icon-btn" onclick="goMap()">🗺️ 地圖</button>
+    <h2 id="learnTitle">關卡 1</h2>
+    <div class="topbar-stat">符號 <span class="val" id="learnProgress">1/4</span></div>
+    <div class="voice-toggle">
+      <button id="voiceTeacher" class="active" onclick="setVoice('teacher')">👩 老師</button>
+      <button id="voiceChild" onclick="setVoice('child')">🧒 小朋友</button>
+    </div>
+  </div>
+  <div class="learn-container" id="learnContent"></div>
+</div>
+
+<!-- ============ TEST ============ -->
+<div class="screen" id="test">
+  <div class="topbar">
+    <button class="icon-btn" onclick="goMap()">🗺️ 地圖</button>
+    <h2>🏆 最終測驗</h2>
+    <div class="topbar-stat">題 <span class="val" id="testProgress">1/20</span></div>
+    <div class="topbar-stat">✓ <span class="val" id="testScore">0</span></div>
+  </div>
+  <div class="test-progress" id="testPipBar"></div>
+  <div class="learn-container" id="testContent"></div>
+</div>
+
+<!-- ============ COLLECTION ============ -->
+<div class="screen" id="collection">
+  <div class="topbar">
+    <button class="icon-btn" onclick="goMap()">🗺️ 地圖</button>
+    <h2>📔 我的注音收藏</h2>
+    <div class="topbar-stat">已學會 <span class="val" id="colCount">0</span>/37</div>
+  </div>
+  <div class="collection-grid" id="collectionGrid"></div>
+</div>
+
+<!-- ============ Modal ============ -->
+<div class="modal-bg" id="rewardModal">
+  <div class="modal">
+    <div class="pikmin-reward" id="rewardPikmin">🌱</div>
+    <h2 id="rewardTitle">過關!</h2>
+    <p id="rewardDesc"></p>
+    <div class="btn-row" style="margin-top:20px;">
+      <button class="btn btn-primary" onclick="closeReward()">繼續</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="resultModal">
+  <div class="modal">
+    <span class="big-emoji">🏆</span>
+    <h2>測驗完成!</h2>
+    <div class="grade" id="resultGrade">優等</div>
+    <p id="resultDesc"></p>
+    <div class="scoreboard">
+      答對 <span class="num" id="resultCorrect">0</span> 題 / 共 <span class="num" id="resultTotal">20</span> 題<br>
+      正確率 <span class="num" id="resultRate">0</span>%
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="closeResult(); goMap();">回地圖</button>
+      <button class="btn btn-warning" onclick="closeResult(); startTest();">再測一次</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ DATA: 37 注音符號 ============
+// 每個符號: z(注音), name(念法), word(例字), zhuyin(例字注音), emoji, level
+const SYMBOLS = [
+  // 關卡 1: 唇音 ㄅㄆㄇㄈ
+  { z:'ㄅ', name:'ㄅ', word:'爸', zhuyin:'ㄅㄚˋ', emoji:'👨', level:1 },
+  { z:'ㄆ', name:'ㄆ', word:'怕', zhuyin:'ㄆㄚˋ', emoji:'😨', level:1 },
+  { z:'ㄇ', name:'ㄇ', word:'媽', zhuyin:'ㄇㄚ', emoji:'👩', level:1 },
+  { z:'ㄈ', name:'ㄈ', word:'飛', zhuyin:'ㄈㄟ', emoji:'✈️', level:1 },
+
+  // 關卡 2: 舌尖音 ㄉㄊㄋㄌ
+  { z:'ㄉ', name:'ㄉ', word:'弟', zhuyin:'ㄉㄧˋ', emoji:'🧒', level:2 },
+  { z:'ㄊ', name:'ㄊ', word:'兔', zhuyin:'ㄊㄨˋ', emoji:'🐰', level:2 },
+  { z:'ㄋ', name:'ㄋ', word:'牛', zhuyin:'ㄋㄧㄡˊ', emoji:'🐂', level:2 },
+  { z:'ㄌ', name:'ㄌ', word:'鹿', zhuyin:'ㄌㄨˋ', emoji:'🦌', level:2 },
+
+  // 關卡 3: 舌根+舌面音 ㄍㄎㄏㄐㄑㄒ
+  { z:'ㄍ', name:'ㄍ', word:'狗', zhuyin:'ㄍㄡˇ', emoji:'🐶', level:3 },
+  { z:'ㄎ', name:'ㄎ', word:'哭', zhuyin:'ㄎㄨ', emoji:'😢', level:3 },
+  { z:'ㄏ', name:'ㄏ', word:'花', zhuyin:'ㄏㄨㄚ', emoji:'🌸', level:3 },
+  { z:'ㄐ', name:'ㄐ', word:'雞', zhuyin:'ㄐㄧ', emoji:'🐔', level:3 },
+  { z:'ㄑ', name:'ㄑ', word:'球', zhuyin:'ㄑㄧㄡˊ', emoji:'⚽', level:3 },
+  { z:'ㄒ', name:'ㄒ', word:'笑', zhuyin:'ㄒㄧㄠˋ', emoji:'😄', level:3 },
+
+  // 關卡 4: 翹舌+平舌 ㄓㄔㄕㄖㄗㄘㄙ
+  { z:'ㄓ', name:'ㄓ', word:'紙', zhuyin:'ㄓˇ', emoji:'📄', level:4 },
+  { z:'ㄔ', name:'ㄔ', word:'吃', zhuyin:'ㄔ', emoji:'🍴', level:4 },
+  { z:'ㄕ', name:'ㄕ', word:'手', zhuyin:'ㄕㄡˇ', emoji:'👋', level:4 },
+  { z:'ㄖ', name:'ㄖ', word:'日', zhuyin:'ㄖˋ', emoji:'☀️', level:4 },
+  { z:'ㄗ', name:'ㄗ', word:'字', zhuyin:'ㄗˋ', emoji:'🔤', level:4 },
+  { z:'ㄘ', name:'ㄘ', word:'草', zhuyin:'ㄘㄠˇ', emoji:'🌿', level:4 },
+  { z:'ㄙ', name:'ㄙ', word:'四', zhuyin:'ㄙˋ', emoji:'4️⃣', level:4 },
+
+  // 關卡 5: 單韻母 ㄚㄛㄜㄝ
+  { z:'ㄚ', name:'ㄚ', word:'阿', zhuyin:'ㄚ', emoji:'👶', level:5 },
+  { z:'ㄛ', name:'ㄛ', word:'喔', zhuyin:'ㄛ', emoji:'😯', level:5 },
+  { z:'ㄜ', name:'ㄜ', word:'鵝', zhuyin:'ㄜˊ', emoji:'🦢', level:5 },
+  { z:'ㄝ', name:'ㄝ', word:'耶', zhuyin:'ㄧㄝ', emoji:'🎉', level:5 },
+
+  // 關卡 6: 複韻母+鼻韻 ㄞㄟㄠㄡㄢㄣㄤㄥㄦ
+  { z:'ㄞ', name:'ㄞ', word:'愛', zhuyin:'ㄞˋ', emoji:'❤️', level:6 },
+  { z:'ㄟ', name:'ㄟ', word:'背', zhuyin:'ㄅㄟˋ', emoji:'🎒', level:6 },
+  { z:'ㄠ', name:'ㄠ', word:'貓', zhuyin:'ㄇㄠ', emoji:'🐱', level:6 },
+  { z:'ㄡ', name:'ㄡ', word:'狗', zhuyin:'ㄍㄡˇ', emoji:'🐕', level:6 },
+  { z:'ㄢ', name:'ㄢ', word:'山', zhuyin:'ㄕㄢ', emoji:'⛰️', level:6 },
+  { z:'ㄣ', name:'ㄣ', word:'森', zhuyin:'ㄙㄣ', emoji:'🌲', level:6 },
+  { z:'ㄤ', name:'ㄤ', word:'糖', zhuyin:'ㄊㄤˊ', emoji:'🍬', level:6 },
+  { z:'ㄥ', name:'ㄥ', word:'燈', zhuyin:'ㄉㄥ', emoji:'💡', level:6 },
+  { z:'ㄦ', name:'ㄦ', word:'耳', zhuyin:'ㄦˇ', emoji:'👂', level:6 },
+
+  // 關卡 7: 結合韻 ㄧㄨㄩ
+  { z:'ㄧ', name:'ㄧ', word:'一', zhuyin:'ㄧ', emoji:'1️⃣', level:7 },
+  { z:'ㄨ', name:'ㄨ', word:'五', zhuyin:'ㄨˇ', emoji:'5️⃣', level:7 },
+  { z:'ㄩ', name:'ㄩ', word:'魚', zhuyin:'ㄩˊ', emoji:'🐟', level:7 },
+];
+
+const LEVELS = [
+  { id:1, name:'紅皮克敏關卡 · 唇音',   color:'#EF4444', bg:'#FEE2E2', mascot:'red',    desc:'ㄅㄆㄇㄈ 4 個' },
+  { id:2, name:'藍皮克敏關卡 · 舌尖音', color:'#3B82F6', bg:'#DBEAFE', mascot:'blue',   desc:'ㄉㄊㄋㄌ 4 個' },
+  { id:3, name:'黃皮克敏關卡 · 舌根舌面', color:'#F59E0B', bg:'#FEF3C7', mascot:'yellow', desc:'ㄍㄎㄏㄐㄑㄒ 6 個' },
+  { id:4, name:'紫皮克敏關卡 · 翹平舌', color:'#A855F7', bg:'#F3E8FF', mascot:'purple', desc:'ㄓㄔㄕㄖㄗㄘㄙ 7 個' },
+  { id:5, name:'白皮克敏關卡 · 單韻母', color:'#6B7280', bg:'#F3F4F6', mascot:'white',  desc:'ㄚㄛㄜㄝ 4 個' },
+  { id:6, name:'石皮克敏關卡 · 複鼻韻', color:'#525252', bg:'#E5E5E5', mascot:'rock',   desc:'ㄞㄟㄠㄡㄢㄣㄤㄥㄦ 9 個' },
+  { id:7, name:'花皮克敏關卡 · 結合韻', color:'#EC4899', bg:'#FCE7F3', mascot:'flower', desc:'ㄧㄨㄩ 3 個' },
+];
+
+const PIKMIN_EMOJI_BY = { red:'🔴', blue:'🔵', yellow:'🟡', purple:'🟣', white:'⚪', rock:'🪨', flower:'🌸' };
+const PRAISE = ['太棒了!','好厲害!','答對了!','你會了耶!','超棒的!','你真聰明!','正確!','好讚喔!','超強的!'];
+
+// ============ STATE ============
+const STORAGE_KEY = 'pikmin-zhuyin-learn-v1';
+let state = loadState();
+let currentLevelIdx = 0;       // 0-based index in LEVELS
+let currentSymbolIdx = 0;      // index within current level's symbols
+let currentStage = 0;          // 0=見, 1=讀, 2=練, 3=測
+let voiceMode = 'teacher';     // teacher | child
+let currentSymbols = [];       // symbols in current level
+// Test state
+let testQuestions = [];
+let testIdx = 0;
+let testCorrect = 0;
+
+function loadState() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (s) return JSON.parse(s);
+  } catch(e) {}
+  return freshState();
+}
+function freshState() {
+  return {
+    name: '梅梅',
+    levels: {}, // {1:{cleared:true, progress:4}, ...}
+    symbols: {}, // {ㄅ:{seen:true, correct:n, wrong:n}}
+    pikmin: {}, // {red:1, blue:1, ...}
+    finalGrade: null,
+    finalScore: null,
+  };
+}
+function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){} }
+
+// ============ TTS ============
+function speak(text, mode) {
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-TW';
+  const m = mode || voiceMode;
+  if (m === 'child') {
+    u.pitch = 1.6;  // 童音模擬
+    u.rate = 0.95;
+  } else {
+    u.pitch = 1.0;
+    u.rate = 0.75;
+  }
+  const voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('zh'));
+  const preferred = ['Mei-Jia','Yating','Tingting','Sin-ji'];
+  for (const name of preferred) {
+    const v = voices.find(x => x.name.includes(name));
+    if (v) { u.voice = v; break; }
+  }
+  speechSynthesis.speak(u);
+}
+function setVoice(mode) {
+  voiceMode = mode;
+  document.querySelectorAll('.voice-toggle button').forEach(b => b.classList.remove('active'));
+  document.getElementById('voice' + mode.charAt(0).toUpperCase()+mode.slice(1)).classList.add('active');
+  speak('你好', mode);
+}
+
+// ============ SVG Pikmin ============
+function pikminSVG(color, size) {
+  const colors = {
+    red:    { body:'#EF4444', dark:'#B91C1C', eye:'#FFF' },
+    blue:   { body:'#3B82F6', dark:'#1D4ED8', eye:'#FFF' },
+    yellow: { body:'#FBBF24', dark:'#D97706', eye:'#FFF' },
+    purple: { body:'#A855F7', dark:'#7E22CE', eye:'#FFF' },
+    white:  { body:'#F9FAFB', dark:'#9CA3AF', eye:'#1F2937' },
+    rock:   { body:'#737373', dark:'#404040', eye:'#FFF' },
+    flower: { body:'#F472B6', dark:'#BE185D', eye:'#FFF' },
+  };
+  const c = colors[color] || colors.red;
+  const s = size || 80;
+  return `<svg width="${s}" height="${s*1.15}" viewBox="0 0 100 115">
+    <!-- 葉子 -->
+    <ellipse cx="42" cy="14" rx="22" ry="14" fill="#4CAF50" transform="rotate(-25 42 14)" stroke="#2E7D32" stroke-width="1"/>
+    <!-- 莖 -->
+    <rect x="47" y="20" width="6" height="20" rx="3" fill="#2E7D32"/>
+    <!-- 身體 -->
+    <ellipse cx="50" cy="70" rx="32" ry="38" fill="${c.body}" stroke="${c.dark}" stroke-width="2"/>
+    <!-- 眼睛 -->
+    <ellipse cx="40" cy="62" rx="8" ry="10" fill="${c.eye}"/>
+    <ellipse cx="60" cy="62" rx="8" ry="10" fill="${c.eye}"/>
+    <circle cx="40" cy="64" r="4" fill="#1F2937"/>
+    <circle cx="60" cy="64" r="4" fill="#1F2937"/>
+    <circle cx="42" cy="62" r="1.5" fill="#FFF"/>
+    <circle cx="62" cy="62" r="1.5" fill="#FFF"/>
+    <!-- 笑嘴 -->
+    <path d="M 42 78 Q 50 84 58 78" stroke="#1F2937" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- 腳 -->
+    <ellipse cx="40" cy="108" rx="8" ry="5" fill="#FFE082" stroke="#F57F17" stroke-width="1"/>
+    <ellipse cx="60" cy="108" rx="8" ry="5" fill="#FFE082" stroke="#F57F17" stroke-width="1"/>
+  </svg>`;
+}
+
+// ============ SCREEN NAV ============
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goIntro() { showScreen('intro'); }
+function goMap() { showScreen('map'); renderMap(); }
+function showCollection() { showScreen('collection'); renderCollection(); }
+
+// ============ INTRO ============
+function initIntro() {
+  document.getElementById('playerName').value = state.name || '梅梅';
+  const row = document.getElementById('introPikmin');
+  row.innerHTML = '';
+  ['red','blue','yellow','purple','white','rock','flower'].forEach(c => {
+    const d = document.createElement('div');
+    d.className = 'pikmin-icon';
+    d.innerHTML = pikminSVG(c, 70);
+    row.appendChild(d);
+  });
+}
+
+// ============ MAP ============
+function renderMap() {
+  state.name = document.getElementById('playerName').value.trim() || state.name;
+  document.getElementById('mapTitle').textContent = `🗺️ ${state.name} 的學習地圖`;
+
+  const totalPikmin = Object.values(state.pikmin || {}).filter(v => v > 0).length;
+  document.getElementById('pikminCount').textContent = totalPikmin;
+  const learned = Object.values(state.symbols).filter(s => s.seen).length;
+  document.getElementById('symbolCount').textContent = learned;
+
+  const grid = document.getElementById('mapGrid');
+  grid.innerHTML = '';
+
+  LEVELS.forEach((lv, i) => {
+    const symbols = SYMBOLS.filter(s => s.level === lv.id);
+    const prog = state.levels[lv.id] || {};
+    const isCleared = !!prog.cleared;
+    const isLocked = i > 0 && !state.levels[LEVELS[i-1].id]?.cleared;
+    const learnedInLevel = symbols.filter(s => state.symbols[s.z]?.seen).length;
+
+    const card = document.createElement('div');
+    card.className = 'level-card' + (isCleared ? ' cleared' : '') + (isLocked ? ' locked' : '');
+    card.style.setProperty('--c', lv.color);
+    card.innerHTML = `
+      <div class="pikmin-mascot">${pikminSVG(lv.mascot, 60)}</div>
+      <h3>關卡 ${lv.id}</h3>
+      <div style="color:#6B7280;font-size:14px;margin-bottom:6px;">${lv.name}</div>
+      <div class="symbols-preview">${symbols.map(s => s.z).join(' ')}</div>
+      <div class="progress"><div class="bar" style="width:${(learnedInLevel/symbols.length*100)}%;"></div></div>
+      <div class="status">
+        <span>學會 ${learnedInLevel} / ${symbols.length}</span>
+        <span>${isCleared ? '✓ 已過關' : isLocked ? '🔒 鎖定中' : '👆 點擊開始'}</span>
+      </div>
+    `;
+    if (isLocked) card.innerHTML += `<div class="lock-icon">🔒</div>`;
+    if (!isLocked) card.onclick = () => startLevel(i);
+    grid.appendChild(card);
+  });
+
+  // 最終測驗
+  const allCleared = LEVELS.every(lv => state.levels[lv.id]?.cleared);
+  const ft = document.createElement('div');
+  ft.className = 'final-test-card' + (allCleared ? '' : ' locked');
+  ft.innerHTML = `
+    <div class="trophy">${allCleared ? '🏆' : '🔒'}</div>
+    <h3>${allCleared ? '挑戰最終測驗!' : '完成 7 個關卡後解鎖'}</h3>
+    <p>${allCleared ? '20 題綜合測驗，評量你的注音程度' : `已完成 ${LEVELS.filter(lv=>state.levels[lv.id]?.cleared).length} / 7 關`}</p>
+    ${state.finalGrade ? `<p style="margin-top:8px;font-weight:bold;">🏅 上次成績: ${state.finalGrade}</p>` : ''}
+  `;
+  if (allCleared) ft.onclick = () => startTest();
+  grid.appendChild(ft);
+}
+
+// ============ LEARN LEVEL ============
+function startLevel(levelIdx) {
+  currentLevelIdx = levelIdx;
+  currentSymbolIdx = 0;
+  currentStage = 0;
+  currentSymbols = SYMBOLS.filter(s => s.level === LEVELS[levelIdx].id);
+  showScreen('learn');
+  renderLearn();
+}
+
+function currentSymbol() { return currentSymbols[currentSymbolIdx]; }
+
+function renderLearn() {
+  const lv = LEVELS[currentLevelIdx];
+  const sym = currentSymbol();
+  document.getElementById('learnTitle').textContent = `${lv.name}`;
+  document.getElementById('learnProgress').textContent = `${currentSymbolIdx+1}/${currentSymbols.length}`;
+
+  const content = document.getElementById('learnContent');
+  const c = lv.color;
+
+  // 階段 0: 看符號 + 聽老師念
+  if (currentStage === 0) {
+    content.innerHTML = `
+      <div class="stage-progress">
+        ${[0,1,2].map(i => `<div class="stage-dot${i===0?' current':''}"></div>`).join('')}
+      </div>
+      <div style="text-align:center;color:#6B7280;">第 1 步：看符號、聽念法</div>
+      <div class="symbol-big" style="--c:${c}">
+        ${sym.z}
+        <div class="play-mini" onclick="speakSymbol()">🔊</div>
+      </div>
+      <div class="example" style="--c:${c}">
+        <span class="emoji">${sym.emoji}</span>
+        <div class="word"><span class="target">${sym.z}</span> → ${sym.word}</div>
+        <div style="font-size:14px;color:#92400E;margin-top:6px;">「${sym.word}」念 ${sym.zhuyin}</div>
+      </div>
+      <div class="instruction" style="--c:${c}">點 🔊 聽老師念，多聽幾次</div>
+      <div class="btn-row">
+        <button class="btn btn-warning" onclick="speakSymbol()">🔊 老師念</button>
+        <button class="btn btn-child" onclick="speakWord('child')">🧒 小朋友念</button>
+        <button class="btn btn-success" onclick="nextStage()">下一步 →</button>
+      </div>
+    `;
+    setTimeout(() => speakSymbol(), 300);
+  }
+
+  // 階段 1: 跟讀
+  else if (currentStage === 1) {
+    content.innerHTML = `
+      <div class="stage-progress">
+        ${[0,1,2].map(i => `<div class="stage-dot${i<1?' done':i===1?' current':''}"></div>`).join('')}
+      </div>
+      <div style="text-align:center;color:#6B7280;">第 2 步：跟著念</div>
+      <div class="symbol-big" style="--c:${c}">${sym.z}</div>
+      <div class="instruction" style="--c:${c}">
+        🎤 跟著念：先聽老師，再學小朋友
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-warning" onclick="speakSymbol('teacher')">👩 老師念</button>
+        <button class="btn btn-child" onclick="speakSymbol('child')">🧒 小朋友念</button>
+        <button class="btn btn-success" onclick="nextStage()">我會了 →</button>
+      </div>
+    `;
+    setTimeout(() => speakSymbol('teacher'), 300);
+  }
+
+  // 階段 2: 認注音測驗（4 選 1）
+  else if (currentStage === 2) {
+    // 4 個選項：1 正解 + 3 distractor
+    const others = SYMBOLS.filter(x => x.z !== sym.z);
+    const distractors = [];
+    while (distractors.length < 3) {
+      const d = others[Math.floor(Math.random()*others.length)];
+      if (!distractors.includes(d.z)) distractors.push(d.z);
+    }
+    const options = [sym.z, ...distractors].sort(() => Math.random()-0.5);
+
+    content.innerHTML = `
+      <div class="stage-progress">
+        ${[0,1,2].map(i => `<div class="stage-dot${i<2?' done':i===2?' current':''}"></div>`).join('')}
+      </div>
+      <div style="text-align:center;color:#6B7280;">第 3 步：考考你</div>
+      <div class="example" style="--c:${c}">
+        <span class="emoji">${sym.emoji}</span>
+        <div class="word">「<span class="target">${sym.word}</span>」的開頭是？</div>
+      </div>
+      <div class="instruction" style="--c:${c}">點 🔊 聽提示，選對的注音</div>
+      <button class="btn btn-warning" onclick="speakWord()">🔊 聽「${sym.word}」</button>
+      <div class="options-grid">
+        ${options.map(o => `<button class="option-btn" style="--c:${c}" data-opt="${o}">${o}</button>`).join('')}
+      </div>
+      <div class="instruction" id="quizMsg" style="--c:${c};margin-top:10px;">選一個答案</div>
+    `;
+    document.querySelectorAll('.option-btn').forEach(b => {
+      b.addEventListener('click', () => onQuizPick(b, sym.z));
+    });
+    setTimeout(() => speakWord(), 400);
+  }
+}
+
+function speakSymbol(mode) {
+  const s = currentSymbol();
+  speak(s.name, mode);
+}
+function speakWord(mode) {
+  const s = currentSymbol();
+  speak(s.word + '的' + s.name, mode);
+}
+
+function onQuizPick(btn, correct) {
+  if (btn.classList.contains('correct') || btn.classList.contains('wrong')) return;
+  const picked = btn.dataset.opt;
+  const msg = document.getElementById('quizMsg');
+  const sym = currentSymbol();
+  const symState = state.symbols[sym.z] || {seen:0, correct:0, wrong:0};
+  if (picked === correct) {
+    btn.classList.add('correct');
+    msg.textContent = '✅ ' + PRAISE[Math.floor(Math.random()*PRAISE.length)];
+    msg.className = 'instruction success';
+    speak(PRAISE[Math.floor(Math.random()*PRAISE.length)]);
+    symState.correct = (symState.correct||0)+1;
+    symState.seen = true;
+    state.symbols[sym.z] = symState;
+    saveState();
+    setTimeout(() => nextSymbolOrFinish(), 1500);
+  } else {
+    btn.classList.add('wrong');
+    msg.textContent = `❌ 正解是 ${correct}，再聽一次「${sym.word}」`;
+    msg.className = 'instruction error';
+    document.querySelectorAll('.option-btn').forEach(b => {
+      if (b.dataset.opt === correct) b.classList.add('correct');
+    });
+    speakWord();
+    symState.wrong = (symState.wrong||0)+1;
+    state.symbols[sym.z] = symState;
+    saveState();
+    setTimeout(() => nextSymbolOrFinish(), 2200);
+  }
+}
+
+function nextStage() {
+  currentStage++;
+  if (currentStage > 2) {
+    nextSymbolOrFinish();
+  } else {
+    renderLearn();
+  }
+}
+
+function nextSymbolOrFinish() {
+  if (currentSymbolIdx + 1 < currentSymbols.length) {
+    currentSymbolIdx++;
+    currentStage = 0;
+    renderLearn();
+  } else {
+    // 過關!
+    completeLevel();
+  }
+}
+
+function completeLevel() {
+  const lv = LEVELS[currentLevelIdx];
+  const wasCleared = !!state.levels[lv.id]?.cleared;
+  state.levels[lv.id] = { cleared: true, completedAt: Date.now() };
+  if (!wasCleared) {
+    state.pikmin[lv.mascot] = (state.pikmin[lv.mascot] || 0) + 1;
+  }
+  saveState();
+
+  // Reward modal
+  document.getElementById('rewardPikmin').innerHTML = pikminSVG(lv.mascot, 110);
+  document.getElementById('rewardTitle').textContent = `${lv.name} 過關!`;
+  document.getElementById('rewardDesc').innerHTML =
+    wasCleared ? `已重複完成這關 🎉` : `獲得 1 隻 <b>${lv.mascot} 皮克敏</b>!<br>學會 ${currentSymbols.length} 個注音`;
+  document.getElementById('rewardModal').classList.add('show');
+  fireConfetti();
+  speak('太棒了，' + state.name + '，' + lv.name + '過關!');
+}
+
+function closeReward() {
+  document.getElementById('rewardModal').classList.remove('show');
+  goMap();
+}
+
+// ============ FINAL TEST ============
+function startTest() {
+  // 隨機抽 20 題
+  const shuffled = [...SYMBOLS].sort(() => Math.random()-0.5);
+  testQuestions = shuffled.slice(0, 20);
+  testIdx = 0;
+  testCorrect = 0;
+  showScreen('test');
+  renderTestPipBar();
+  renderTestQuestion();
+}
+
+function renderTestPipBar() {
+  const bar = document.getElementById('testPipBar');
+  bar.innerHTML = testQuestions.map((_, i) => {
+    let cls = 'pip';
+    if (i < testIdx) cls += ' done';
+    if (i === testIdx) cls += ' current';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+}
+
+function renderTestQuestion() {
+  if (testIdx >= testQuestions.length) {
+    showTestResult();
+    return;
+  }
+  const sym = testQuestions[testIdx];
+  document.getElementById('testProgress').textContent = `${testIdx+1}/${testQuestions.length}`;
+  document.getElementById('testScore').textContent = testCorrect;
+  renderTestPipBar();
+
+  // 題型：聽聲音選注音、看字選注音、看圖選注音 隨機
+  const qType = ['hear-zhuyin','word-zhuyin','emoji-zhuyin'][Math.floor(Math.random()*3)];
+  const others = SYMBOLS.filter(x => x.z !== sym.z);
+  const distractors = [];
+  while (distractors.length < 3) {
+    const d = others[Math.floor(Math.random()*others.length)];
+    if (!distractors.includes(d.z)) distractors.push(d.z);
+  }
+  const options = [sym.z, ...distractors].sort(() => Math.random()-0.5);
+
+  let prompt = '';
+  if (qType === 'hear-zhuyin') {
+    prompt = `<div class="instruction" style="--c:#F59E0B">🔊 聽聲音，選注音</div>
+      <button class="btn btn-warning" onclick="speak('${sym.word}的${sym.name}')">🔊 再聽一次</button>`;
+    setTimeout(() => speak(`${sym.word}的${sym.name}`), 300);
+  } else if (qType === 'word-zhuyin') {
+    prompt = `<div class="example" style="--c:#F59E0B"><div class="word">「<span class="target">${sym.word}</span>」的開頭注音?</div></div>`;
+  } else {
+    prompt = `<div class="example" style="--c:#F59E0B"><span class="emoji">${sym.emoji}</span><div class="word">「<span class="target">${sym.word}</span>」開頭注音?</div></div>`;
+  }
+
+  document.getElementById('testContent').innerHTML = `
+    ${prompt}
+    <div class="options-grid">
+      ${options.map(o => `<button class="option-btn" style="--c:#F59E0B" data-opt="${o}">${o}</button>`).join('')}
+    </div>
+    <div class="instruction" id="testMsg" style="--c:#F59E0B;margin-top:10px;">點注音作答</div>
+  `;
+  document.querySelectorAll('.option-btn').forEach(b => {
+    b.addEventListener('click', () => onTestPick(b, sym));
+  });
+}
+
+function onTestPick(btn, sym) {
+  if (btn.classList.contains('correct') || btn.classList.contains('wrong')) return;
+  const picked = btn.dataset.opt;
+  const msg = document.getElementById('testMsg');
+  if (picked === sym.z) {
+    btn.classList.add('correct');
+    msg.textContent = '✅ 答對了!';
+    msg.className = 'instruction success';
+    testCorrect++;
+    document.getElementById('testScore').textContent = testCorrect;
+    speak(PRAISE[Math.floor(Math.random()*PRAISE.length)]);
+  } else {
+    btn.classList.add('wrong');
+    msg.innerHTML = `❌ 正解是 <b>${sym.z}</b> (${sym.word})`;
+    msg.className = 'instruction error';
+    document.querySelectorAll('.option-btn').forEach(b => {
+      if (b.dataset.opt === sym.z) b.classList.add('correct');
+    });
+    speak(`${sym.word}的${sym.name}`);
+    // Update pip color
+    const pips = document.querySelectorAll('#testPipBar .pip');
+    if (pips[testIdx]) {
+      pips[testIdx].classList.remove('current');
+      pips[testIdx].classList.add('wrong');
+    }
+  }
+  setTimeout(() => {
+    testIdx++;
+    renderTestQuestion();
+  }, 1700);
+}
+
+function showTestResult() {
+  const total = testQuestions.length;
+  const rate = Math.round(testCorrect / total * 100);
+  let grade, desc;
+  if (rate >= 95) { grade = '注音大師 🏆'; desc = '太厲害了!你已經完全學會注音了!'; }
+  else if (rate >= 85) { grade = '優等 ⭐⭐⭐'; desc = '很棒喔!再多練幾次就完美了!'; }
+  else if (rate >= 70) { grade = '甲等 ⭐⭐'; desc = '不錯不錯!繼續加油!'; }
+  else if (rate >= 50) { grade = '乙等 ⭐'; desc = '有進步空間，多回去複習幾次喔!'; }
+  else { grade = '加油 💪'; desc = '別灰心!回去再學一次，下次一定更棒!'; }
+
+  state.finalGrade = grade;
+  state.finalScore = rate;
+  saveState();
+
+  document.getElementById('resultGrade').textContent = grade;
+  document.getElementById('resultDesc').textContent = desc;
+  document.getElementById('resultCorrect').textContent = testCorrect;
+  document.getElementById('resultTotal').textContent = total;
+  document.getElementById('resultRate').textContent = rate;
+  document.getElementById('resultModal').classList.add('show');
+  speak(`測驗完成! 答對 ${testCorrect} 題，等級是 ${grade}`);
+  fireConfetti();
+}
+
+function closeResult() {
+  document.getElementById('resultModal').classList.remove('show');
+}
+
+// ============ COLLECTION ============
+function renderCollection() {
+  const learned = Object.values(state.symbols).filter(s => s.seen).length;
+  document.getElementById('colCount').textContent = learned;
+
+  const grid = document.getElementById('collectionGrid');
+  grid.innerHTML = '';
+  SYMBOLS.forEach(s => {
+    const st = state.symbols[s.z] || {};
+    const isLearned = !!st.seen;
+    const total = (st.correct||0) + (st.wrong||0);
+    const acc = total ? Math.round((st.correct||0)/total*100) : 0;
+    const cell = document.createElement('div');
+    cell.className = 'col-symbol' + (isLearned ? ' learned' : '');
+    cell.innerHTML = `<div>${s.z}</div>${isLearned ? `<div class="acc">${acc}%</div>` : ''}`;
+    cell.onclick = () => speak(s.word + '的' + s.name);
+    grid.appendChild(cell);
+  });
+}
+
+// ============ Confetti ============
+function fireConfetti() {
+  const colors = ['#EF4444','#3B82F6','#F59E0B','#10B981','#A855F7','#EC4899'];
+  for (let i = 0; i < 40; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random()*100 + 'vw';
+    c.style.top = '-20px';
+    c.style.setProperty('--c', colors[i%colors.length]);
+    c.style.animationDuration = (1+Math.random()) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 2500);
+  }
+}
+
+// ============ Init ============
+document.body.addEventListener('touchend', function unlock() {
+  const u = new SpeechSynthesisUtterance(' ');
+  u.volume = 0;
+  speechSynthesis.speak(u);
+  document.body.removeEventListener('touchend', unlock);
+}, { once: true });
+
+initIntro();
+</script>
+</body>
+</html>
