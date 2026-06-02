@@ -2,11 +2,11 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<title>溝通版 - 永芳特教</title>
+<title>溝通版 · 永芳特教</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="溝通版">
+<meta name="apple-mobile-web-app-title" content="溝通">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%234A90E2' rx='40'/%3E%3Ctext x='90' y='130' font-size='110' text-anchor='middle' fill='white'%3E💬%3C/text%3E%3C/svg%3E">
 <style>
 * {
@@ -1009,113 +1009,5 @@ document.body.addEventListener('touchend', function unlock() {
   document.body.removeEventListener('touchend', unlock);
 }, { once: true });
 </script>
-<!-- VIP-NAV-START -->
-<style id="vip-nav-style">
-.vip-nav-fab{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#ffb800,#ff7a4d);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.4);font-size:24px;z-index:99999;display:flex;align-items:center;justify-content:center;transition:transform .2s, box-shadow .2s;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif}
-.vip-nav-fab:hover{transform:scale(1.1);box-shadow:0 6px 24px rgba(255,184,0,.6)}
-.vip-nav-fab:active{transform:scale(.95)}
-.vip-nav-mask{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99998;display:none;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
-.vip-nav-mask.show{display:block}
-.vip-nav-panel{position:fixed;bottom:90px;right:20px;width:min(420px,calc(100vw - 40px));max-height:75vh;overflow-y:auto;background:#1a2028;border:1px solid #2a3441;border-radius:16px;padding:18px;z-index:99999;display:none;box-shadow:0 12px 48px rgba(0,0,0,.5);color:#e6edf3;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;line-height:1.4}
-.vip-nav-panel.show{display:block;animation:vipNavPop .2s ease-out}
-@keyframes vipNavPop{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
-.vip-nav-title{font-size:16px;font-weight:700;color:#ffb800;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
-.vip-nav-sub{font-size:11px;color:#8b96a3;margin-bottom:12px}
-.vip-nav-close{background:none;border:1px solid #2a3441;border-radius:8px;color:#8b96a3;font-size:18px;cursor:pointer;width:28px;height:28px;display:flex;align-items:center;justify-content:center;padding:0}
-.vip-nav-close:hover{color:#fff;border-color:#3a4452}
-.vip-nav-cat{font-size:10px;color:#8b96a3;margin:14px 0 8px;letter-spacing:2px;font-weight:700}
-.vip-nav-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.vip-nav-item{display:flex;flex-direction:column;align-items:center;padding:12px 6px;border-radius:10px;background:#2a3441;color:#e6edf3;text-decoration:none;font-size:12px;text-align:center;transition:background .15s, transform .15s;border:1px solid transparent}
-.vip-nav-item:hover{background:#3a4452;transform:translateY(-2px);border-color:#4a5462}
-.vip-nav-item.current{background:linear-gradient(135deg,#ffb800,#ff7a4d);color:#fff;pointer-events:none;opacity:.9;font-weight:700}
-.vip-nav-emoji{font-size:22px;margin-bottom:4px;line-height:1}
-@media (max-width:480px){.vip-nav-panel{right:10px;left:10px;width:auto;bottom:80px}.vip-nav-grid{grid-template-columns:repeat(4,1fr)}.vip-nav-item{padding:10px 4px;font-size:11px}.vip-nav-emoji{font-size:20px}}
-</style>
-<script id="vip-nav-script">
-(function(){
-  if (window.__vipNavLoaded) return;
-  window.__vipNavLoaded = true;
-  var TOOLS = [
-    {emoji:'🏠', name:'首頁', file:'首頁.html', cat:'入口'},
-    {emoji:'🇹🇼', name:'台股分析', file:'台股智能分析.html', cat:'智能分析'},
-    {emoji:'🇺🇸', name:'美股分析', file:'美股智能分析.html', cat:'智能分析'},
-    {emoji:'🧠', name:'聰明錢', file:'股票聰明錢分析.html', cat:'智能分析'},
-    {emoji:'📰', name:'台股情報', file:'tw_news/', cat:'每日情報'},
-    {emoji:'📡', name:'美股情報', file:'news/', cat:'每日情報'},
-    {emoji:'☀️', name:'每日早報', file:'每日早報.html', cat:'每日情報'},
-    {emoji:'💰', name:'損益追蹤', file:'index.html', cat:'生活工具'},
-    {emoji:'🏡', name:'房地產', file:'房地產搜尋.html', cat:'生活工具'},
-    {emoji:'🎵', name:'音樂', file:'音樂播放器.html', cat:'生活工具'},
-    {emoji:'🕐', name:'時鐘', file:'時鐘.html', cat:'生活工具'},
-    {emoji:'💬', name:'溝通版', file:'iPad溝通版.html', cat:'特教工具'},
-    {emoji:'📥', name:'台股匯入', file:'import.html', cat:'匯入'},
-    {emoji:'📥', name:'美股匯入', file:'us_import.html', cat:'匯入'}
-  ];
-  // 自動偵測站根：找 path 裡的 "stocks" 或 "Downloads" 當作站根
-  var path = decodeURIComponent(window.location.pathname);
-  var parts = path.split('/').filter(Boolean);
-  var rootKeys = ['stocks','Downloads'];
-  var rootIdx = -1;
-  for (var k=0;k<rootKeys.length;k++) {
-    var ix = parts.indexOf(rootKeys[k]);
-    if (ix >= 0) { rootIdx = ix; break; }
-  }
-  // 區分 path 結尾是檔案還是目錄；目錄會以 "/" 結尾
-  var endsWithSlash = path.charAt(path.length - 1) === '/';
-  // 站根後的 segment 數 = parts.length - rootIdx - 1（扣掉 root segment 本身）
-  // 檔案路徑：最後一段是檔名，不算 depth；目錄：所有段都算 depth
-  var depth = rootIdx >= 0
-    ? Math.max(0, parts.length - rootIdx - (endsWithSlash ? 1 : 2))
-    : 0;
-  var base = depth > 0 ? new Array(depth+1).join('../') : '';
-  // 偵測目前頁
-  var here = parts[parts.length-1] || '';
-  var current = null;
-  TOOLS.forEach(function(t){
-    var fn = t.file.replace(/\/$/,'');
-    if (here === fn || (here === '' && t.file === '首頁.html') ||
-        (path.indexOf('/'+fn+'/') >= 0 && t.file.indexOf('/') >= 0)) {
-      current = t.name;
-    }
-  });
-  // 建立浮動鈕
-  var btn = document.createElement('button');
-  btn.className = 'vip-nav-fab';
-  btn.title = '工具切換';
-  btn.setAttribute('aria-label','工具切換');
-  btn.textContent = '🧭';
-  // 建立遮罩
-  var mask = document.createElement('div');
-  mask.className = 'vip-nav-mask';
-  // 建立面板
-  var panel = document.createElement('div');
-  panel.className = 'vip-nav-panel';
-  var byCat = {}, catOrder = [];
-  TOOLS.forEach(function(t){ if (!byCat[t.cat]) { byCat[t.cat] = []; catOrder.push(t.cat); } byCat[t.cat].push(t); });
-  var html = '<div class="vip-nav-title">🧭 川普投顧 VIP 工具箱<button class="vip-nav-close" aria-label="關閉">×</button></div>';
-  html += '<div class="vip-nav-sub">王川銘 — 一鍵切換所有工具</div>';
-  catOrder.forEach(function(cat){
-    html += '<div class="vip-nav-cat">'+cat+'</div><div class="vip-nav-grid">';
-    byCat[cat].forEach(function(t){
-      var cls = 'vip-nav-item' + (t.name === current ? ' current' : '');
-      html += '<a class="'+cls+'" href="'+base+t.file+'"><div class="vip-nav-emoji">'+t.emoji+'</div><div>'+t.name+'</div></a>';
-    });
-    html += '</div>';
-  });
-  panel.innerHTML = html;
-  function attach(){
-    document.body.appendChild(btn);
-    document.body.appendChild(mask);
-    document.body.appendChild(panel);
-    btn.addEventListener('click', function(){ mask.classList.add('show'); panel.classList.add('show'); });
-    mask.addEventListener('click', function(){ mask.classList.remove('show'); panel.classList.remove('show'); });
-    panel.querySelector('.vip-nav-close').addEventListener('click', function(){ mask.classList.remove('show'); panel.classList.remove('show'); });
-    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { mask.classList.remove('show'); panel.classList.remove('show'); } });
-  }
-  if (document.body) attach(); else document.addEventListener('DOMContentLoaded', attach);
-})();
-</script>
-<!-- VIP-NAV-END -->
-
 </body>
 </html>
