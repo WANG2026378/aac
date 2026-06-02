@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="注音拼讀">
+<meta name="theme-color" content="#7C3AED">
+<link rel="apple-touch-icon" href="icons/zhuyin-180.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/zhuyin-180.png?v=1">
+<link rel="apple-touch-icon" sizes="512x512" href="icons/zhuyin-512.png?v=1">
+<link rel="icon" type="image/png" href="icons/zhuyin-512.png?v=1">
+<title>注音拼讀 · 皮克敏冒險生字</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body {
+  font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
+  background: linear-gradient(180deg, #DDD6FE 0%, #E0E7FF 50%, #FDF4FF 100%);
+  color: #2d3748;
+  overflow-x: hidden;
+  min-height: 100vh;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+/* ===== Intro ===== */
+#intro {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+}
+#intro h1 {
+  font-size: clamp(36px, 6vw, 56px);
+  color: #6B21A8;
+  text-shadow: 3px 3px 0 #fff, 6px 6px 0 rgba(0,0,0,0.08);
+  margin-bottom: 12px;
+}
+#intro .sub {
+  font-size: 18px;
+  color: #6B21A8;
+  background: rgba(255,255,255,0.7);
+  padding: 10px 20px;
+  border-radius: 16px;
+  margin-bottom: 28px;
+  max-width: 600px;
+}
+.zhuyin-demo {
+  font-size: 64px;
+  color: #7C3AED;
+  margin: 20px 0;
+  font-weight: bold;
+  letter-spacing: 8px;
+}
+.mode-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 280px));
+  gap: 16px;
+  max-width: 900px;
+  margin: 20px 0;
+}
+.mode-card {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.15);
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 3px solid transparent;
+}
+.mode-card:hover {
+  transform: translateY(-4px);
+  border-color: #A78BFA;
+}
+.mode-card .level {
+  display: inline-block;
+  background: var(--c);
+  color: white;
+  padding: 4px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.mode-card.easy { --c: #10B981; }
+.mode-card.med { --c: #F59E0B; }
+.mode-card.hard { --c: #EF4444; }
+.mode-card h3 { font-size: 22px; color: #1F2937; margin-bottom: 8px; }
+.mode-card p { font-size: 14px; color: #6B7280; line-height: 1.6; }
+.mode-card .demo {
+  font-size: 32px;
+  margin: 12px 0;
+  color: var(--c);
+  font-weight: bold;
+}
+
+.name-input {
+  margin: 20px 0;
+  font-size: 16px;
+  color: #6B21A8;
+}
+.name-input input {
+  font-size: 20px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 3px solid #A78BFA;
+  text-align: center;
+  width: 200px;
+  font-family: inherit;
+  background: white;
+}
+
+/* ===== Game Layout ===== */
+#game { display: none; }
+#game.active { display: grid; min-height: 100vh; padding: 12px; gap: 12px;
+  grid-template-columns: 1fr 280px;
+  grid-template-rows: auto 1fr auto;
+}
+@media (max-width: 900px) {
+  #game.active { grid-template-columns: 1fr; }
+  .sidebar { order: 3; }
+}
+
+/* Header */
+.bar {
+  grid-column: 1 / -1;
+  background: rgba(255,255,255,0.92);
+  border-radius: 16px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.1);
+}
+.bar h2 { font-size: 20px; color: #6B21A8; margin-right: auto; }
+.stat {
+  background: white;
+  border: 2px solid #E0E7FF;
+  border-radius: 12px;
+  padding: 6px 14px;
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  gap: 6px;
+}
+.stat .lbl { color: #6B7280; font-size: 12px; }
+.stat .val { color: #7C3AED; font-size: 18px; }
+
+.icon-btn {
+  background: white;
+  border: 2px solid #E0E7FF;
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: inherit;
+}
+.icon-btn:hover { background: #F5F3FF; }
+
+/* Main quiz area */
+.quiz-main {
+  background: rgba(255,255,255,0.95);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.word-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  background: linear-gradient(135deg, #F5F3FF, #FFFFFF);
+  border-radius: 20px;
+  padding: 32px 24px;
+  border: 3px solid #E0E7FF;
+  flex-wrap: wrap;
+}
+.word-emoji { font-size: 80px; }
+.word-char {
+  font-size: 120px;
+  font-weight: 900;
+  color: #6B21A8;
+  font-family: "標楷體", "PingFang TC", serif;
+  text-shadow: 4px 4px 0 rgba(124, 58, 237, 0.15);
+}
+.word-hint {
+  font-size: 16px;
+  color: #6B7280;
+  margin-top: 8px;
+  background: #F9FAFB;
+  padding: 6px 14px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.answer-area {
+  text-align: center;
+}
+.answer-area h3 {
+  color: #6B21A8;
+  font-size: 18px;
+  margin-bottom: 14px;
+}
+
+/* Options grid (mode 1 + 2) */
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+.option-btn {
+  background: white;
+  border: 3px solid #DDD6FE;
+  border-radius: 16px;
+  padding: 20px 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 32px;
+  font-weight: bold;
+  color: #6B21A8;
+  transition: all 0.15s;
+  min-height: 88px;
+  letter-spacing: 3px;
+}
+.option-btn:hover {
+  border-color: #7C3AED;
+  background: #F5F3FF;
+  transform: translateY(-2px);
+}
+.option-btn.correct {
+  background: #D1FAE5;
+  border-color: #10B981;
+  color: #047857;
+  animation: pop 0.4s;
+}
+.option-btn.wrong {
+  background: #FEE2E2;
+  border-color: #EF4444;
+  color: #B91C1C;
+  animation: shake 0.4s;
+}
+@keyframes pop {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+/* Compose area (mode 3) */
+.compose-display {
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border: 3px dashed #F59E0B;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  font-size: 56px;
+  font-weight: bold;
+  color: #92400E;
+  letter-spacing: 8px;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.compose-display .slot {
+  display: inline-block;
+  width: 60px;
+  height: 80px;
+  border-bottom: 4px solid #F59E0B;
+  margin: 0 4px;
+  line-height: 80px;
+}
+.compose-display .slot.filled {
+  background: #FEF3C7;
+  border-radius: 8px;
+  border-bottom: 4px solid #10B981;
+  color: #047857;
+}
+.compose-keyboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+.compose-key {
+  background: white;
+  border: 2px solid #DDD6FE;
+  border-radius: 12px;
+  padding: 14px 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 28px;
+  font-weight: bold;
+  color: #6B21A8;
+  transition: all 0.15s;
+  min-height: 64px;
+}
+.compose-key:hover { background: #F5F3FF; border-color: #7C3AED; }
+.compose-key:active { transform: scale(0.95); }
+.compose-key.tone { background: #FFFBEB; border-color: #F59E0B; color: #92400E; }
+.compose-key.used { opacity: 0.3; pointer-events: none; }
+
+.compose-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+/* Buttons */
+.btn {
+  padding: 12px 24px;
+  border-radius: 14px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: inherit;
+  transition: transform 0.1s;
+}
+.btn:active { transform: translateY(2px); }
+.btn-primary { background: #7C3AED; color: white; box-shadow: 0 4px 0 #5B21B6; }
+.btn-success { background: #10B981; color: white; box-shadow: 0 4px 0 #047857; }
+.btn-warning { background: #F59E0B; color: white; box-shadow: 0 4px 0 #B45309; }
+.btn-secondary { background: #9CA3AF; color: white; box-shadow: 0 4px 0 #6B7280; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; transform: none; }
+
+.action-bar {
+  grid-column: 1 / -1;
+  background: rgba(255,255,255,0.92);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(124,58,237,0.1);
+}
+.msg {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 14px;
+  background: white;
+  border-radius: 10px;
+  border: 2px dashed #DDD6FE;
+  font-size: 15px;
+  color: #4B5563;
+}
+.msg.success { border-color: #10B981; color: #047857; background: #ECFDF5; }
+.msg.error { border-color: #EF4444; color: #B91C1C; background: #FEF2F2; }
+
+/* Sidebar */
+.sidebar { display: flex; flex-direction: column; gap: 12px; }
+.panel {
+  background: rgba(255,255,255,0.95);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 4px 12px rgba(124,58,237,0.08);
+}
+.panel h3 { font-size: 15px; color: #6B21A8; margin-bottom: 10px; }
+
+.pikmin-collection {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.pikmin-cell {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  background: #F9FAFB;
+  border: 2px solid #E5E7EB;
+  color: #9CA3AF;
+}
+.pikmin-cell.has {
+  background: linear-gradient(135deg, #DDD6FE, #C4B5FD);
+  border-color: #7C3AED;
+  color: #5B21B6;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.progress-list {
+  max-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.progress-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: #F9FAFB;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.progress-row.done {
+  background: linear-gradient(90deg, #ECFDF5, #F0FDF4);
+  color: #047857;
+}
+.progress-row .stars { color: #F59E0B; font-size: 12px; }
+
+/* Modal */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+.modal-bg.show { display: flex; }
+.modal {
+  background: white;
+  border-radius: 24px;
+  padding: 32px 28px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: pop 0.4s;
+}
+.modal h2 { color: #6B21A8; font-size: 28px; margin-bottom: 12px; }
+.modal .big-emoji { font-size: 72px; margin: 10px 0; display: block; }
+.modal p { color: #4B5563; line-height: 1.7; font-size: 16px; margin-bottom: 8px; }
+.modal .pikmin-reward { font-size: 80px; margin: 20px 0; }
+
+/* Confetti */
+.confetti {
+  position: fixed;
+  width: 12px;
+  height: 12px;
+  background: var(--c, #7C3AED);
+  pointer-events: none;
+  border-radius: 2px;
+  animation: fall 1.5s linear forwards;
+  z-index: 200;
+}
+@keyframes fall {
+  to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ Intro ============ -->
+<div id="intro">
+  <h1>🔤 注音拼讀 🔤</h1>
+  <p class="sub">用皮克敏冒險的 30 個生字學注音</p>
+
+  <div class="zhuyin-demo">ㄅㄆㄇㄈ</div>
+
+  <div class="name-input">
+    📛 名字：<input type="text" id="playerName" value="梅梅" maxlength="8">
+  </div>
+
+  <div class="mode-cards">
+    <div class="mode-card easy" onclick="startGame('easy')">
+      <span class="level">難度 1</span>
+      <h3>🌱 認注音</h3>
+      <div class="demo">ㄅ ㄆ ㄇ</div>
+      <p>聽聲音<br>從 4 個注音中選出對的</p>
+    </div>
+
+    <div class="mode-card med" onclick="startGame('medium')">
+      <span class="level">難度 2</span>
+      <h3>🌿 找注音</h3>
+      <div class="demo">雨 → ㄩˇ</div>
+      <p>看生字<br>選正確的完整注音(含聲調)</p>
+    </div>
+
+    <div class="mode-card hard" onclick="startGame('hard')">
+      <span class="level">難度 3</span>
+      <h3>🌳 拼注音</h3>
+      <div class="demo">ㄩ + ˇ</div>
+      <p>看生字<br>自己拼出每個注音+聲調</p>
+    </div>
+  </div>
+
+  <p style="color:#9CA3AF;font-size:13px;margin-top:20px;">
+    💡 對應 <a href="pikmin.html" style="color:#7C3AED;font-weight:bold;">皮克敏×台灣大冒險</a> 的 30 生字
+  </p>
+</div>
+
+<!-- ============ Game ============ -->
+<div id="game">
+  <div class="bar">
+    <h2 id="gameTitle">🔤 注音拼讀</h2>
+    <div class="stat"><span class="lbl">分數</span><span class="val" id="scoreVal">0</span></div>
+    <div class="stat"><span class="lbl">皮克敏</span><span class="val" id="pikminVal">0</span>/30</div>
+    <button class="icon-btn" onclick="speakCurrent()">🔊 念一次</button>
+    <button class="icon-btn" onclick="quitToIntro()">🏠 首頁</button>
+  </div>
+
+  <div class="quiz-main">
+    <div class="word-display" id="wordDisplay">
+      <span class="word-emoji" id="wordEmoji">📝</span>
+      <div>
+        <div class="word-char" id="wordChar">字</div>
+        <div class="word-hint" id="wordHint">提示文字</div>
+      </div>
+    </div>
+
+    <div class="answer-area" id="answerArea">
+      <!-- options inserted by JS -->
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="panel">
+      <h3>🌱 我的皮克敏</h3>
+      <div class="pikmin-collection" id="pikminCollection"></div>
+    </div>
+    <div class="panel">
+      <h3>📋 學過的字</h3>
+      <div class="progress-list" id="progressList"></div>
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn btn-warning" onclick="skipQuestion()">⏭️ 跳過</button>
+    <button class="btn btn-primary" onclick="speakCurrent()">🔊 再聽一次</button>
+    <div class="msg" id="msg">點按鈕作答 👆</div>
+    <button class="btn btn-success" id="nextBtn" onclick="nextQuestion()" disabled>👉 下一題</button>
+  </div>
+</div>
+
+<!-- ============ Modal ============ -->
+<div class="modal-bg" id="rewardModal">
+  <div class="modal">
+    <span class="big-emoji" id="modalEmoji">🎉</span>
+    <h2 id="modalTitle">答對了!</h2>
+    <p id="modalDesc">獲得 1 隻皮克敏</p>
+    <div class="pikmin-reward" id="modalPikmin">🌱</div>
+    <button class="btn btn-primary" onclick="closeModal()">繼續挑戰</button>
+  </div>
+</div>
+
+<div class="modal-bg" id="finishModal">
+  <div class="modal">
+    <span class="big-emoji">🏆</span>
+    <h2>太厲害了!</h2>
+    <p>你答完所有題目了!</p>
+    <p>共獲得 <span id="finalScore" style="color:#7C3AED;font-weight:bold;font-size:24px;">0</span> 分</p>
+    <p>收集到 <span id="finalPikmin" style="color:#10B981;font-weight:bold;font-size:24px;">0</span> 隻皮克敏</p>
+    <div style="display:flex;gap:10px;margin-top:20px;justify-content:center;">
+      <button class="btn btn-primary" onclick="restartGame()">再玩一次</button>
+      <button class="btn btn-secondary" onclick="quitToIntro()">回首頁</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ DATA (同 Pikmin 30 字) ============
+const WORDS = [
+  { char:'雨', emoji:'☔', zhuyin:'ㄩˇ', initials:[], medials:['ㄩ'], tone:'ˇ', pronounce:'下雨的雨', hint:'從天上掉下來的水' },
+  { char:'樓', emoji:'🏢', zhuyin:'ㄌㄡˊ', initials:['ㄌ'], medials:['ㄡ'], tone:'ˊ', pronounce:'高樓的樓', hint:'高高的房子' },
+  { char:'市', emoji:'🏙️', zhuyin:'ㄕˋ', initials:['ㄕ'], medials:[], tone:'ˋ', pronounce:'城市的市', hint:'熱鬧、有很多店' },
+  { char:'機', emoji:'✈️', zhuyin:'ㄐㄧ', initials:['ㄐ'], medials:['ㄧ'], tone:'', pronounce:'飛機的機', hint:'會飛的大鳥' },
+  { char:'池', emoji:'💧', zhuyin:'ㄔˊ', initials:['ㄔ'], medials:[], tone:'ˊ', pronounce:'水池的池', hint:'裝水的小水塘' },
+  { char:'田', emoji:'🌾', zhuyin:'ㄊㄧㄢˊ', initials:['ㄊ'], medials:['ㄧ','ㄢ'], tone:'ˊ', pronounce:'稻田的田', hint:'種米的綠色方格' },
+  { char:'太', emoji:'🌞', zhuyin:'ㄊㄞˋ', initials:['ㄊ'], medials:['ㄞ'], tone:'ˋ', pronounce:'太陽的太', hint:'比大還大' },
+  { char:'餅', emoji:'🥮', zhuyin:'ㄅㄧㄥˇ', initials:['ㄅ'], medials:['ㄧ','ㄥ'], tone:'ˇ', pronounce:'餅乾的餅', hint:'圓圓的點心' },
+  { char:'紅', emoji:'🌹', zhuyin:'ㄏㄨㄥˊ', initials:['ㄏ'], medials:['ㄨ','ㄥ'], tone:'ˊ', pronounce:'紅色的紅', hint:'像血、像蘋果的顏色' },
+  { char:'山', emoji:'⛰️', zhuyin:'ㄕㄢ', initials:['ㄕ'], medials:['ㄢ'], tone:'', pronounce:'高山的山', hint:'高高的可以爬' },
+  { char:'木', emoji:'🌳', zhuyin:'ㄇㄨˋ', initials:['ㄇ'], medials:['ㄨ'], tone:'ˋ', pronounce:'木頭的木', hint:'會長葉子直直的' },
+  { char:'林', emoji:'🌲', zhuyin:'ㄌㄧㄣˊ', initials:['ㄌ'], medials:['ㄧ','ㄣ'], tone:'ˊ', pronounce:'樹林的林', hint:'兩棵樹站在一起' },
+  { char:'廟', emoji:'⛩️', zhuyin:'ㄇㄧㄠˋ', initials:['ㄇ'], medials:['ㄧ','ㄠ'], tone:'ˋ', pronounce:'廟宇的廟', hint:'拜拜的地方' },
+  { char:'冰', emoji:'🍧', zhuyin:'ㄅㄧㄥ', initials:['ㄅ'], medials:['ㄧ','ㄥ'], tone:'', pronounce:'冰塊的冰', hint:'冰冰涼涼的' },
+  { char:'香', emoji:'🌸', zhuyin:'ㄒㄧㄤ', initials:['ㄒ'], medials:['ㄧ','ㄤ'], tone:'', pronounce:'香香的香', hint:'聞起來很好聞' },
+  { char:'海', emoji:'🌊', zhuyin:'ㄏㄞˇ', initials:['ㄏ'], medials:['ㄞ'], tone:'ˇ', pronounce:'大海的海', hint:'又大又藍' },
+  { char:'船', emoji:'⛴️', zhuyin:'ㄔㄨㄢˊ', initials:['ㄔ'], medials:['ㄨ','ㄢ'], tone:'ˊ', pronounce:'輪船的船', hint:'在海上跑' },
+  { char:'港', emoji:'⚓', zhuyin:'ㄍㄤˇ', initials:['ㄍ'], medials:['ㄤ'], tone:'ˇ', pronounce:'港口的港', hint:'船停的地方' },
+  { char:'鹿', emoji:'🦌', zhuyin:'ㄌㄨˋ', initials:['ㄌ'], medials:['ㄨ'], tone:'ˋ', pronounce:'梅花鹿的鹿', hint:'頭上有角會跑' },
+  { char:'花', emoji:'🌺', zhuyin:'ㄏㄨㄚ', initials:['ㄏ'], medials:['ㄨ','ㄚ'], tone:'', pronounce:'花朵的花', hint:'香香的有顏色' },
+  { char:'椰', emoji:'🥥', zhuyin:'ㄧㄝˊ', initials:[], medials:['ㄧ','ㄝ'], tone:'ˊ', pronounce:'椰子的椰', hint:'海邊高樹結大果' },
+  { char:'米', emoji:'🍚', zhuyin:'ㄇㄧˇ', initials:['ㄇ'], medials:['ㄧ'], tone:'ˇ', pronounce:'米飯的米', hint:'白白的小顆,煮成飯' },
+  { char:'蔥', emoji:'🌿', zhuyin:'ㄘㄨㄥ', initials:['ㄘ'], medials:['ㄨ','ㄥ'], tone:'', pronounce:'青蔥的蔥', hint:'綠色的,煮菜會放' },
+  { char:'雪', emoji:'❄️', zhuyin:'ㄒㄩㄝˇ', initials:['ㄒ'], medials:['ㄩ','ㄝ'], tone:'ˇ', pronounce:'下雪的雪', hint:'冬天白白會下' },
+  { char:'石', emoji:'🪨', zhuyin:'ㄕˊ', initials:['ㄕ'], medials:[], tone:'ˊ', pronounce:'石頭的石', hint:'硬硬的' },
+  { char:'洞', emoji:'🕳️', zhuyin:'ㄉㄨㄥˋ', initials:['ㄉ'], medials:['ㄨ','ㄥ'], tone:'ˋ', pronounce:'山洞的洞', hint:'圓圓的可以鑽進去' },
+  { char:'岩', emoji:'🏔️', zhuyin:'ㄧㄢˊ', initials:[], medials:['ㄧ','ㄢ'], tone:'ˊ', pronounce:'岩石的岩', hint:'山上的大石頭' },
+  { char:'風', emoji:'💨', zhuyin:'ㄈㄥ', initials:['ㄈ'], medials:['ㄥ'], tone:'', pronounce:'風吹的風', hint:'看不見會吹樹葉' },
+  { char:'星', emoji:'⭐', zhuyin:'ㄒㄧㄥ', initials:['ㄒ'], medials:['ㄧ','ㄥ'], tone:'', pronounce:'星星的星', hint:'晚上天上發光' },
+  { char:'雲', emoji:'☁️', zhuyin:'ㄩㄣˊ', initials:[], medials:['ㄩ','ㄣ'], tone:'ˊ', pronounce:'雲朵的雲', hint:'天上白白軟軟的' },
+];
+
+const ALL_INITIALS = ['ㄅ','ㄆ','ㄇ','ㄈ','ㄉ','ㄊ','ㄋ','ㄌ','ㄍ','ㄎ','ㄏ','ㄐ','ㄑ','ㄒ','ㄓ','ㄔ','ㄕ','ㄖ','ㄗ','ㄘ','ㄙ'];
+const ALL_MEDIALS = ['ㄚ','ㄛ','ㄜ','ㄝ','ㄞ','ㄟ','ㄠ','ㄡ','ㄢ','ㄣ','ㄤ','ㄥ','ㄦ','ㄧ','ㄨ','ㄩ'];
+const ALL_TONES = ['','ˊ','ˇ','ˋ']; // 1聲 2聲 3聲 4聲
+
+const PRAISE = ['太棒了!','好厲害!','答對了!','哇,你會了耶!','超棒的!','你真聰明!','正確!','好讚喔!'];
+const PIKMIN_EMOJI = ['🌱','🌿','🍀','🌳','🌲','🌴','🌵','🪴','🌾','🌷','🌼','🌻','🌺','💐','🪷','🌸','🌹','🥀'];
+
+// ============ STATE ============
+const STORAGE_KEY = 'zhuyin-pinyin-v1';
+let state = loadState();
+let currentMode = 'easy';
+let currentIdx = 0;
+let currentWord = null;
+let answered = false;
+let composeAnswer = [];
+
+function loadState() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (s) return JSON.parse(s);
+  } catch(e) {}
+  return freshState();
+}
+function freshState() {
+  return {
+    name: '梅梅',
+    score: 0,
+    pikmin: 0,
+    progress: {}, // word: {correct: n, total: n, stars: 0-3}
+  };
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
+}
+
+// ============ TTS ============
+let voicesReady = false;
+function loadVoices() { voicesReady = true; }
+speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+function speak(text, slow) {
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-TW';
+  u.rate = slow ? 0.7 : 0.85;
+  u.pitch = 1.0;
+  // 優先挑女聲
+  const voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('zh'));
+  const preferred = ['Mei-Jia','Yating','Tingting','Ya-ling','Sin-ji'];
+  for (const name of preferred) {
+    const v = voices.find(x => x.name.includes(name));
+    if (v) { u.voice = v; break; }
+  }
+  speechSynthesis.speak(u);
+}
+
+function speakCurrent() {
+  if (currentWord) speak(currentWord.pronounce, true);
+}
+
+// ============ Quiz Logic ============
+function startGame(mode) {
+  currentMode = mode;
+  state.name = document.getElementById('playerName').value.trim() || '梅梅';
+  currentIdx = 0;
+  saveState();
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('game').classList.add('active');
+  const titles = { easy: '🌱 認注音', medium: '🌿 找注音', hard: '🌳 拼注音' };
+  document.getElementById('gameTitle').textContent = `${titles[mode]} · ${state.name}`;
+  loadQuestion();
+}
+
+function loadQuestion() {
+  if (currentIdx >= WORDS.length) {
+    showFinish();
+    return;
+  }
+  currentWord = WORDS[currentIdx];
+  answered = false;
+  composeAnswer = [];
+
+  document.getElementById('wordEmoji').textContent = currentWord.emoji;
+  document.getElementById('wordChar').textContent = currentWord.char;
+  document.getElementById('wordHint').textContent = currentWord.hint;
+  document.getElementById('msg').textContent = '聽聲音作答 👂';
+  document.getElementById('msg').className = 'msg';
+  document.getElementById('nextBtn').disabled = true;
+
+  renderAnswerArea();
+  renderSidebar();
+  updateStats();
+
+  // 自動念
+  setTimeout(() => speakCurrent(), 300);
+}
+
+function renderAnswerArea() {
+  const area = document.getElementById('answerArea');
+  if (currentMode === 'hard') {
+    // Compose mode
+    area.innerHTML = `
+      <h3>請依序點按注音 (${currentWord.zhuyin})</h3>
+      <div class="compose-display" id="composeDisplay"></div>
+      <div class="compose-keyboard" id="composeKeyboard"></div>
+      <div class="compose-actions">
+        <button class="btn btn-warning" onclick="clearCompose()">🔄 重來</button>
+        <button class="btn btn-success" id="composeCheckBtn" onclick="checkCompose()">✓ 完成</button>
+      </div>
+    `;
+    renderComposeDisplay();
+    renderComposeKeyboard();
+  } else if (currentMode === 'medium') {
+    // 看字選注音
+    area.innerHTML = `<h3>選正確的注音</h3><div class="options-grid" id="optionsGrid"></div>`;
+    renderOptions('full');
+  } else {
+    // 認注音 (easy) - 顯示注音由 user 念出來; 選正確的注音 (不含聲調)
+    area.innerHTML = `<h3>聽老師念，選對的注音</h3><div class="options-grid" id="optionsGrid"></div>`;
+    renderOptions('symbol');
+  }
+}
+
+function renderOptions(type) {
+  const grid = document.getElementById('optionsGrid');
+  grid.innerHTML = '';
+  // 產生 3 個 distractors
+  const correct = type === 'full' ? currentWord.zhuyin : currentWord.zhuyin.replace(/[ˊˇˋ˙]/g, '');
+  const options = [correct];
+  // 從其他字生成不同
+  const otherWords = WORDS.filter(w => w.char !== currentWord.char);
+  while (options.length < 4) {
+    const w = otherWords[Math.floor(Math.random()*otherWords.length)];
+    const v = type === 'full' ? w.zhuyin : w.zhuyin.replace(/[ˊˇˋ˙]/g, '');
+    if (!options.includes(v)) options.push(v);
+  }
+  options.sort(() => Math.random()-0.5);
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => pickOption(btn, opt, correct));
+    grid.appendChild(btn);
+  });
+}
+
+function pickOption(btn, picked, correct) {
+  if (answered) return;
+  answered = true;
+  const ok = picked === correct;
+  if (ok) {
+    btn.classList.add('correct');
+    onCorrect();
+  } else {
+    btn.classList.add('wrong');
+    // 標出正解
+    document.querySelectorAll('.option-btn').forEach(b => {
+      if (b.textContent === correct) b.classList.add('correct');
+    });
+    onWrong();
+  }
+}
+
+function renderComposeDisplay() {
+  const disp = document.getElementById('composeDisplay');
+  disp.innerHTML = '';
+  const parts = [...currentWord.initials, ...currentWord.medials, currentWord.tone].filter(x => x !== undefined);
+  const totalSlots = parts.length;
+  for (let i = 0; i < totalSlots; i++) {
+    const slot = document.createElement('span');
+    slot.className = 'slot' + (composeAnswer[i] ? ' filled' : '');
+    slot.textContent = composeAnswer[i] || '＿';
+    disp.appendChild(slot);
+  }
+}
+
+function renderComposeKeyboard() {
+  const kb = document.getElementById('composeKeyboard');
+  kb.innerHTML = '';
+  // 為這題提供：正確的所有 parts + 一些 distractors
+  const correctParts = [...currentWord.initials, ...currentWord.medials];
+  // 加 distractors
+  const distractors = [];
+  // 從 initials 加 2 個
+  for (let i=0; i<3; i++) {
+    const r = ALL_INITIALS[Math.floor(Math.random()*ALL_INITIALS.length)];
+    if (!correctParts.includes(r) && !distractors.includes(r)) distractors.push(r);
+  }
+  // 從 medials 加 2 個
+  for (let i=0; i<3; i++) {
+    const r = ALL_MEDIALS[Math.floor(Math.random()*ALL_MEDIALS.length)];
+    if (!correctParts.includes(r) && !distractors.includes(r)) distractors.push(r);
+  }
+  // 混合
+  const symbols = [...correctParts, ...distractors].sort(() => Math.random()-0.5);
+  symbols.forEach(s => {
+    const k = document.createElement('button');
+    k.className = 'compose-key';
+    k.textContent = s;
+    k.addEventListener('click', () => pickSymbol(s, k));
+    kb.appendChild(k);
+  });
+  // 加 4 個聲調
+  ['ˉ','ˊ','ˇ','ˋ'].forEach(t => {
+    const k = document.createElement('button');
+    k.className = 'compose-key tone';
+    k.textContent = t;
+    k.addEventListener('click', () => pickSymbol(t === 'ˉ' ? '' : t, k, true));
+    kb.appendChild(k);
+  });
+}
+
+function pickSymbol(sym, keyBtn, isTone) {
+  // 確定填入哪一個 slot
+  const expected = [...currentWord.initials, ...currentWord.medials, currentWord.tone].filter(x => x !== undefined);
+  const nextIdx = composeAnswer.length;
+  if (nextIdx >= expected.length) return;
+  // 如果這格是聲調 slot，且選的不是聲調，error 提示
+  const isLast = nextIdx === expected.length - 1;
+  // 直接填入（不限制順序，方便特教生）
+  composeAnswer.push(sym);
+  keyBtn.classList.add('used');
+  renderComposeDisplay();
+}
+
+function clearCompose() {
+  composeAnswer = [];
+  document.querySelectorAll('.compose-key').forEach(k => k.classList.remove('used'));
+  renderComposeDisplay();
+}
+
+function checkCompose() {
+  if (answered) return;
+  const expected = [...currentWord.initials, ...currentWord.medials, currentWord.tone].filter(x => x !== undefined);
+  const ok = JSON.stringify(composeAnswer) === JSON.stringify(expected);
+  answered = true;
+  if (ok) {
+    document.querySelectorAll('.compose-display .slot').forEach(s => s.style.color = '#10B981');
+    onCorrect();
+  } else {
+    document.querySelectorAll('.compose-display .slot').forEach(s => s.style.color = '#EF4444');
+    onWrong();
+  }
+}
+
+// ============ Correct / Wrong ============
+function onCorrect() {
+  state.score += 3;
+  state.pikmin = (state.pikmin || 0) + 1;
+  const progress = state.progress[currentWord.char] || {correct:0, total:0, stars:0};
+  progress.correct++; progress.total++;
+  progress.stars = Math.min(3, Math.floor(progress.correct/1));
+  state.progress[currentWord.char] = progress;
+  saveState();
+  updateStats();
+  renderSidebar();
+  showConfetti();
+  const praise = PRAISE[Math.floor(Math.random()*PRAISE.length)];
+  showMsg(`✅ ${praise} 「${currentWord.char}」念 ${currentWord.zhuyin}`, 'success');
+  speak(praise, false);
+  setTimeout(() => speak(currentWord.pronounce, true), 600);
+  showRewardModal();
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function onWrong() {
+  const progress = state.progress[currentWord.char] || {correct:0, total:0, stars:0};
+  progress.total++;
+  state.progress[currentWord.char] = progress;
+  saveState();
+  showMsg(`❌ 「${currentWord.char}」念 ${currentWord.zhuyin}, 再聽一次喔!`, 'error');
+  speak(currentWord.pronounce, true);
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function skipQuestion() {
+  if (!answered) {
+    showMsg(`「${currentWord.char}」念 ${currentWord.zhuyin}`, 'error');
+    speak(currentWord.pronounce, true);
+  }
+  setTimeout(nextQuestion, 1500);
+}
+
+function nextQuestion() {
+  currentIdx++;
+  closeModal();
+  loadQuestion();
+}
+
+function showMsg(text, type) {
+  const msg = document.getElementById('msg');
+  msg.textContent = text;
+  msg.className = 'msg' + (type ? ' ' + type : '');
+}
+
+function updateStats() {
+  document.getElementById('scoreVal').textContent = state.score;
+  document.getElementById('pikminVal').textContent = state.pikmin;
+}
+
+function renderSidebar() {
+  // Pikmin collection
+  const coll = document.getElementById('pikminCollection');
+  coll.innerHTML = '';
+  for (let i = 0; i < 30; i++) {
+    const c = document.createElement('div');
+    c.className = 'pikmin-cell' + (i < state.pikmin ? ' has' : '');
+    c.textContent = i < state.pikmin ? PIKMIN_EMOJI[i % PIKMIN_EMOJI.length] : '·';
+    coll.appendChild(c);
+  }
+  // Progress list
+  const list = document.getElementById('progressList');
+  list.innerHTML = '';
+  const done = Object.entries(state.progress).filter(([k,v]) => v.correct > 0);
+  if (done.length === 0) {
+    list.innerHTML = '<div class="progress-row" style="text-align:center;color:#9CA3AF;">尚無學過的字</div>';
+  } else {
+    done.slice(0, 30).forEach(([word, p]) => {
+      const row = document.createElement('div');
+      row.className = 'progress-row done';
+      const wordObj = WORDS.find(w => w.char === word);
+      row.innerHTML = `<span>${word} <span style="color:#9CA3AF;font-size:12px;">${wordObj?wordObj.zhuyin:''}</span></span><span class="stars">${'⭐'.repeat(p.stars)}</span>`;
+      list.appendChild(row);
+    });
+  }
+}
+
+function showConfetti() {
+  const colors = ['#7C3AED','#10B981','#F59E0B','#EF4444','#3B82F6','#EC4899'];
+  for (let i = 0; i < 25; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random()*100 + 'vw';
+    c.style.top = '-20px';
+    c.style.setProperty('--c', colors[i%colors.length]);
+    c.style.animationDuration = (1+Math.random()) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 2000);
+  }
+}
+
+function showRewardModal() {
+  document.getElementById('modalEmoji').textContent = ['🎉','🎊','✨','🌟','🥳'][Math.floor(Math.random()*5)];
+  document.getElementById('modalTitle').textContent = PRAISE[Math.floor(Math.random()*PRAISE.length)];
+  document.getElementById('modalDesc').textContent = `「${currentWord.char}」念 ${currentWord.zhuyin} · 獲得 1 隻皮克敏!`;
+  document.getElementById('modalPikmin').textContent = PIKMIN_EMOJI[(state.pikmin-1) % PIKMIN_EMOJI.length];
+  document.getElementById('rewardModal').classList.add('show');
+  setTimeout(() => document.getElementById('rewardModal').classList.remove('show'), 1800);
+}
+
+function closeModal() {
+  document.querySelectorAll('.modal-bg').forEach(m => m.classList.remove('show'));
+}
+
+function showFinish() {
+  document.getElementById('finalScore').textContent = state.score;
+  document.getElementById('finalPikmin').textContent = state.pikmin;
+  document.getElementById('finishModal').classList.add('show');
+  speak(`太棒了 ${state.name}, 你完成了所有題目`, false);
+}
+
+function restartGame() {
+  state = freshState();
+  saveState();
+  closeModal();
+  startGame(currentMode);
+}
+
+function quitToIntro() {
+  if (currentIdx > 0 && !confirm('確定要回首頁嗎? 進度會保留。')) return;
+  closeModal();
+  document.getElementById('game').classList.remove('active');
+  document.getElementById('intro').style.display = 'flex';
+}
+
+// init - 解鎖 iOS 語音
+document.body.addEventListener('touchend', function unlock() {
+  const u = new SpeechSynthesisUtterance(' ');
+  u.volume = 0;
+  speechSynthesis.speak(u);
+  document.body.removeEventListener('touchend', unlock);
+}, { once: true });
+
+// 名字記憶
+document.getElementById('playerName').value = state.name || '梅梅';
+</script>
+</body>
+</html>
