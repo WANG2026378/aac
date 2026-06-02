@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+<defs>
+<linearGradient id="bgsky" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#87CEEB"/>
+<stop offset="60%" stop-color="#B8E0D2"/>
+<stop offset="100%" stop-color="#F5E6A8"/>
+</linearGradient>
+<radialGradient id="bodyred" cx="50%" cy="50%" r="50%">
+<stop offset="0%" stop-color="#FFD4D4"/>
+<stop offset="100%" stop-color="#E53935"/>
+</radialGradient>
+</defs>
+<!-- Background -->
+<rect width="1024" height="1024" rx="230" fill="url(#bgsky)"/>
+<!-- Taiwan island silhouette (small, top-right) -->
+<path d="M 760 200 Q 770 180 780 200 L 790 320 Q 785 340 770 350 L 760 400 Q 750 410 745 400 L 740 320 Q 738 240 760 200 Z" fill="#5fb89e" opacity="0.7"/>
+<!-- Pikmin body (red) -->
+<ellipse cx="512" cy="640" rx="200" ry="240" fill="url(#bodyred)" stroke="#B71C1C" stroke-width="8"/>
+<!-- Pikmin head -->
+<ellipse cx="512" cy="430" rx="170" ry="160" fill="url(#bodyred)" stroke="#B71C1C" stroke-width="8"/>
+<!-- Eyes (white sclera) -->
+<ellipse cx="450" cy="420" rx="46" ry="58" fill="#FFFFFF"/>
+<ellipse cx="574" cy="420" rx="46" ry="58" fill="#FFFFFF"/>
+<!-- Eye pupils -->
+<circle cx="450" cy="425" r="22" fill="#1A1A1A"/>
+<circle cx="574" cy="425" r="22" fill="#1A1A1A"/>
+<!-- Eye shine -->
+<circle cx="458" cy="415" r="9" fill="#FFFFFF"/>
+<circle cx="582" cy="415" r="9" fill="#FFFFFF"/>
+<!-- Mouth (smile) -->
+<path d="M 470 510 Q 512 540 554 510" stroke="#1A1A1A" stroke-width="10" fill="none" stroke-linecap="round"/>
+<!-- Nose (small) -->
+<ellipse cx="512" cy="470" rx="10" ry="6" fill="#B71C1C"/>
+<!-- Stem -->
+<rect x="500" y="200" width="24" height="80" rx="12" fill="#2E7D32"/>
+<!-- Leaf (top, swaying) -->
+<path d="M 512 200 Q 460 130 380 130 Q 380 200 460 230 Q 500 220 512 200 Z" fill="#4CAF50" stroke="#2E7D32" stroke-width="6"/>
+<path d="M 460 230 Q 480 200 500 200" stroke="#2E7D32" stroke-width="4" fill="none"/>
+<!-- Arms (short stubs) -->
+<ellipse cx="320" cy="640" rx="40" ry="55" fill="url(#bodyred)" stroke="#B71C1C" stroke-width="6"/>
+<ellipse cx="704" cy="640" rx="40" ry="55" fill="url(#bodyred)" stroke="#B71C1C" stroke-width="6"/>
+<!-- Feet -->
+<ellipse cx="430" cy="870" rx="55" ry="32" fill="#FFE082" stroke="#F57F17" stroke-width="6"/>
+<ellipse cx="594" cy="870" rx="55" ry="32" fill="#FFE082" stroke="#F57F17" stroke-width="6"/>
+</svg>
