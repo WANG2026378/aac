@@ -853,6 +853,13 @@ function loadVoices() {
     if (hintEl) hintEl.innerHTML = `⚠️ 偵測不到中文語音（系統共 ${allVoices.length} 個語音）<br>→ iPad 設定 → 輔助使用 → 朗讀內容 → 聲音 → 中文 → 下載 Tian-Tian 或 Pang Pang<br>→ <a href="#" onclick="showAllVoices=true;loadVoices();return false;" style="color:#4A90E2;">查看全部 ${allVoices.length} 個語音</a>`;
     return;
   }
+  // 加上「顯示全部語音」切換選項
+  if (zhVoices.length > 0 && !showAllVoices && allVoices.length > zhVoices.length) {
+    const opt = document.createElement('option');
+    opt.value = '__SHOW_ALL__';
+    opt.textContent = `─── 顯示全部 ${allVoices.length} 個語音（包含非中文） ───`;
+    sel.appendChild(opt);
+  }
 
   availableVoices.forEach(v => {
     const opt = document.createElement('option');
@@ -878,9 +885,14 @@ function loadVoices() {
 
 function applyVoiceGender() {
   const pref = state.settings.voiceGender || 'female';
-  if (pref === 'auto') return;
+  if (pref === 'auto') {
+    state.settings.simulateMalePitch = false;
+    state.settings.pitch = 1.0;
+    return;
+  }
   // 找符合性別的最佳語音（優先 zh-TW > zh-CN > 其他）
-  const matched = availableVoices
+  const zhVoices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('zh') || v.lang.startsWith('cmn'));
+  const matched = zhVoices
     .filter(v => guessGender(v.name) === pref)
     .sort((a, b) => {
       const score = (v) => {
@@ -894,11 +906,33 @@ function applyVoiceGender() {
       return score(b) - score(a);
     });
   if (matched.length > 0) {
+    // 找到真男聲/女聲
     state.settings.voiceURI = matched[0].voiceURI;
+    state.settings.simulateMalePitch = false;
+    state.settings.pitch = 1.0;
     const sel = document.getElementById('voiceSelect');
     if (sel) sel.value = matched[0].voiceURI;
-    saveState();
+  } else if (pref === 'male') {
+    // 沒有男聲 → 用降音調模擬（iOS 限制 fallback）
+    const femaleVoice = zhVoices.find(v => guessGender(v.name) === 'female') || zhVoices[0];
+    if (femaleVoice) {
+      state.settings.voiceURI = femaleVoice.voiceURI;
+      state.settings.simulateMalePitch = true;
+      state.settings.pitch = 0.55; // 降音模擬男聲
+      const sel = document.getElementById('voiceSelect');
+      if (sel) sel.value = femaleVoice.voiceURI;
+      const hintEl = document.getElementById('voiceHint');
+      if (hintEl) {
+        hintEl.innerHTML = '⚠️ iPad Safari 沒開放男聲給網頁 → 已用<b>降音調模擬</b>（仿男聲）。<br>想要真男聲：用 iOS <b>VoiceOver / 朗讀螢幕</b> 才能用 Tian-Tian。';
+      }
+    }
   }
+  saveState();
+  // 同步 pitch slider UI
+  const pitchInput = document.getElementById('pitchInput');
+  const pitchValue = document.getElementById('pitchValue');
+  if (pitchInput) pitchInput.value = state.settings.pitch;
+  if (pitchValue) pitchValue.textContent = state.settings.pitch.toFixed(1);
 }
 
 function speak(text) {
@@ -1090,7 +1124,17 @@ document.querySelectorAll('#genderToggle .gender-btn').forEach(btn => {
 });
 
 document.getElementById('voiceSelect').addEventListener('change', e => {
+  if (e.target.value === '__SHOW_ALL__') {
+    showAllVoices = true;
+    loadVoices();
+    return;
+  }
   state.settings.voiceURI = e.target.value;
+  // 手動選了語音 → 取消模擬男聲
+  state.settings.simulateMalePitch = false;
+  state.settings.pitch = 1.0;
+  document.getElementById('pitchInput').value = 1.0;
+  document.getElementById('pitchValue').textContent = '1.0';
   saveState();
   speak('測試語音');
 });
