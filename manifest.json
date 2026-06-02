@@ -1,0 +1,31 @@
+{
+  "name": "永芳特教 溝通版",
+  "short_name": "溝通",
+  "description": "iPad AAC 輔助溝通系統",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#4A90E2",
+  "theme_color": "#3576C7",
+  "lang": "zh-TW",
+  "icons": [
+    {
+      "src": "icons/icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

@@ -7,7 +7,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="溝通">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%234A90E2' rx='40'/%3E%3Ctext x='90' y='130' font-size='110' text-anchor='middle' fill='white'%3E💬%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
+<link rel="icon" type="image/png" href="icons/icon-512.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3576C7">
 <style>
 * {
   margin: 0;
@@ -212,6 +217,9 @@ body {
 .color-thing    { background: linear-gradient(135deg, #ECEFF1, #CFD8DC); border-color: #607D8B; }
 .color-answer   { background: linear-gradient(135deg, #FFCDD2, #EF9A9A); border-color: #E53935; }
 .color-quick    { background: linear-gradient(135deg, #B3E5FC, #81D4FA); border-color: #0288D1; }
+.color-home     { background: linear-gradient(135deg, #F3E5F5, #E1BEE7); border-color: #8E24AA; }
+.color-snack    { background: linear-gradient(135deg, #FFF3E0, #FFCC80); border-color: #F57C00; }
+.color-toy      { background: linear-gradient(135deg, #E8F5E9, #A5D6A7); border-color: #43A047; }
 
 .cat-need     { color: #2196F3; }
 .cat-feeling  { color: #FFA000; }
@@ -223,6 +231,9 @@ body {
 .cat-thing    { color: #607D8B; }
 .cat-answer   { color: #E53935; }
 .cat-quick    { color: #0288D1; }
+.cat-home     { color: #8E24AA; }
+.cat-snack    { color: #F57C00; }
+.cat-toy      { color: #43A047; }
 
 /* ===== 設定 Modal ===== */
 .modal-bg {
@@ -466,9 +477,12 @@ const DEFAULT_CATEGORIES = [
   { id: 'need',     name: '我要', icon: '🙋', color: 'need' },
   { id: 'feeling',  name: '感覺', icon: '😊', color: 'feeling' },
   { id: 'family',   name: '家人', icon: '👨‍👩‍👧', color: 'family' },
+  { id: 'home',     name: '居家', icon: '🏠', color: 'home' },
   { id: 'school',   name: '學校', icon: '🏫', color: 'school' },
   { id: 'food',     name: '食物', icon: '🍎', color: 'food' },
+  { id: 'snack',    name: '零食', icon: '🍿', color: 'snack' },
   { id: 'activity', name: '活動', icon: '🎮', color: 'activity' },
+  { id: 'toy',      name: '玩具', icon: '🧸', color: 'toy' },
   { id: 'body',     name: '身體', icon: '🧍', color: 'body' },
   { id: 'thing',    name: '物品', icon: '📦', color: 'thing' },
   { id: 'answer',   name: '回答', icon: '👍', color: 'answer' },
@@ -484,6 +498,10 @@ const DEFAULT_BUTTONS = {
     { icon: '😣', label: '痛痛', speak: '我覺得痛' },
     { icon: '😴', label: '想睡覺', speak: '我想睡覺' },
     { icon: '🤗', label: '抱抱', speak: '我要抱抱' },
+    { icon: '💕', label: '我愛你', speak: '我愛你' },
+    { icon: '😋', label: '好吃', speak: '好吃' },
+    { icon: '👍', label: '謝謝', speak: '謝謝' },
+    { icon: '🙅', label: '不要', speak: '不要' },
   ],
   need: [
     { icon: '🙋', label: '我要', speak: '我要' },
@@ -498,6 +516,10 @@ const DEFAULT_BUTTONS = {
     { icon: '😴', label: '想睡', speak: '想睡覺' },
     { icon: '🚪', label: '回家', speak: '回家' },
     { icon: '🚙', label: '出去', speak: '出去' },
+    { icon: '🛁', label: '想洗澡', speak: '我想洗澡' },
+    { icon: '🪥', label: '想刷牙', speak: '我想刷牙' },
+    { icon: '👃', label: '想擤鼻涕', speak: '我想擤鼻涕' },
+    { icon: '🩹', label: '受傷了', speak: '我受傷了' },
   ],
   feeling: [
     { icon: '😀', label: '開心', speak: '我很開心' },
@@ -512,6 +534,10 @@ const DEFAULT_BUTTONS = {
     { icon: '🤢', label: '不好吃', speak: '不好吃' },
     { icon: '😎', label: '好玩', speak: '好玩' },
     { icon: '🥱', label: '無聊', speak: '無聊' },
+    { icon: '🤒', label: '不舒服', speak: '我不舒服' },
+    { icon: '🥺', label: '想媽媽', speak: '我想媽媽' },
+    { icon: '🤤', label: '口渴', speak: '我口渴' },
+    { icon: '🍴', label: '肚子餓', speak: '我肚子餓' },
   ],
   family: [
     { icon: '👩', label: '媽媽', speak: '媽媽' },
@@ -522,10 +548,32 @@ const DEFAULT_BUTTONS = {
     { icon: '👶', label: '妹妹', speak: '妹妹' },
     { icon: '👵', label: '阿嬤', speak: '阿嬤' },
     { icon: '👴', label: '阿公', speak: '阿公' },
-    { icon: '👩‍🦰', label: '阿姨', speak: '阿姨' },
-    { icon: '👨‍🦰', label: '叔叔', speak: '叔叔' },
     { icon: '👵🏻', label: '外婆', speak: '外婆' },
     { icon: '👴🏻', label: '外公', speak: '外公' },
+    { icon: '👩‍🦰', label: '阿姨', speak: '阿姨' },
+    { icon: '👨‍🦰', label: '叔叔', speak: '叔叔' },
+    { icon: '💕', label: '愛你', speak: '我愛你' },
+    { icon: '😘', label: '親親', speak: '親親' },
+    { icon: '🤗', label: '抱抱', speak: '抱抱' },
+    { icon: '🐶', label: '狗狗', speak: '狗狗' },
+  ],
+  home: [
+    { icon: '🛁', label: '洗澡', speak: '洗澡' },
+    { icon: '🪥', label: '刷牙', speak: '刷牙' },
+    { icon: '🧼', label: '洗手', speak: '洗手' },
+    { icon: '🛌', label: '睡覺', speak: '睡覺' },
+    { icon: '🌅', label: '起床', speak: '起床' },
+    { icon: '👗', label: '換衣服', speak: '換衣服' },
+    { icon: '💇', label: '洗頭', speak: '洗頭' },
+    { icon: '🚗', label: '坐車', speak: '坐車' },
+    { icon: '📺', label: '看電視', speak: '看電視' },
+    { icon: '📱', label: '看平板', speak: '看平板' },
+    { icon: '🎬', label: '看 YouTube', speak: '看 YouTube' },
+    { icon: '🎵', label: '聽音樂', speak: '聽音樂' },
+    { icon: '🛋️', label: '坐沙發', speak: '坐沙發' },
+    { icon: '🪑', label: '坐椅子', speak: '坐椅子' },
+    { icon: '🪞', label: '照鏡子', speak: '照鏡子' },
+    { icon: '💊', label: '吃藥', speak: '吃藥' },
   ],
   school: [
     { icon: '👨‍🏫', label: '川銘老師', speak: '王川銘老師' },
@@ -542,18 +590,36 @@ const DEFAULT_BUTTONS = {
     { icon: '🎒', label: '放學', speak: '放學' },
   ],
   food: [
-    { icon: '🍚', label: '飯', speak: '飯' },
+    { icon: '🍚', label: '白飯', speak: '白飯' },
     { icon: '🍜', label: '麵', speak: '麵' },
+    { icon: '🥟', label: '水餃', speak: '水餃' },
     { icon: '🍞', label: '麵包', speak: '麵包' },
     { icon: '🥬', label: '青菜', speak: '青菜' },
     { icon: '🍖', label: '肉', speak: '肉' },
     { icon: '🐟', label: '魚', speak: '魚' },
-    { icon: '🍎', label: '水果', speak: '水果' },
+    { icon: '🥚', label: '蛋', speak: '蛋' },
+    { icon: '🍅', label: '番茄', speak: '番茄' },
+    { icon: '🌽', label: '玉米', speak: '玉米' },
+    { icon: '🍎', label: '蘋果', speak: '蘋果' },
+    { icon: '🍌', label: '香蕉', speak: '香蕉' },
+    { icon: '🍇', label: '葡萄', speak: '葡萄' },
     { icon: '🥛', label: '牛奶', speak: '牛奶' },
     { icon: '🧃', label: '果汁', speak: '果汁' },
+    { icon: '🍵', label: '茶', speak: '茶' },
+  ],
+  snack: [
     { icon: '🍪', label: '餅乾', speak: '餅乾' },
     { icon: '🍰', label: '蛋糕', speak: '蛋糕' },
     { icon: '🍫', label: '巧克力', speak: '巧克力' },
+    { icon: '🍭', label: '糖果', speak: '糖果' },
+    { icon: '🍮', label: '布丁', speak: '布丁' },
+    { icon: '🍦', label: '冰淇淋', speak: '冰淇淋' },
+    { icon: '🥤', label: '飲料', speak: '飲料' },
+    { icon: '🍿', label: '爆米花', speak: '爆米花' },
+    { icon: '🍟', label: '薯條', speak: '薯條' },
+    { icon: '🍔', label: '漢堡', speak: '漢堡' },
+    { icon: '🍕', label: '披薩', speak: '披薩' },
+    { icon: '🍙', label: '飯糰', speak: '飯糰' },
   ],
   activity: [
     { icon: '🎮', label: '玩', speak: '我要玩' },
@@ -561,13 +627,35 @@ const DEFAULT_BUTTONS = {
     { icon: '🎨', label: '畫畫', speak: '畫畫' },
     { icon: '🎵', label: '聽音樂', speak: '聽音樂' },
     { icon: '📺', label: '看電視', speak: '看電視' },
+    { icon: '🎬', label: '看卡通', speak: '看卡通' },
+    { icon: '📱', label: '玩平板', speak: '玩平板' },
     { icon: '🚶', label: '散步', speak: '散步' },
     { icon: '🎤', label: '唱歌', speak: '唱歌' },
     { icon: '💃', label: '跳舞', speak: '跳舞' },
     { icon: '🧩', label: '拼圖', speak: '玩拼圖' },
-    { icon: '🧸', label: '玩具', speak: '玩玩具' },
     { icon: '⚽', label: '球', speak: '玩球' },
+    { icon: '🏊', label: '游泳', speak: '游泳' },
+    { icon: '🏃', label: '跑步', speak: '跑步' },
     { icon: '🛌', label: '休息', speak: '休息' },
+    { icon: '🎈', label: '吹氣球', speak: '吹氣球' },
+  ],
+  toy: [
+    { icon: '🧸', label: '熊熊', speak: '熊熊' },
+    { icon: '🐶', label: '狗狗玩偶', speak: '狗狗玩偶' },
+    { icon: '🚗', label: '車車', speak: '車車' },
+    { icon: '🚂', label: '火車', speak: '火車' },
+    { icon: '✈️', label: '飛機', speak: '飛機' },
+    { icon: '🛩️', label: '直升機', speak: '直升機' },
+    { icon: '⚽', label: '球球', speak: '球球' },
+    { icon: '🪀', label: '溜溜球', speak: '溜溜球' },
+    { icon: '🧩', label: '拼圖', speak: '拼圖' },
+    { icon: '🧱', label: '積木', speak: '積木' },
+    { icon: '🤖', label: '機器人', speak: '機器人' },
+    { icon: '🎲', label: '骰子', speak: '骰子' },
+    { icon: '🪁', label: '風箏', speak: '風箏' },
+    { icon: '🎨', label: '蠟筆', speak: '蠟筆' },
+    { icon: '✏️', label: '鉛筆', speak: '鉛筆' },
+    { icon: '🖍️', label: '彩色筆', speak: '彩色筆' },
   ],
   body: [
     { icon: '🤕', label: '頭', speak: '頭' },
@@ -614,7 +702,7 @@ const DEFAULT_BUTTONS = {
 };
 
 // ============== 狀態管理 ==============
-const STORAGE_KEY = 'aac_board_v1';
+const STORAGE_KEY = 'aac_board_v2';
 
 function loadState() {
   try {
