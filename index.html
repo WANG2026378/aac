@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>溝通版 - 永芳特教</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="溝通版">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%234A90E2' rx='40'/%3E%3Ctext x='90' y='130' font-size='110' text-anchor='middle' fill='white'%3E💬%3C/text%3E%3C/svg%3E">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #f0f4f8;
+  font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
+  font-size: 18px;
+  touch-action: manipulation;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+}
+
+/* ===== 句子建構器 ===== */
+.sentence-bar {
+  background: linear-gradient(135deg, #4A90E2, #357ABD);
+  padding: 12px 16px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 100;
+}
+.sentence-display {
+  flex: 1;
+  background: rgba(255,255,255,0.95);
+  border-radius: 14px;
+  padding: 12px 16px;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 28px;
+  font-weight: 600;
+  color: #1a3a5c;
+  overflow: hidden;
+}
+.sentence-display:empty::before {
+  content: '👆 點選按鈕說話';
+  color: #aaa;
+  font-weight: 400;
+}
+.sentence-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #e8f1fd;
+  border-radius: 10px;
+  padding: 4px 10px;
+  font-size: 24px;
+}
+
+.bar-btn {
+  background: rgba(255,255,255,0.25);
+  color: white;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-radius: 14px;
+  width: 64px;
+  height: 64px;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.1s;
+  font-family: inherit;
+}
+.bar-btn:active {
+  transform: scale(0.92);
+  background: rgba(255,255,255,0.4);
+}
+.bar-btn.play {
+  background: #2ecc71;
+  border-color: #27ae60;
+  width: 80px;
+}
+
+/* ===== 分類列 ===== */
+.category-bar {
+  background: white;
+  border-bottom: 2px solid #e0e6ed;
+  padding: 8px 12px;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.category-bar::-webkit-scrollbar { display: none; }
+
+.cat-btn {
+  flex: 0 0 auto;
+  background: #f5f7fa;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  padding: 10px 18px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  transition: all 0.15s;
+  min-height: 56px;
+}
+.cat-btn.active {
+  border-color: currentColor;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.cat-btn .emoji { font-size: 28px; }
+
+/* ===== 按鈕網格 ===== */
+.grid-container {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 768px) {
+  .grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.word-btn {
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 20px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+  font-family: inherit;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: all 0.12s;
+  border: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.word-btn:active {
+  transform: scale(0.94);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.word-btn .icon {
+  font-size: 56px;
+  margin-bottom: 6px;
+  pointer-events: none;
+}
+
+.word-btn img.photo {
+  width: 80%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 6px;
+}
+
+.word-btn .label {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a3a5c;
+  text-align: center;
+  line-height: 1.1;
+  pointer-events: none;
+}
+
+/* 顏色主題 */
+.color-need     { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); border-color: #2196F3; }
+.color-feeling  { background: linear-gradient(135deg, #FFF9C4, #FFE082); border-color: #FFA000; }
+.color-family   { background: linear-gradient(135deg, #FCE4EC, #F8BBD0); border-color: #E91E63; }
+.color-school   { background: linear-gradient(135deg, #E0F2F1, #B2DFDB); border-color: #009688; }
+.color-food     { background: linear-gradient(135deg, #FFE0B2, #FFCC80); border-color: #FF9800; }
+.color-activity { background: linear-gradient(135deg, #DCEDC8, #C5E1A5); border-color: #689F38; }
+.color-body     { background: linear-gradient(135deg, #E1BEE7, #CE93D8); border-color: #9C27B0; }
+.color-thing    { background: linear-gradient(135deg, #ECEFF1, #CFD8DC); border-color: #607D8B; }
+.color-answer   { background: linear-gradient(135deg, #FFCDD2, #EF9A9A); border-color: #E53935; }
+.color-quick    { background: linear-gradient(135deg, #B3E5FC, #81D4FA); border-color: #0288D1; }
+
+.cat-need     { color: #2196F3; }
+.cat-feeling  { color: #FFA000; }
+.cat-family   { color: #E91E63; }
+.cat-school   { color: #009688; }
+.cat-food     { color: #FF9800; }
+.cat-activity { color: #689F38; }
+.cat-body     { color: #9C27B0; }
+.cat-thing    { color: #607D8B; }
+.cat-answer   { color: #E53935; }
+.cat-quick    { color: #0288D1; }
+
+/* ===== 設定 Modal ===== */
+.modal-bg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-bg.show { display: flex; }
+.modal {
+  background: white;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+}
+.modal h2 {
+  font-size: 28px;
+  margin-bottom: 16px;
+  color: #1a3a5c;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal h2 .close {
+  background: #f0f4f8;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  font-size: 24px;
+  cursor: pointer;
+}
+.modal label {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 16px;
+  margin-bottom: 6px;
+  color: #333;
+}
+.modal input, .modal select, .modal textarea {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 20px;
+  border: 2px solid #e0e6ed;
+  border-radius: 14px;
+  font-family: inherit;
+  background: white;
+}
+.modal input:focus, .modal select:focus, .modal textarea:focus {
+  outline: none;
+  border-color: #4A90E2;
+}
+.modal .btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+.modal button.primary {
+  flex: 1;
+  background: #4A90E2;
+  color: white;
+  border: none;
+  padding: 16px;
+  font-size: 20px;
+  font-weight: 700;
+  border-radius: 14px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.modal button.danger {
+  background: #e74c3c;
+}
+.modal button.secondary {
+  background: #ecf0f1;
+  color: #333;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid #e0e6ed;
+}
+.settings-row label {
+  margin: 0;
+  font-size: 18px;
+  flex: 1;
+}
+.settings-row input[type="range"] {
+  width: 200px;
+  padding: 0;
+  border: none;
+}
+.settings-row .value {
+  min-width: 60px;
+  text-align: right;
+  font-weight: 700;
+  color: #4A90E2;
+  font-size: 20px;
+}
+
+/* 老師模式（編輯按鈕） */
+.edit-mode .word-btn::after {
+  content: '✏️';
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: #4A90E2;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.edit-mode .word-btn.add-new {
+  background: #f0f4f8;
+  border: 3px dashed #4A90E2;
+  box-shadow: none;
+}
+.edit-mode .word-btn.add-new::after { content: ''; }
+.edit-mode .word-btn.add-new .icon { color: #4A90E2; }
+
+.fav-star {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  font-size: 24px;
+  display: none;
+}
+.word-btn.is-fav .fav-star { display: block; }
+</style>
+</head>
+<body>
+
+<!-- 句子建構區 -->
+<div class="sentence-bar">
+  <button class="bar-btn" id="btnClear" title="清除">🗑️</button>
+  <div class="sentence-display" id="sentence"></div>
+  <button class="bar-btn play" id="btnPlay" title="播放">🔊</button>
+  <button class="bar-btn" id="btnSettings" title="設定">⚙️</button>
+</div>
+
+<!-- 分類列 -->
+<div class="category-bar" id="categoryBar"></div>
+
+<!-- 按鈕網格 -->
+<div class="grid-container">
+  <div class="grid" id="grid"></div>
+</div>
+
+<!-- 設定 Modal -->
+<div class="modal-bg" id="settingsModal">
+  <div class="modal">
+    <h2>⚙️ 設定 <button class="close" data-close>✕</button></h2>
+
+    <div class="settings-row">
+      <label>語速</label>
+      <input type="range" id="rateInput" min="0.4" max="1.4" step="0.1" value="0.85">
+      <span class="value" id="rateValue">0.85</span>
+    </div>
+    <div class="settings-row">
+      <label>音調</label>
+      <input type="range" id="pitchInput" min="0.5" max="1.5" step="0.1" value="1">
+      <span class="value" id="pitchValue">1.0</span>
+    </div>
+    <div class="settings-row">
+      <label>音量</label>
+      <input type="range" id="volumeInput" min="0.2" max="1" step="0.1" value="1">
+      <span class="value" id="volumeValue">1.0</span>
+    </div>
+    <div class="settings-row">
+      <label>語音</label>
+      <select id="voiceSelect" style="width: 240px;"></select>
+    </div>
+    <div class="settings-row">
+      <label>按鍵後自動發音</label>
+      <input type="checkbox" id="autoSpeak" checked style="width: 30px; height: 30px;">
+    </div>
+    <div class="settings-row">
+      <label>老師編輯模式（長按按鈕編輯/拖移）</label>
+      <input type="checkbox" id="editMode" style="width: 30px; height: 30px;">
+    </div>
+
+    <div class="btn-row">
+      <button class="primary secondary" id="btnExport">📤 匯出設定</button>
+      <button class="primary secondary" id="btnImport">📥 匯入設定</button>
+    </div>
+    <div class="btn-row">
+      <button class="primary danger" id="btnReset">🔄 重設為預設</button>
+    </div>
+    <input type="file" id="importFile" accept=".json" style="display: none;">
+  </div>
+</div>
+
+<!-- 編輯按鈕 Modal -->
+<div class="modal-bg" id="editModal">
+  <div class="modal">
+    <h2 id="editTitle">編輯按鈕 <button class="close" data-close>✕</button></h2>
+
+    <label>文字（按鈕顯示+念出）</label>
+    <input type="text" id="editLabel" placeholder="例如：媽媽" maxlength="20">
+
+    <label>圖示（Emoji 或上傳照片）</label>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <input type="text" id="editIcon" placeholder="例如：👩" maxlength="4" style="width: 100px; font-size: 32px; text-align: center;">
+      <button class="primary secondary" id="btnPickPhoto" style="flex: 1;">📷 上傳照片</button>
+    </div>
+    <input type="file" id="photoFile" accept="image/*" style="display: none;">
+    <div id="photoPreview" style="margin-top: 10px; text-align: center;"></div>
+
+    <label>語音文字（如果與顯示文字不同，例如「媽媽」可念「ㄇㄚˊㄇㄚ」）</label>
+    <input type="text" id="editSpeak" placeholder="留空則念顯示文字">
+
+    <label>分類</label>
+    <select id="editCategory"></select>
+
+    <div class="btn-row">
+      <button class="primary" id="btnSaveBtn">💾 儲存</button>
+      <button class="primary danger" id="btnDeleteBtn" style="flex: 0 0 auto; padding: 16px 20px;">🗑️ 刪除</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============== 預設資料 ==============
+const DEFAULT_CATEGORIES = [
+  { id: 'quick',    name: '常用', icon: '⭐', color: 'quick' },
+  { id: 'need',     name: '我要', icon: '🙋', color: 'need' },
+  { id: 'feeling',  name: '感覺', icon: '😊', color: 'feeling' },
+  { id: 'family',   name: '家人', icon: '👨‍👩‍👧', color: 'family' },
+  { id: 'school',   name: '學校', icon: '🏫', color: 'school' },
+  { id: 'food',     name: '食物', icon: '🍎', color: 'food' },
+  { id: 'activity', name: '活動', icon: '🎮', color: 'activity' },
+  { id: 'body',     name: '身體', icon: '🧍', color: 'body' },
+  { id: 'thing',    name: '物品', icon: '📦', color: 'thing' },
+  { id: 'answer',   name: '回答', icon: '👍', color: 'answer' },
+];
+
+const DEFAULT_BUTTONS = {
+  quick: [
+    { icon: '🚪', label: '我要回家', speak: '我要回家' },
+    { icon: '🚽', label: '上廁所', speak: '我要上廁所' },
+    { icon: '💧', label: '喝水', speak: '我要喝水' },
+    { icon: '🍚', label: '吃飯', speak: '我要吃飯' },
+    { icon: '🆘', label: '幫幫我', speak: '請幫我' },
+    { icon: '😣', label: '痛痛', speak: '我覺得痛' },
+    { icon: '😴', label: '想睡覺', speak: '我想睡覺' },
+    { icon: '🤗', label: '抱抱', speak: '我要抱抱' },
+  ],
+  need: [
+    { icon: '🙋', label: '我要', speak: '我要' },
+    { icon: '🙅', label: '不要', speak: '不要' },
+    { icon: '➕', label: '還要', speak: '我還要' },
+    { icon: '✅', label: '夠了', speak: '夠了' },
+    { icon: '💧', label: '喝水', speak: '喝水' },
+    { icon: '🍚', label: '吃飯', speak: '吃飯' },
+    { icon: '🚽', label: '上廁所', speak: '我要上廁所' },
+    { icon: '🆘', label: '幫忙', speak: '請幫我' },
+    { icon: '😣', label: '痛痛', speak: '痛痛' },
+    { icon: '😴', label: '想睡', speak: '想睡覺' },
+    { icon: '🚪', label: '回家', speak: '回家' },
+    { icon: '🚙', label: '出去', speak: '出去' },
+  ],
+  feeling: [
+    { icon: '😀', label: '開心', speak: '我很開心' },
+    { icon: '😢', label: '難過', speak: '我很難過' },
+    { icon: '😡', label: '生氣', speak: '我在生氣' },
+    { icon: '😨', label: '害怕', speak: '我害怕' },
+    { icon: '😴', label: '累了', speak: '我累了' },
+    { icon: '🥰', label: '喜歡', speak: '我喜歡' },
+    { icon: '😖', label: '不喜歡', speak: '我不喜歡' },
+    { icon: '🤗', label: '想抱抱', speak: '我想要抱抱' },
+    { icon: '😋', label: '好吃', speak: '好吃' },
+    { icon: '🤢', label: '不好吃', speak: '不好吃' },
+    { icon: '😎', label: '好玩', speak: '好玩' },
+    { icon: '🥱', label: '無聊', speak: '無聊' },
+  ],
+  family: [
+    { icon: '👩', label: '媽媽', speak: '媽媽' },
+    { icon: '👨', label: '爸爸', speak: '爸爸' },
+    { icon: '👦', label: '哥哥', speak: '哥哥' },
+    { icon: '👧', label: '姊姊', speak: '姊姊' },
+    { icon: '🧒', label: '弟弟', speak: '弟弟' },
+    { icon: '👶', label: '妹妹', speak: '妹妹' },
+    { icon: '👵', label: '阿嬤', speak: '阿嬤' },
+    { icon: '👴', label: '阿公', speak: '阿公' },
+    { icon: '👩‍🦰', label: '阿姨', speak: '阿姨' },
+    { icon: '👨‍🦰', label: '叔叔', speak: '叔叔' },
+    { icon: '👵🏻', label: '外婆', speak: '外婆' },
+    { icon: '👴🏻', label: '外公', speak: '外公' },
+  ],
+  school: [
+    { icon: '👨‍🏫', label: '川銘老師', speak: '王川銘老師' },
+    { icon: '👨‍🏫', label: '偉倫老師', speak: '孫偉倫老師' },
+    { icon: '👫', label: '同學', speak: '同學' },
+    { icon: '🏫', label: '學校', speak: '學校' },
+    { icon: '🚪', label: '教室', speak: '教室' },
+    { icon: '🚽', label: '廁所', speak: '廁所' },
+    { icon: '🏟️', label: '操場', speak: '操場' },
+    { icon: '🍽️', label: '餐廳', speak: '餐廳' },
+    { icon: '🏥', label: '保健室', speak: '保健室' },
+    { icon: '📚', label: '上課', speak: '上課' },
+    { icon: '⏰', label: '下課', speak: '下課' },
+    { icon: '🎒', label: '放學', speak: '放學' },
+  ],
+  food: [
+    { icon: '🍚', label: '飯', speak: '飯' },
+    { icon: '🍜', label: '麵', speak: '麵' },
+    { icon: '🍞', label: '麵包', speak: '麵包' },
+    { icon: '🥬', label: '青菜', speak: '青菜' },
+    { icon: '🍖', label: '肉', speak: '肉' },
+    { icon: '🐟', label: '魚', speak: '魚' },
+    { icon: '🍎', label: '水果', speak: '水果' },
+    { icon: '🥛', label: '牛奶', speak: '牛奶' },
+    { icon: '🧃', label: '果汁', speak: '果汁' },
+    { icon: '🍪', label: '餅乾', speak: '餅乾' },
+    { icon: '🍰', label: '蛋糕', speak: '蛋糕' },
+    { icon: '🍫', label: '巧克力', speak: '巧克力' },
+  ],
+  activity: [
+    { icon: '🎮', label: '玩', speak: '我要玩' },
+    { icon: '📖', label: '看書', speak: '看書' },
+    { icon: '🎨', label: '畫畫', speak: '畫畫' },
+    { icon: '🎵', label: '聽音樂', speak: '聽音樂' },
+    { icon: '📺', label: '看電視', speak: '看電視' },
+    { icon: '🚶', label: '散步', speak: '散步' },
+    { icon: '🎤', label: '唱歌', speak: '唱歌' },
+    { icon: '💃', label: '跳舞', speak: '跳舞' },
+    { icon: '🧩', label: '拼圖', speak: '玩拼圖' },
+    { icon: '🧸', label: '玩具', speak: '玩玩具' },
+    { icon: '⚽', label: '球', speak: '玩球' },
+    { icon: '🛌', label: '休息', speak: '休息' },
+  ],
+  body: [
+    { icon: '🤕', label: '頭', speak: '頭' },
+    { icon: '🤰', label: '肚子', speak: '肚子' },
+    { icon: '✋', label: '手', speak: '手' },
+    { icon: '🦶', label: '腳', speak: '腳' },
+    { icon: '👁️', label: '眼睛', speak: '眼睛' },
+    { icon: '👄', label: '嘴巴', speak: '嘴巴' },
+    { icon: '👂', label: '耳朵', speak: '耳朵' },
+    { icon: '👃', label: '鼻子', speak: '鼻子' },
+    { icon: '🦷', label: '牙齒', speak: '牙齒' },
+    { icon: '💇', label: '頭髮', speak: '頭髮' },
+    { icon: '🦵', label: '膝蓋', speak: '膝蓋' },
+    { icon: '🫀', label: '胸口', speak: '胸口' },
+  ],
+  thing: [
+    { icon: '🎒', label: '書包', speak: '書包' },
+    { icon: '👕', label: '衣服', speak: '衣服' },
+    { icon: '👟', label: '鞋子', speak: '鞋子' },
+    { icon: '📚', label: '書', speak: '書' },
+    { icon: '✏️', label: '鉛筆', speak: '鉛筆' },
+    { icon: '📝', label: '本子', speak: '本子' },
+    { icon: '🍽️', label: '碗', speak: '碗' },
+    { icon: '🥄', label: '湯匙', speak: '湯匙' },
+    { icon: '🥤', label: '杯子', speak: '杯子' },
+    { icon: '🧻', label: '衛生紙', speak: '衛生紙' },
+    { icon: '📱', label: '手機', speak: '手機' },
+    { icon: '🪑', label: '椅子', speak: '椅子' },
+  ],
+  answer: [
+    { icon: '✅', label: '是', speak: '是' },
+    { icon: '❌', label: '不是', speak: '不是' },
+    { icon: '👍', label: '好', speak: '好' },
+    { icon: '👎', label: '不好', speak: '不好' },
+    { icon: '⭕', label: '對', speak: '對' },
+    { icon: '❎', label: '錯', speak: '錯' },
+    { icon: '🙏', label: '謝謝', speak: '謝謝' },
+    { icon: '🙇', label: '對不起', speak: '對不起' },
+    { icon: '👋', label: '你好', speak: '你好' },
+    { icon: '🤚', label: '再見', speak: '再見' },
+    { icon: '🤔', label: '我不知道', speak: '我不知道' },
+    { icon: '🆗', label: '可以', speak: '可以' },
+  ],
+};
+
+// ============== 狀態管理 ==============
+const STORAGE_KEY = 'aac_board_v1';
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const s = JSON.parse(saved);
+      return {
+        categories: s.categories || DEFAULT_CATEGORIES,
+        buttons: s.buttons || DEFAULT_BUTTONS,
+        settings: s.settings || defaultSettings(),
+      };
+    }
+  } catch (e) { console.error(e); }
+  return {
+    categories: structuredClone(DEFAULT_CATEGORIES),
+    buttons: structuredClone(DEFAULT_BUTTONS),
+    settings: defaultSettings(),
+  };
+}
+
+function defaultSettings() {
+  return {
+    rate: 0.85,
+    pitch: 1.0,
+    volume: 1.0,
+    voiceURI: '',
+    autoSpeak: true,
+    editMode: false,
+    currentCat: 'quick',
+  };
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+const state = loadState();
+let sentence = []; // [{text, speak}, ...]
+let editingButton = null; // {catId, index, isNew}
+let availableVoices = [];
+
+// ============== 文字轉語音 ==============
+function loadVoices() {
+  availableVoices = speechSynthesis.getVoices().filter(v =>
+    v.lang.startsWith('zh') || v.lang.startsWith('cmn')
+  );
+  const sel = document.getElementById('voiceSelect');
+  sel.innerHTML = '';
+  if (availableVoices.length === 0) {
+    sel.innerHTML = '<option value="">系統預設</option>';
+  } else {
+    availableVoices.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.voiceURI;
+      opt.textContent = `${v.name} (${v.lang})`;
+      if (v.voiceURI === state.settings.voiceURI) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+}
+
+function speak(text) {
+  if (!text) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-TW';
+  u.rate = state.settings.rate;
+  u.pitch = state.settings.pitch;
+  u.volume = state.settings.volume;
+  if (state.settings.voiceURI) {
+    const v = availableVoices.find(x => x.voiceURI === state.settings.voiceURI);
+    if (v) u.voice = v;
+  }
+  speechSynthesis.speak(u);
+}
+
+speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+// ============== 渲染 ==============
+function renderCategories() {
+  const bar = document.getElementById('categoryBar');
+  bar.innerHTML = '';
+  state.categories.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = `cat-btn cat-${cat.color}` + (cat.id === state.settings.currentCat ? ' active' : '');
+    btn.innerHTML = `<span class="emoji">${cat.icon}</span><span>${cat.name}</span>`;
+    btn.addEventListener('click', () => {
+      state.settings.currentCat = cat.id;
+      renderCategories();
+      renderGrid();
+      saveState();
+    });
+    bar.appendChild(btn);
+  });
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  const cat = state.categories.find(c => c.id === state.settings.currentCat);
+  if (!cat) return;
+  const items = state.buttons[cat.id] || [];
+
+  items.forEach((item, idx) => {
+    const btn = document.createElement('button');
+    btn.className = `word-btn color-${cat.color}`;
+    let iconHTML;
+    if (item.photo) {
+      iconHTML = `<img class="photo" src="${item.photo}" alt="${item.label}">`;
+    } else {
+      iconHTML = `<div class="icon">${item.icon || '🔤'}</div>`;
+    }
+    btn.innerHTML = `${iconHTML}<div class="label">${item.label}</div>`;
+
+    let pressTimer;
+    btn.addEventListener('touchstart', (e) => {
+      pressTimer = setTimeout(() => {
+        e.preventDefault();
+        openEditButton(cat.id, idx);
+      }, 800);
+    }, {passive: false});
+    btn.addEventListener('touchend', () => clearTimeout(pressTimer));
+    btn.addEventListener('touchcancel', () => clearTimeout(pressTimer));
+    btn.addEventListener('touchmove', () => clearTimeout(pressTimer));
+
+    btn.addEventListener('click', () => {
+      if (state.settings.editMode) {
+        openEditButton(cat.id, idx);
+        return;
+      }
+      const speakText = item.speak || item.label;
+      sentence.push({ text: item.label, speak: speakText });
+      renderSentence();
+      if (state.settings.autoSpeak) speak(speakText);
+    });
+
+    grid.appendChild(btn);
+  });
+
+  // 編輯模式下加 "+" 新增按鈕
+  if (state.settings.editMode) {
+    const addBtn = document.createElement('button');
+    addBtn.className = `word-btn add-new`;
+    addBtn.innerHTML = `<div class="icon">➕</div><div class="label">新增按鈕</div>`;
+    addBtn.addEventListener('click', () => openEditButton(cat.id, -1, true));
+    grid.appendChild(addBtn);
+  }
+}
+
+function renderSentence() {
+  const el = document.getElementById('sentence');
+  el.innerHTML = '';
+  sentence.forEach(item => {
+    const chip = document.createElement('span');
+    chip.className = 'sentence-chip';
+    chip.textContent = item.text;
+    el.appendChild(chip);
+  });
+}
+
+// ============== 句子建構器按鈕 ==============
+document.getElementById('btnClear').addEventListener('click', () => {
+  sentence = [];
+  renderSentence();
+  speechSynthesis.cancel();
+});
+
+document.getElementById('btnPlay').addEventListener('click', () => {
+  if (sentence.length === 0) return;
+  const text = sentence.map(s => s.speak).join('，');
+  speak(text);
+});
+
+// ============== 設定 Modal ==============
+document.getElementById('btnSettings').addEventListener('click', () => {
+  document.getElementById('settingsModal').classList.add('show');
+  syncSettingsUI();
+});
+
+function syncSettingsUI() {
+  document.getElementById('rateInput').value = state.settings.rate;
+  document.getElementById('rateValue').textContent = state.settings.rate;
+  document.getElementById('pitchInput').value = state.settings.pitch;
+  document.getElementById('pitchValue').textContent = state.settings.pitch.toFixed(1);
+  document.getElementById('volumeInput').value = state.settings.volume;
+  document.getElementById('volumeValue').textContent = state.settings.volume.toFixed(1);
+  document.getElementById('autoSpeak').checked = state.settings.autoSpeak;
+  document.getElementById('editMode').checked = state.settings.editMode;
+}
+
+['rate','pitch','volume'].forEach(k => {
+  const input = document.getElementById(k + 'Input');
+  input.addEventListener('input', () => {
+    state.settings[k] = parseFloat(input.value);
+    document.getElementById(k + 'Value').textContent = (k==='rate')?state.settings[k]:state.settings[k].toFixed(1);
+    saveState();
+  });
+  input.addEventListener('change', () => {
+    speak('測試語音 一二三');
+  });
+});
+
+document.getElementById('voiceSelect').addEventListener('change', e => {
+  state.settings.voiceURI = e.target.value;
+  saveState();
+  speak('測試語音');
+});
+
+document.getElementById('autoSpeak').addEventListener('change', e => {
+  state.settings.autoSpeak = e.target.checked;
+  saveState();
+});
+
+document.getElementById('editMode').addEventListener('change', e => {
+  state.settings.editMode = e.target.checked;
+  document.body.classList.toggle('edit-mode', state.settings.editMode);
+  saveState();
+  renderGrid();
+});
+
+document.getElementById('btnReset').addEventListener('click', () => {
+  if (!confirm('確定要重設成預設按鈕嗎？所有自訂內容會清除。')) return;
+  state.categories = structuredClone(DEFAULT_CATEGORIES);
+  state.buttons = structuredClone(DEFAULT_BUTTONS);
+  saveState();
+  renderCategories();
+  renderGrid();
+  alert('已重設為預設按鈕');
+});
+
+document.getElementById('btnExport').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `溝通版設定_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('btnImport').addEventListener('click', () => {
+  document.getElementById('importFile').click();
+});
+
+document.getElementById('importFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.categories && data.buttons) {
+        Object.assign(state, data);
+        saveState();
+        renderCategories();
+        renderGrid();
+        alert('已成功匯入設定');
+      } else {
+        alert('檔案格式錯誤');
+      }
+    } catch (err) {
+      alert('讀取失敗: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+// ============== 編輯按鈕 Modal ==============
+function openEditButton(catId, index, isNew=false) {
+  editingButton = { catId, index, isNew };
+  const modal = document.getElementById('editModal');
+  modal.classList.add('show');
+
+  const editCat = document.getElementById('editCategory');
+  editCat.innerHTML = state.categories.map(c =>
+    `<option value="${c.id}" ${c.id===catId?'selected':''}>${c.icon} ${c.name}</option>`).join('');
+
+  let item;
+  if (isNew) {
+    document.getElementById('editTitle').firstChild.textContent = '新增按鈕 ';
+    item = { icon: '😊', label: '', speak: '', photo: null };
+    document.getElementById('btnDeleteBtn').style.display = 'none';
+  } else {
+    document.getElementById('editTitle').firstChild.textContent = '編輯按鈕 ';
+    item = state.buttons[catId][index];
+    document.getElementById('btnDeleteBtn').style.display = 'block';
+  }
+  document.getElementById('editLabel').value = item.label || '';
+  document.getElementById('editIcon').value = item.icon || '';
+  document.getElementById('editSpeak').value = item.speak || '';
+
+  const preview = document.getElementById('photoPreview');
+  if (item.photo) {
+    preview.innerHTML = `<img src="${item.photo}" style="max-width: 150px; max-height: 150px; border-radius: 12px;"><br><button class="primary danger" onclick="document.getElementById('photoPreview').innerHTML='';window._currentPhoto=null;" style="margin-top:8px; padding: 8px 16px;">移除照片</button>`;
+    window._currentPhoto = item.photo;
+  } else {
+    preview.innerHTML = '';
+    window._currentPhoto = null;
+  }
+}
+
+document.getElementById('btnPickPhoto').addEventListener('click', () => {
+  document.getElementById('photoFile').click();
+});
+
+document.getElementById('photoFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  // 壓縮圖片
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const MAX_SIZE = 300;
+    let w = img.width, h = img.height;
+    if (w > h) { if (w > MAX_SIZE) { h *= MAX_SIZE/w; w = MAX_SIZE; } }
+    else { if (h > MAX_SIZE) { w *= MAX_SIZE/h; h = MAX_SIZE; } }
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    const data = canvas.toDataURL('image/jpeg', 0.75);
+    window._currentPhoto = data;
+    document.getElementById('photoPreview').innerHTML =
+      `<img src="${data}" style="max-width: 150px; max-height: 150px; border-radius: 12px;"><br><button class="primary danger" onclick="document.getElementById('photoPreview').innerHTML='';window._currentPhoto=null;" style="margin-top:8px; padding: 8px 16px;">移除照片</button>`;
+  };
+  img.src = URL.createObjectURL(file);
+});
+
+document.getElementById('btnSaveBtn').addEventListener('click', () => {
+  const label = document.getElementById('editLabel').value.trim();
+  if (!label) {
+    alert('請輸入文字');
+    return;
+  }
+  const newItem = {
+    label,
+    icon: document.getElementById('editIcon').value || '🔤',
+    speak: document.getElementById('editSpeak').value.trim() || label,
+    photo: window._currentPhoto || null,
+  };
+  const newCatId = document.getElementById('editCategory').value;
+
+  if (editingButton.isNew) {
+    if (!state.buttons[newCatId]) state.buttons[newCatId] = [];
+    state.buttons[newCatId].push(newItem);
+  } else {
+    if (newCatId === editingButton.catId) {
+      state.buttons[editingButton.catId][editingButton.index] = newItem;
+    } else {
+      // 跨分類移動
+      state.buttons[editingButton.catId].splice(editingButton.index, 1);
+      if (!state.buttons[newCatId]) state.buttons[newCatId] = [];
+      state.buttons[newCatId].push(newItem);
+    }
+  }
+  saveState();
+  renderGrid();
+  document.getElementById('editModal').classList.remove('show');
+  window._currentPhoto = null;
+});
+
+document.getElementById('btnDeleteBtn').addEventListener('click', () => {
+  if (!confirm(`確定刪除「${state.buttons[editingButton.catId][editingButton.index].label}」？`)) return;
+  state.buttons[editingButton.catId].splice(editingButton.index, 1);
+  saveState();
+  renderGrid();
+  document.getElementById('editModal').classList.remove('show');
+});
+
+// 關閉 modal
+document.querySelectorAll('[data-close]').forEach(b => {
+  b.addEventListener('click', () => {
+    b.closest('.modal-bg').classList.remove('show');
+  });
+});
+
+document.querySelectorAll('.modal-bg').forEach(bg => {
+  bg.addEventListener('click', (e) => {
+    if (e.target === bg) bg.classList.remove('show');
+  });
+});
+
+// ============== 啟動 ==============
+document.body.classList.toggle('edit-mode', state.settings.editMode);
+renderCategories();
+renderGrid();
+
+// 解鎖 iOS 語音（需用戶手勢觸發）
+document.body.addEventListener('touchend', function unlock() {
+  const u = new SpeechSynthesisUtterance(' ');
+  u.volume = 0;
+  speechSynthesis.speak(u);
+  document.body.removeEventListener('touchend', unlock);
+}, { once: true });
+</script>
+<!-- VIP-NAV-START -->
+<style id="vip-nav-style">
+.vip-nav-fab{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#ffb800,#ff7a4d);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.4);font-size:24px;z-index:99999;display:flex;align-items:center;justify-content:center;transition:transform .2s, box-shadow .2s;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif}
+.vip-nav-fab:hover{transform:scale(1.1);box-shadow:0 6px 24px rgba(255,184,0,.6)}
+.vip-nav-fab:active{transform:scale(.95)}
+.vip-nav-mask{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99998;display:none;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.vip-nav-mask.show{display:block}
+.vip-nav-panel{position:fixed;bottom:90px;right:20px;width:min(420px,calc(100vw - 40px));max-height:75vh;overflow-y:auto;background:#1a2028;border:1px solid #2a3441;border-radius:16px;padding:18px;z-index:99999;display:none;box-shadow:0 12px 48px rgba(0,0,0,.5);color:#e6edf3;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;line-height:1.4}
+.vip-nav-panel.show{display:block;animation:vipNavPop .2s ease-out}
+@keyframes vipNavPop{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
+.vip-nav-title{font-size:16px;font-weight:700;color:#ffb800;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.vip-nav-sub{font-size:11px;color:#8b96a3;margin-bottom:12px}
+.vip-nav-close{background:none;border:1px solid #2a3441;border-radius:8px;color:#8b96a3;font-size:18px;cursor:pointer;width:28px;height:28px;display:flex;align-items:center;justify-content:center;padding:0}
+.vip-nav-close:hover{color:#fff;border-color:#3a4452}
+.vip-nav-cat{font-size:10px;color:#8b96a3;margin:14px 0 8px;letter-spacing:2px;font-weight:700}
+.vip-nav-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.vip-nav-item{display:flex;flex-direction:column;align-items:center;padding:12px 6px;border-radius:10px;background:#2a3441;color:#e6edf3;text-decoration:none;font-size:12px;text-align:center;transition:background .15s, transform .15s;border:1px solid transparent}
+.vip-nav-item:hover{background:#3a4452;transform:translateY(-2px);border-color:#4a5462}
+.vip-nav-item.current{background:linear-gradient(135deg,#ffb800,#ff7a4d);color:#fff;pointer-events:none;opacity:.9;font-weight:700}
+.vip-nav-emoji{font-size:22px;margin-bottom:4px;line-height:1}
+@media (max-width:480px){.vip-nav-panel{right:10px;left:10px;width:auto;bottom:80px}.vip-nav-grid{grid-template-columns:repeat(4,1fr)}.vip-nav-item{padding:10px 4px;font-size:11px}.vip-nav-emoji{font-size:20px}}
+</style>
+<script id="vip-nav-script">
+(function(){
+  if (window.__vipNavLoaded) return;
+  window.__vipNavLoaded = true;
+  var TOOLS = [
+    {emoji:'🏠', name:'首頁', file:'首頁.html', cat:'入口'},
+    {emoji:'🇹🇼', name:'台股分析', file:'台股智能分析.html', cat:'智能分析'},
+    {emoji:'🇺🇸', name:'美股分析', file:'美股智能分析.html', cat:'智能分析'},
+    {emoji:'🧠', name:'聰明錢', file:'股票聰明錢分析.html', cat:'智能分析'},
+    {emoji:'📰', name:'台股情報', file:'tw_news/', cat:'每日情報'},
+    {emoji:'📡', name:'美股情報', file:'news/', cat:'每日情報'},
+    {emoji:'☀️', name:'每日早報', file:'每日早報.html', cat:'每日情報'},
+    {emoji:'💰', name:'損益追蹤', file:'index.html', cat:'生活工具'},
+    {emoji:'🏡', name:'房地產', file:'房地產搜尋.html', cat:'生活工具'},
+    {emoji:'🎵', name:'音樂', file:'音樂播放器.html', cat:'生活工具'},
+    {emoji:'🕐', name:'時鐘', file:'時鐘.html', cat:'生活工具'},
+    {emoji:'💬', name:'溝通版', file:'iPad溝通版.html', cat:'特教工具'},
+    {emoji:'📥', name:'台股匯入', file:'import.html', cat:'匯入'},
+    {emoji:'📥', name:'美股匯入', file:'us_import.html', cat:'匯入'}
+  ];
+  // 自動偵測站根：找 path 裡的 "stocks" 或 "Downloads" 當作站根
+  var path = decodeURIComponent(window.location.pathname);
+  var parts = path.split('/').filter(Boolean);
+  var rootKeys = ['stocks','Downloads'];
+  var rootIdx = -1;
+  for (var k=0;k<rootKeys.length;k++) {
+    var ix = parts.indexOf(rootKeys[k]);
+    if (ix >= 0) { rootIdx = ix; break; }
+  }
+  // 區分 path 結尾是檔案還是目錄；目錄會以 "/" 結尾
+  var endsWithSlash = path.charAt(path.length - 1) === '/';
+  // 站根後的 segment 數 = parts.length - rootIdx - 1（扣掉 root segment 本身）
+  // 檔案路徑：最後一段是檔名，不算 depth；目錄：所有段都算 depth
+  var depth = rootIdx >= 0
+    ? Math.max(0, parts.length - rootIdx - (endsWithSlash ? 1 : 2))
+    : 0;
+  var base = depth > 0 ? new Array(depth+1).join('../') : '';
+  // 偵測目前頁
+  var here = parts[parts.length-1] || '';
+  var current = null;
+  TOOLS.forEach(function(t){
+    var fn = t.file.replace(/\/$/,'');
+    if (here === fn || (here === '' && t.file === '首頁.html') ||
+        (path.indexOf('/'+fn+'/') >= 0 && t.file.indexOf('/') >= 0)) {
+      current = t.name;
+    }
+  });
+  // 建立浮動鈕
+  var btn = document.createElement('button');
+  btn.className = 'vip-nav-fab';
+  btn.title = '工具切換';
+  btn.setAttribute('aria-label','工具切換');
+  btn.textContent = '🧭';
+  // 建立遮罩
+  var mask = document.createElement('div');
+  mask.className = 'vip-nav-mask';
+  // 建立面板
+  var panel = document.createElement('div');
+  panel.className = 'vip-nav-panel';
+  var byCat = {}, catOrder = [];
+  TOOLS.forEach(function(t){ if (!byCat[t.cat]) { byCat[t.cat] = []; catOrder.push(t.cat); } byCat[t.cat].push(t); });
+  var html = '<div class="vip-nav-title">🧭 川普投顧 VIP 工具箱<button class="vip-nav-close" aria-label="關閉">×</button></div>';
+  html += '<div class="vip-nav-sub">王川銘 — 一鍵切換所有工具</div>';
+  catOrder.forEach(function(cat){
+    html += '<div class="vip-nav-cat">'+cat+'</div><div class="vip-nav-grid">';
+    byCat[cat].forEach(function(t){
+      var cls = 'vip-nav-item' + (t.name === current ? ' current' : '');
+      html += '<a class="'+cls+'" href="'+base+t.file+'"><div class="vip-nav-emoji">'+t.emoji+'</div><div>'+t.name+'</div></a>';
+    });
+    html += '</div>';
+  });
+  panel.innerHTML = html;
+  function attach(){
+    document.body.appendChild(btn);
+    document.body.appendChild(mask);
+    document.body.appendChild(panel);
+    btn.addEventListener('click', function(){ mask.classList.add('show'); panel.classList.add('show'); });
+    mask.addEventListener('click', function(){ mask.classList.remove('show'); panel.classList.remove('show'); });
+    panel.querySelector('.vip-nav-close').addEventListener('click', function(){ mask.classList.remove('show'); panel.classList.remove('show'); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { mask.classList.remove('show'); panel.classList.remove('show'); } });
+  }
+  if (document.body) attach(); else document.addEventListener('DOMContentLoaded', attach);
+})();
+</script>
+<!-- VIP-NAV-END -->
+
+</body>
+</html>
