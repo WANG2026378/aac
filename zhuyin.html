@@ -212,6 +212,27 @@ body {
   margin-bottom: 14px;
 }
 
+/* ===== 注音直書元件（聲韻符在左、聲調在右） ===== */
+.zh {
+  display: inline-flex;
+  align-items: stretch;
+  vertical-align: middle;
+  line-height: 1.0;
+}
+.zh-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.zh-col > span { display: block; }
+.zh-tone {
+  align-self: flex-end;
+  margin-left: 4px;
+  font-size: 0.65em;
+  margin-bottom: 0.1em;
+  color: inherit;
+}
+
 /* Options grid (mode 1 + 2) */
 .options-grid {
   display: grid;
@@ -222,15 +243,17 @@ body {
   background: white;
   border: 3px solid #DDD6FE;
   border-radius: 16px;
-  padding: 20px 12px;
+  padding: 16px 12px;
   cursor: pointer;
   font-family: inherit;
-  font-size: 32px;
+  font-size: 40px;
   font-weight: bold;
   color: #6B21A8;
   transition: all 0.15s;
-  min-height: 88px;
-  letter-spacing: 3px;
+  min-height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .option-btn:hover {
   border-color: #7C3AED;
@@ -259,35 +282,68 @@ body {
   75% { transform: translateX(8px); }
 }
 
-/* Compose area (mode 3) */
+/* Compose area (mode 3) - 直書 + 聲調在右 */
 .compose-display {
   background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
   border: 3px dashed #F59E0B;
   border-radius: 16px;
   padding: 24px;
   text-align: center;
-  font-size: 56px;
   font-weight: bold;
   color: #92400E;
-  letter-spacing: 8px;
-  min-height: 100px;
+  min-height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.compose-display .slot {
-  display: inline-block;
-  width: 60px;
+.compose-stack {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 10px;
+}
+.compose-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.compose-col .slot {
+  width: 70px;
   height: 80px;
   border-bottom: 4px solid #F59E0B;
-  margin: 0 4px;
+  text-align: center;
+  font-size: 52px;
   line-height: 80px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 8px 8px 0 0;
 }
-.compose-display .slot.filled {
+.compose-col .slot.filled {
   background: #FEF3C7;
-  border-radius: 8px;
   border-bottom: 4px solid #10B981;
   color: #047857;
+}
+.compose-tone {
+  align-self: flex-end;
+  width: 60px;
+  height: 60px;
+  border-bottom: 4px solid #F59E0B;
+  text-align: center;
+  font-size: 40px;
+  line-height: 60px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 8px 8px 0 0;
+  font-weight: bold;
+}
+.compose-tone.filled {
+  background: #FEF3C7;
+  border-bottom: 4px solid #10B981;
+  color: #047857;
+}
+.compose-tone.empty-firsttone {
+  border-bottom: 4px solid transparent;
+  background: transparent;
+  color: #B45309;
+  font-size: 14px;
+  line-height: 1.3;
 }
 .compose-keyboard {
   display: grid;
@@ -358,6 +414,13 @@ body {
   border: 2px dashed #DDD6FE;
   font-size: 15px;
   color: #4B5563;
+}
+.zh-inline {
+  font-size: 24px;
+  font-weight: bold;
+  color: #6B21A8;
+  display: inline-block;
+  vertical-align: middle;
 }
 .msg.success { border-color: #10B981; color: #047857; background: #ECFDF5; }
 .msg.error { border-color: #EF4444; color: #B91C1C; background: #FEF2F2; }
@@ -468,7 +531,11 @@ body {
   <h1>🔤 注音拼讀 🔤</h1>
   <p class="sub">用皮克敏冒險的 30 個生字學注音</p>
 
-  <div class="zhuyin-demo">ㄅㄆㄇㄈ</div>
+  <div class="zhuyin-demo" style="display:flex;justify-content:center;gap:24px;align-items:flex-end;">
+    <span style="display:inline-flex;align-items:stretch;line-height:1;"><span style="display:flex;flex-direction:column;gap:2px;"><span>ㄔ</span><span>ㄨ</span><span>ㄢ</span></span><span style="font-size:0.65em;align-self:flex-end;margin-left:6px;">ˊ</span></span>
+    <span style="display:inline-flex;align-items:stretch;line-height:1;"><span style="display:flex;flex-direction:column;gap:2px;"><span>ㄏ</span><span>ㄞ</span></span><span style="font-size:0.65em;align-self:flex-end;margin-left:6px;">ˇ</span></span>
+    <span style="display:inline-flex;align-items:stretch;line-height:1;"><span style="display:flex;flex-direction:column;gap:2px;"><span>ㄩ</span></span><span style="font-size:0.65em;align-self:flex-end;margin-left:6px;">ˇ</span></span>
+  </div>
 
   <div class="name-input">
     📛 名字：<input type="text" id="playerName" value="梅梅" maxlength="8">
@@ -729,6 +796,20 @@ function renderAnswerArea() {
   }
 }
 
+// 注音直書渲染（聲韻符直書、聲調在右）
+function zh(str) {
+  if (!str) return '';
+  const tm = str.match(/([ˊˇˋ˙])/);
+  const tone = tm ? tm[1] : '';
+  const letters = str.replace(/[ˊˇˋ˙]/g, '');
+  let html = '<span class="zh"><span class="zh-col">';
+  for (const ch of letters) html += `<span>${ch}</span>`;
+  html += '</span>';
+  if (tone) html += `<span class="zh-tone">${tone}</span>`;
+  html += '</span>';
+  return html;
+}
+
 function renderOptions(type) {
   const grid = document.getElementById('optionsGrid');
   grid.innerHTML = '';
@@ -746,7 +827,7 @@ function renderOptions(type) {
   options.forEach(opt => {
     const btn = document.createElement('button');
     btn.className = 'option-btn';
-    btn.textContent = opt;
+    btn.innerHTML = zh(opt);
     btn.addEventListener('click', () => pickOption(btn, opt, correct));
     grid.appendChild(btn);
   });
@@ -771,15 +852,28 @@ function pickOption(btn, picked, correct) {
 
 function renderComposeDisplay() {
   const disp = document.getElementById('composeDisplay');
-  disp.innerHTML = '';
-  const parts = [...currentWord.initials, ...currentWord.medials, currentWord.tone].filter(x => x !== undefined);
-  const totalSlots = parts.length;
-  for (let i = 0; i < totalSlots; i++) {
-    const slot = document.createElement('span');
-    slot.className = 'slot' + (composeAnswer[i] ? ' filled' : '');
-    slot.textContent = composeAnswer[i] || '＿';
-    disp.appendChild(slot);
+  const letters = [...currentWord.initials, ...currentWord.medials];
+  const hasTone = currentWord.tone !== '';
+
+  // 直書 stack: 字母直行在左、聲調在右下
+  let html = '<div class="compose-stack"><div class="compose-col">';
+  for (let i = 0; i < letters.length; i++) {
+    const filled = !!composeAnswer[i];
+    html += `<span class="slot${filled?' filled':''}">${composeAnswer[i] || '＿'}</span>`;
   }
+  html += '</div>';
+
+  if (hasTone) {
+    const toneIdx = letters.length;
+    const filled = !!composeAnswer[toneIdx];
+    html += `<span class="compose-tone${filled?' filled':''}">${composeAnswer[toneIdx] || '＿'}</span>`;
+  } else {
+    // 一聲沒有調號，顯示「一聲」說明
+    html += `<span class="compose-tone empty-firsttone">一聲<br>(無調)</span>`;
+  }
+  html += '</div>';
+
+  disp.innerHTML = html;
 }
 
 function renderComposeKeyboard() {
@@ -819,13 +913,12 @@ function renderComposeKeyboard() {
 }
 
 function pickSymbol(sym, keyBtn, isTone) {
-  // 確定填入哪一個 slot
-  const expected = [...currentWord.initials, ...currentWord.medials, currentWord.tone].filter(x => x !== undefined);
+  const letters = [...currentWord.initials, ...currentWord.medials];
+  const hasTone = currentWord.tone !== '';
+  const expected = hasTone ? [...letters, currentWord.tone] : letters;
   const nextIdx = composeAnswer.length;
   if (nextIdx >= expected.length) return;
-  // 如果這格是聲調 slot，且選的不是聲調，error 提示
-  const isLast = nextIdx === expected.length - 1;
-  // 直接填入（不限制順序，方便特教生）
+  // 直接依序填入
   composeAnswer.push(sym);
   keyBtn.classList.add('used');
   renderComposeDisplay();
@@ -839,14 +932,16 @@ function clearCompose() {
 
 function checkCompose() {
   if (answered) return;
-  const expected = [...currentWord.initials, ...currentWord.medials, currentWord.tone].filter(x => x !== undefined);
+  const letters = [...currentWord.initials, ...currentWord.medials];
+  const hasTone = currentWord.tone !== '';
+  const expected = hasTone ? [...letters, currentWord.tone] : letters;
   const ok = JSON.stringify(composeAnswer) === JSON.stringify(expected);
   answered = true;
   if (ok) {
-    document.querySelectorAll('.compose-display .slot').forEach(s => s.style.color = '#10B981');
+    document.querySelectorAll('.compose-display .slot, .compose-tone').forEach(s => s.style.color = '#10B981');
     onCorrect();
   } else {
-    document.querySelectorAll('.compose-display .slot').forEach(s => s.style.color = '#EF4444');
+    document.querySelectorAll('.compose-display .slot, .compose-tone').forEach(s => s.style.color = '#EF4444');
     onWrong();
   }
 }
@@ -864,7 +959,7 @@ function onCorrect() {
   renderSidebar();
   showConfetti();
   const praise = PRAISE[Math.floor(Math.random()*PRAISE.length)];
-  showMsg(`✅ ${praise} 「${currentWord.char}」念 ${currentWord.zhuyin}`, 'success');
+  showMsg(`✅ ${praise} 「${currentWord.char}」念 <span class="zh-inline">${zh(currentWord.zhuyin)}</span>`, 'success', true);
   speak(praise, false);
   setTimeout(() => speak(currentWord.pronounce, true), 600);
   showRewardModal();
@@ -876,7 +971,7 @@ function onWrong() {
   progress.total++;
   state.progress[currentWord.char] = progress;
   saveState();
-  showMsg(`❌ 「${currentWord.char}」念 ${currentWord.zhuyin}, 再聽一次喔!`, 'error');
+  showMsg(`❌ 「${currentWord.char}」念 <span class="zh-inline">${zh(currentWord.zhuyin)}</span>, 再聽一次喔!`, 'error', true);
   speak(currentWord.pronounce, true);
   document.getElementById('nextBtn').disabled = false;
 }
@@ -895,9 +990,10 @@ function nextQuestion() {
   loadQuestion();
 }
 
-function showMsg(text, type) {
+function showMsg(text, type, isHtml) {
   const msg = document.getElementById('msg');
-  msg.textContent = text;
+  if (isHtml) msg.innerHTML = text;
+  else msg.textContent = text;
   msg.className = 'msg' + (type ? ' ' + type : '');
 }
 
@@ -950,7 +1046,7 @@ function showConfetti() {
 function showRewardModal() {
   document.getElementById('modalEmoji').textContent = ['🎉','🎊','✨','🌟','🥳'][Math.floor(Math.random()*5)];
   document.getElementById('modalTitle').textContent = PRAISE[Math.floor(Math.random()*PRAISE.length)];
-  document.getElementById('modalDesc').textContent = `「${currentWord.char}」念 ${currentWord.zhuyin} · 獲得 1 隻皮克敏!`;
+  document.getElementById('modalDesc').innerHTML = `「${currentWord.char}」念 <span style="font-size:1.4em;display:inline-block;vertical-align:middle;">${zh(currentWord.zhuyin)}</span> · 獲得 1 隻皮克敏!`;
   document.getElementById('modalPikmin').textContent = PIKMIN_EMOJI[(state.pikmin-1) % PIKMIN_EMOJI.length];
   document.getElementById('rewardModal').classList.add('show');
   setTimeout(() => document.getElementById('rewardModal').classList.remove('show'), 1800);
