@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="運筆練習">
+<meta name="theme-color" content="#EC4899">
+<link rel="apple-touch-icon" href="icons/write-180.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/write-180.png?v=1">
+<link rel="apple-touch-icon" sizes="512x512" href="icons/write-512.png?v=1">
+<link rel="icon" type="image/png" href="icons/write-512.png?v=1">
+<title>翰林1下 運筆練習</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body {
+  font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
+  background: linear-gradient(180deg, #FCE7F3 0%, #FBCFE8 50%, #FDF4FF 100%);
+  color: #4B5563;
+  overflow-x: hidden;
+  min-height: 100vh;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+/* ===== Intro ===== */
+#intro {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 20px;
+}
+#intro h1 {
+  font-size: clamp(32px, 5vw, 48px);
+  color: #BE185D;
+  text-shadow: 3px 3px 0 #fff, 6px 6px 0 rgba(0,0,0,0.08);
+  margin: 20px 0 8px;
+  text-align: center;
+}
+#intro .sub {
+  font-size: 16px;
+  color: #831843;
+  background: rgba(255,255,255,0.7);
+  padding: 8px 18px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.units {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 900px;
+  margin: 12px 0;
+}
+.unit-block {
+  background: white;
+  border-radius: 20px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.12);
+}
+.unit-block h2 {
+  font-size: 20px;
+  color: #BE185D;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.unit-block h2 .emoji { font-size: 28px; }
+.char-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 10px;
+}
+.char-tile {
+  background: linear-gradient(135deg, #FDF4FF, #FCE7F3);
+  border: 3px solid #F9A8D4;
+  border-radius: 14px;
+  padding: 12px 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.char-tile:hover {
+  background: linear-gradient(135deg, #FCE7F3, #FBCFE8);
+  transform: translateY(-3px);
+  border-color: #EC4899;
+}
+.char-tile.done {
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border-color: #10B981;
+}
+.char-tile .ch {
+  font-size: 36px;
+  font-weight: 900;
+  color: #BE185D;
+  font-family: "標楷體", serif;
+  line-height: 1;
+  display: block;
+}
+.char-tile .zh {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  font-size: 13px;
+  color: #6B7280;
+  margin-top: 4px;
+}
+.char-tile .stars {
+  font-size: 11px;
+  color: #F59E0B;
+  margin-top: 2px;
+  min-height: 16px;
+}
+
+.name-input {
+  margin: 14px 0;
+  text-align: center;
+}
+.name-input input {
+  font-size: 18px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 3px solid #F9A8D4;
+  text-align: center;
+  width: 180px;
+  font-family: inherit;
+  background: white;
+}
+
+/* ===== Practice ===== */
+#practice { display: none; }
+#practice.active {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.bar {
+  background: rgba(255,255,255,0.92);
+  padding: 12px 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 12px rgba(236,72,153,0.1);
+}
+.bar h2 {
+  font-size: 18px;
+  color: #BE185D;
+  margin-right: auto;
+}
+.stat {
+  background: white;
+  border: 2px solid #FCE7F3;
+  border-radius: 10px;
+  padding: 4px 12px;
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  gap: 6px;
+}
+.stat .lbl { color: #6B7280; font-size: 12px; }
+.stat .val { color: #EC4899; font-size: 17px; }
+
+.icon-btn {
+  background: white;
+  border: 2px solid #FCE7F3;
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: inherit;
+}
+.icon-btn:hover { background: #FDF4FF; }
+
+.main-content {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 14px;
+  padding: 14px;
+}
+@media (max-width: 900px) {
+  .main-content { grid-template-columns: 1fr; }
+  .info-side { order: 0; }
+}
+
+.writer-area {
+  background: rgba(255,255,255,0.95);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(236,72,153,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.char-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 4px;
+}
+.char-main-zh {
+  display: inline-flex;
+  align-items: center;
+  font-size: 36px;
+  font-weight: bold;
+  color: #BE185D;
+  line-height: 1;
+}
+.char-main-zh .zh-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.char-main-zh .zh-tone {
+  align-self: center;
+  margin-left: 8px;
+  font-size: 0.95em;
+}
+.char-pronounce {
+  font-size: 16px;
+  color: #6B7280;
+  background: #FDF4FF;
+  padding: 6px 14px;
+  border-radius: 12px;
+}
+
+/* HanziWriter container with 田字格 */
+.writer-wrap {
+  position: relative;
+  width: min(380px, 90vw);
+  height: min(380px, 90vw);
+  background: white;
+  border: 4px solid #F9A8D4;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(236,72,153,0.15);
+}
+.writer-wrap .grid-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.writer-wrap .grid-bg::before,
+.writer-wrap .grid-bg::after {
+  content: '';
+  position: absolute;
+  background: repeating-linear-gradient(0deg, transparent 0 6px, #F9A8D4 6px 12px);
+  opacity: 0.5;
+}
+.writer-wrap .grid-bg::before {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: repeating-linear-gradient(0deg, transparent 0 6px, #F9A8D4 6px 12px);
+}
+.writer-wrap .grid-bg::after {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, transparent 0 6px, #F9A8D4 6px 12px);
+}
+.writer-wrap #writerTarget {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.writer-wrap #writerTarget svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.mode-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.mode-btn {
+  padding: 12px 18px;
+  border-radius: 14px;
+  border: 3px solid transparent;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  background: white;
+  color: #6B7280;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.mode-btn.active {
+  border-color: #EC4899;
+  color: #BE185D;
+  background: #FDF4FF;
+  box-shadow: 0 4px 12px rgba(236,72,153,0.2);
+}
+
+.action-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn {
+  padding: 12px 22px;
+  border-radius: 14px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: inherit;
+  transition: transform 0.1s;
+}
+.btn:active { transform: translateY(2px); }
+.btn-primary { background: #EC4899; color: white; box-shadow: 0 4px 0 #BE185D; }
+.btn-success { background: #10B981; color: white; box-shadow: 0 4px 0 #047857; }
+.btn-warning { background: #F59E0B; color: white; box-shadow: 0 4px 0 #B45309; }
+.btn-secondary { background: white; color: #6B7280; border: 2px solid #E5E7EB; box-shadow: 0 4px 0 #E5E7EB; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; transform: none; }
+
+.msg {
+  background: white;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 15px;
+  color: #6B7280;
+  text-align: center;
+  border: 2px dashed #FCE7F3;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.msg.success { background: #ECFDF5; color: #047857; border-color: #10B981; }
+.msg.error { background: #FEF2F2; color: #B91C1C; border-color: #EF4444; }
+
+/* Sidebar */
+.info-side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.panel {
+  background: rgba(255,255,255,0.95);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 4px 12px rgba(236,72,153,0.08);
+}
+.panel h3 {
+  font-size: 14px;
+  color: #BE185D;
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+
+.word-example {
+  font-size: 22px;
+  font-weight: bold;
+  color: #BE185D;
+  font-family: "標楷體", serif;
+  margin: 8px 0;
+}
+.word-example .highlight { background: #FCE7F3; padding: 0 4px; border-radius: 4px; }
+.example-sentence {
+  font-size: 16px;
+  color: #6B7280;
+  line-height: 1.6;
+  padding: 8px 12px;
+  background: #FDF4FF;
+  border-radius: 10px;
+}
+
+.char-jumper {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+}
+.jumper-cell {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background: #F9FAFB;
+  border: 2px solid #E5E7EB;
+  font-family: "標楷體", serif;
+  font-weight: bold;
+  cursor: pointer;
+  color: #9CA3AF;
+}
+.jumper-cell.current {
+  background: linear-gradient(135deg, #FCE7F3, #FBCFE8);
+  border-color: #EC4899;
+  color: #BE185D;
+}
+.jumper-cell.done {
+  background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
+  border-color: #10B981;
+  color: #047857;
+}
+
+/* Praise modal */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+.modal-bg.show { display: flex; }
+.modal {
+  background: white;
+  border-radius: 24px;
+  padding: 32px 28px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: pop 0.4s;
+}
+@keyframes pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.modal h2 { color: #BE185D; font-size: 28px; margin-bottom: 8px; }
+.modal .big-emoji { font-size: 72px; margin: 10px 0; display: block; }
+.modal p { color: #4B5563; font-size: 16px; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<!-- ============ Intro ============ -->
+<div id="intro">
+  <h1>✍️ 翰林1下 運筆練習</h1>
+  <p class="sub">30 個生字 · 5 單元 · 筆順動畫 + 描寫練習</p>
+
+  <div class="name-input">
+    📛 名字：<input type="text" id="playerName" value="梅梅" maxlength="8">
+  </div>
+
+  <div class="units" id="unitsList"></div>
+
+  <p style="color:#9CA3AF;font-size:13px;margin-top:20px;text-align:center;max-width:600px;">
+    💡 點任何一個字就開始練習。先看筆順動畫，再描寫。
+  </p>
+</div>
+
+<!-- ============ Practice ============ -->
+<div id="practice">
+  <div class="bar">
+    <button class="icon-btn" onclick="backToIntro()">🏠 首頁</button>
+    <h2 id="charBreadcrumb">第 1 單元 · 春天</h2>
+    <div class="stat"><span class="lbl">⭐</span><span class="val" id="starsVal">0</span></div>
+    <button class="icon-btn" onclick="speakChar()">🔊 念字</button>
+    <button class="icon-btn" onclick="prevChar()">← 上一字</button>
+    <button class="icon-btn" onclick="nextChar()">下一字 →</button>
+  </div>
+
+  <div class="main-content">
+    <div class="writer-area">
+      <div class="char-header">
+        <span class="char-main-zh" id="zhuyinDisplay"></span>
+        <span class="char-pronounce" id="pronounceDisplay"></span>
+      </div>
+
+      <div class="writer-wrap">
+        <div class="grid-bg"></div>
+        <div id="writerTarget"></div>
+      </div>
+
+      <div class="mode-bar">
+        <button class="mode-btn active" data-mode="watch" onclick="setMode('watch')">🎬 看筆順</button>
+        <button class="mode-btn" data-mode="trace" onclick="setMode('trace')">✍️ 描寫</button>
+        <button class="mode-btn" data-mode="quiz" onclick="setMode('quiz')">🎯 測驗</button>
+      </div>
+
+      <div class="msg" id="msg">點「看筆順」播放動畫</div>
+
+      <div class="action-bar">
+        <button class="btn btn-primary" id="actionBtn" onclick="doAction()">▶️ 開始</button>
+        <button class="btn btn-warning" onclick="resetWriter()">🔄 重來</button>
+        <button class="btn btn-success" onclick="markDone()">✓ 完成</button>
+      </div>
+    </div>
+
+    <div class="info-side">
+      <div class="panel">
+        <h3>📝 詞語例句</h3>
+        <div class="word-example" id="wordExample">__</div>
+        <div class="example-sentence" id="exampleSentence">__</div>
+      </div>
+      <div class="panel">
+        <h3>📚 本單元生字</h3>
+        <div class="char-jumper" id="charJumper"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Modal ============ -->
+<div class="modal-bg" id="praiseModal">
+  <div class="modal">
+    <span class="big-emoji" id="praiseEmoji">🎉</span>
+    <h2 id="praiseTitle">太棒了!</h2>
+    <p id="praiseDesc"></p>
+    <button class="btn btn-primary" style="margin-top:16px;" onclick="closePraise()">繼續</button>
+  </div>
+</div>
+
+<!-- HanziWriter library -->
+<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+
+<script>
+// ============ DATA: 翰林1下 30 生字（5 單元） ============
+const UNITS = [
+  {
+    name: '春天的歌',
+    emoji: '🌸',
+    color: '#EC4899',
+    chars: [
+      { c:'春', z:'ㄔㄨㄣ', word:'春天', sentence:'春天到了，花開了。' },
+      { c:'花', z:'ㄏㄨㄚ', word:'小花', sentence:'小花真漂亮。' },
+      { c:'草', z:'ㄘㄠˇ', word:'青草', sentence:'草地上有很多青草。' },
+      { c:'風', z:'ㄈㄥ', word:'春風', sentence:'春風吹過樹梢。' },
+      { c:'雨', z:'ㄩˇ', word:'下雨', sentence:'下雨了，要帶傘。' },
+      { c:'雲', z:'ㄩㄣˊ', word:'白雲', sentence:'天上有白白的雲。' },
+    ]
+  },
+  {
+    name: '我愛家人',
+    emoji: '👨‍👩‍👧‍👦',
+    color: '#F97316',
+    chars: [
+      { c:'爸', z:'ㄅㄚˋ', word:'爸爸', sentence:'爸爸去上班了。' },
+      { c:'媽', z:'ㄇㄚ', word:'媽媽', sentence:'媽媽做飯給我吃。' },
+      { c:'哥', z:'ㄍㄜ', word:'哥哥', sentence:'我有一個哥哥。' },
+      { c:'姐', z:'ㄐㄧㄝˇ', word:'姐姐', sentence:'姐姐會彈鋼琴。' },
+      { c:'弟', z:'ㄉㄧˋ', word:'弟弟', sentence:'弟弟還很小。' },
+      { c:'妹', z:'ㄇㄟˋ', word:'妹妹', sentence:'妹妹很可愛。' },
+    ]
+  },
+  {
+    name: '學校生活',
+    emoji: '🏫',
+    color: '#10B981',
+    chars: [
+      { c:'老', z:'ㄌㄠˇ', word:'老師', sentence:'老師教我寫字。' },
+      { c:'師', z:'ㄕ', word:'老師', sentence:'我喜歡王老師。' },
+      { c:'書', z:'ㄕㄨ', word:'看書', sentence:'我每天看書。' },
+      { c:'筆', z:'ㄅㄧˇ', word:'鉛筆', sentence:'鉛筆可以寫字。' },
+      { c:'同', z:'ㄊㄨㄥˊ', word:'同學', sentence:'我和同學一起玩。' },
+      { c:'學', z:'ㄒㄩㄝˊ', word:'學校', sentence:'我去學校上課。' },
+    ]
+  },
+  {
+    name: '動物朋友',
+    emoji: '🦊',
+    color: '#3B82F6',
+    chars: [
+      { c:'鳥', z:'ㄋㄧㄠˇ', word:'小鳥', sentence:'小鳥在樹上唱歌。' },
+      { c:'魚', z:'ㄩˊ', word:'金魚', sentence:'金魚在水裡游。' },
+      { c:'貓', z:'ㄇㄠ', word:'小貓', sentence:'小貓喵喵叫。' },
+      { c:'狗', z:'ㄍㄡˇ', word:'小狗', sentence:'小狗汪汪叫。' },
+      { c:'牛', z:'ㄋㄧㄡˊ', word:'水牛', sentence:'水牛在田裡。' },
+      { c:'馬', z:'ㄇㄚˇ', word:'白馬', sentence:'白馬跑得快。' },
+    ]
+  },
+  {
+    name: '大自然',
+    emoji: '🌳',
+    color: '#8B5CF6',
+    chars: [
+      { c:'山', z:'ㄕㄢ', word:'高山', sentence:'高山上有雲。' },
+      { c:'水', z:'ㄕㄨㄟˇ', word:'河水', sentence:'河水流到海裡。' },
+      { c:'太', z:'ㄊㄞˋ', word:'太陽', sentence:'太陽從東邊出來。' },
+      { c:'陽', z:'ㄧㄤˊ', word:'陽光', sentence:'陽光暖暖的。' },
+      { c:'月', z:'ㄩㄝˋ', word:'月亮', sentence:'晚上月亮出來了。' },
+      { c:'星', z:'ㄒㄧㄥ', word:'星星', sentence:'天上有很多星星。' },
+    ]
+  },
+];
+
+// 平坦化所有字
+const ALL_CHARS = [];
+UNITS.forEach((u, ui) => u.chars.forEach((c, ci) => ALL_CHARS.push({...c, unit:ui, idx:ci})));
+
+const STORAGE_KEY = 'hanlin-write-v1';
+let state = loadState();
+let currentUnitIdx = 0;
+let currentCharIdx = 0;
+let currentMode = 'watch';
+let writer = null;
+
+function loadState() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (s) return JSON.parse(s);
+  } catch(e) {}
+  return { name:'梅梅', progress:{} };
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
+}
+
+// ============ TTS ============
+function speak(text) {
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-TW';
+  u.rate = 0.8;
+  u.pitch = 1.0;
+  const voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('zh'));
+  const preferred = ['Mei-Jia','Yating','Tingting','Sin-ji'];
+  for (const name of preferred) {
+    const v = voices.find(x => x.name.includes(name));
+    if (v) { u.voice = v; break; }
+  }
+  speechSynthesis.speak(u);
+}
+
+function currentChar() {
+  return UNITS[currentUnitIdx].chars[currentCharIdx];
+}
+
+function speakChar() {
+  const c = currentChar();
+  speak(`${c.word} 的 ${c.c}`);
+}
+
+// ============ Zhuyin rendering ============
+function zh(str) {
+  if (!str) return '';
+  const tm = str.match(/([ˊˇˋ˙])/);
+  const tone = tm ? tm[1] : '';
+  const letters = str.replace(/[ˊˇˋ˙]/g, '');
+  let html = '<span class="zh-col">';
+  for (const ch of letters) html += `<span>${ch}</span>`;
+  html += '</span>';
+  if (tone) html += `<span class="zh-tone">${tone}</span>`;
+  return html;
+}
+
+// ============ Intro ============
+function renderIntro() {
+  const list = document.getElementById('unitsList');
+  list.innerHTML = '';
+  UNITS.forEach((u, ui) => {
+    const block = document.createElement('div');
+    block.className = 'unit-block';
+    const charsHtml = u.chars.map((c, ci) => {
+      const prog = state.progress[c.c];
+      const stars = prog && prog.stars ? '⭐'.repeat(prog.stars) : '';
+      const doneClass = prog && prog.stars >= 1 ? ' done' : '';
+      return `<div class="char-tile${doneClass}" onclick="startPractice(${ui}, ${ci})">
+        <span class="ch">${c.c}</span>
+        <span class="zh">${zh(c.z)}</span>
+        <div class="stars">${stars}</div>
+      </div>`;
+    }).join('');
+    block.innerHTML = `
+      <h2><span class="emoji">${u.emoji}</span> 第 ${ui+1} 單元 · ${u.name}</h2>
+      <div class="char-grid">${charsHtml}</div>
+    `;
+    list.appendChild(block);
+  });
+}
+
+// ============ Practice ============
+function startPractice(unitIdx, charIdx) {
+  currentUnitIdx = unitIdx;
+  currentCharIdx = charIdx;
+  state.name = document.getElementById('playerName').value.trim() || '梅梅';
+  saveState();
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('practice').classList.add('active');
+  loadChar();
+}
+
+function loadChar() {
+  const c = currentChar();
+  const u = UNITS[currentUnitIdx];
+  document.getElementById('charBreadcrumb').textContent = `第 ${currentUnitIdx+1} 單元 · ${u.name}`;
+  document.getElementById('zhuyinDisplay').innerHTML = `<span style="font-size:64px;font-family:'標楷體',serif;margin-right:14px;color:#BE185D;">${c.c}</span>${zh(c.z)}`;
+  document.getElementById('pronounceDisplay').textContent = `${c.word} 的 ${c.c}`;
+  document.getElementById('wordExample').innerHTML = c.word.split('').map(ch => ch === c.c ? `<span class="highlight">${ch}</span>` : ch).join('');
+  document.getElementById('exampleSentence').textContent = c.sentence;
+
+  updateStars();
+  renderJumper();
+  setMode('watch');
+  initWriter(c.c);
+  speak(`${c.word} 的 ${c.c}`);
+}
+
+function renderJumper() {
+  const j = document.getElementById('charJumper');
+  j.innerHTML = '';
+  UNITS[currentUnitIdx].chars.forEach((c, i) => {
+    const cell = document.createElement('div');
+    let cls = 'jumper-cell';
+    if (i === currentCharIdx) cls += ' current';
+    else if (state.progress[c.c]?.stars >= 1) cls += ' done';
+    cell.className = cls;
+    cell.textContent = c.c;
+    cell.onclick = () => { currentCharIdx = i; loadChar(); };
+    j.appendChild(cell);
+  });
+}
+
+function updateStars() {
+  const c = currentChar();
+  const prog = state.progress[c.c] || { stars: 0 };
+  document.getElementById('starsVal').textContent = '⭐'.repeat(prog.stars) || '0';
+}
+
+function initWriter(char) {
+  const target = document.getElementById('writerTarget');
+  target.innerHTML = '';
+  if (writer) { try { writer.cancelQuiz?.(); } catch(e){} }
+
+  try {
+    writer = HanziWriter.create('writerTarget', char, {
+      width: target.clientWidth || 360,
+      height: target.clientHeight || 360,
+      padding: 8,
+      strokeColor: '#BE185D',
+      outlineColor: '#FCE7F3',
+      radicalColor: '#EC4899',
+      highlightColor: '#FBBF24',
+      drawingColor: '#10B981',
+      strokeAnimationSpeed: 0.8,
+      delayBetweenStrokes: 250,
+      strokeFadeDuration: 400,
+      showOutline: true,
+      showHintAfterMisses: 2,
+    });
+    showMsg('點「看筆順」播放動畫', '');
+  } catch(e) {
+    target.innerHTML = `<div style="font-size:180px;color:#FCE7F3;font-family:'標楷體',serif;">${char}</div>`;
+    showMsg('⚠️ 筆順資料載入中（需要網路）', 'error');
+  }
+}
+
+function setMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  if (writer) { try { writer.cancelQuiz?.(); } catch(e){} }
+  const c = currentChar();
+  initWriter(c.c);
+
+  const actionBtn = document.getElementById('actionBtn');
+  if (mode === 'watch') {
+    actionBtn.textContent = '▶️ 播放筆順';
+    showMsg('點「播放筆順」看老師寫', '');
+  } else if (mode === 'trace') {
+    actionBtn.textContent = '✍️ 開始描寫';
+    showMsg('點「開始描寫」跟著寫', '');
+  } else if (mode === 'quiz') {
+    actionBtn.textContent = '🎯 開始測驗';
+    showMsg('點「開始測驗」自己寫出來（沒提示）', '');
+  }
+}
+
+function doAction() {
+  if (!writer) return;
+  const c = currentChar();
+  if (currentMode === 'watch') {
+    writer.animateCharacter({
+      onComplete: () => showMsg('看完囉! 試試「描寫」', 'success'),
+    });
+    showMsg('看老師寫…', '');
+  } else if (currentMode === 'trace') {
+    showMsg('用手指沿著筆畫描寫', '');
+    writer.quiz({
+      showHintAfterMisses: 2,
+      showOutline: true,
+      onMistake: (data) => showMsg(`第 ${data.strokeNum+1} 筆畫，再試一次!`, 'error'),
+      onCorrectStroke: (data) => {
+        showMsg(`第 ${data.strokeNum+1} 筆 ✓ 還有 ${data.strokesRemaining} 筆`, 'success');
+      },
+      onComplete: (data) => {
+        const mistakes = data.totalMistakes;
+        const stars = mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1;
+        recordSuccess(stars);
+        showMsg(`寫完了! 共 ${mistakes} 次提示，${stars} 顆星`, 'success');
+        speak(`${currentChar().word}的${currentChar().c}`);
+        showPraise(stars);
+      },
+    });
+  } else if (currentMode === 'quiz') {
+    showMsg('自己寫出來，沒有提示喔!', '');
+    writer.quiz({
+      showHintAfterMisses: false,
+      showOutline: false,
+      leniency: 1.5,
+      onMistake: () => showMsg('再想想看…', 'error'),
+      onComplete: (data) => {
+        const mistakes = data.totalMistakes;
+        const stars = mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1;
+        recordSuccess(stars);
+        showMsg(`太棒了! ${stars} 顆星 🌟`, 'success');
+        speak(`${currentChar().word}的${currentChar().c}`);
+        showPraise(stars);
+      },
+    });
+  }
+}
+
+function recordSuccess(stars) {
+  const c = currentChar();
+  const prog = state.progress[c.c] || { stars: 0, attempts: 0 };
+  prog.stars = Math.max(prog.stars, stars);
+  prog.attempts = (prog.attempts || 0) + 1;
+  state.progress[c.c] = prog;
+  saveState();
+  updateStars();
+}
+
+function resetWriter() {
+  const c = currentChar();
+  initWriter(c.c);
+  showMsg('重新開始', '');
+}
+
+function markDone() {
+  recordSuccess(1);
+  showMsg('✓ 標記為練習過', 'success');
+  showPraise(1);
+}
+
+function showMsg(text, type) {
+  const m = document.getElementById('msg');
+  m.textContent = text;
+  m.className = 'msg' + (type ? ' ' + type : '');
+}
+
+function showPraise(stars) {
+  const praises = ['太棒了!', '好厲害!', '寫得真好!', '加油!', '你真聰明!', '正確!', '好讚喔!'];
+  document.getElementById('praiseEmoji').textContent = ['🎉','🎊','✨','🌟','🥳','🏆'][Math.floor(Math.random()*6)];
+  document.getElementById('praiseTitle').textContent = praises[Math.floor(Math.random()*praises.length)];
+  const c = currentChar();
+  document.getElementById('praiseDesc').innerHTML = `「${c.c}」寫對了!<br>得到 ${'⭐'.repeat(stars)} ${stars} 顆星`;
+  document.getElementById('praiseModal').classList.add('show');
+}
+
+function closePraise() {
+  document.getElementById('praiseModal').classList.remove('show');
+  // 自動下一字
+  setTimeout(() => nextChar(), 200);
+}
+
+function prevChar() {
+  if (currentCharIdx > 0) {
+    currentCharIdx--;
+  } else if (currentUnitIdx > 0) {
+    currentUnitIdx--;
+    currentCharIdx = UNITS[currentUnitIdx].chars.length - 1;
+  } else return;
+  loadChar();
+}
+
+function nextChar() {
+  const unit = UNITS[currentUnitIdx];
+  if (currentCharIdx < unit.chars.length - 1) {
+    currentCharIdx++;
+  } else if (currentUnitIdx < UNITS.length - 1) {
+    currentUnitIdx++;
+    currentCharIdx = 0;
+  } else {
+    showMsg('🎉 全部字都練習過了!', 'success');
+    return;
+  }
+  loadChar();
+}
+
+function backToIntro() {
+  if (writer) { try { writer.cancelQuiz?.(); } catch(e){} }
+  document.getElementById('practice').classList.remove('active');
+  document.getElementById('intro').style.display = 'flex';
+  renderIntro();
+}
+
+// init
+document.body.addEventListener('touchend', function unlock() {
+  const u = new SpeechSynthesisUtterance(' ');
+  u.volume = 0;
+  speechSynthesis.speak(u);
+  document.body.removeEventListener('touchend', unlock);
+}, { once: true });
+
+document.getElementById('playerName').value = state.name || '梅梅';
+renderIntro();
+
+// 等 HanziWriter 載入
+window.addEventListener('load', () => {
+  if (typeof HanziWriter === 'undefined') {
+    console.warn('HanziWriter 載入失敗');
+  }
+});
+</script>
+</body>
+</html>
