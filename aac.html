@@ -451,9 +451,13 @@ body {
         <button data-gender="auto" class="gender-btn">🎙️ 預設</button>
       </div>
     </div>
-    <div class="settings-row">
-      <label>語音</label>
-      <select id="voiceSelect" style="width: 240px;"></select>
+    <div class="settings-row" style="flex-direction: column; align-items: stretch;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <label style="margin: 0;">語音 <span id="voiceCount" style="color:#888;font-size:14px;font-weight:400;"></span></label>
+        <button id="btnReloadVoices" style="background:#f0f4f8;border:none;border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;color:#4A90E2;font-family:inherit;cursor:pointer;">🔄 重新整理</button>
+      </div>
+      <select id="voiceSelect" style="width: 100%;"></select>
+      <div id="voiceHint" style="font-size:13px;color:#888;margin-top:6px;line-height:1.5;"></div>
     </div>
     <div class="settings-row">
       <label>按鍵後自動發音</label>
@@ -819,25 +823,55 @@ function guessGender(voiceName) {
   return 'unknown';
 }
 
+let showAllVoices = false; // 切換是否顯示全部語音（非中文也顯示）
+
 function loadVoices() {
-  availableVoices = speechSynthesis.getVoices().filter(v =>
+  const allVoices = speechSynthesis.getVoices();
+  const zhVoices = allVoices.filter(v =>
     v.lang.startsWith('zh') || v.lang.startsWith('cmn')
   );
+  availableVoices = showAllVoices ? allVoices : zhVoices;
+
   const sel = document.getElementById('voiceSelect');
+  if (!sel) return;
   sel.innerHTML = '';
-  if (availableVoices.length === 0) {
-    sel.innerHTML = '<option value="">系統預設</option>';
-  } else {
-    availableVoices.forEach(v => {
-      const opt = document.createElement('option');
-      opt.value = v.voiceURI;
-      const g = guessGender(v.name);
-      const tag = g === 'male' ? ' 👨' : g === 'female' ? ' 👩' : '';
-      opt.textContent = `${v.name}${tag} (${v.lang})`;
-      if (v.voiceURI === state.settings.voiceURI) opt.selected = true;
-      sel.appendChild(opt);
-    });
+
+  // 統計資訊
+  const countEl = document.getElementById('voiceCount');
+  const hintEl = document.getElementById('voiceHint');
+  const maleCount = zhVoices.filter(v => guessGender(v.name) === 'male').length;
+  const femaleCount = zhVoices.filter(v => guessGender(v.name) === 'female').length;
+  if (countEl) countEl.textContent = `(中文 ${zhVoices.length} 個 · 👨 ${maleCount} · 👩 ${femaleCount})`;
+
+  if (allVoices.length === 0) {
+    sel.innerHTML = '<option value="">系統預設（尚未偵測到語音）</option>';
+    if (hintEl) hintEl.innerHTML = '⚠️ 偵測不到語音，請先點任何按鈕讓系統解鎖語音，再按 🔄 重新整理';
+    return;
   }
+  if (zhVoices.length === 0 && !showAllVoices) {
+    sel.innerHTML = '<option value="">系統預設（沒有中文語音）</option>';
+    if (hintEl) hintEl.innerHTML = `⚠️ 偵測不到中文語音（系統共 ${allVoices.length} 個語音）<br>→ iPad 設定 → 輔助使用 → 朗讀內容 → 聲音 → 中文 → 下載 Tian-Tian 或 Pang Pang<br>→ <a href="#" onclick="showAllVoices=true;loadVoices();return false;" style="color:#4A90E2;">查看全部 ${allVoices.length} 個語音</a>`;
+    return;
+  }
+
+  availableVoices.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.voiceURI;
+    const g = guessGender(v.name);
+    const tag = g === 'male' ? ' 👨' : g === 'female' ? ' 👩' : '';
+    opt.textContent = `${v.name}${tag} · ${v.lang}`;
+    if (v.voiceURI === state.settings.voiceURI) opt.selected = true;
+    sel.appendChild(opt);
+  });
+
+  if (hintEl) {
+    if (maleCount === 0) {
+      hintEl.innerHTML = '💡 沒偵測到中文男聲。請到 iPad <b>設定 → 輔助使用 → 朗讀內容 → 聲音 → 中文 → 普通話（中國大陸）</b> 下載 <b>Tian-Tian</b>（天天）後回來按 🔄 重新整理';
+    } else {
+      hintEl.innerHTML = `✅ 偵測到 ${maleCount} 個男聲，${femaleCount} 個女聲`;
+    }
+  }
+
   // 套用性別偏好
   applyVoiceGender();
 }
@@ -983,7 +1017,30 @@ document.getElementById('btnPlay').addEventListener('click', () => {
 // ============== 設定 Modal ==============
 document.getElementById('btnSettings').addEventListener('click', () => {
   document.getElementById('settingsModal').classList.add('show');
+  // 觸發 iOS 解鎖語音 + 強制重新載入清單
+  try {
+    const warm = new SpeechSynthesisUtterance(' ');
+    warm.volume = 0;
+    speechSynthesis.speak(warm);
+  } catch(e) {}
+  loadVoices();
+  // iOS 有時要等一下才有
+  setTimeout(loadVoices, 300);
+  setTimeout(loadVoices, 1000);
   syncSettingsUI();
+});
+
+// 手動重新整理語音清單
+document.getElementById('btnReloadVoices').addEventListener('click', () => {
+  // 解鎖+重抓
+  try {
+    const warm = new SpeechSynthesisUtterance('語音清單');
+    warm.lang = 'zh-TW';
+    warm.volume = 0.3;
+    speechSynthesis.speak(warm);
+  } catch(e) {}
+  loadVoices();
+  setTimeout(loadVoices, 500);
 });
 
 function syncSettingsUI() {
