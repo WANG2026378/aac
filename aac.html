@@ -344,6 +344,32 @@ body {
   font-size: 20px;
 }
 
+/* 性別切換 */
+.gender-toggle {
+  display: flex;
+  gap: 6px;
+  background: #f0f4f8;
+  border-radius: 12px;
+  padding: 4px;
+}
+.gender-btn {
+  background: transparent;
+  border: none;
+  padding: 10px 14px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 9px;
+  cursor: pointer;
+  color: #555;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.gender-btn.active {
+  background: #4A90E2;
+  color: white;
+  box-shadow: 0 2px 6px rgba(74,144,226,0.3);
+}
+
 /* 老師模式（編輯按鈕） */
 .edit-mode .word-btn::after {
   content: '✏️';
@@ -416,6 +442,14 @@ body {
       <label>音量</label>
       <input type="range" id="volumeInput" min="0.2" max="1" step="0.1" value="1">
       <span class="value" id="volumeValue">1.0</span>
+    </div>
+    <div class="settings-row">
+      <label>聲音性別</label>
+      <div class="gender-toggle" id="genderToggle">
+        <button data-gender="female" class="gender-btn active">👩 女聲</button>
+        <button data-gender="male" class="gender-btn">👨 男聲</button>
+        <button data-gender="auto" class="gender-btn">🎙️ 預設</button>
+      </div>
     </div>
     <div class="settings-row">
       <label>語音</label>
@@ -729,6 +763,7 @@ function defaultSettings() {
     pitch: 1.0,
     volume: 1.0,
     voiceURI: '',
+    voiceGender: 'female',  // 'female' / 'male' / 'auto'
     autoSpeak: true,
     editMode: false,
     currentCat: 'quick',
@@ -745,6 +780,45 @@ let editingButton = null; // {catId, index, isNew}
 let availableVoices = [];
 
 // ============== 文字轉語音 ==============
+// 已知中文語音的性別對照（iOS/macOS/Windows/Android）
+const VOICE_GENDER = {
+  // Apple (iOS/macOS) - 已知 zh 男聲
+  'Tian-Tian': 'male',     // macOS 標準男聲（北京話）
+  'Yu-Shu': 'male',
+  'Pang Pang': 'male',     // iOS 17+ Enhanced 男聲
+  'Tarik': 'male',
+  // Apple - 已知 zh 女聲
+  'Mei-Jia': 'female',     // macOS/iOS 台灣女聲（預設）
+  'Ting-Ting': 'female',   // 中國女聲
+  'Tingting': 'female',
+  'Sin-Ji': 'female',      // 香港女聲
+  'Sinji': 'female',
+  // Microsoft Edge / Windows
+  'Microsoft Hsiao-Chen': 'female',
+  'Microsoft HsiaoChen': 'female',
+  'Microsoft Zhiyu': 'female',
+  'Microsoft YunJhe': 'male',
+  'Microsoft Yunjhe': 'male',
+  'Microsoft Yunhao': 'male',
+  'Microsoft Yunxi': 'male',
+  // Google
+  'Google 國語': 'female',
+  'Google 普通话': 'female',
+  'Google 粤語': 'female',
+};
+
+function guessGender(voiceName) {
+  // 直接命中
+  if (VOICE_GENDER[voiceName]) return VOICE_GENDER[voiceName];
+  // 模糊匹配（小寫包含）
+  const name = voiceName.toLowerCase();
+  if (name.includes('male') && !name.includes('female')) return 'male';
+  if (name.includes('female')) return 'female';
+  if (name.includes('yun') || name.includes('tian') || name.includes('pang')) return 'male';
+  if (name.includes('hsiao') || name.includes('mei') || name.includes('ting') || name.includes('sin')) return 'female';
+  return 'unknown';
+}
+
 function loadVoices() {
   availableVoices = speechSynthesis.getVoices().filter(v =>
     v.lang.startsWith('zh') || v.lang.startsWith('cmn')
@@ -757,10 +831,39 @@ function loadVoices() {
     availableVoices.forEach(v => {
       const opt = document.createElement('option');
       opt.value = v.voiceURI;
-      opt.textContent = `${v.name} (${v.lang})`;
+      const g = guessGender(v.name);
+      const tag = g === 'male' ? ' 👨' : g === 'female' ? ' 👩' : '';
+      opt.textContent = `${v.name}${tag} (${v.lang})`;
       if (v.voiceURI === state.settings.voiceURI) opt.selected = true;
       sel.appendChild(opt);
     });
+  }
+  // 套用性別偏好
+  applyVoiceGender();
+}
+
+function applyVoiceGender() {
+  const pref = state.settings.voiceGender || 'female';
+  if (pref === 'auto') return;
+  // 找符合性別的最佳語音（優先 zh-TW > zh-CN > 其他）
+  const matched = availableVoices
+    .filter(v => guessGender(v.name) === pref)
+    .sort((a, b) => {
+      const score = (v) => {
+        let s = 0;
+        if (v.lang === 'zh-TW' || v.lang === 'zh_TW') s += 100;
+        else if (v.lang === 'zh-CN' || v.lang === 'cmn-Hans-CN') s += 50;
+        if (v.localService) s += 10;
+        if (v.name.includes('Enhanced') || v.name.includes('Premium')) s += 5;
+        return s;
+      };
+      return score(b) - score(a);
+    });
+  if (matched.length > 0) {
+    state.settings.voiceURI = matched[0].voiceURI;
+    const sel = document.getElementById('voiceSelect');
+    if (sel) sel.value = matched[0].voiceURI;
+    saveState();
   }
 }
 
@@ -892,7 +995,30 @@ function syncSettingsUI() {
   document.getElementById('volumeValue').textContent = state.settings.volume.toFixed(1);
   document.getElementById('autoSpeak').checked = state.settings.autoSpeak;
   document.getElementById('editMode').checked = state.settings.editMode;
+  // 性別 toggle
+  const g = state.settings.voiceGender || 'female';
+  document.querySelectorAll('#genderToggle .gender-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.gender === g);
+  });
 }
+
+document.querySelectorAll('#genderToggle .gender-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.settings.voiceGender = btn.dataset.gender;
+    document.querySelectorAll('#genderToggle .gender-btn').forEach(b => {
+      b.classList.toggle('active', b === btn);
+    });
+    applyVoiceGender();
+    saveState();
+    // 試播
+    const sampleByGender = {
+      female: '你好，我是女生的聲音',
+      male: '你好，我是男生的聲音',
+      auto: '使用系統預設語音',
+    };
+    speak(sampleByGender[btn.dataset.gender] || '測試語音');
+  });
+});
 
 ['rate','pitch','volume'].forEach(k => {
   const input = document.getElementById(k + 'Input');
