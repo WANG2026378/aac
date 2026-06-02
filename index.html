@@ -2,1327 +2,485 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<title>溝通版 · 永芳特教</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>川普特師 · 教學分享網</title>
+<meta name="description" content="王川銘老師永芳特教班教學工具分享 · iPad 溝通版 AAC、皮克敏台灣大冒險國字學習">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="溝通">
-<link rel="apple-touch-icon" href="icons/icon-180.png?v=7">
-<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png?v=7">
-<link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png?v=7">
-<link rel="icon" type="image/png" href="icons/icon-512.png?v=7">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#3576C7">
+<meta name="apple-mobile-web-app-title" content="川普特師">
+<meta name="theme-color" content="#FF6B6B">
+<link rel="apple-touch-icon" href="icons/portal-180.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/portal-180.png?v=1">
+<link rel="apple-touch-icon" sizes="512x512" href="icons/portal-512.png?v=1">
+<link rel="icon" type="image/png" href="icons/portal-512.png?v=1">
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-html, body {
-  height: 100%;
-  overflow: hidden;
-  background: #f0f4f8;
-  font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
-  font-size: 18px;
-  touch-action: manipulation;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #fef9f3;
+  --card: #ffffff;
+  --text: #2d3748;
+  --muted: #718096;
+  --primary: #FF6B6B;
+  --primary-dark: #E53E3E;
+  --accent-orange: #FF8E53;
+  --accent-yellow: #F6AD55;
+  --accent-blue: #4299E1;
+  --accent-green: #48BB78;
+  --accent-purple: #9F7AEA;
+  --border: #f0e6d6;
+  --shadow: 0 4px 24px rgba(229, 62, 62, 0.08);
+  --shadow-hover: 0 8px 36px rgba(229, 62, 62, 0.15);
 }
 
 body {
-  display: flex;
-  flex-direction: column;
-  padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+  font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
 }
 
-/* ===== 句子建構器 ===== */
-.sentence-bar {
-  background: linear-gradient(135deg, #4A90E2, #357ABD);
-  padding: 12px 16px;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  z-index: 100;
-}
-.sentence-display {
-  flex: 1;
-  background: rgba(255,255,255,0.95);
-  border-radius: 14px;
-  padding: 12px 16px;
-  min-height: 60px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  font-size: 28px;
-  font-weight: 600;
-  color: #1a3a5c;
-  overflow: hidden;
-}
-.sentence-display:empty::before {
-  content: '👆 點選按鈕說話';
-  color: #aaa;
-  font-weight: 400;
-}
-.sentence-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: #e8f1fd;
-  border-radius: 10px;
-  padding: 4px 10px;
-  font-size: 24px;
-}
-
-.bar-btn {
-  background: rgba(255,255,255,0.25);
+/* ============ Header ============ */
+.header {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
   color: white;
-  border: 2px solid rgba(255,255,255,0.4);
-  border-radius: 14px;
-  width: 64px;
-  height: 64px;
-  font-size: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.1s;
-  font-family: inherit;
-}
-.bar-btn:active {
-  transform: scale(0.92);
-  background: rgba(255,255,255,0.4);
-}
-.bar-btn.play {
-  background: #2ecc71;
-  border-color: #27ae60;
-  width: 80px;
-}
-
-/* ===== 分類列 ===== */
-.category-bar {
-  background: white;
-  border-bottom: 2px solid #e0e6ed;
-  padding: 8px 12px;
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-.category-bar::-webkit-scrollbar { display: none; }
-
-.cat-btn {
-  flex: 0 0 auto;
-  background: #f5f7fa;
-  border: 2px solid transparent;
-  border-radius: 14px;
-  padding: 10px 18px;
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: inherit;
-  transition: all 0.15s;
-  min-height: 56px;
-}
-.cat-btn.active {
-  border-color: currentColor;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-.cat-btn .emoji { font-size: 28px; }
-
-/* ===== 按鈕網格 ===== */
-.grid-container {
-  flex: 1;
-  padding: 16px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
-
-@media (max-width: 768px) {
-  .grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-.word-btn {
-  aspect-ratio: 1;
-  border: none;
-  border-radius: 20px;
-  background: white;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 8px;
-  font-family: inherit;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  transition: all 0.12s;
-  border: 3px solid transparent;
+  padding: 60px 24px 80px;
+  text-align: center;
   position: relative;
   overflow: hidden;
 }
-
-.word-btn:active {
-  transform: scale(0.94);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-.word-btn .icon {
-  font-size: 56px;
-  margin-bottom: 6px;
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at top, rgba(255,255,255,0.2) 0%, transparent 60%);
   pointer-events: none;
 }
-
-.word-btn img.photo {
-  width: 80%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 12px;
-  margin-bottom: 6px;
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--bg);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  transform: scaleX(1.5);
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.2);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.title {
+  font-size: clamp(36px, 6vw, 56px);
+  font-weight: 900;
+  letter-spacing: -1px;
+  margin-bottom: 12px;
+  text-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+}
+.title .accent {
+  color: #FFE082;
+}
+.subtitle {
+  font-size: clamp(16px, 2vw, 20px);
+  opacity: 0.95;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.teacher-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.15);
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-size: 15px;
+  margin-top: 20px;
+  backdrop-filter: blur(8px);
 }
 
-.word-btn .label {
+/* ============ Stats ============ */
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 2;
+}
+.stat {
+  text-align: center;
+}
+.stat-num {
+  font-size: 28px;
+  font-weight: 800;
+  color: #FFE082;
+}
+.stat-lbl {
+  font-size: 13px;
+  opacity: 0.9;
+  margin-top: 2px;
+}
+
+/* ============ Main ============ */
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+  position: relative;
+  z-index: 2;
+}
+
+.section {
+  margin-bottom: 50px;
+}
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.section-head .icon {
+  font-size: 32px;
+}
+.section-head h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--primary-dark);
+}
+.section-head .count {
+  background: var(--primary);
+  color: white;
+  padding: 2px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ============ Tool Card ============ */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.tool-card {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: var(--shadow);
+  transition: all 0.25s ease;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+.tool-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--accent);
+}
+.tool-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: var(--accent, var(--primary));
+}
+
+.tool-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  background: var(--accent-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px var(--accent-shadow);
+}
+.tool-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.tool-subtitle {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.tool-desc {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 18px;
+}
+.tool-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.tag {
+  background: var(--tag-bg, #f0f4f8);
+  color: var(--accent, var(--primary));
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+.tool-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 2px dashed var(--border);
+}
+.tool-url {
+  font-size: 13px;
+  color: var(--muted);
+  font-family: ui-monospace, Menlo, monospace;
+}
+.tool-arrow {
+  color: var(--accent, var(--primary));
   font-size: 22px;
   font-weight: 700;
-  color: #1a3a5c;
+  transition: transform 0.2s;
+}
+.tool-card:hover .tool-arrow {
+  transform: translateX(4px);
+}
+
+/* Card color schemes */
+.tool-card.aac {
+  --accent: #4299E1;
+  --accent-bg: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+  --accent-shadow: rgba(66, 153, 225, 0.25);
+  --tag-bg: #E3F2FD;
+}
+.tool-card.pikmin {
+  --accent: #48BB78;
+  --accent-bg: linear-gradient(135deg, #C6F6D5, #9AE6B4);
+  --accent-shadow: rgba(72, 187, 120, 0.25);
+  --tag-bg: #C6F6D5;
+}
+.tool-card.coming {
+  --accent: #A0AEC0;
+  --accent-bg: linear-gradient(135deg, #EDF2F7, #E2E8F0);
+  --accent-shadow: rgba(160, 174, 192, 0.25);
+  --tag-bg: #EDF2F7;
+  opacity: 0.7;
+}
+.tool-card.coming:hover {
+  transform: none;
+  cursor: default;
+}
+
+/* ============ Footer ============ */
+.footer {
+  background: white;
+  border-top: 3px solid var(--border);
+  padding: 40px 24px;
   text-align: center;
-  line-height: 1.1;
-  pointer-events: none;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
 }
-
-/* 顏色主題 */
-.color-need     { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); border-color: #2196F3; }
-.color-feeling  { background: linear-gradient(135deg, #FFF9C4, #FFE082); border-color: #FFA000; }
-.color-family   { background: linear-gradient(135deg, #FCE4EC, #F8BBD0); border-color: #E91E63; }
-.color-school   { background: linear-gradient(135deg, #E0F2F1, #B2DFDB); border-color: #009688; }
-.color-food     { background: linear-gradient(135deg, #FFE0B2, #FFCC80); border-color: #FF9800; }
-.color-activity { background: linear-gradient(135deg, #DCEDC8, #C5E1A5); border-color: #689F38; }
-.color-body     { background: linear-gradient(135deg, #E1BEE7, #CE93D8); border-color: #9C27B0; }
-.color-thing    { background: linear-gradient(135deg, #ECEFF1, #CFD8DC); border-color: #607D8B; }
-.color-answer   { background: linear-gradient(135deg, #FFCDD2, #EF9A9A); border-color: #E53935; }
-.color-quick    { background: linear-gradient(135deg, #B3E5FC, #81D4FA); border-color: #0288D1; }
-.color-home     { background: linear-gradient(135deg, #F3E5F5, #E1BEE7); border-color: #8E24AA; }
-.color-snack    { background: linear-gradient(135deg, #FFF3E0, #FFCC80); border-color: #F57C00; }
-.color-toy      { background: linear-gradient(135deg, #E8F5E9, #A5D6A7); border-color: #43A047; }
-
-.cat-need     { color: #2196F3; }
-.cat-feeling  { color: #FFA000; }
-.cat-family   { color: #E91E63; }
-.cat-school   { color: #009688; }
-.cat-food     { color: #FF9800; }
-.cat-activity { color: #689F38; }
-.cat-body     { color: #9C27B0; }
-.cat-thing    { color: #607D8B; }
-.cat-answer   { color: #E53935; }
-.cat-quick    { color: #0288D1; }
-.cat-home     { color: #8E24AA; }
-.cat-snack    { color: #F57C00; }
-.cat-toy      { color: #43A047; }
-
-/* ===== 設定 Modal ===== */
-.modal-bg {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.modal-bg.show { display: flex; }
-.modal {
-  background: white;
-  border-radius: 24px;
-  width: 100%;
-  max-width: 600px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 24px;
-}
-.modal h2 {
-  font-size: 28px;
-  margin-bottom: 16px;
-  color: #1a3a5c;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.modal h2 .close {
-  background: #f0f4f8;
-  border: none;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  font-size: 24px;
-  cursor: pointer;
-}
-.modal label {
-  display: block;
-  font-size: 18px;
-  font-weight: 600;
-  margin-top: 16px;
-  margin-bottom: 6px;
-  color: #333;
-}
-.modal input, .modal select, .modal textarea {
-  width: 100%;
-  padding: 14px 16px;
-  font-size: 20px;
-  border: 2px solid #e0e6ed;
-  border-radius: 14px;
-  font-family: inherit;
-  background: white;
-}
-.modal input:focus, .modal select:focus, .modal textarea:focus {
-  outline: none;
-  border-color: #4A90E2;
-}
-.modal .btn-row {
-  display: flex;
-  gap: 10px;
-  margin-top: 24px;
-}
-.modal button.primary {
-  flex: 1;
-  background: #4A90E2;
-  color: white;
-  border: none;
-  padding: 16px;
-  font-size: 20px;
+.footer .school {
   font-weight: 700;
-  border-radius: 14px;
-  cursor: pointer;
-  font-family: inherit;
-}
-.modal button.danger {
-  background: #e74c3c;
-}
-.modal button.secondary {
-  background: #ecf0f1;
-  color: #333;
-}
-
-.settings-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 0;
-  border-bottom: 1px solid #e0e6ed;
-}
-.settings-row label {
-  margin: 0;
-  font-size: 18px;
-  flex: 1;
-}
-.settings-row input[type="range"] {
-  width: 200px;
-  padding: 0;
-  border: none;
-}
-.settings-row .value {
-  min-width: 60px;
-  text-align: right;
-  font-weight: 700;
-  color: #4A90E2;
-  font-size: 20px;
-}
-
-/* 性別切換 */
-.gender-toggle {
-  display: flex;
-  gap: 6px;
-  background: #f0f4f8;
-  border-radius: 12px;
-  padding: 4px;
-}
-.gender-btn {
-  background: transparent;
-  border: none;
-  padding: 10px 14px;
+  color: var(--primary-dark);
   font-size: 16px;
-  font-weight: 600;
-  border-radius: 9px;
-  cursor: pointer;
-  color: #555;
-  font-family: inherit;
-  transition: all 0.15s;
+  margin-bottom: 8px;
 }
-.gender-btn.active {
-  background: #4A90E2;
-  color: white;
-  box-shadow: 0 2px 6px rgba(74,144,226,0.3);
+.footer .heart {
+  color: var(--primary);
+  display: inline-block;
+  animation: heartbeat 1.5s infinite ease-in-out;
+}
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
 }
 
-/* 老師模式（編輯按鈕） */
-.edit-mode .word-btn::after {
-  content: '✏️';
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  background: #4A90E2;
-  color: white;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+/* ============ Responsive ============ */
+@media (max-width: 600px) {
+  .header { padding: 40px 20px 60px; }
+  .stats { gap: 20px; }
+  .grid { grid-template-columns: 1fr; }
+  .tool-card { padding: 20px; }
 }
-.edit-mode .word-btn.add-new {
-  background: #f0f4f8;
-  border: 3px dashed #4A90E2;
-  box-shadow: none;
-}
-.edit-mode .word-btn.add-new::after { content: ''; }
-.edit-mode .word-btn.add-new .icon { color: #4A90E2; }
-
-.fav-star {
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  font-size: 24px;
-  display: none;
-}
-.word-btn.is-fav .fav-star { display: block; }
 </style>
 </head>
 <body>
 
-<!-- 句子建構區 -->
-<div class="sentence-bar">
-  <button class="bar-btn" id="btnClear" title="清除">🗑️</button>
-  <div class="sentence-display" id="sentence"></div>
-  <button class="bar-btn play" id="btnPlay" title="播放">🔊</button>
-  <button class="bar-btn" id="btnSettings" title="設定">⚙️</button>
-</div>
+<!-- Header -->
+<div class="header">
+  <div class="brand">🎓 永芳國小特教班</div>
+  <h1 class="title">川普<span class="accent">特師</span>教學分享網</h1>
+  <p class="subtitle">王川銘老師 · 客製化特教輔助工具與遊戲化教材</p>
+  <div class="teacher-info">👨‍🏫 給家長、學生與同行老師</div>
 
-<!-- 分類列 -->
-<div class="category-bar" id="categoryBar"></div>
-
-<!-- 按鈕網格 -->
-<div class="grid-container">
-  <div class="grid" id="grid"></div>
-</div>
-
-<!-- 設定 Modal -->
-<div class="modal-bg" id="settingsModal">
-  <div class="modal">
-    <h2>⚙️ 設定 <button class="close" data-close>✕</button></h2>
-
-    <div class="settings-row">
-      <label>語速</label>
-      <input type="range" id="rateInput" min="0.4" max="1.4" step="0.1" value="0.85">
-      <span class="value" id="rateValue">0.85</span>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">2</div>
+      <div class="stat-lbl">教學工具</div>
     </div>
-    <div class="settings-row">
-      <label>音調</label>
-      <input type="range" id="pitchInput" min="0.5" max="1.5" step="0.1" value="1">
-      <span class="value" id="pitchValue">1.0</span>
+    <div class="stat">
+      <div class="stat-num">200+</div>
+      <div class="stat-lbl">溝通詞彙</div>
     </div>
-    <div class="settings-row">
-      <label>音量</label>
-      <input type="range" id="volumeInput" min="0.2" max="1" step="0.1" value="1">
-      <span class="value" id="volumeValue">1.0</span>
+    <div class="stat">
+      <div class="stat-num">30</div>
+      <div class="stat-lbl">國字題目</div>
     </div>
-    <div class="settings-row">
-      <label>聲音性別</label>
-      <div class="gender-toggle" id="genderToggle">
-        <button data-gender="female" class="gender-btn active">👩 女聲</button>
-        <button data-gender="male" class="gender-btn">👨 男聲</button>
-        <button data-gender="auto" class="gender-btn">🎙️ 預設</button>
-      </div>
-    </div>
-    <div class="settings-row" style="flex-direction: column; align-items: stretch;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <label style="margin: 0;">語音 <span id="voiceCount" style="color:#888;font-size:14px;font-weight:400;"></span></label>
-        <button id="btnReloadVoices" style="background:#f0f4f8;border:none;border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;color:#4A90E2;font-family:inherit;cursor:pointer;">🔄 重新整理</button>
-      </div>
-      <select id="voiceSelect" style="width: 100%;"></select>
-      <div id="voiceHint" style="font-size:13px;color:#888;margin-top:6px;line-height:1.5;"></div>
-    </div>
-    <div class="settings-row">
-      <label>按鍵後自動發音</label>
-      <input type="checkbox" id="autoSpeak" checked style="width: 30px; height: 30px;">
-    </div>
-    <div class="settings-row">
-      <label>老師編輯模式（長按按鈕編輯/拖移）</label>
-      <input type="checkbox" id="editMode" style="width: 30px; height: 30px;">
-    </div>
-
-    <div class="btn-row">
-      <button class="primary secondary" id="btnExport">📤 匯出設定</button>
-      <button class="primary secondary" id="btnImport">📥 匯入設定</button>
-    </div>
-    <div class="btn-row">
-      <button class="primary danger" id="btnReset">🔄 重設為預設</button>
-    </div>
-    <input type="file" id="importFile" accept=".json" style="display: none;">
-  </div>
-</div>
-
-<!-- 編輯按鈕 Modal -->
-<div class="modal-bg" id="editModal">
-  <div class="modal">
-    <h2 id="editTitle">編輯按鈕 <button class="close" data-close>✕</button></h2>
-
-    <label>文字（按鈕顯示+念出）</label>
-    <input type="text" id="editLabel" placeholder="例如：媽媽" maxlength="20">
-
-    <label>圖示（Emoji 或上傳照片）</label>
-    <div style="display: flex; gap: 10px; align-items: center;">
-      <input type="text" id="editIcon" placeholder="例如：👩" maxlength="4" style="width: 100px; font-size: 32px; text-align: center;">
-      <button class="primary secondary" id="btnPickPhoto" style="flex: 1;">📷 上傳照片</button>
-    </div>
-    <input type="file" id="photoFile" accept="image/*" style="display: none;">
-    <div id="photoPreview" style="margin-top: 10px; text-align: center;"></div>
-
-    <label>語音文字（如果與顯示文字不同，例如「媽媽」可念「ㄇㄚˊㄇㄚ」）</label>
-    <input type="text" id="editSpeak" placeholder="留空則念顯示文字">
-
-    <label>分類</label>
-    <select id="editCategory"></select>
-
-    <div class="btn-row">
-      <button class="primary" id="btnSaveBtn">💾 儲存</button>
-      <button class="primary danger" id="btnDeleteBtn" style="flex: 0 0 auto; padding: 16px 20px;">🗑️ 刪除</button>
+    <div class="stat">
+      <div class="stat-num">11</div>
+      <div class="stat-lbl">台灣縣市</div>
     </div>
   </div>
 </div>
 
-<script>
-// ============== 預設資料 ==============
-const DEFAULT_CATEGORIES = [
-  { id: 'quick',    name: '常用', icon: '⭐', color: 'quick' },
-  { id: 'need',     name: '我要', icon: '🙋', color: 'need' },
-  { id: 'feeling',  name: '感覺', icon: '😊', color: 'feeling' },
-  { id: 'family',   name: '家人', icon: '👨‍👩‍👧', color: 'family' },
-  { id: 'home',     name: '居家', icon: '🏠', color: 'home' },
-  { id: 'school',   name: '學校', icon: '🏫', color: 'school' },
-  { id: 'food',     name: '食物', icon: '🍎', color: 'food' },
-  { id: 'snack',    name: '零食', icon: '🍿', color: 'snack' },
-  { id: 'activity', name: '活動', icon: '🎮', color: 'activity' },
-  { id: 'toy',      name: '玩具', icon: '🧸', color: 'toy' },
-  { id: 'body',     name: '身體', icon: '🧍', color: 'body' },
-  { id: 'thing',    name: '物品', icon: '📦', color: 'thing' },
-  { id: 'answer',   name: '回答', icon: '👍', color: 'answer' },
-];
+<!-- Main -->
+<div class="main">
 
-const DEFAULT_BUTTONS = {
-  quick: [
-    { icon: '🚪', label: '我要回家', speak: '我要回家' },
-    { icon: '🚽', label: '上廁所', speak: '我要上廁所' },
-    { icon: '💧', label: '喝水', speak: '我要喝水' },
-    { icon: '🍚', label: '吃飯', speak: '我要吃飯' },
-    { icon: '🆘', label: '幫幫我', speak: '請幫我' },
-    { icon: '😣', label: '痛痛', speak: '我覺得痛' },
-    { icon: '😴', label: '想睡覺', speak: '我想睡覺' },
-    { icon: '🤗', label: '抱抱', speak: '我要抱抱' },
-    { icon: '💕', label: '我愛你', speak: '我愛你' },
-    { icon: '😋', label: '好吃', speak: '好吃' },
-    { icon: '👍', label: '謝謝', speak: '謝謝' },
-    { icon: '🙅', label: '不要', speak: '不要' },
-  ],
-  need: [
-    { icon: '🙋', label: '我要', speak: '我要' },
-    { icon: '🙅', label: '不要', speak: '不要' },
-    { icon: '➕', label: '還要', speak: '我還要' },
-    { icon: '✅', label: '夠了', speak: '夠了' },
-    { icon: '💧', label: '喝水', speak: '喝水' },
-    { icon: '🍚', label: '吃飯', speak: '吃飯' },
-    { icon: '🚽', label: '上廁所', speak: '我要上廁所' },
-    { icon: '🆘', label: '幫忙', speak: '請幫我' },
-    { icon: '😣', label: '痛痛', speak: '痛痛' },
-    { icon: '😴', label: '想睡', speak: '想睡覺' },
-    { icon: '🚪', label: '回家', speak: '回家' },
-    { icon: '🚙', label: '出去', speak: '出去' },
-    { icon: '🛁', label: '想洗澡', speak: '我想洗澡' },
-    { icon: '🪥', label: '想刷牙', speak: '我想刷牙' },
-    { icon: '👃', label: '想擤鼻涕', speak: '我想擤鼻涕' },
-    { icon: '🩹', label: '受傷了', speak: '我受傷了' },
-  ],
-  feeling: [
-    { icon: '😀', label: '開心', speak: '我很開心' },
-    { icon: '😢', label: '難過', speak: '我很難過' },
-    { icon: '😡', label: '生氣', speak: '我在生氣' },
-    { icon: '😨', label: '害怕', speak: '我害怕' },
-    { icon: '😴', label: '累了', speak: '我累了' },
-    { icon: '🥰', label: '喜歡', speak: '我喜歡' },
-    { icon: '😖', label: '不喜歡', speak: '我不喜歡' },
-    { icon: '🤗', label: '想抱抱', speak: '我想要抱抱' },
-    { icon: '😋', label: '好吃', speak: '好吃' },
-    { icon: '🤢', label: '不好吃', speak: '不好吃' },
-    { icon: '😎', label: '好玩', speak: '好玩' },
-    { icon: '🥱', label: '無聊', speak: '無聊' },
-    { icon: '🤒', label: '不舒服', speak: '我不舒服' },
-    { icon: '🥺', label: '想媽媽', speak: '我想媽媽' },
-    { icon: '🤤', label: '口渴', speak: '我口渴' },
-    { icon: '🍴', label: '肚子餓', speak: '我肚子餓' },
-  ],
-  family: [
-    { icon: '👩', label: '媽媽', speak: '媽媽' },
-    { icon: '👨', label: '爸爸', speak: '爸爸' },
-    { icon: '👦', label: '哥哥', speak: '哥哥' },
-    { icon: '👧', label: '姊姊', speak: '姊姊' },
-    { icon: '🧒', label: '弟弟', speak: '弟弟' },
-    { icon: '👶', label: '妹妹', speak: '妹妹' },
-    { icon: '👵', label: '阿嬤', speak: '阿嬤' },
-    { icon: '👴', label: '阿公', speak: '阿公' },
-    { icon: '👵🏻', label: '外婆', speak: '外婆' },
-    { icon: '👴🏻', label: '外公', speak: '外公' },
-    { icon: '👩‍🦰', label: '阿姨', speak: '阿姨' },
-    { icon: '👨‍🦰', label: '叔叔', speak: '叔叔' },
-    { icon: '💕', label: '愛你', speak: '我愛你' },
-    { icon: '😘', label: '親親', speak: '親親' },
-    { icon: '🤗', label: '抱抱', speak: '抱抱' },
-    { icon: '🐶', label: '狗狗', speak: '狗狗' },
-  ],
-  home: [
-    { icon: '🛁', label: '洗澡', speak: '洗澡' },
-    { icon: '🪥', label: '刷牙', speak: '刷牙' },
-    { icon: '🧼', label: '洗手', speak: '洗手' },
-    { icon: '🛌', label: '睡覺', speak: '睡覺' },
-    { icon: '🌅', label: '起床', speak: '起床' },
-    { icon: '👗', label: '換衣服', speak: '換衣服' },
-    { icon: '💇', label: '洗頭', speak: '洗頭' },
-    { icon: '🚗', label: '坐車', speak: '坐車' },
-    { icon: '📺', label: '看電視', speak: '看電視' },
-    { icon: '📱', label: '看平板', speak: '看平板' },
-    { icon: '🎬', label: '看 YouTube', speak: '看 YouTube' },
-    { icon: '🎵', label: '聽音樂', speak: '聽音樂' },
-    { icon: '🛋️', label: '坐沙發', speak: '坐沙發' },
-    { icon: '🪑', label: '坐椅子', speak: '坐椅子' },
-    { icon: '🪞', label: '照鏡子', speak: '照鏡子' },
-    { icon: '💊', label: '吃藥', speak: '吃藥' },
-  ],
-  school: [
-    { icon: '👨‍🏫', label: '川銘老師', speak: '王川銘老師' },
-    { icon: '👨‍🏫', label: '偉倫老師', speak: '孫偉倫老師' },
-    { icon: '👫', label: '同學', speak: '同學' },
-    { icon: '🏫', label: '學校', speak: '學校' },
-    { icon: '🚪', label: '教室', speak: '教室' },
-    { icon: '🚽', label: '廁所', speak: '廁所' },
-    { icon: '🏟️', label: '操場', speak: '操場' },
-    { icon: '🍽️', label: '餐廳', speak: '餐廳' },
-    { icon: '🏥', label: '保健室', speak: '保健室' },
-    { icon: '📚', label: '上課', speak: '上課' },
-    { icon: '⏰', label: '下課', speak: '下課' },
-    { icon: '🎒', label: '放學', speak: '放學' },
-  ],
-  food: [
-    { icon: '🍚', label: '白飯', speak: '白飯' },
-    { icon: '🍜', label: '麵', speak: '麵' },
-    { icon: '🥟', label: '水餃', speak: '水餃' },
-    { icon: '🍞', label: '麵包', speak: '麵包' },
-    { icon: '🥬', label: '青菜', speak: '青菜' },
-    { icon: '🍖', label: '肉', speak: '肉' },
-    { icon: '🐟', label: '魚', speak: '魚' },
-    { icon: '🥚', label: '蛋', speak: '蛋' },
-    { icon: '🍅', label: '番茄', speak: '番茄' },
-    { icon: '🌽', label: '玉米', speak: '玉米' },
-    { icon: '🍎', label: '蘋果', speak: '蘋果' },
-    { icon: '🍌', label: '香蕉', speak: '香蕉' },
-    { icon: '🍇', label: '葡萄', speak: '葡萄' },
-    { icon: '🥛', label: '牛奶', speak: '牛奶' },
-    { icon: '🧃', label: '果汁', speak: '果汁' },
-    { icon: '🍵', label: '茶', speak: '茶' },
-  ],
-  snack: [
-    { icon: '🍪', label: '餅乾', speak: '餅乾' },
-    { icon: '🍰', label: '蛋糕', speak: '蛋糕' },
-    { icon: '🍫', label: '巧克力', speak: '巧克力' },
-    { icon: '🍭', label: '糖果', speak: '糖果' },
-    { icon: '🍮', label: '布丁', speak: '布丁' },
-    { icon: '🍦', label: '冰淇淋', speak: '冰淇淋' },
-    { icon: '🥤', label: '飲料', speak: '飲料' },
-    { icon: '🍿', label: '爆米花', speak: '爆米花' },
-    { icon: '🍟', label: '薯條', speak: '薯條' },
-    { icon: '🍔', label: '漢堡', speak: '漢堡' },
-    { icon: '🍕', label: '披薩', speak: '披薩' },
-    { icon: '🍙', label: '飯糰', speak: '飯糰' },
-  ],
-  activity: [
-    { icon: '🎮', label: '玩', speak: '我要玩' },
-    { icon: '📖', label: '看書', speak: '看書' },
-    { icon: '🎨', label: '畫畫', speak: '畫畫' },
-    { icon: '🎵', label: '聽音樂', speak: '聽音樂' },
-    { icon: '📺', label: '看電視', speak: '看電視' },
-    { icon: '🎬', label: '看卡通', speak: '看卡通' },
-    { icon: '📱', label: '玩平板', speak: '玩平板' },
-    { icon: '🚶', label: '散步', speak: '散步' },
-    { icon: '🎤', label: '唱歌', speak: '唱歌' },
-    { icon: '💃', label: '跳舞', speak: '跳舞' },
-    { icon: '🧩', label: '拼圖', speak: '玩拼圖' },
-    { icon: '⚽', label: '球', speak: '玩球' },
-    { icon: '🏊', label: '游泳', speak: '游泳' },
-    { icon: '🏃', label: '跑步', speak: '跑步' },
-    { icon: '🛌', label: '休息', speak: '休息' },
-    { icon: '🎈', label: '吹氣球', speak: '吹氣球' },
-  ],
-  toy: [
-    { icon: '🧸', label: '熊熊', speak: '熊熊' },
-    { icon: '🐶', label: '狗狗玩偶', speak: '狗狗玩偶' },
-    { icon: '🚗', label: '車車', speak: '車車' },
-    { icon: '🚂', label: '火車', speak: '火車' },
-    { icon: '✈️', label: '飛機', speak: '飛機' },
-    { icon: '🛩️', label: '直升機', speak: '直升機' },
-    { icon: '⚽', label: '球球', speak: '球球' },
-    { icon: '🪀', label: '溜溜球', speak: '溜溜球' },
-    { icon: '🧩', label: '拼圖', speak: '拼圖' },
-    { icon: '🧱', label: '積木', speak: '積木' },
-    { icon: '🤖', label: '機器人', speak: '機器人' },
-    { icon: '🎲', label: '骰子', speak: '骰子' },
-    { icon: '🪁', label: '風箏', speak: '風箏' },
-    { icon: '🎨', label: '蠟筆', speak: '蠟筆' },
-    { icon: '✏️', label: '鉛筆', speak: '鉛筆' },
-    { icon: '🖍️', label: '彩色筆', speak: '彩色筆' },
-  ],
-  body: [
-    { icon: '🤕', label: '頭', speak: '頭' },
-    { icon: '🤰', label: '肚子', speak: '肚子' },
-    { icon: '✋', label: '手', speak: '手' },
-    { icon: '🦶', label: '腳', speak: '腳' },
-    { icon: '👁️', label: '眼睛', speak: '眼睛' },
-    { icon: '👄', label: '嘴巴', speak: '嘴巴' },
-    { icon: '👂', label: '耳朵', speak: '耳朵' },
-    { icon: '👃', label: '鼻子', speak: '鼻子' },
-    { icon: '🦷', label: '牙齒', speak: '牙齒' },
-    { icon: '💇', label: '頭髮', speak: '頭髮' },
-    { icon: '🦵', label: '膝蓋', speak: '膝蓋' },
-    { icon: '🫀', label: '胸口', speak: '胸口' },
-  ],
-  thing: [
-    { icon: '🎒', label: '書包', speak: '書包' },
-    { icon: '👕', label: '衣服', speak: '衣服' },
-    { icon: '👟', label: '鞋子', speak: '鞋子' },
-    { icon: '📚', label: '書', speak: '書' },
-    { icon: '✏️', label: '鉛筆', speak: '鉛筆' },
-    { icon: '📝', label: '本子', speak: '本子' },
-    { icon: '🍽️', label: '碗', speak: '碗' },
-    { icon: '🥄', label: '湯匙', speak: '湯匙' },
-    { icon: '🥤', label: '杯子', speak: '杯子' },
-    { icon: '🧻', label: '衛生紙', speak: '衛生紙' },
-    { icon: '📱', label: '手機', speak: '手機' },
-    { icon: '🪑', label: '椅子', speak: '椅子' },
-  ],
-  answer: [
-    { icon: '✅', label: '是', speak: '是' },
-    { icon: '❌', label: '不是', speak: '不是' },
-    { icon: '👍', label: '好', speak: '好' },
-    { icon: '👎', label: '不好', speak: '不好' },
-    { icon: '⭕', label: '對', speak: '對' },
-    { icon: '❎', label: '錯', speak: '錯' },
-    { icon: '🙏', label: '謝謝', speak: '謝謝' },
-    { icon: '🙇', label: '對不起', speak: '對不起' },
-    { icon: '👋', label: '你好', speak: '你好' },
-    { icon: '🤚', label: '再見', speak: '再見' },
-    { icon: '🤔', label: '我不知道', speak: '我不知道' },
-    { icon: '🆗', label: '可以', speak: '可以' },
-  ],
-};
+  <!-- 教學工具 -->
+  <div class="section">
+    <div class="section-head">
+      <span class="icon">🛠️</span>
+      <h2>教學工具</h2>
+      <span class="count">2 個</span>
+    </div>
 
-// ============== 狀態管理 ==============
-const STORAGE_KEY = 'aac_board_v2';
+    <div class="grid">
 
-function loadState() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const s = JSON.parse(saved);
-      return {
-        categories: s.categories || DEFAULT_CATEGORIES,
-        buttons: s.buttons || DEFAULT_BUTTONS,
-        settings: s.settings || defaultSettings(),
-      };
-    }
-  } catch (e) { console.error(e); }
-  return {
-    categories: structuredClone(DEFAULT_CATEGORIES),
-    buttons: structuredClone(DEFAULT_BUTTONS),
-    settings: defaultSettings(),
-  };
-}
+      <!-- AAC -->
+      <a href="talk.html" class="tool-card aac">
+        <div class="tool-icon">💬</div>
+        <div class="tool-title">iPad 溝通版 AAC</div>
+        <div class="tool-subtitle">輔助溝通系統 · 中文 TTS 語音</div>
+        <div class="tool-desc">
+          大按鈕點按發音、13 大類 200+ 預設詞彙、句子組合念整句。老師可編輯按鈕、上傳家人照片，加到 iPad 主畫面離線可用。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">中文 TTS</span>
+          <span class="tag">13 分類</span>
+          <span class="tag">家人照片</span>
+          <span class="tag">PWA 離線</span>
+          <span class="tag">男女聲</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">talk.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
 
-function defaultSettings() {
-  return {
-    rate: 0.85,
-    pitch: 1.0,
-    volume: 1.0,
-    voiceURI: '',
-    voiceGender: 'female',  // 'female' / 'male' / 'auto'
-    autoSpeak: true,
-    editMode: false,
-    currentCat: 'quick',
-  };
-}
+      <!-- Pikmin -->
+      <a href="pikmin.html" class="tool-card pikmin">
+        <div class="tool-icon">🌱</div>
+        <div class="tool-title">皮克敏 × 台灣大冒險</div>
+        <div class="tool-subtitle">國字學習遊戲 · 環島台灣</div>
+        <div class="tool-desc">
+          11 個台灣縣市 30 個生字 4 選 1，圖示+注音+念音輔助。答對收集 7 色皮克敏紀念品，形近字 distractors 訓練辨識力。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">11 縣市</span>
+          <span class="tag">30 生字</span>
+          <span class="tag">7 色皮克敏</span>
+          <span class="tag">語音念字</span>
+          <span class="tag">進度保存</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">pikmin.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
 
-function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
+    </div>
+  </div>
 
-const state = loadState();
-let sentence = []; // [{text, speak}, ...]
-let editingButton = null; // {catId, index, isNew}
-let availableVoices = [];
+  <!-- 即將上線 -->
+  <div class="section">
+    <div class="section-head">
+      <span class="icon">✨</span>
+      <h2>即將上線</h2>
+      <span class="count">陸續更新</span>
+    </div>
 
-// ============== 文字轉語音 ==============
-// 已知中文語音的性別對照（iOS/macOS/Windows/Android）
-const VOICE_GENDER = {
-  // Apple (iOS/macOS) - 已知 zh 男聲
-  'Tian-Tian': 'male',     // macOS 標準男聲（北京話）
-  'Yu-Shu': 'male',
-  'Pang Pang': 'male',     // iOS 17+ Enhanced 男聲
-  'Tarik': 'male',
-  // Apple - 已知 zh 女聲
-  'Mei-Jia': 'female',     // macOS/iOS 台灣女聲（預設）
-  'Ting-Ting': 'female',   // 中國女聲
-  'Tingting': 'female',
-  'Sin-Ji': 'female',      // 香港女聲
-  'Sinji': 'female',
-  // Microsoft Edge / Windows
-  'Microsoft Hsiao-Chen': 'female',
-  'Microsoft HsiaoChen': 'female',
-  'Microsoft Zhiyu': 'female',
-  'Microsoft YunJhe': 'male',
-  'Microsoft Yunjhe': 'male',
-  'Microsoft Yunhao': 'male',
-  'Microsoft Yunxi': 'male',
-  // Google
-  'Google 國語': 'female',
-  'Google 普通话': 'female',
-  'Google 粤語': 'female',
-};
+    <div class="grid">
+      <div class="tool-card coming">
+        <div class="tool-icon">📚</div>
+        <div class="tool-title">注音拼讀練習</div>
+        <div class="tool-subtitle">籌備中</div>
+        <div class="tool-desc">
+          結合注音符號與生字，協助學生建立聲音與文字連結。
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">敬請期待</span>
+          <span class="tool-arrow">⏳</span>
+        </div>
+      </div>
 
-function guessGender(voiceName) {
-  // 直接命中
-  if (VOICE_GENDER[voiceName]) return VOICE_GENDER[voiceName];
-  // 模糊匹配（小寫包含）
-  const name = voiceName.toLowerCase();
-  if (name.includes('male') && !name.includes('female')) return 'male';
-  if (name.includes('female')) return 'female';
-  if (name.includes('yun') || name.includes('tian') || name.includes('pang')) return 'male';
-  if (name.includes('hsiao') || name.includes('mei') || name.includes('ting') || name.includes('sin')) return 'female';
-  return 'unknown';
-}
+      <div class="tool-card coming">
+        <div class="tool-icon">🎨</div>
+        <div class="tool-title">手部運筆練習</div>
+        <div class="tool-subtitle">籌備中</div>
+        <div class="tool-desc">
+          觸控描寫常用字、進步追蹤、家長端可看見學生練習紀錄。
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">敬請期待</span>
+          <span class="tool-arrow">⏳</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-let showAllVoices = false; // 切換是否顯示全部語音（非中文也顯示）
+  <!-- 使用說明 -->
+  <div class="section">
+    <div class="section-head">
+      <span class="icon">📱</span>
+      <h2>如何加到 iPad 主畫面</h2>
+    </div>
+    <div style="background:white;border-radius:20px;padding:28px;box-shadow:var(--shadow);">
+      <ol style="padding-left:28px;line-height:2;font-size:15px;">
+        <li>iPad 用 <b>Safari</b> 打開上方任一工具網址</li>
+        <li>按右上角 <b>分享按鈕</b> 📤</li>
+        <li>下滑找「<b>加入主畫面</b>」</li>
+        <li>桌面就會出現圖示，<b>離線可用</b>，全螢幕運作</li>
+      </ol>
+      <p style="margin-top:16px;color:var(--muted);font-size:14px;">
+        💡 提示：可以重複此步驟把溝通版+皮克敏都加到桌面，學生需要時直接點開。
+      </p>
+    </div>
+  </div>
 
-function loadVoices() {
-  const allVoices = speechSynthesis.getVoices();
-  const zhVoices = allVoices.filter(v =>
-    v.lang.startsWith('zh') || v.lang.startsWith('cmn')
-  );
-  availableVoices = showAllVoices ? allVoices : zhVoices;
+</div>
 
-  const sel = document.getElementById('voiceSelect');
-  if (!sel) return;
-  sel.innerHTML = '';
+<!-- Footer -->
+<div class="footer">
+  <div class="school">🏫 高雄市永芳國小 · 特教一班</div>
+  <p>王川銘 · 孫偉倫 老師 共同經營</p>
+  <p style="margin-top:8px;font-size:13px;opacity:0.7;">
+    為特殊需求學生與家長製作，<span class="heart">❤️</span> 持續更新中
+  </p>
+  <p style="margin-top:8px;font-size:12px;opacity:0.6;">© 2026 川普特師教學分享網</p>
+</div>
 
-  // 統計資訊
-  const countEl = document.getElementById('voiceCount');
-  const hintEl = document.getElementById('voiceHint');
-  const maleCount = zhVoices.filter(v => guessGender(v.name) === 'male').length;
-  const femaleCount = zhVoices.filter(v => guessGender(v.name) === 'female').length;
-  if (countEl) countEl.textContent = `(中文 ${zhVoices.length} 個 · 👨 ${maleCount} · 👩 ${femaleCount})`;
-
-  if (allVoices.length === 0) {
-    sel.innerHTML = '<option value="">系統預設（尚未偵測到語音）</option>';
-    if (hintEl) hintEl.innerHTML = '⚠️ 偵測不到語音，請先點任何按鈕讓系統解鎖語音，再按 🔄 重新整理';
-    return;
-  }
-  if (zhVoices.length === 0 && !showAllVoices) {
-    sel.innerHTML = '<option value="">系統預設（沒有中文語音）</option>';
-    if (hintEl) hintEl.innerHTML = `⚠️ 偵測不到中文語音（系統共 ${allVoices.length} 個語音）<br>→ iPad 設定 → 輔助使用 → 朗讀內容 → 聲音 → 中文 → 下載 Tian-Tian 或 Pang Pang<br>→ <a href="#" onclick="showAllVoices=true;loadVoices();return false;" style="color:#4A90E2;">查看全部 ${allVoices.length} 個語音</a>`;
-    return;
-  }
-  // 加上「顯示全部語音」切換選項
-  if (zhVoices.length > 0 && !showAllVoices && allVoices.length > zhVoices.length) {
-    const opt = document.createElement('option');
-    opt.value = '__SHOW_ALL__';
-    opt.textContent = `─── 顯示全部 ${allVoices.length} 個語音（包含非中文） ───`;
-    sel.appendChild(opt);
-  }
-
-  availableVoices.forEach(v => {
-    const opt = document.createElement('option');
-    opt.value = v.voiceURI;
-    const g = guessGender(v.name);
-    const tag = g === 'male' ? ' 👨' : g === 'female' ? ' 👩' : '';
-    opt.textContent = `${v.name}${tag} · ${v.lang}`;
-    if (v.voiceURI === state.settings.voiceURI) opt.selected = true;
-    sel.appendChild(opt);
-  });
-
-  if (hintEl) {
-    if (maleCount === 0) {
-      hintEl.innerHTML = '💡 沒偵測到中文男聲。請到 iPad <b>設定 → 輔助使用 → 朗讀內容 → 聲音 → 中文 → 普通話（中國大陸）</b> 下載 <b>Tian-Tian</b>（天天）後回來按 🔄 重新整理';
-    } else {
-      hintEl.innerHTML = `✅ 偵測到 ${maleCount} 個男聲，${femaleCount} 個女聲`;
-    }
-  }
-
-  // 套用性別偏好
-  applyVoiceGender();
-}
-
-function applyVoiceGender() {
-  const pref = state.settings.voiceGender || 'female';
-  if (pref === 'auto') {
-    state.settings.simulateMalePitch = false;
-    state.settings.pitch = 1.0;
-    return;
-  }
-  // 找符合性別的最佳語音（優先 zh-TW > zh-CN > 其他）
-  const zhVoices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('zh') || v.lang.startsWith('cmn'));
-  const matched = zhVoices
-    .filter(v => guessGender(v.name) === pref)
-    .sort((a, b) => {
-      const score = (v) => {
-        let s = 0;
-        if (v.lang === 'zh-TW' || v.lang === 'zh_TW') s += 100;
-        else if (v.lang === 'zh-CN' || v.lang === 'cmn-Hans-CN') s += 50;
-        if (v.localService) s += 10;
-        if (v.name.includes('Enhanced') || v.name.includes('Premium')) s += 5;
-        return s;
-      };
-      return score(b) - score(a);
-    });
-  if (matched.length > 0) {
-    // 找到真男聲/女聲
-    state.settings.voiceURI = matched[0].voiceURI;
-    state.settings.simulateMalePitch = false;
-    state.settings.pitch = 1.0;
-    const sel = document.getElementById('voiceSelect');
-    if (sel) sel.value = matched[0].voiceURI;
-  } else if (pref === 'male') {
-    // 沒有男聲 → 用降音調模擬（iOS 限制 fallback）
-    const femaleVoice = zhVoices.find(v => guessGender(v.name) === 'female') || zhVoices[0];
-    if (femaleVoice) {
-      state.settings.voiceURI = femaleVoice.voiceURI;
-      state.settings.simulateMalePitch = true;
-      state.settings.pitch = 0.55; // 降音模擬男聲
-      const sel = document.getElementById('voiceSelect');
-      if (sel) sel.value = femaleVoice.voiceURI;
-      const hintEl = document.getElementById('voiceHint');
-      if (hintEl) {
-        hintEl.innerHTML = '⚠️ iPad Safari 沒開放男聲給網頁 → 已用<b>降音調模擬</b>（仿男聲）。<br>想要真男聲：用 iOS <b>VoiceOver / 朗讀螢幕</b> 才能用 Tian-Tian。';
-      }
-    }
-  }
-  saveState();
-  // 同步 pitch slider UI
-  const pitchInput = document.getElementById('pitchInput');
-  const pitchValue = document.getElementById('pitchValue');
-  if (pitchInput) pitchInput.value = state.settings.pitch;
-  if (pitchValue) pitchValue.textContent = state.settings.pitch.toFixed(1);
-}
-
-function speak(text) {
-  if (!text) return;
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'zh-TW';
-  u.rate = state.settings.rate;
-  u.pitch = state.settings.pitch;
-  u.volume = state.settings.volume;
-  if (state.settings.voiceURI) {
-    const v = availableVoices.find(x => x.voiceURI === state.settings.voiceURI);
-    if (v) u.voice = v;
-  }
-  speechSynthesis.speak(u);
-}
-
-speechSynthesis.onvoiceschanged = loadVoices;
-loadVoices();
-
-// ============== 渲染 ==============
-function renderCategories() {
-  const bar = document.getElementById('categoryBar');
-  bar.innerHTML = '';
-  state.categories.forEach(cat => {
-    const btn = document.createElement('button');
-    btn.className = `cat-btn cat-${cat.color}` + (cat.id === state.settings.currentCat ? ' active' : '');
-    btn.innerHTML = `<span class="emoji">${cat.icon}</span><span>${cat.name}</span>`;
-    btn.addEventListener('click', () => {
-      state.settings.currentCat = cat.id;
-      renderCategories();
-      renderGrid();
-      saveState();
-    });
-    bar.appendChild(btn);
-  });
-}
-
-function renderGrid() {
-  const grid = document.getElementById('grid');
-  grid.innerHTML = '';
-  const cat = state.categories.find(c => c.id === state.settings.currentCat);
-  if (!cat) return;
-  const items = state.buttons[cat.id] || [];
-
-  items.forEach((item, idx) => {
-    const btn = document.createElement('button');
-    btn.className = `word-btn color-${cat.color}`;
-    let iconHTML;
-    if (item.photo) {
-      iconHTML = `<img class="photo" src="${item.photo}" alt="${item.label}">`;
-    } else {
-      iconHTML = `<div class="icon">${item.icon || '🔤'}</div>`;
-    }
-    btn.innerHTML = `${iconHTML}<div class="label">${item.label}</div>`;
-
-    let pressTimer;
-    btn.addEventListener('touchstart', (e) => {
-      pressTimer = setTimeout(() => {
-        e.preventDefault();
-        openEditButton(cat.id, idx);
-      }, 800);
-    }, {passive: false});
-    btn.addEventListener('touchend', () => clearTimeout(pressTimer));
-    btn.addEventListener('touchcancel', () => clearTimeout(pressTimer));
-    btn.addEventListener('touchmove', () => clearTimeout(pressTimer));
-
-    btn.addEventListener('click', () => {
-      if (state.settings.editMode) {
-        openEditButton(cat.id, idx);
-        return;
-      }
-      const speakText = item.speak || item.label;
-      sentence.push({ text: item.label, speak: speakText });
-      renderSentence();
-      if (state.settings.autoSpeak) speak(speakText);
-    });
-
-    grid.appendChild(btn);
-  });
-
-  // 編輯模式下加 "+" 新增按鈕
-  if (state.settings.editMode) {
-    const addBtn = document.createElement('button');
-    addBtn.className = `word-btn add-new`;
-    addBtn.innerHTML = `<div class="icon">➕</div><div class="label">新增按鈕</div>`;
-    addBtn.addEventListener('click', () => openEditButton(cat.id, -1, true));
-    grid.appendChild(addBtn);
-  }
-}
-
-function renderSentence() {
-  const el = document.getElementById('sentence');
-  el.innerHTML = '';
-  sentence.forEach(item => {
-    const chip = document.createElement('span');
-    chip.className = 'sentence-chip';
-    chip.textContent = item.text;
-    el.appendChild(chip);
-  });
-}
-
-// ============== 句子建構器按鈕 ==============
-document.getElementById('btnClear').addEventListener('click', () => {
-  sentence = [];
-  renderSentence();
-  speechSynthesis.cancel();
-});
-
-document.getElementById('btnPlay').addEventListener('click', () => {
-  if (sentence.length === 0) return;
-  const text = sentence.map(s => s.speak).join('，');
-  speak(text);
-});
-
-// ============== 設定 Modal ==============
-document.getElementById('btnSettings').addEventListener('click', () => {
-  document.getElementById('settingsModal').classList.add('show');
-  // 觸發 iOS 解鎖語音 + 強制重新載入清單
-  try {
-    const warm = new SpeechSynthesisUtterance(' ');
-    warm.volume = 0;
-    speechSynthesis.speak(warm);
-  } catch(e) {}
-  loadVoices();
-  // iOS 有時要等一下才有
-  setTimeout(loadVoices, 300);
-  setTimeout(loadVoices, 1000);
-  syncSettingsUI();
-});
-
-// 手動重新整理語音清單
-document.getElementById('btnReloadVoices').addEventListener('click', () => {
-  // 解鎖+重抓
-  try {
-    const warm = new SpeechSynthesisUtterance('語音清單');
-    warm.lang = 'zh-TW';
-    warm.volume = 0.3;
-    speechSynthesis.speak(warm);
-  } catch(e) {}
-  loadVoices();
-  setTimeout(loadVoices, 500);
-});
-
-function syncSettingsUI() {
-  document.getElementById('rateInput').value = state.settings.rate;
-  document.getElementById('rateValue').textContent = state.settings.rate;
-  document.getElementById('pitchInput').value = state.settings.pitch;
-  document.getElementById('pitchValue').textContent = state.settings.pitch.toFixed(1);
-  document.getElementById('volumeInput').value = state.settings.volume;
-  document.getElementById('volumeValue').textContent = state.settings.volume.toFixed(1);
-  document.getElementById('autoSpeak').checked = state.settings.autoSpeak;
-  document.getElementById('editMode').checked = state.settings.editMode;
-  // 性別 toggle
-  const g = state.settings.voiceGender || 'female';
-  document.querySelectorAll('#genderToggle .gender-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.gender === g);
-  });
-}
-
-document.querySelectorAll('#genderToggle .gender-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    state.settings.voiceGender = btn.dataset.gender;
-    document.querySelectorAll('#genderToggle .gender-btn').forEach(b => {
-      b.classList.toggle('active', b === btn);
-    });
-    applyVoiceGender();
-    saveState();
-    // 試播
-    const sampleByGender = {
-      female: '你好，我是女生的聲音',
-      male: '你好，我是男生的聲音',
-      auto: '使用系統預設語音',
-    };
-    speak(sampleByGender[btn.dataset.gender] || '測試語音');
-  });
-});
-
-['rate','pitch','volume'].forEach(k => {
-  const input = document.getElementById(k + 'Input');
-  input.addEventListener('input', () => {
-    state.settings[k] = parseFloat(input.value);
-    document.getElementById(k + 'Value').textContent = (k==='rate')?state.settings[k]:state.settings[k].toFixed(1);
-    saveState();
-  });
-  input.addEventListener('change', () => {
-    speak('測試語音 一二三');
-  });
-});
-
-document.getElementById('voiceSelect').addEventListener('change', e => {
-  if (e.target.value === '__SHOW_ALL__') {
-    showAllVoices = true;
-    loadVoices();
-    return;
-  }
-  state.settings.voiceURI = e.target.value;
-  // 手動選了語音 → 取消模擬男聲
-  state.settings.simulateMalePitch = false;
-  state.settings.pitch = 1.0;
-  document.getElementById('pitchInput').value = 1.0;
-  document.getElementById('pitchValue').textContent = '1.0';
-  saveState();
-  speak('測試語音');
-});
-
-document.getElementById('autoSpeak').addEventListener('change', e => {
-  state.settings.autoSpeak = e.target.checked;
-  saveState();
-});
-
-document.getElementById('editMode').addEventListener('change', e => {
-  state.settings.editMode = e.target.checked;
-  document.body.classList.toggle('edit-mode', state.settings.editMode);
-  saveState();
-  renderGrid();
-});
-
-document.getElementById('btnReset').addEventListener('click', () => {
-  if (!confirm('確定要重設成預設按鈕嗎？所有自訂內容會清除。')) return;
-  state.categories = structuredClone(DEFAULT_CATEGORIES);
-  state.buttons = structuredClone(DEFAULT_BUTTONS);
-  saveState();
-  renderCategories();
-  renderGrid();
-  alert('已重設為預設按鈕');
-});
-
-document.getElementById('btnExport').addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `溝通版設定_${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-});
-
-document.getElementById('btnImport').addEventListener('click', () => {
-  document.getElementById('importFile').click();
-});
-
-document.getElementById('importFile').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    try {
-      const data = JSON.parse(ev.target.result);
-      if (data.categories && data.buttons) {
-        Object.assign(state, data);
-        saveState();
-        renderCategories();
-        renderGrid();
-        alert('已成功匯入設定');
-      } else {
-        alert('檔案格式錯誤');
-      }
-    } catch (err) {
-      alert('讀取失敗: ' + err.message);
-    }
-  };
-  reader.readAsText(file);
-});
-
-// ============== 編輯按鈕 Modal ==============
-function openEditButton(catId, index, isNew=false) {
-  editingButton = { catId, index, isNew };
-  const modal = document.getElementById('editModal');
-  modal.classList.add('show');
-
-  const editCat = document.getElementById('editCategory');
-  editCat.innerHTML = state.categories.map(c =>
-    `<option value="${c.id}" ${c.id===catId?'selected':''}>${c.icon} ${c.name}</option>`).join('');
-
-  let item;
-  if (isNew) {
-    document.getElementById('editTitle').firstChild.textContent = '新增按鈕 ';
-    item = { icon: '😊', label: '', speak: '', photo: null };
-    document.getElementById('btnDeleteBtn').style.display = 'none';
-  } else {
-    document.getElementById('editTitle').firstChild.textContent = '編輯按鈕 ';
-    item = state.buttons[catId][index];
-    document.getElementById('btnDeleteBtn').style.display = 'block';
-  }
-  document.getElementById('editLabel').value = item.label || '';
-  document.getElementById('editIcon').value = item.icon || '';
-  document.getElementById('editSpeak').value = item.speak || '';
-
-  const preview = document.getElementById('photoPreview');
-  if (item.photo) {
-    preview.innerHTML = `<img src="${item.photo}" style="max-width: 150px; max-height: 150px; border-radius: 12px;"><br><button class="primary danger" onclick="document.getElementById('photoPreview').innerHTML='';window._currentPhoto=null;" style="margin-top:8px; padding: 8px 16px;">移除照片</button>`;
-    window._currentPhoto = item.photo;
-  } else {
-    preview.innerHTML = '';
-    window._currentPhoto = null;
-  }
-}
-
-document.getElementById('btnPickPhoto').addEventListener('click', () => {
-  document.getElementById('photoFile').click();
-});
-
-document.getElementById('photoFile').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  // 壓縮圖片
-  const img = new Image();
-  img.onload = () => {
-    const canvas = document.createElement('canvas');
-    const MAX_SIZE = 300;
-    let w = img.width, h = img.height;
-    if (w > h) { if (w > MAX_SIZE) { h *= MAX_SIZE/w; w = MAX_SIZE; } }
-    else { if (h > MAX_SIZE) { w *= MAX_SIZE/h; h = MAX_SIZE; } }
-    canvas.width = w; canvas.height = h;
-    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-    const data = canvas.toDataURL('image/jpeg', 0.75);
-    window._currentPhoto = data;
-    document.getElementById('photoPreview').innerHTML =
-      `<img src="${data}" style="max-width: 150px; max-height: 150px; border-radius: 12px;"><br><button class="primary danger" onclick="document.getElementById('photoPreview').innerHTML='';window._currentPhoto=null;" style="margin-top:8px; padding: 8px 16px;">移除照片</button>`;
-  };
-  img.src = URL.createObjectURL(file);
-});
-
-document.getElementById('btnSaveBtn').addEventListener('click', () => {
-  const label = document.getElementById('editLabel').value.trim();
-  if (!label) {
-    alert('請輸入文字');
-    return;
-  }
-  const newItem = {
-    label,
-    icon: document.getElementById('editIcon').value || '🔤',
-    speak: document.getElementById('editSpeak').value.trim() || label,
-    photo: window._currentPhoto || null,
-  };
-  const newCatId = document.getElementById('editCategory').value;
-
-  if (editingButton.isNew) {
-    if (!state.buttons[newCatId]) state.buttons[newCatId] = [];
-    state.buttons[newCatId].push(newItem);
-  } else {
-    if (newCatId === editingButton.catId) {
-      state.buttons[editingButton.catId][editingButton.index] = newItem;
-    } else {
-      // 跨分類移動
-      state.buttons[editingButton.catId].splice(editingButton.index, 1);
-      if (!state.buttons[newCatId]) state.buttons[newCatId] = [];
-      state.buttons[newCatId].push(newItem);
-    }
-  }
-  saveState();
-  renderGrid();
-  document.getElementById('editModal').classList.remove('show');
-  window._currentPhoto = null;
-});
-
-document.getElementById('btnDeleteBtn').addEventListener('click', () => {
-  if (!confirm(`確定刪除「${state.buttons[editingButton.catId][editingButton.index].label}」？`)) return;
-  state.buttons[editingButton.catId].splice(editingButton.index, 1);
-  saveState();
-  renderGrid();
-  document.getElementById('editModal').classList.remove('show');
-});
-
-// 關閉 modal
-document.querySelectorAll('[data-close]').forEach(b => {
-  b.addEventListener('click', () => {
-    b.closest('.modal-bg').classList.remove('show');
-  });
-});
-
-document.querySelectorAll('.modal-bg').forEach(bg => {
-  bg.addEventListener('click', (e) => {
-    if (e.target === bg) bg.classList.remove('show');
-  });
-});
-
-// ============== 啟動 ==============
-document.body.classList.toggle('edit-mode', state.settings.editMode);
-renderCategories();
-renderGrid();
-
-// 解鎖 iOS 語音（需用戶手勢觸發）
-document.body.addEventListener('touchend', function unlock() {
-  const u = new SpeechSynthesisUtterance(' ');
-  u.volume = 0;
-  speechSynthesis.speak(u);
-  document.body.removeEventListener('touchend', unlock);
-}, { once: true });
-</script>
 </body>
 </html>
