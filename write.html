@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="icons/write-180.png?v=1">
 <link rel="apple-touch-icon" sizes="512x512" href="icons/write-512.png?v=1">
 <link rel="icon" type="image/png" href="icons/write-512.png?v=1">
-<title>翰林1下 運筆練習</title>
+<title>一下生字 運筆練習</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; }
@@ -453,9 +453,12 @@ body {
 
 <!-- ============ Intro ============ -->
 <div id="intro">
-  <h1>✍️ 翰林1下 運筆練習</h1>
-  <p class="sub">30 個生字 · 5 單元 · 筆順動畫 + 描寫練習</p>
+  <h1>✍️ 一下生字 運筆練習</h1>
+  <p class="sub">30 個常用生字 · 5 主題 · 筆順動畫 + 描寫練習</p>
 
+  <div style="background:#FFFBEB;border:2px dashed #FDE68A;border-radius:14px;padding:14px 18px;font-size:13px;color:#92400E;max-width:600px;margin:16px auto;line-height:1.6;">
+    📋 <b>說明：</b>本工具為教學練習參考，30 字選自國小一下常用字組（不限教材版本），學生可依任何版本教科書學習。
+  </div>
   <div class="name-input">
     📛 名字：<input type="text" id="playerName" value="梅梅" maxlength="8">
   </div>
@@ -533,7 +536,7 @@ body {
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
 
 <script>
-// ============ DATA: 翰林1下 30 生字（5 單元） ============
+// ============ DATA: 國小一下 30 個常用生字（5 主題） ============
 const UNITS = [
   {
     name: '春天的歌',
