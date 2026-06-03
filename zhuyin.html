@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="icons/zhuyin-180.png?v=1">
 <link rel="apple-touch-icon" sizes="512x512" href="icons/zhuyin-512.png?v=1">
 <link rel="icon" type="image/png" href="icons/zhuyin-512.png?v=1">
-<title>注音拼讀 · 皮克敏冒險生字</title>
+<title>注音拼讀 · SEED 生字</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; }
@@ -530,7 +530,7 @@ body {
 <!-- ============ Intro ============ -->
 <div id="intro">
   <h1>🔤 注音拼讀 🔤</h1>
-  <p class="sub">用皮克敏冒險的 30 個生字學注音</p>
+  <p class="sub">用種子冒險的 30 個生字學注音</p>
 
   <div class="zhuyin-demo" style="display:flex;justify-content:center;gap:32px;align-items:center;">
     <span style="display:inline-flex;align-items:center;line-height:1;"><span style="display:flex;flex-direction:column;gap:2px;"><span>ㄔ</span><span>ㄨ</span><span>ㄢ</span></span><span style="font-size:0.95em;font-weight:bold;margin-left:8px;">ˊ</span></span>
@@ -566,7 +566,7 @@ body {
   </div>
 
   <p style="color:#9CA3AF;font-size:13px;margin-top:20px;">
-    💡 對應 <a href="pikmin.html" style="color:#7C3AED;font-weight:bold;">皮克敏×台灣大冒險</a> 的 30 生字
+    💡 對應 <a href="pikmin.html" style="color:#7C3AED;font-weight:bold;">SEED×台灣大冒險</a> 的 30 生字
   </p>
 </div>
 
@@ -575,7 +575,7 @@ body {
   <div class="bar">
     <h2 id="gameTitle">🔤 注音拼讀</h2>
     <div class="stat"><span class="lbl">分數</span><span class="val" id="scoreVal">0</span></div>
-    <div class="stat"><span class="lbl">皮克敏</span><span class="val" id="pikminVal">0</span>/30</div>
+    <div class="stat"><span class="lbl">種子</span><span class="val" id="pikminVal">0</span>/30</div>
     <button class="icon-btn" onclick="speakCurrent()">🔊 念一次</button>
     <button class="icon-btn" onclick="quitToIntro()">🏠 首頁</button>
   </div>
@@ -596,7 +596,7 @@ body {
 
   <div class="sidebar">
     <div class="panel">
-      <h3>🌱 我的皮克敏</h3>
+      <h3>🌱 我的種子</h3>
       <div class="pikmin-collection" id="pikminCollection"></div>
     </div>
     <div class="panel">
@@ -618,7 +618,7 @@ body {
   <div class="modal">
     <span class="big-emoji" id="modalEmoji">🎉</span>
     <h2 id="modalTitle">答對了!</h2>
-    <p id="modalDesc">獲得 1 隻皮克敏</p>
+    <p id="modalDesc">獲得 1 隻種子</p>
     <div class="pikmin-reward" id="modalPikmin">🌱</div>
     <button class="btn btn-primary" onclick="closeModal()">繼續挑戰</button>
   </div>
@@ -630,7 +630,7 @@ body {
     <h2>太厲害了!</h2>
     <p>你答完所有題目了!</p>
     <p>共獲得 <span id="finalScore" style="color:#7C3AED;font-weight:bold;font-size:24px;">0</span> 分</p>
-    <p>收集到 <span id="finalPikmin" style="color:#10B981;font-weight:bold;font-size:24px;">0</span> 隻皮克敏</p>
+    <p>收集到 <span id="finalPikmin" style="color:#10B981;font-weight:bold;font-size:24px;">0</span> 隻種子</p>
     <div style="display:flex;gap:10px;margin-top:20px;justify-content:center;">
       <button class="btn btn-primary" onclick="restartGame()">再玩一次</button>
       <button class="btn btn-secondary" onclick="quitToIntro()">回首頁</button>
@@ -1047,7 +1047,7 @@ function showConfetti() {
 function showRewardModal() {
   document.getElementById('modalEmoji').textContent = ['🎉','🎊','✨','🌟','🥳'][Math.floor(Math.random()*5)];
   document.getElementById('modalTitle').textContent = PRAISE[Math.floor(Math.random()*PRAISE.length)];
-  document.getElementById('modalDesc').innerHTML = `「${currentWord.char}」念 <span style="font-size:1.4em;display:inline-block;vertical-align:middle;">${zh(currentWord.zhuyin)}</span> · 獲得 1 隻皮克敏!`;
+  document.getElementById('modalDesc').innerHTML = `「${currentWord.char}」念 <span style="font-size:1.4em;display:inline-block;vertical-align:middle;">${zh(currentWord.zhuyin)}</span> · 獲得 1 隻種子!`;
   document.getElementById('modalPikmin').textContent = PIKMIN_EMOJI[(state.pikmin-1) % PIKMIN_EMOJI.length];
   document.getElementById('rewardModal').classList.add('show');
   setTimeout(() => document.getElementById('rewardModal').classList.remove('show'), 1800);

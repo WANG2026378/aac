@@ -1,27 +1,38 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
 <defs>
-<linearGradient id="lg1" x1="0" y1="0" x2="0" y2="1">
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
 <stop offset="0%" stop-color="#87CEEB"/>
-<stop offset="60%" stop-color="#B8E0D2"/>
+<stop offset="50%" stop-color="#B8E0D2"/>
 <stop offset="100%" stop-color="#F5E6A8"/>
 </linearGradient>
 </defs>
-<rect width="1024" height="1024" rx="230" fill="url(#lg1)"/>
-<!-- Pikmin red -->
-<g transform="translate(280 380)">
-  <ellipse cx="42" cy="14" rx="22" ry="14" fill="#4CAF50" transform="rotate(-25 42 14)" stroke="#2E7D32" stroke-width="2"/>
-  <rect x="47" y="20" width="6" height="20" rx="3" fill="#2E7D32"/>
-  <ellipse cx="50" cy="70" rx="32" ry="38" fill="#EF4444" stroke="#B91C1C" stroke-width="2"/>
-  <ellipse cx="40" cy="62" rx="8" ry="10" fill="white"/>
-  <ellipse cx="60" cy="62" rx="8" ry="10" fill="white"/>
-  <circle cx="40" cy="64" r="4" fill="#1F2937"/>
-  <circle cx="60" cy="64" r="4" fill="#1F2937"/>
-  <path d="M 42 78 Q 50 84 58 78" stroke="#1F2937" stroke-width="2" fill="none" stroke-linecap="round"/>
+<rect width="1024" height="1024" rx="230" fill="url(#bg)"/>
+<!-- SEED 中央種子 (紅) -->
+<g transform="translate(300 340)">
+  <!-- 嫩芽 -->
+  <path d="M 100 60 Q 100 30 80 26 Q 70 42 88 56" fill="#4CAF50" stroke="#2E7D32" stroke-width="3"/>
+  <path d="M 100 60 Q 100 20 120 24 Q 130 40 112 56" fill="#66BB6A" stroke="#2E7D32" stroke-width="3"/>
+  <!-- 種子身體 -->
+  <path d="M 100 56 Q 30 80 30 150 Q 30 220 100 220 Q 170 220 170 150 Q 170 80 100 56 Z" fill="#EF4444" stroke="#B91C1C" stroke-width="5"/>
+  <!-- 高光 -->
+  <ellipse cx="65" cy="115" rx="22" ry="32" fill="#FCA5A5" opacity="0.5"/>
+  <!-- 眼睛 -->
+  <circle cx="80" cy="148" r="11" fill="#1F2937"/>
+  <circle cx="120" cy="148" r="11" fill="#1F2937"/>
+  <circle cx="84" cy="144" r="4" fill="white"/>
+  <circle cx="124" cy="144" r="4" fill="white"/>
+  <!-- 紅暈臉頰 -->
+  <circle cx="48" cy="172" r="10" fill="#FB7185" opacity="0.4"/>
+  <circle cx="152" cy="172" r="10" fill="#FB7185" opacity="0.4"/>
+  <!-- 笑嘴 -->
+  <path d="M 88 178 Q 100 188 112 178" stroke="#1F2937" stroke-width="5" fill="none" stroke-linecap="round"/>
 </g>
 <!-- 注音 ㄅㄆㄇ -->
 <text x="640" y="430" font-family="標楷體, PingFang TC, serif" font-size="180" font-weight="900" fill="#047857">ㄅ</text>
 <text x="640" y="620" font-family="標楷體, PingFang TC, serif" font-size="180" font-weight="900" fill="#FB923C">ㄆ</text>
 <text x="640" y="810" font-family="標楷體, PingFang TC, serif" font-size="180" font-weight="900" fill="#3B82F6">ㄇ</text>
 <!-- Title arc -->
-<text x="512" y="200" font-family="PingFang TC, sans-serif" font-size="100" font-weight="900" fill="#047857" text-anchor="middle">學注音</text>
+<text x="512" y="180" font-family="PingFang TC, sans-serif" font-size="80" font-weight="900" fill="#047857" text-anchor="middle">SEED 學注音</text>
+<!-- 副標 習得字 -->
+<text x="512" y="240" font-family="PingFang TC, sans-serif" font-size="46" font-weight="700" fill="#047857" text-anchor="middle" letter-spacing="8">習 · 得 · 字</text>
 </svg>

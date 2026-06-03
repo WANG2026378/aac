@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="皮克敏冒險">
+<meta name="apple-mobile-web-app-title" content="SEED 冒險">
 <meta name="theme-color" content="#87ceeb">
 <link rel="apple-touch-icon" href="icons/pikmin-180.png?v=1">
 <link rel="apple-touch-icon" sizes="180x180" href="icons/pikmin-180.png?v=1">
 <link rel="apple-touch-icon" sizes="512x512" href="icons/pikmin-512.png?v=1">
 <link rel="icon" type="image/png" href="icons/pikmin-512.png?v=1">
-<title>皮克敏 × 台灣大冒險</title>
+<title>SEED 台灣大冒險 · 習得字</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
@@ -195,10 +195,10 @@
 
 <!-- INTRO -->
 <div id="intro">
-  <h1>🌱 皮克敏 × 台灣大冒險 🇹🇼</h1>
+  <h1>🌱 SEED × 台灣大冒險 🇹🇼</h1>
   <div class="pikmin-row" id="intro-pikmin-row"></div>
   <p>🗺️ 點地圖選地區 → 🎯 點關卡 → 🔊 聽聲音 → 選對的字!</p>
-  <p>每過一關就會收到一隻小皮克敏 🌱</p>
+  <p>每過一關就會收到一隻小種子 🌱</p>
   <div class="name-input">
     隊長的名字:<br>
     <input id="player-name" type="text" placeholder="梅梅" maxlength="6">
@@ -225,7 +225,7 @@
 
   <div class="sidebar">
     <div class="panel">
-      <h3>🌱 我的皮克敏(紀念品)</h3>
+      <h3>🌱 我的種子(紀念品)</h3>
       <div class="pikmin-hand" id="pikmin-hand"></div>
     </div>
     <div class="panel">
@@ -445,7 +445,7 @@ const TAIWAN_OUTLINE = "M 210 62 Q 235 55 258 60 Q 275 64 280 78 Q 285 95 288 11
 const PIKMIN_TYPES = ['red','blue','yellow','purple','white','rock','flower'];
 const PIKMIN_CN = { red:'紅', blue:'藍', yellow:'黃', purple:'紫', white:'白', rock:'石', flower:'花' };
 
-// 迷你皮克敏 SVG(用於開始畫面和側邊欄收藏格)
+// 迷你種子 SVG(用於開始畫面和側邊欄收藏格)
 // viewBox 50×70,身體中心 (25, 40)
 function miniPikminSVG(type) {
   const c = { red:'#e85d5d', blue:'#4a90d9', yellow:'#f0c441', purple:'#9b6dd1', white:'#f5f5f5', rock:'#9ca3af', flower:'#f687b3' };
@@ -728,7 +728,7 @@ function drawMap() {
 
   // ===== 遊戲地區標記(座標需要從原始 (x,y) 旋轉到新位置) =====
   // 原座標 (rx, ry) → 橫放後 (ry, 400 - rx)
-  // 皮克敏顏色對照(致敬風格原創設計)
+  // 種子顏色對照(致敬風格原創設計)
   const PIKMIN_COLORS = {
     red:    { body:'#e85d5d', light:'#fc8181', dark:'#9b1c1c', leaf:'#5fb89e' },
     blue:   { body:'#4a90d9', light:'#7eb8e8', dark:'#1e4a8a', leaf:'#5fb89e' },
@@ -737,7 +737,7 @@ function drawMap() {
     white:  { body:'#f5f5f5', light:'#ffffff', dark:'#4a5568', leaf:'#5fb89e' }
   };
 
-  // 繪製一隻原創致敬風格的皮克敏(中心 cx, cy)
+  // 繪製一隻原創致敬風格的種子(中心 cx, cy)
   // 設計:細長身體、橢圓大眼、頭頂植物隨進度變化(葉→花苞→開花)
   function pikminSVG(cx, cy, theme, cleared, treasureCount) {
     const col = PIKMIN_COLORS[theme] || PIKMIN_COLORS.red;
@@ -825,7 +825,7 @@ function drawMap() {
     g.setAttribute('class', `region-grp${cleared?' cleared':''}${isCurrent?' current':''}`);
     if (!cleared) g.addEventListener('click', () => onRegionClick(r.id));
 
-    // 目前位置脈動光環(在皮克敏底下)
+    // 目前位置脈動光環(在種子底下)
     if (isCurrent) {
       const ring = document.createElementNS(NS, 'circle');
       ring.setAttribute('class', 'pulse-ring');
@@ -834,7 +834,7 @@ function drawMap() {
       ring.setAttribute('stroke-width', '3'); g.appendChild(ring);
     }
 
-    // 點擊熱區(看不見的圓,確保整隻皮克敏都能點)
+    // 點擊熱區(看不見的圓,確保整隻種子都能點)
     const hit = document.createElementNS(NS, 'circle');
     hit.setAttribute('class', 'region-circle');
     hit.setAttribute('cx', nx); hit.setAttribute('cy', ny); hit.setAttribute('r', 18);
@@ -843,7 +843,7 @@ function drawMap() {
     hit.setAttribute('stroke-width', isCurrent ? 0 : 0);
     g.appendChild(hit);
 
-    // 繪製皮克敏角色
+    // 繪製種子角色
     const pikmin = document.createElementNS(NS, 'g');
     pikmin.innerHTML = pikminSVG(nx, ny, r.theme, cleared, r.treasures.length);
     g.appendChild(pikmin);
@@ -1162,12 +1162,12 @@ function finishLevel(gotItRight) {
   state.levelCleared++;
   state.inventory.push({ ...treasure, regionName: region.name, earned, viaTeach: !gotItRight });
   if (!state.learned.includes(treasure.word)) state.learned.push(treasure.word);
-  // 答對才給主題色皮克敏,教學完成只記學會
+  // 答對才給主題色種子,教學完成只記學會
   const themeColor = region.theme || 'red';
   let pikminMsg = '';
   if (gotItRight) {
     state.pikmin[themeColor] = (state.pikmin[themeColor] || 0) + 1;
-    pikminMsg = `,還有一隻${PIKMIN_CN[themeColor]}皮克敏!`;
+    pikminMsg = `,還有一隻${PIKMIN_CN[themeColor]}種子!`;
   }
 
   const r = getRegion(region.id);
@@ -1178,7 +1178,7 @@ function finishLevel(gotItRight) {
   if (r.treasures.length === 0 && gotItRight) {
     const bonus = Math.random() < 0.5 ? 'rock' : 'flower';
     state.pikmin[bonus] = (state.pikmin[bonus] || 0) + 1;
-    bonusMsg = ` 🎁 還拿到一隻特別的${PIKMIN_CN[bonus]}皮克敏!`;
+    bonusMsg = ` 🎁 還拿到一隻特別的${PIKMIN_CN[bonus]}種子!`;
   }
 
   if (earned > 0) showFloat(`+${earned}🌟`);
@@ -1382,7 +1382,7 @@ function exportSettings() {
   const blob = new Blob([data], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = '皮克敏字詞設定.json';
+  a.href = url; a.download = '種子字詞設定.json';
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 500);
 }
@@ -1447,7 +1447,7 @@ function populateVoiceList() {
 
 // init
 state = freshState();
-// 開始畫面填入 5 隻代表皮克敏(展示給玩家看會收集到什麼)
+// 開始畫面填入 5 隻代表種子(展示給玩家看會收集到什麼)
 (function fillIntroPikmin(){
   const row = document.getElementById('intro-pikmin-row');
   if (row) {

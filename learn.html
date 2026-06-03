@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="注音學習">
+<meta name="apple-mobile-web-app-title" content="SEED 注音">
 <meta name="theme-color" content="#10B981">
 <link rel="apple-touch-icon" href="icons/learn-180.png?v=1">
 <link rel="apple-touch-icon" sizes="180x180" href="icons/learn-180.png?v=1">
 <link rel="apple-touch-icon" sizes="512x512" href="icons/learn-512.png?v=1">
 <link rel="icon" type="image/png" href="icons/learn-512.png?v=1">
-<title>皮克敏注音學習島</title>
+<title>SEED 注音學習島 · 習得字</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; overflow-x: hidden; }
@@ -593,8 +593,9 @@ body {
 
 <!-- ============ INTRO ============ -->
 <div class="screen active" id="intro">
-  <h1>🌱 皮克敏注音學習島 🌱</h1>
-  <p class="sub">學會 37 個注音符號 · 收集 7 種皮克敏 · 闖關+測驗</p>
+  <h1>🌱 SEED 注音學習島 🌱</h1>
+  <div style="font-size:14px;color:#047857;background:rgba(255,255,255,0.7);padding:4px 14px;border-radius:14px;display:inline-block;margin-top:6px;letter-spacing:3px;font-weight:700;">習 · 得 · 字</div>
+  <p class="sub">學會 37 個注音符號 · 收集 7 種種子 · 闖關+測驗</p>
   <div class="pikmin-row" id="introPikmin"></div>
   <div class="name-input">
     📛 名字：<input type="text" id="playerName" value="梅梅" maxlength="8">
@@ -609,7 +610,7 @@ body {
 <div class="screen" id="map">
   <div class="topbar">
     <h2 id="mapTitle">🗺️ 學習地圖</h2>
-    <div class="topbar-stat">🌱 皮克敏 <span class="val" id="pikminCount">0</span>/7</div>
+    <div class="topbar-stat">🌱 SEED <span class="val" id="pikminCount">0</span>/7</div>
     <div class="topbar-stat">📚 學會 <span class="val" id="symbolCount">0</span>/37</div>
     <button class="icon-btn" onclick="showTones()">🎵 聲調</button>
     <button class="icon-btn" onclick="showMiniGames()">🎮 小遊戲</button>
@@ -771,13 +772,13 @@ const SYMBOLS = [
 ];
 
 const LEVELS = [
-  { id:1, name:'紅皮克敏關卡 · 唇音',   color:'#EF4444', bg:'#FEE2E2', mascot:'red',    desc:'ㄅㄆㄇㄈ 4 個' },
-  { id:2, name:'藍皮克敏關卡 · 舌尖音', color:'#3B82F6', bg:'#DBEAFE', mascot:'blue',   desc:'ㄉㄊㄋㄌ 4 個' },
-  { id:3, name:'黃皮克敏關卡 · 舌根舌面', color:'#F59E0B', bg:'#FEF3C7', mascot:'yellow', desc:'ㄍㄎㄏㄐㄑㄒ 6 個' },
-  { id:4, name:'紫皮克敏關卡 · 翹平舌', color:'#A855F7', bg:'#F3E8FF', mascot:'purple', desc:'ㄓㄔㄕㄖㄗㄘㄙ 7 個' },
-  { id:5, name:'白皮克敏關卡 · 單韻母', color:'#6B7280', bg:'#F3F4F6', mascot:'white',  desc:'ㄚㄛㄜㄝ 4 個' },
-  { id:6, name:'石皮克敏關卡 · 複鼻韻', color:'#525252', bg:'#E5E5E5', mascot:'rock',   desc:'ㄞㄟㄠㄡㄢㄣㄤㄥㄦ 9 個' },
-  { id:7, name:'花皮克敏關卡 · 結合韻', color:'#EC4899', bg:'#FCE7F3', mascot:'flower', desc:'ㄧㄨㄩ 3 個' },
+  { id:1, name:'紅種子關卡 · 唇音',   color:'#EF4444', bg:'#FEE2E2', mascot:'red',    desc:'ㄅㄆㄇㄈ 4 個' },
+  { id:2, name:'藍種子關卡 · 舌尖音', color:'#3B82F6', bg:'#DBEAFE', mascot:'blue',   desc:'ㄉㄊㄋㄌ 4 個' },
+  { id:3, name:'黃種子關卡 · 舌根舌面', color:'#F59E0B', bg:'#FEF3C7', mascot:'yellow', desc:'ㄍㄎㄏㄐㄑㄒ 6 個' },
+  { id:4, name:'紫種子關卡 · 翹平舌', color:'#A855F7', bg:'#F3E8FF', mascot:'purple', desc:'ㄓㄔㄕㄖㄗㄘㄙ 7 個' },
+  { id:5, name:'白種子關卡 · 單韻母', color:'#6B7280', bg:'#F3F4F6', mascot:'white',  desc:'ㄚㄛㄜㄝ 4 個' },
+  { id:6, name:'灰種子關卡 · 複鼻韻', color:'#525252', bg:'#E5E5E5', mascot:'rock',   desc:'ㄞㄟㄠㄡㄢㄣㄤㄥㄦ 9 個' },
+  { id:7, name:'花種子關卡 · 結合韻', color:'#EC4899', bg:'#FCE7F3', mascot:'flower', desc:'ㄧㄨㄩ 3 個' },
 ];
 
 const PIKMIN_EMOJI_BY = { red:'🔴', blue:'🔵', yellow:'🟡', purple:'🟣', white:'⚪', rock:'🪨', flower:'🌸' };
@@ -935,37 +936,38 @@ function setVoice(mode) {
 }
 
 // ============ SVG Pikmin ============
+// 種子 SVG（重新設計，圓潤種子狀，與 Pikmin 完全不同）
 function pikminSVG(color, size) {
   const colors = {
-    red:    { body:'#EF4444', dark:'#B91C1C', eye:'#FFF' },
-    blue:   { body:'#3B82F6', dark:'#1D4ED8', eye:'#FFF' },
-    yellow: { body:'#FBBF24', dark:'#D97706', eye:'#FFF' },
-    purple: { body:'#A855F7', dark:'#7E22CE', eye:'#FFF' },
-    white:  { body:'#F9FAFB', dark:'#9CA3AF', eye:'#1F2937' },
-    rock:   { body:'#737373', dark:'#404040', eye:'#FFF' },
-    flower: { body:'#F472B6', dark:'#BE185D', eye:'#FFF' },
+    red:    { body:'#EF4444', dark:'#B91C1C', shine:'#FCA5A5', eye:'#1F2937' },
+    blue:   { body:'#3B82F6', dark:'#1D4ED8', shine:'#93C5FD', eye:'#1F2937' },
+    yellow: { body:'#FBBF24', dark:'#D97706', shine:'#FDE68A', eye:'#1F2937' },
+    purple: { body:'#A855F7', dark:'#7E22CE', shine:'#D8B4FE', eye:'#1F2937' },
+    white:  { body:'#F9FAFB', dark:'#9CA3AF', shine:'#FFFFFF', eye:'#1F2937' },
+    rock:   { body:'#9CA3AF', dark:'#525252', shine:'#D1D5DB', eye:'#1F2937' },
+    flower: { body:'#F472B6', dark:'#BE185D', shine:'#FBCFE8', eye:'#1F2937' },
   };
   const c = colors[color] || colors.red;
   const s = size || 80;
+  // 種子設計：圓潤水滴形 + 小綠芽 + 簡單笑臉
   return `<svg width="${s}" height="${s*1.15}" viewBox="0 0 100 115">
-    <!-- 葉子 -->
-    <ellipse cx="42" cy="14" rx="22" ry="14" fill="#4CAF50" transform="rotate(-25 42 14)" stroke="#2E7D32" stroke-width="1"/>
-    <!-- 莖 -->
-    <rect x="47" y="20" width="6" height="20" rx="3" fill="#2E7D32"/>
-    <!-- 身體 -->
-    <ellipse cx="50" cy="70" rx="32" ry="38" fill="${c.body}" stroke="${c.dark}" stroke-width="2"/>
-    <!-- 眼睛 -->
-    <ellipse cx="40" cy="62" rx="8" ry="10" fill="${c.eye}"/>
-    <ellipse cx="60" cy="62" rx="8" ry="10" fill="${c.eye}"/>
-    <circle cx="40" cy="64" r="4" fill="#1F2937"/>
-    <circle cx="60" cy="64" r="4" fill="#1F2937"/>
-    <circle cx="42" cy="62" r="1.5" fill="#FFF"/>
-    <circle cx="62" cy="62" r="1.5" fill="#FFF"/>
-    <!-- 笑嘴 -->
-    <path d="M 42 78 Q 50 84 58 78" stroke="#1F2937" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <!-- 腳 -->
-    <ellipse cx="40" cy="108" rx="8" ry="5" fill="#FFE082" stroke="#F57F17" stroke-width="1"/>
-    <ellipse cx="60" cy="108" rx="8" ry="5" fill="#FFE082" stroke="#F57F17" stroke-width="1"/>
+    <!-- 嫩芽 -->
+    <path d="M 50 30 Q 50 18 42 16 Q 38 22 44 28" fill="#4CAF50" stroke="#2E7D32" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 50 30 Q 50 12 58 14 Q 62 22 56 28" fill="#66BB6A" stroke="#2E7D32" stroke-width="1.5" stroke-linejoin="round"/>
+    <!-- 種子身體（水滴形，圓潤） -->
+    <path d="M 50 28 Q 18 40 18 70 Q 18 100 50 100 Q 82 100 82 70 Q 82 40 50 28 Z" fill="${c.body}" stroke="${c.dark}" stroke-width="2.5"/>
+    <!-- 高光 -->
+    <ellipse cx="36" cy="55" rx="10" ry="14" fill="${c.shine}" opacity="0.5"/>
+    <!-- 眼睛（簡單點點，貼合種子風格） -->
+    <circle cx="40" cy="70" r="4.5" fill="${c.eye}"/>
+    <circle cx="60" cy="70" r="4.5" fill="${c.eye}"/>
+    <circle cx="41.5" cy="68.5" r="1.5" fill="white"/>
+    <circle cx="61.5" cy="68.5" r="1.5" fill="white"/>
+    <!-- 紅暈臉頰 -->
+    <circle cx="28" cy="78" r="4" fill="#FB7185" opacity="0.4"/>
+    <circle cx="72" cy="78" r="4" fill="#FB7185" opacity="0.4"/>
+    <!-- 笑嘴（小小可愛） -->
+    <path d="M 45 82 Q 50 86 55 82" stroke="${c.eye}" stroke-width="2" fill="none" stroke-linecap="round"/>
   </svg>`;
 }
 
@@ -1261,7 +1263,7 @@ function completeLevel() {
   document.getElementById('rewardPikmin').innerHTML = pikminSVG(lv.mascot, 110);
   document.getElementById('rewardTitle').textContent = `${lv.name} 過關!`;
   document.getElementById('rewardDesc').innerHTML =
-    wasCleared ? `已重複完成這關 🎉` : `獲得 1 隻 <b>${lv.mascot} 皮克敏</b>!<br>學會 ${currentSymbols.length} 個注音`;
+    wasCleared ? `已重複完成這關 🎉` : `獲得 1 隻 <b>${lv.mascot} 種子</b>!<br>學會 ${currentSymbols.length} 個注音`;
   document.getElementById('rewardModal').classList.add('show');
   fireConfetti();
   speak('太棒了，' + state.name + '，' + lv.name + '過關!');
