@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>永芳特教教學資源網 · 推廣介紹</title>
+<meta name="description" content="永芳國小特教資源網介紹：6 個數位教學工具，普通生與特殊生都能用">
+<meta name="theme-color" content="#FF6B6B">
+<link rel="icon" type="image/png" href="icons/portal-512.png?v=1">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #fef9f3;
+  --primary: #FF6B6B;
+  --primary-dark: #C53030;
+  --text: #2D3748;
+  --muted: #6B7280;
+}
+body {
+  font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+}
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+/* ===== HERO ===== */
+.hero {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  color: white;
+  padding: 80px 20px 100px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.2), transparent 50%),
+              radial-gradient(ellipse at 70% 80%, rgba(255,255,255,0.15), transparent 50%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--bg);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  transform: scaleX(1.5);
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.25);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+  backdrop-filter: blur(8px);
+}
+.hero h1 {
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 900;
+  letter-spacing: -2px;
+  margin-bottom: 16px;
+  text-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+}
+.hero h1 .accent { color: #FFE082; }
+.hero .lead {
+  font-size: clamp(18px, 2.2vw, 22px);
+  opacity: 0.95;
+  max-width: 720px;
+  margin: 0 auto 24px;
+  line-height: 1.6;
+}
+.hero-cta {
+  display: inline-flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 14px;
+}
+.cta-btn {
+  background: white;
+  color: var(--primary-dark);
+  padding: 14px 28px;
+  border-radius: 30px;
+  font-weight: 800;
+  font-size: 17px;
+  text-decoration: none;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.cta-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,0.25); }
+.cta-btn.outline {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 2px solid white;
+  backdrop-filter: blur(8px);
+}
+
+/* ===== Stats strip ===== */
+.stats-strip {
+  display: flex;
+  justify-content: center;
+  gap: clamp(20px, 4vw, 50px);
+  flex-wrap: wrap;
+  margin-top: 30px;
+  position: relative;
+  z-index: 2;
+}
+.stat {
+  text-align: center;
+}
+.stat-num {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 900;
+  color: #FFE082;
+  line-height: 1;
+}
+.stat-lbl {
+  font-size: 14px;
+  opacity: 0.95;
+  margin-top: 4px;
+}
+
+/* ===== Section ===== */
+.section {
+  padding: 60px 0 40px;
+}
+.section h2 {
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 900;
+  color: var(--primary-dark);
+  text-align: center;
+  margin-bottom: 14px;
+  letter-spacing: -1px;
+}
+.section .section-sub {
+  text-align: center;
+  font-size: 18px;
+  color: var(--muted);
+  max-width: 700px;
+  margin: 0 auto 40px;
+}
+
+/* ===== Problem block ===== */
+.problems {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+.problem-card {
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  border-left: 5px solid #EF4444;
+}
+.problem-card .icon {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+.problem-card h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: #B91C1C;
+  margin-bottom: 6px;
+}
+.problem-card p {
+  font-size: 15px;
+  color: var(--muted);
+}
+
+/* ===== Solution grid ===== */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+.tool-card {
+  background: white;
+  border-radius: 22px;
+  padding: 28px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  position: relative;
+  overflow: hidden;
+  border-top: 6px solid var(--c);
+  transition: all 0.2s;
+}
+.tool-card:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,0.12); }
+.tool-card .icon-big {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  background: var(--bg-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  margin-bottom: 16px;
+}
+.tool-card h3 {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.tool-card .sub {
+  font-size: 13px;
+  color: var(--c);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.tool-card .desc {
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+.tool-card .target {
+  background: #F9FAFB;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 14px;
+  border-left: 3px solid var(--c);
+}
+.tool-card .target b { color: var(--c); }
+.tool-card .url {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.c-aac    { --c: #4299E1; --bg-light: linear-gradient(135deg, #E3F2FD, #BBDEFB); }
+.c-learn  { --c: #10B981; --bg-light: linear-gradient(135deg, #D1FAE5, #A7F3D0); }
+.c-story  { --c: #F59E0B; --bg-light: linear-gradient(135deg, #FEF3C7, #FDE68A); }
+.c-zhuyin { --c: #7C3AED; --bg-light: linear-gradient(135deg, #DDD6FE, #C4B5FD); }
+.c-pikmin { --c: #48BB78; --bg-light: linear-gradient(135deg, #C6F6D5, #9AE6B4); }
+.c-write  { --c: #EC4899; --bg-light: linear-gradient(135deg, #FCE7F3, #FBCFE8); }
+
+/* ===== Use case (student matrix) ===== */
+.matrix-section {
+  background: linear-gradient(135deg, #FFF5E6, #FFE4B5);
+  padding: 60px 20px;
+  margin: 40px 0;
+  border-radius: 32px;
+}
+.matrix {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.matrix-card {
+  background: white;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+.matrix-card h4 {
+  font-size: 17px;
+  font-weight: 800;
+  color: #C53030;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.matrix-card .student-type {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 10px;
+  font-style: italic;
+}
+.matrix-card .tools {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.matrix-card .tool-pill {
+  background: #FFFBEB;
+  border: 2px solid #FDE68A;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #92400E;
+}
+
+/* ===== Philosophy ===== */
+.philosophy {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+}
+.phil-card {
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+  text-align: center;
+}
+.phil-card .icon {
+  font-size: 56px;
+  margin-bottom: 12px;
+}
+.phil-card h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--primary-dark);
+  margin-bottom: 8px;
+}
+.phil-card p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ===== How to use ===== */
+.howto {
+  background: white;
+  border-radius: 24px;
+  padding: 36px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 32px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+@media (max-width: 700px) {
+  .howto { grid-template-columns: 1fr; text-align: center; }
+}
+.howto .qr-side img {
+  width: 240px;
+  height: 240px;
+  border-radius: 18px;
+  border: 6px solid var(--primary);
+  background: white;
+  padding: 12px;
+  display: block;
+}
+.howto h2 {
+  font-size: 30px;
+  color: var(--primary-dark);
+  margin-bottom: 12px;
+  text-align: left;
+}
+@media (max-width: 700px) {
+  .howto h2 { text-align: center; }
+  .howto .qr-side img { margin: 0 auto; }
+}
+.howto p { font-size: 16px; color: var(--text); margin-bottom: 10px; }
+.howto .url-box {
+  background: #FEF3C7;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 14px;
+  color: var(--primary-dark);
+  margin: 12px 0;
+  border: 2px solid #FDE68A;
+  word-break: break-all;
+}
+.howto .features {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.howto .feat {
+  background: #FCE7F3;
+  color: #BE185D;
+  padding: 6px 12px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ===== Quote / highlight ===== */
+.highlight-box {
+  background: linear-gradient(135deg, #FFE082, #FFB74D);
+  border-radius: 24px;
+  padding: 40px 30px;
+  text-align: center;
+  margin: 40px 0;
+  box-shadow: 0 8px 24px rgba(255, 152, 0, 0.2);
+}
+.highlight-box .quote-mark {
+  font-size: 80px;
+  line-height: 0.8;
+  color: white;
+  opacity: 0.8;
+}
+.highlight-box p {
+  font-size: clamp(20px, 3vw, 28px);
+  color: #C53030;
+  font-weight: 800;
+  max-width: 700px;
+  margin: 14px auto;
+  line-height: 1.6;
+}
+.highlight-box small {
+  display: block;
+  font-size: 15px;
+  color: #92400E;
+  margin-top: 12px;
+  font-weight: 600;
+}
+
+/* ===== Share / Distribute ===== */
+.share-box {
+  background: white;
+  border-radius: 24px;
+  padding: 36px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  text-align: center;
+}
+.share-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+.share-btn {
+  background: var(--primary);
+  color: white;
+  padding: 14px 22px;
+  border-radius: 14px;
+  text-decoration: none;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(255,107,107,0.3);
+}
+.share-btn.green { background: #10B981; box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
+.share-btn.blue { background: #4299E1; box-shadow: 0 4px 12px rgba(66,153,225,0.3); }
+.share-btn:hover { transform: translateY(-2px); }
+
+/* ===== Footer ===== */
+.footer {
+  background: #FFE4B5;
+  padding: 36px 24px;
+  text-align: center;
+  color: #92400E;
+  margin-top: 60px;
+  border-top: 6px solid #FF8E53;
+}
+.footer .school {
+  font-weight: 900;
+  color: var(--primary-dark);
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+.footer .small {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-top: 12px;
+}
+
+@media print {
+  @page { size: A4; margin: 12mm; }
+  .hero { background: #FF6B6B !important; -webkit-print-color-adjust: exact; }
+  .section { padding: 20px 0; break-inside: avoid; }
+  .tools-grid { grid-template-columns: repeat(2, 1fr); }
+  .tool-card { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<div class="hero">
+  <div class="hero-badge">🏫 永芳國小 · 特教資源</div>
+  <h1>用 iPad 改變<br>特教與普教<span class="accent">學習</span>的可能</h1>
+  <p class="lead">
+    6 個專為特教與普教設計的數位教學工具，<br>
+    從 AAC 輔助溝通到注音、生字、運筆、故事，<br>
+    一個學期、一個 QR Code、無限次練習。
+  </p>
+  <div class="hero-cta">
+    <a class="cta-btn" href="./">🌐 進入資源網</a>
+    <a class="cta-btn outline" href="qr.html">📱 看 QR 總表</a>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">6</div><div class="stat-lbl">教學工具</div></div>
+    <div class="stat"><div class="stat-num">200+</div><div class="stat-lbl">溝通詞彙</div></div>
+    <div class="stat"><div class="stat-num">37</div><div class="stat-lbl">注音符號</div></div>
+    <div class="stat"><div class="stat-num">60+</div><div class="stat-lbl">國字練習</div></div>
+    <div class="stat"><div class="stat-num">∞</div><div class="stat-lbl">免費使用</div></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ Problem ============ -->
+  <div class="section">
+    <h2>👀 我們看到的問題</h2>
+    <p class="section-sub">特殊需求學生、普通生需要更彈性的數位資源，而現有方案常常太貴、太難用、太一刀切</p>
+
+    <div class="problems">
+      <div class="problem-card">
+        <div class="icon">💰</div>
+        <h3>商用 AAC 動輒上萬</h3>
+        <p>家長負擔重，學校預算有限，常常一台 iPad 卻沒有合適的 App。</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">🔒</div>
+        <h3>內容固定不能客製</h3>
+        <p>家裡常用詞、家人照片、學生喜好都不能加進去，學生用了沒共鳴。</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">📵</div>
+        <h3>離線斷網就不能用</h3>
+        <p>很多 App 需要登入帳號、要網路、要訂閱，課程中斷或在家無網都卡住。</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">🎯</div>
+        <h3>普特生需求差異大</h3>
+        <p>普通生想練更難的、特殊生需要簡化，同一個工具很難同時服務兩種需求。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Solution ============ -->
+  <div class="section">
+    <h2>🛠️ 我們提供的解決方案</h2>
+    <p class="section-sub">6 個工具涵蓋溝通、識字、注音、運筆、閱讀理解，全部開源免費，加到 iPad 主畫面離線可用</p>
+
+    <div class="tools-grid">
+
+      <div class="tool-card c-aac">
+        <div class="icon-big">💬</div>
+        <h3>iPad 溝通版 AAC</h3>
+        <div class="sub">輔助溝通系統</div>
+        <p class="desc">大按鈕點按發音，13 分類 200+ 預設詞。可上傳家人照片、自訂常用詞，老師家長都能編輯。</p>
+        <div class="target">
+          <b>適用：</b>無口語/口語極少的學生、需要溝通輔助的特殊生<br>
+          <b>場景：</b>表達需求、學校與家庭溝通
+        </div>
+        <div class="url">aac/talk.html</div>
+      </div>
+
+      <div class="tool-card c-learn">
+        <div class="icon-big">🌱</div>
+        <h3>皮克敏注音學習島</h3>
+        <div class="sub">完整 37 注音教學</div>
+        <p class="desc">7 個皮克敏關卡學會所有注音。看符號→錄音跟讀→4 選 1 測驗。含聲調教學、小遊戲、老師面板。</p>
+        <div class="target">
+          <b>適用：</b>幼兒園大班、小一新生、特教注音延伸學習<br>
+          <b>場景：</b>注音入門、聲調辨識、發音練習
+        </div>
+        <div class="url">aac/learn.html</div>
+      </div>
+
+      <div class="tool-card c-story">
+        <div class="icon-big">📖</div>
+        <h3>故事屋 · 說故事學生字</h3>
+        <div class="sub">閱讀理解訓練</div>
+        <p class="desc">6 個短篇故事，TTS 朗讀+生字標注音。讀完答 4-5 題閱讀測驗，可錄音念整段練口語。</p>
+        <div class="target">
+          <b>適用：</b>小一~小三、特教中高組閱讀理解<br>
+          <b>場景：</b>晨光時間、語文課延伸、家庭共讀
+        </div>
+        <div class="url">aac/story.html</div>
+      </div>
+
+      <div class="tool-card c-zhuyin">
+        <div class="icon-big">🔤</div>
+        <h3>注音拼讀練習</h3>
+        <div class="sub">3 階段循序漸進</div>
+        <p class="desc">配合皮克敏 30 生字。難度 1 認注音 → 難度 2 找注音 → 難度 3 自己拼讀，循序建立聲音與符號連結。</p>
+        <div class="target">
+          <b>適用：</b>注音熟悉但拼讀不熟、特教需要重複練習<br>
+          <b>場景：</b>注音複習、拼讀訓練、自學
+        </div>
+        <div class="url">aac/zhuyin.html</div>
+      </div>
+
+      <div class="tool-card c-pikmin">
+        <div class="icon-big">🌿</div>
+        <h3>皮克敏 × 台灣大冒險</h3>
+        <div class="sub">遊戲化國字學習</div>
+        <p class="desc">環島台灣 11 縣市，每地有當地特色生字 4 選 1。答對收集 7 色皮克敏，融合鄉土教育。</p>
+        <div class="target">
+          <b>適用：</b>小一~小二、普特生皆可，喜歡遊戲化的學生<br>
+          <b>場景：</b>國字鞏固、社會課延伸、下課休閒
+        </div>
+        <div class="url">aac/pikmin.html</div>
+      </div>
+
+      <div class="tool-card c-write">
+        <div class="icon-big">✍️</div>
+        <h3>翰林1下 運筆練習</h3>
+        <div class="sub">筆順動畫 + 描寫</div>
+        <p class="desc">翰林版小一下 30 個生字，5 單元分類。看筆順動畫、跟著描寫、不看提示測驗 3 種模式。</p>
+        <div class="target">
+          <b>適用：</b>小一下學期、特教運筆訓練<br>
+          <b>場景：</b>國語課練字、寒暑假鞏固、家庭作業
+        </div>
+        <div class="url">aac/write.html</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ Highlight ============ -->
+  <div class="highlight-box">
+    <div class="quote-mark">"</div>
+    <p>普通生與特殊生都能用<br>每位學生都有適合的學習工具</p>
+    <small>— 永芳特教教學資源網 設計理念</small>
+  </div>
+
+  <!-- ============ Use case Matrix ============ -->
+  <div class="matrix-section">
+    <h2 style="font-size:30px;text-align:center;color:#C53030;margin-bottom:14px;">📋 學生類型 × 推薦工具</h2>
+    <p style="text-align:center;color:#92400E;max-width:700px;margin:0 auto 30px;font-size:16px;">
+      根據學生能力，推薦不同工具組合
+    </p>
+
+    <div class="matrix">
+      <div class="matrix-card">
+        <h4>🚫 無口語 / 口語極少</h4>
+        <div class="student-type">例：重度多障、自閉症重度</div>
+        <div class="tools">
+          <span class="tool-pill">💬 AAC 溝通版</span>
+          <span class="tool-pill">📖 故事屋（聽）</span>
+        </div>
+      </div>
+
+      <div class="matrix-card">
+        <h4>😊 口語簡單 / 構音不清</h4>
+        <div class="student-type">例：智能輕中度、自閉症輕度</div>
+        <div class="tools">
+          <span class="tool-pill">💬 AAC</span>
+          <span class="tool-pill">🌱 注音島</span>
+          <span class="tool-pill">📖 故事屋</span>
+        </div>
+      </div>
+
+      <div class="matrix-card">
+        <h4>📚 注音入門 / 學習中</h4>
+        <div class="student-type">例：幼兒園大班、小一新生、特教中高組</div>
+        <div class="tools">
+          <span class="tool-pill">🌱 注音島</span>
+          <span class="tool-pill">🔤 拼讀</span>
+          <span class="tool-pill">📖 故事屋</span>
+        </div>
+      </div>
+
+      <div class="matrix-card">
+        <h4>✍️ 識字運筆練習</h4>
+        <div class="student-type">例：小一下、特教國語延伸</div>
+        <div class="tools">
+          <span class="tool-pill">✍️ 運筆</span>
+          <span class="tool-pill">🌿 皮克敏</span>
+          <span class="tool-pill">📖 故事屋</span>
+        </div>
+      </div>
+
+      <div class="matrix-card">
+        <h4>🌟 一般學習加強</h4>
+        <div class="student-type">例：普通班學生、需多元刺激</div>
+        <div class="tools">
+          <span class="tool-pill">🌿 皮克敏</span>
+          <span class="tool-pill">🔤 拼讀</span>
+          <span class="tool-pill">📖 故事屋</span>
+        </div>
+      </div>
+
+      <div class="matrix-card">
+        <h4>👨‍👩‍👧 家庭親子使用</h4>
+        <div class="student-type">家長與孩子共學</div>
+        <div class="tools">
+          <span class="tool-pill">📖 故事屋</span>
+          <span class="tool-pill">🌱 注音島</span>
+          <span class="tool-pill">💬 AAC</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Philosophy ============ -->
+  <div class="section">
+    <h2>💡 我們的設計理念</h2>
+    <p class="section-sub">每個工具都是「為真實學生」設計，不是抽象的功能規格</p>
+
+    <div class="philosophy">
+      <div class="phil-card">
+        <div class="icon">🎨</div>
+        <h3>客製化優先</h3>
+        <p>老師家長可以加自己學生的家人照片、常用詞、發音方式。</p>
+      </div>
+      <div class="phil-card">
+        <div class="icon">📱</div>
+        <h3>iPad PWA 友善</h3>
+        <p>網址加到主畫面就像 App，全螢幕運作，<b>離線可用</b>。</p>
+      </div>
+      <div class="phil-card">
+        <div class="icon">🎮</div>
+        <h3>遊戲化 + 獎勵</h3>
+        <p>皮克敏收集、星等、紙片動畫，特教生長期堅持的動力。</p>
+      </div>
+      <div class="phil-card">
+        <div class="icon">🔊</div>
+        <h3>多語音支援</h3>
+        <p>老師 vs 童音切換、降音模擬男聲、語速可調。</p>
+      </div>
+      <div class="phil-card">
+        <div class="icon">📊</div>
+        <h3>進度追蹤</h3>
+        <p>老師面板看到每位學生學會的注音、需加強的符號、星等。</p>
+      </div>
+      <div class="phil-card">
+        <div class="icon">💯</div>
+        <h3>完全免費</h3>
+        <p>所有工具開源、無廣告、無訂閱、無登入帳號。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ How to use ============ -->
+  <div class="section">
+    <h2>📱 如何取得使用</h2>
+    <p class="section-sub">沒有 App Store、沒有下載、沒有註冊，只需要一個瀏覽器</p>
+
+    <div class="howto">
+      <div class="qr-side">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=https%3A%2F%2Fwang2026378.github.io%2Faac%2F&margin=6" alt="教學資源網 QR">
+      </div>
+      <div>
+        <h2>📲 三步驟立即使用</h2>
+        <p><b>1. iPad 相機掃左邊 QR Code</b><br>不需下載 App，Safari 自動打開</p>
+        <p><b>2. 右上「分享 → 加入主畫面」</b><br>桌面出現 6 個工具的入口</p>
+        <p><b>3. 全螢幕運作、離線可用</b><br>無網路時也能用，是真正的 PWA</p>
+
+        <div class="url-box">https://wang2026378.github.io/aac/</div>
+
+        <div class="features">
+          <span class="feat">✅ 完全免費</span>
+          <span class="feat">✅ 無廣告</span>
+          <span class="feat">✅ 無登入</span>
+          <span class="feat">✅ 離線可用</span>
+          <span class="feat">✅ 持續更新</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Share ============ -->
+  <div class="section">
+    <h2>📣 推廣與分享</h2>
+    <p class="section-sub">教師研習、班親會、教學分享都歡迎使用，請與更多有需要的學生分享</p>
+
+    <div class="share-box">
+      <p style="font-size:18px;color:var(--primary-dark);font-weight:700;margin-bottom:6px;">這份資源完全免費，歡迎自由分享</p>
+      <p style="color:var(--muted);">研習簡報、班級網頁、家長 LINE 群組、教師臉書社團都可以引用</p>
+
+      <div class="share-buttons">
+        <a class="share-btn" href="qr.html">📱 給家長的 QR 總表</a>
+        <a class="share-btn green" href="./">🌐 進入資源網</a>
+        <a class="share-btn blue" href="javascript:window.print()">🖨️ 列印此頁</a>
+      </div>
+
+      <div style="margin-top:24px;padding:20px;background:#F9FAFB;border-radius:14px;text-align:left;max-width:700px;margin-left:auto;margin-right:auto;">
+        <p style="font-weight:700;color:var(--primary-dark);margin-bottom:6px;">💡 推廣建議使用情境</p>
+        <ul style="list-style:none;padding:0;color:var(--muted);line-height:2;">
+          <li>📚 <b>特教教師研習</b>：示範各工具使用、適用對象</li>
+          <li>👨‍👩‍👧 <b>班親會</b>：發 QR 總表給家長，回家陪孩子用</li>
+          <li>🏫 <b>校內分享</b>：與普通班老師分享，融合教育延伸</li>
+          <li>💬 <b>家長社群</b>：LINE 群組轉貼網址即可</li>
+          <li>📰 <b>教育媒體</b>：歡迎報導、引用、二次分享</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ Footer ============ -->
+<div class="footer">
+  <div class="school">🏫 高雄市永芳國小 · 特教教學資源網</div>
+  <p>為普通生與特殊生設計的數位教學工具</p>
+  <p class="small">
+    本網站持續更新中 · 歡迎自由分享 · ❤️ 感謝你支持特殊教育<br>
+    🌐 https://wang2026378.github.io/aac/
+  </p>
+</div>
+
+</body>
+</html>
