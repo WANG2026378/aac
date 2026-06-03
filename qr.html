@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>川普特師教學分享網 · 家長 QR 總表</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#FF6B6B">
+<link rel="icon" type="image/png" href="icons/portal-512.png?v=1">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
+  background: linear-gradient(180deg, #FFE4B5 0%, #FFF5E6 50%, #FFE4B5 100%);
+  color: #2D3748;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ==== Header ==== */
+.head {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  color: white;
+  border-radius: 24px;
+  padding: 30px 24px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(229, 62, 62, 0.2);
+  margin-bottom: 20px;
+  position: relative;
+}
+.brand {
+  display: inline-block;
+  background: rgba(255,255,255,0.25);
+  padding: 5px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.head h1 {
+  font-size: clamp(28px, 4.5vw, 42px);
+  font-weight: 900;
+  letter-spacing: -1px;
+  margin-bottom: 8px;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+}
+.head .accent { color: #FFE082; }
+.head .sub {
+  font-size: 17px;
+  opacity: 0.95;
+  max-width: 700px;
+  margin: 0 auto 14px;
+}
+.head .info {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.head .info span {
+  background: rgba(255,255,255,0.2);
+  padding: 6px 14px;
+  border-radius: 18px;
+  font-size: 14px;
+  backdrop-filter: blur(8px);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ==== Main Hub QR ==== */
+.main-hub {
+  background: white;
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.main-hub .hub-text {
+  flex: 1;
+  min-width: 240px;
+}
+.main-hub h2 {
+  font-size: 26px;
+  color: #C53030;
+  margin-bottom: 8px;
+}
+.main-hub p {
+  font-size: 15px;
+  color: #6B7280;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+.main-hub .url {
+  background: #FFF5E6;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 14px;
+  color: #C53030;
+  border: 1px solid #FDE68A;
+  word-break: break-all;
+}
+.main-hub .hub-qr {
+  background: white;
+  padding: 12px;
+  border-radius: 16px;
+  border: 4px solid #FF6B6B;
+  box-shadow: 0 6px 16px rgba(255,107,107,0.2);
+}
+.main-hub .hub-qr img {
+  display: block;
+  width: 220px;
+  height: 220px;
+}
+
+/* ==== Section title ==== */
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  margin-top: 24px;
+}
+.section-head h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #C53030;
+}
+.section-head .count {
+  background: #FF6B6B;
+  color: white;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ==== QR Grid ==== */
+.qr-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.qr-card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  border-top: 6px solid var(--c, #FF6B6B);
+  position: relative;
+  overflow: hidden;
+}
+.qr-card .card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.qr-card .icon {
+  font-size: 40px;
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  background: var(--bg, #FCE7F3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.qr-card .meta {
+  flex: 1;
+  min-width: 0;
+}
+.qr-card h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1F2937;
+  margin-bottom: 2px;
+}
+.qr-card .sub {
+  font-size: 13px;
+  color: #6B7280;
+}
+.qr-card .desc {
+  font-size: 13px;
+  color: #4B5563;
+  line-height: 1.6;
+  margin: 8px 0 12px;
+  min-height: 40px;
+}
+.qr-card .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.qr-card .tag {
+  background: var(--bg, #FCE7F3);
+  color: var(--c, #FF6B6B);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+.qr-card .qr-img {
+  background: white;
+  padding: 10px;
+  border-radius: 12px;
+  border: 2px solid var(--c, #FF6B6B);
+  margin: 0 auto 8px;
+  width: fit-content;
+}
+.qr-card .qr-img img {
+  display: block;
+  width: 160px;
+  height: 160px;
+}
+.qr-card .url {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 11px;
+  color: #6B7280;
+  text-align: center;
+  word-break: break-all;
+  background: #F9FAFB;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+/* Color schemes */
+.c-aac    { --c: #4299E1; --bg: #E3F2FD; }
+.c-learn  { --c: #10B981; --bg: #D1FAE5; }
+.c-story  { --c: #F59E0B; --bg: #FEF3C7; }
+.c-zhuyin { --c: #7C3AED; --bg: #DDD6FE; }
+.c-pikmin { --c: #48BB78; --bg: #C6F6D5; }
+.c-write  { --c: #EC4899; --bg: #FCE7F3; }
+
+/* ==== Instructions ==== */
+.steps-box {
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border-left: 6px solid #F59E0B;
+  border-radius: 16px;
+  padding: 22px 26px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+.steps-box h2 {
+  font-size: 22px;
+  color: #92400E;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.steps-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+.step {
+  background: white;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 2px solid #FDE68A;
+}
+.step .num {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background: #F59E0B;
+  color: white;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 32px;
+  font-weight: 800;
+  font-size: 16px;
+  margin-right: 6px;
+}
+.step .title {
+  font-weight: 800;
+  font-size: 16px;
+  color: #92400E;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+.step .desc {
+  font-size: 13px;
+  color: #6B7280;
+  line-height: 1.6;
+  margin-left: 38px;
+}
+
+/* ==== Footer ==== */
+.footer {
+  background: white;
+  border-radius: 16px;
+  padding: 22px 24px;
+  margin-top: 16px;
+  text-align: center;
+  color: #6B7280;
+  font-size: 14px;
+  line-height: 1.8;
+  border: 2px dashed #F9A8D4;
+}
+.footer .school {
+  font-weight: 800;
+  color: #C53030;
+  font-size: 17px;
+  margin-bottom: 6px;
+}
+.footer .heart {
+  color: #FF6B6B;
+  display: inline-block;
+  animation: heartbeat 1.5s infinite ease-in-out;
+}
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* ==== Print Button ==== */
+.print-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #FF6B6B;
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(255,107,107,0.4);
+  z-index: 100;
+  font-family: inherit;
+}
+.print-btn:hover { transform: translateY(-2px); }
+
+/* ==== Print styles ==== */
+@media print {
+  @page { size: A4; margin: 12mm; }
+  body { background: white !important; padding: 0; }
+  .head { background: #FF6B6B !important; -webkit-print-color-adjust: exact; }
+  .qr-card { break-inside: avoid; box-shadow: 0 0 0 1px #ddd !important; }
+  .main-hub { break-inside: avoid; }
+  .print-btn { display: none; }
+  .steps-box { break-inside: avoid; }
+  .qr-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">🖨️ 列印 / 存成 PDF</button>
+
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="head">
+    <div class="brand">🎓 永芳國小特教班</div>
+    <h1>川普<span class="accent">特師</span>教學分享網</h1>
+    <p class="sub">給家長的 iPad/平板使用指南 · 6 個教學工具 QR Code</p>
+    <div class="info">
+      <span>👨‍🏫 王川銘 老師</span>
+      <span>📚 6 個工具</span>
+      <span>📱 iPad/手機/平板可用</span>
+      <span>🌐 隨時更新</span>
+    </div>
+  </div>
+
+  <!-- Main Hub -->
+  <div class="main-hub">
+    <div class="hub-text">
+      <h2>🏠 推薦：先掃這一個</h2>
+      <p>掃描右邊 QR 進入「教學分享網」首頁，<b>所有工具都在裡面</b>，一次掃描即可使用全部資源。也可以直接掃下方各個工具的 QR Code 進去用。</p>
+      <div class="url">https://wang2026378.github.io/aac/</div>
+    </div>
+    <div class="hub-qr">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=https%3A%2F%2Fwang2026378.github.io%2Faac%2F&margin=8" alt="教學分享網入口">
+    </div>
+  </div>
+
+  <!-- Tools -->
+  <div class="section-head">
+    <h2>🛠️ 各工具獨立 QR Code</h2>
+    <span class="count">6 個</span>
+  </div>
+
+  <div class="qr-grid">
+
+    <!-- 1. AAC 溝通版 -->
+    <div class="qr-card c-aac">
+      <div class="card-head">
+        <div class="icon">💬</div>
+        <div class="meta">
+          <h3>iPad 溝通版 AAC</h3>
+          <div class="sub">輔助溝通系統</div>
+        </div>
+      </div>
+      <div class="desc">大按鈕中文語音溝通板，13 大類 200+ 詞，點按發音、組句念整句，可上傳家人照片。</div>
+      <div class="tags">
+        <span class="tag">中文 TTS</span>
+        <span class="tag">13 分類</span>
+        <span class="tag">家人照片</span>
+      </div>
+      <div class="qr-img">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fwang2026378.github.io%2Faac%2Ftalk.html&margin=6" alt="溝通版">
+      </div>
+      <div class="url">aac/talk.html</div>
+    </div>
+
+    <!-- 2. 注音學習島 -->
+    <div class="qr-card c-learn">
+      <div class="card-head">
+        <div class="icon">🌱</div>
+        <div class="meta">
+          <h3>皮克敏注音學習島</h3>
+          <div class="sub">完整 37 注音 + 測驗</div>
+        </div>
+      </div>
+      <div class="desc">7 個皮克敏關卡學 37 注音符號。看 → 跟讀 → 錄音 → 認字 → 闖關。含聲調教學+老師面板+最終測驗。</div>
+      <div class="tags">
+        <span class="tag">7 關</span>
+        <span class="tag">37 注音</span>
+        <span class="tag">錄音回放</span>
+        <span class="tag">老師面板</span>
+      </div>
+      <div class="qr-img">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fwang2026378.github.io%2Faac%2Flearn.html&margin=6" alt="注音學習島">
+      </div>
+      <div class="url">aac/learn.html</div>
+    </div>
+
+    <!-- 3. 故事屋 -->
+    <div class="qr-card c-story">
+      <div class="card-head">
+        <div class="icon">📖</div>
+        <div class="meta">
+          <h3>故事屋 · 說故事學生字</h3>
+          <div class="sub">6 個故事 + 閱讀測驗</div>
+        </div>
+      </div>
+      <div class="desc">春天小花、小狗找媽媽等 6 個故事。聽 TTS、生字標注音、答閱讀題、錄音念故事練口語。</div>
+      <div class="tags">
+        <span class="tag">6 故事</span>
+        <span class="tag">閱讀測驗</span>
+        <span class="tag">錄音朗讀</span>
+      </div>
+      <div class="qr-img">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fwang2026378.github.io%2Faac%2Fstory.html&margin=6" alt="故事屋">
+      </div>
+      <div class="url">aac/story.html</div>
+    </div>
+
+    <!-- 4. 注音拼讀 -->
+    <div class="qr-card c-zhuyin">
+      <div class="card-head">
+        <div class="icon">🔤</div>
+        <div class="meta">
+          <h3>注音拼讀練習</h3>
+          <div class="sub">30 生字 · 3 階段</div>
+        </div>
+      </div>
+      <div class="desc">配合皮克敏 30 生字練拼讀。🌱 認注音 → 🌿 找注音 → 🌳 拼注音 三階段循序漸進。</div>
+      <div class="tags">
+        <span class="tag">3 階段</span>
+        <span class="tag">30 生字</span>
+        <span class="tag">直書注音</span>
+      </div>
+      <div class="qr-img">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fwang2026378.github.io%2Faac%2Fzhuyin.html&margin=6" alt="注音拼讀">
+      </div>
+      <div class="url">aac/zhuyin.html</div>
+    </div>
+
+    <!-- 5. 皮克敏冒險 -->
+    <div class="qr-card c-pikmin">
+      <div class="card-head">
+        <div class="icon">🌿</div>
+        <div class="meta">
+          <h3>皮克敏 × 台灣大冒險</h3>
+          <div class="sub">國字學習遊戲</div>
+        </div>
+      </div>
+      <div class="desc">環島台灣 11 個縣市，30 個生字 4 選 1。答對收集 7 色皮克敏，學國字看圖配字超好玩。</div>
+      <div class="tags">
+        <span class="tag">11 縣市</span>
+        <span class="tag">30 生字</span>
+        <span class="tag">7 色皮克敏</span>
+      </div>
+      <div class="qr-img">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fwang2026378.github.io%2Faac%2Fpikmin.html&margin=6" alt="皮克敏冒險">
+      </div>
+      <div class="url">aac/pikmin.html</div>
+    </div>
+
+    <!-- 6. 翰林1下 運筆 -->
+    <div class="qr-card c-write">
+      <div class="card-head">
+        <div class="icon">✍️</div>
+        <div class="meta">
+          <h3>翰林1下 運筆練習</h3>
+          <div class="sub">5 單元 30 生字</div>
+        </div>
+      </div>
+      <div class="desc">翰林版小一下學期 30 個生字筆順動畫+描寫練習。看筆順 → 跟著描 → 不看提示測驗 3 種模式。</div>
+      <div class="tags">
+        <span class="tag">5 單元</span>
+        <span class="tag">筆順動畫</span>
+        <span class="tag">3 星等</span>
+      </div>
+      <div class="qr-img">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fwang2026378.github.io%2Faac%2Fwrite.html&margin=6" alt="翰林1下運筆">
+      </div>
+      <div class="url">aac/write.html</div>
+    </div>
+
+  </div>
+
+  <!-- Steps -->
+  <div class="steps-box">
+    <h2>📱 怎麼用 iPad / 手機掃 QR Code?</h2>
+    <div class="steps-list">
+      <div class="step">
+        <span class="num">1</span><span class="title">打開「相機」</span>
+        <div class="desc">iPad/iPhone 內建相機 App 即可，不用下載額外的掃描器</div>
+      </div>
+      <div class="step">
+        <span class="num">2</span><span class="title">對準 QR Code</span>
+        <div class="desc">不需要按拍照，鏡頭對準 QR Code 1-2 秒會自動辨識</div>
+      </div>
+      <div class="step">
+        <span class="num">3</span><span class="title">點黃色橫條</span>
+        <div class="desc">畫面上方會跳出黃色橫條，點下去 Safari 自動打開</div>
+      </div>
+      <div class="step">
+        <span class="num">4</span><span class="title">加入主畫面</span>
+        <div class="desc">右上「分享」按鈕 → 滑下找「加入主畫面」 → 加入</div>
+      </div>
+      <div class="step">
+        <span class="num">5</span><span class="title">桌面圖示</span>
+        <div class="desc">桌面就會出現該工具的圖示，<b>離線也能用</b>！</div>
+      </div>
+      <div class="step">
+        <span class="num">6</span><span class="title">隨時更新</span>
+        <div class="desc">老師會持續更新內容，網頁版本自動同步最新版</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="school">🏫 高雄市永芳國小 · 特教一班</div>
+    <p>王川銘 · 孫偉倫 老師 共同經營</p>
+    <p style="margin-top:6px;font-size:13px;">
+      為特殊需求學生與家長製作，<span class="heart">❤️</span> 持續更新中
+    </p>
+    <p style="margin-top:8px;font-size:12px;opacity:0.7;">© 2026 川普特師教學分享網 · 列印日期: <span id="printDate"></span></p>
+  </div>
+
+</div>
+
+<script>
+document.getElementById('printDate').textContent = new Date().toLocaleDateString('zh-TW');
+</script>
+</body>
+</html>
