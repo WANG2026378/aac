@@ -540,10 +540,42 @@ body {
     <h2 id="mapTitle">🗺️ 學習地圖</h2>
     <div class="topbar-stat">🌱 皮克敏 <span class="val" id="pikminCount">0</span>/7</div>
     <div class="topbar-stat">📚 學會 <span class="val" id="symbolCount">0</span>/37</div>
+    <button class="icon-btn" onclick="showTones()">🎵 聲調</button>
+    <button class="icon-btn" onclick="showMiniGames()">🎮 小遊戲</button>
     <button class="icon-btn" onclick="showCollection()">📔 收藏</button>
+    <button class="icon-btn" onclick="showTeacher()">🎓 老師</button>
     <button class="icon-btn" onclick="goIntro()">🏠 首頁</button>
   </div>
   <div class="map-grid" id="mapGrid"></div>
+</div>
+
+<!-- ============ TONES (聲調教學) ============ -->
+<div class="screen" id="tones">
+  <div class="topbar">
+    <button class="icon-btn" onclick="goMap()">🗺️ 地圖</button>
+    <h2>🎵 聲調教學</h2>
+  </div>
+  <div class="learn-container" id="tonesContent"></div>
+</div>
+
+<!-- ============ MINI GAMES ============ -->
+<div class="screen" id="games">
+  <div class="topbar">
+    <button class="icon-btn" onclick="goMap()">🗺️ 地圖</button>
+    <h2>🎮 注音小遊戲</h2>
+  </div>
+  <div class="learn-container" id="gamesContent"></div>
+</div>
+
+<!-- ============ TEACHER DASHBOARD ============ -->
+<div class="screen" id="teacher">
+  <div class="topbar">
+    <button class="icon-btn" onclick="goMap()">🗺️ 地圖</button>
+    <h2>🎓 學習報告</h2>
+    <button class="icon-btn" onclick="window.print()">🖨️ 列印</button>
+    <button class="icon-btn" onclick="resetProgress()">🔄 重置</button>
+  </div>
+  <div class="learn-container" id="teacherContent"></div>
 </div>
 
 <!-- ============ LEARN ============ -->
@@ -1178,6 +1210,385 @@ function renderCollection() {
     cell.onclick = () => speak(s.word + '的' + s.name);
     grid.appendChild(cell);
   });
+}
+
+// ============ TONES 聲調教學 ============
+const TONES = [
+  { mark:'ˉ', name:'一聲', desc:'高高平平', word:'媽', zhuyin:'ㄇㄚ', example:'媽媽', emoji:'👩' },
+  { mark:'ˊ', name:'二聲', desc:'從低往高', word:'麻', zhuyin:'ㄇㄚˊ', example:'麻油', emoji:'🌾' },
+  { mark:'ˇ', name:'三聲', desc:'先低再高', word:'馬', zhuyin:'ㄇㄚˇ', example:'白馬', emoji:'🐴' },
+  { mark:'ˋ', name:'四聲', desc:'從高到低', word:'罵', zhuyin:'ㄇㄚˋ', example:'被罵', emoji:'😠' },
+  { mark:'˙', name:'輕聲', desc:'輕輕短短', word:'嗎', zhuyin:'ㄇㄚ˙', example:'好嗎', emoji:'❓' },
+];
+
+function showTones() { showScreen('tones'); renderTones(); }
+function renderTones() {
+  const content = document.getElementById('tonesContent');
+  content.innerHTML = `
+    <div style="text-align:center;background:rgba(255,255,255,0.95);padding:20px;border-radius:20px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+      <h2 style="color:#047857;font-size:24px;margin-bottom:10px;">🎵 注音 5 種聲調</h2>
+      <p style="color:#6B7280;">同樣的 ㄇㄚ，不同聲調，意思就不同！點 🔊 聽聽看</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;width:100%;">
+      ${TONES.map((t, i) => {
+        const tcolor = ['#EF4444','#F59E0B','#10B981','#3B82F6','#A855F7'][i];
+        return `<div style="background:white;border:4px solid ${tcolor};border-radius:20px;padding:20px;text-align:center;cursor:pointer;" onclick="speakTone(${i})">
+          <div style="font-size:60px;font-family:'標楷體',serif;font-weight:900;color:${tcolor};margin-bottom:6px;line-height:1;">
+            ${t.word}<span style="font-size:0.5em;">${t.mark==='ˉ'?'':t.mark}</span>
+          </div>
+          <div style="font-size:20px;color:${tcolor};font-weight:bold;">${t.name}</div>
+          <div style="font-size:14px;color:#6B7280;margin:4px 0;">${t.desc}</div>
+          <div style="background:#F3F4F6;padding:6px 12px;border-radius:10px;font-size:14px;color:#4B5563;margin-top:8px;">
+            例：${t.emoji} ${t.example}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="background:linear-gradient(135deg,#FEF3C7,#FFFBEB);border-radius:18px;padding:20px;border:3px dashed #F59E0B;text-align:center;">
+      <h3 style="color:#92400E;font-size:18px;margin-bottom:10px;">🎯 聲調測驗</h3>
+      <p style="color:#92400E;margin-bottom:14px;">聽聲音，選對的聲調</p>
+      <button class="btn btn-primary" onclick="startToneQuiz()">▶️ 開始聲調測驗</button>
+    </div>
+  `;
+  setTimeout(() => speak('注音有五種聲調，一聲、二聲、三聲、四聲、輕聲'), 300);
+}
+function speakTone(idx) {
+  const t = TONES[idx];
+  speak(t.word + '，' + t.name);
+}
+
+let toneQuizIdx = 0, toneQuizCorrect = 0, toneQuizQs = [];
+function startToneQuiz() {
+  toneQuizQs = [];
+  for (let i = 0; i < 10; i++) {
+    toneQuizQs.push(TONES[Math.floor(Math.random()*TONES.length)]);
+  }
+  toneQuizIdx = 0; toneQuizCorrect = 0;
+  renderToneQuiz();
+}
+function renderToneQuiz() {
+  if (toneQuizIdx >= toneQuizQs.length) {
+    document.getElementById('tonesContent').innerHTML = `
+      <div style="background:white;border-radius:20px;padding:30px;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,0.1);">
+        <span style="font-size:80px;">🏆</span>
+        <h2 style="color:#047857;font-size:28px;margin:10px 0;">聲調測驗完成!</h2>
+        <p style="font-size:18px;">答對 <b style="color:#10B981;font-size:28px;">${toneQuizCorrect}</b> / ${toneQuizQs.length} 題</p>
+        <p style="color:#6B7280;margin:10px 0;">正確率 ${Math.round(toneQuizCorrect/toneQuizQs.length*100)}%</p>
+        <div class="btn-row" style="margin-top:20px;">
+          <button class="btn btn-primary" onclick="startToneQuiz()">再測一次</button>
+          <button class="btn btn-secondary" onclick="renderTones()">回聲調教學</button>
+        </div>
+      </div>`;
+    // 記錄
+    state.toneScore = Math.max(state.toneScore || 0, toneQuizCorrect);
+    saveState();
+    fireConfetti();
+    return;
+  }
+  const t = toneQuizQs[toneQuizIdx];
+  const opts = TONES.slice().sort(() => Math.random()-0.5);
+  document.getElementById('tonesContent').innerHTML = `
+    <div style="background:white;border-radius:20px;padding:24px;box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+      <div style="text-align:center;color:#6B7280;font-size:14px;">第 ${toneQuizIdx+1} / ${toneQuizQs.length} 題 · 答對 ${toneQuizCorrect}</div>
+      <div style="text-align:center;margin:20px 0;">
+        <button class="btn btn-warning" onclick="speak('${t.word}，${t.name}')">🔊 聽聲音</button>
+      </div>
+      <p style="text-align:center;color:#374151;font-size:18px;margin-bottom:14px;">這是哪個聲調？</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;">
+        ${opts.map(o => `<button class="option-btn" style="--c:#F59E0B;min-height:90px;font-size:36px;" data-name="${o.name}">${o.name}</button>`).join('')}
+      </div>
+      <div class="instruction" id="toneQMsg" style="--c:#F59E0B;margin-top:14px;">點選聲調作答</div>
+    </div>
+  `;
+  document.querySelectorAll('.option-btn').forEach(b => b.onclick = () => {
+    if (b.classList.contains('correct') || b.classList.contains('wrong')) return;
+    const msg = document.getElementById('toneQMsg');
+    if (b.dataset.name === t.name) {
+      b.classList.add('correct');
+      msg.textContent = '✅ ' + PRAISE[Math.floor(Math.random()*PRAISE.length)];
+      msg.className = 'instruction success';
+      toneQuizCorrect++;
+      speak(PRAISE[Math.floor(Math.random()*PRAISE.length)]);
+    } else {
+      b.classList.add('wrong');
+      document.querySelectorAll('.option-btn').forEach(x => {
+        if (x.dataset.name === t.name) x.classList.add('correct');
+      });
+      msg.innerHTML = `❌ 正解是 <b>${t.name}</b>`;
+      msg.className = 'instruction error';
+      speak(t.word + '是' + t.name);
+    }
+    setTimeout(() => { toneQuizIdx++; renderToneQuiz(); }, 1800);
+  });
+  setTimeout(() => speak(t.word + '，' + t.name), 300);
+}
+
+// ============ MINI GAMES ============
+function showMiniGames() { showScreen('games'); renderGameMenu(); }
+function renderGameMenu() {
+  document.getElementById('gamesContent').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;width:100%;">
+      <div onclick="startPairs()" style="background:white;border-radius:20px;padding:24px;text-align:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.1);border:4px solid #A855F7;">
+        <div style="font-size:64px;">🃏</div>
+        <h3 style="color:#7E22CE;font-size:22px;margin:8px 0;">記憶配對</h3>
+        <p style="color:#6B7280;">翻牌找一樣的注音，<br>練記憶力!</p>
+        ${state.gameScores?.pairs ? `<p style="color:#F59E0B;margin-top:8px;">⭐ 最佳：${state.gameScores.pairs} 步</p>` : ''}
+      </div>
+      <div onclick="startSpeedQuiz()" style="background:white;border-radius:20px;padding:24px;text-align:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.1);border:4px solid #EF4444;">
+        <div style="font-size:64px;">⚡</div>
+        <h3 style="color:#B91C1C;font-size:22px;margin:8px 0;">快問快答</h3>
+        <p style="color:#6B7280;">60 秒內<br>能答對幾題?</p>
+        ${state.gameScores?.speed ? `<p style="color:#F59E0B;margin-top:8px;">⭐ 最佳：${state.gameScores.speed} 題</p>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// 配對遊戲
+let pairsCards = [], pairsFlipped = [], pairsMatched = 0, pairsMoves = 0, pairsLock = false;
+function startPairs() {
+  const seen = SYMBOLS.filter(s => state.symbols[s.z]?.seen);
+  const pool = (seen.length >= 6 ? seen : SYMBOLS).slice(0).sort(() => Math.random()-0.5).slice(0, 6);
+  pairsCards = [...pool, ...pool].sort(() => Math.random()-0.5).map((s, i) => ({ ...s, id: i, matched: false }));
+  pairsFlipped = []; pairsMatched = 0; pairsMoves = 0; pairsLock = false;
+  renderPairs();
+}
+function renderPairs() {
+  document.getElementById('gamesContent').innerHTML = `
+    <div style="background:rgba(255,255,255,0.95);border-radius:18px;padding:14px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="color:#7E22CE;font-weight:bold;font-size:18px;">🃏 記憶配對</span>
+      <span style="color:#6B7280;">步數：<b style="color:#10B981;font-size:20px;">${pairsMoves}</b></span>
+      <span style="color:#6B7280;">配對：<b style="color:#10B981;font-size:20px;">${pairsMatched}</b>/6</span>
+      <button class="btn btn-secondary" onclick="startPairs()" style="padding:8px 14px;font-size:14px;">🔄 重新</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:10px;max-width:480px;margin:0 auto;width:100%;">
+      ${pairsCards.map((c, i) => `<div class="pair-card${pairsFlipped.includes(i)||c.matched?' open':''}${c.matched?' matched':''}" onclick="flipCard(${i})" style="aspect-ratio:1;border-radius:14px;background:${pairsFlipped.includes(i)||c.matched?'linear-gradient(135deg,#DDD6FE,#FFFFFF)':'#A855F7'};display:flex;align-items:center;justify-content:center;font-family:'標楷體',serif;font-weight:bold;color:${pairsFlipped.includes(i)||c.matched?'#7E22CE':'transparent'};cursor:${c.matched?'default':'pointer'};font-size:48px;border:4px solid ${c.matched?'#10B981':'transparent'};box-shadow:0 4px 12px rgba(0,0,0,0.1);transition:all 0.2s;">${c.z}</div>`).join('')}
+    </div>
+    <div class="instruction" style="--c:#A855F7;margin-top:16px;">點兩張牌找出一樣的注音</div>
+  `;
+}
+function flipCard(i) {
+  if (pairsLock) return;
+  const c = pairsCards[i];
+  if (c.matched || pairsFlipped.includes(i)) return;
+  pairsFlipped.push(i);
+  speak(c.name);
+  renderPairs();
+  if (pairsFlipped.length === 2) {
+    pairsMoves++;
+    pairsLock = true;
+    const [a, b] = pairsFlipped;
+    if (pairsCards[a].z === pairsCards[b].z) {
+      pairsCards[a].matched = true;
+      pairsCards[b].matched = true;
+      pairsMatched++;
+      pairsFlipped = [];
+      pairsLock = false;
+      renderPairs();
+      if (pairsMatched === 6) {
+        setTimeout(() => {
+          fireConfetti();
+          state.gameScores = state.gameScores || {};
+          if (!state.gameScores.pairs || pairsMoves < state.gameScores.pairs) state.gameScores.pairs = pairsMoves;
+          saveState();
+          document.getElementById('gamesContent').insertAdjacentHTML('beforeend', `
+            <div style="background:white;border-radius:20px;padding:24px;text-align:center;margin-top:14px;">
+              <span style="font-size:60px;">🎉</span>
+              <h2 style="color:#047857;font-size:24px;">完成! ${pairsMoves} 步</h2>
+              <div class="btn-row" style="margin-top:16px;">
+                <button class="btn btn-primary" onclick="startPairs()">再玩一次</button>
+                <button class="btn btn-secondary" onclick="renderGameMenu()">回小遊戲</button>
+              </div>
+            </div>`);
+          speak('太棒了，配對完成！');
+        }, 600);
+      }
+    } else {
+      setTimeout(() => {
+        pairsFlipped = [];
+        pairsLock = false;
+        renderPairs();
+      }, 1100);
+    }
+  }
+}
+
+// 快問快答
+let speedScore = 0, speedTime = 60, speedTimer = null;
+function startSpeedQuiz() {
+  speedScore = 0; speedTime = 60;
+  if (speedTimer) clearInterval(speedTimer);
+  speedTimer = setInterval(() => {
+    speedTime--;
+    const t = document.getElementById('speedTime');
+    if (t) t.textContent = speedTime;
+    if (speedTime <= 0) endSpeedQuiz();
+  }, 1000);
+  renderSpeed();
+}
+function renderSpeed() {
+  const seen = SYMBOLS.filter(s => state.symbols[s.z]?.seen);
+  const pool = seen.length >= 4 ? seen : SYMBOLS;
+  const sym = pool[Math.floor(Math.random()*pool.length)];
+  const others = SYMBOLS.filter(x => x.z !== sym.z);
+  const opts = [sym.z];
+  while (opts.length < 4) {
+    const d = others[Math.floor(Math.random()*others.length)];
+    if (!opts.includes(d.z)) opts.push(d.z);
+  }
+  opts.sort(() => Math.random()-0.5);
+  document.getElementById('gamesContent').innerHTML = `
+    <div style="background:rgba(255,255,255,0.95);border-radius:18px;padding:14px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="color:#B91C1C;font-weight:bold;font-size:18px;">⚡ 快問快答</span>
+      <span style="color:#6B7280;">⏱ <b id="speedTime" style="color:#EF4444;font-size:24px;">${speedTime}</b> 秒</span>
+      <span style="color:#6B7280;">分數 <b style="color:#10B981;font-size:24px;">${speedScore}</b></span>
+      <button class="btn btn-secondary" onclick="clearInterval(speedTimer); renderGameMenu();" style="padding:8px 14px;font-size:14px;">⏹ 停止</button>
+    </div>
+    <div style="text-align:center;background:white;border-radius:20px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+      <div style="font-size:48px;margin-bottom:6px;">${sym.emoji}</div>
+      <div style="font-size:32px;font-weight:bold;color:#B91C1C;margin-bottom:14px;">「${sym.word}」的開頭注音?</div>
+      <button class="btn btn-warning" onclick="speak('${sym.word}的${sym.name}')">🔊 聽</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;max-width:500px;margin:0 auto;width:100%;">
+      ${opts.map(o => `<button class="option-btn" style="--c:#EF4444;min-height:90px;" data-opt="${o}">${o}</button>`).join('')}
+    </div>
+  `;
+  document.querySelectorAll('.option-btn').forEach(b => b.onclick = () => {
+    if (speedTime <= 0) return;
+    if (b.dataset.opt === sym.z) { speedScore++; b.classList.add('correct'); }
+    else { b.classList.add('wrong'); }
+    setTimeout(renderSpeed, 400);
+  });
+  setTimeout(() => speak(sym.word + '的' + sym.name), 200);
+}
+function endSpeedQuiz() {
+  clearInterval(speedTimer);
+  state.gameScores = state.gameScores || {};
+  if (!state.gameScores.speed || speedScore > state.gameScores.speed) state.gameScores.speed = speedScore;
+  saveState();
+  fireConfetti();
+  document.getElementById('gamesContent').innerHTML = `
+    <div style="background:white;border-radius:20px;padding:30px;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,0.1);">
+      <span style="font-size:72px;">⚡</span>
+      <h2 style="color:#B91C1C;font-size:28px;margin:10px 0;">時間到!</h2>
+      <p style="font-size:20px;">答對 <b style="color:#10B981;font-size:36px;">${speedScore}</b> 題</p>
+      ${state.gameScores.speed >= speedScore ? `<p style="color:#F59E0B;">🏆 個人最佳 ${state.gameScores.speed} 題</p>` : ''}
+      <div class="btn-row" style="margin-top:20px;">
+        <button class="btn btn-primary" onclick="startSpeedQuiz()">再玩一次</button>
+        <button class="btn btn-secondary" onclick="renderGameMenu()">回小遊戲</button>
+      </div>
+    </div>
+  `;
+  speak('時間到，' + state.name + ' 答對 ' + speedScore + ' 題');
+}
+
+// ============ TEACHER DASHBOARD ============
+function showTeacher() { showScreen('teacher'); renderTeacher(); }
+function renderTeacher() {
+  const learned = Object.values(state.symbols).filter(s => s.seen).length;
+  const totalLearnedAttempts = Object.values(state.symbols).reduce((sum, s) => sum + (s.correct||0) + (s.wrong||0), 0);
+  const totalCorrect = Object.values(state.symbols).reduce((sum, s) => sum + (s.correct||0), 0);
+  const overallAcc = totalLearnedAttempts ? Math.round(totalCorrect/totalLearnedAttempts*100) : 0;
+  const clearedLevels = LEVELS.filter(lv => state.levels[lv.id]?.cleared).length;
+
+  // 各 level 統計
+  const levelStats = LEVELS.map(lv => {
+    const syms = SYMBOLS.filter(s => s.level === lv.id);
+    const learnedHere = syms.filter(s => state.symbols[s.z]?.seen).length;
+    return { ...lv, learned: learnedHere, total: syms.length };
+  });
+
+  // 需加強的符號（正確率 < 70%）
+  const weakSymbols = SYMBOLS.filter(s => {
+    const st = state.symbols[s.z]; if (!st || !st.seen) return false;
+    const total = (st.correct||0) + (st.wrong||0); if (total < 2) return false;
+    return (st.correct||0)/total < 0.7;
+  });
+
+  document.getElementById('teacherContent').innerHTML = `
+    <div style="background:white;border-radius:20px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+      <h2 style="color:#047857;font-size:22px;margin-bottom:14px;">📊 ${state.name} 的學習報告</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;">
+        <div style="background:linear-gradient(135deg,#ECFDF5,#D1FAE5);padding:18px;border-radius:14px;text-align:center;">
+          <div style="font-size:36px;font-weight:900;color:#047857;">${learned}/37</div>
+          <div style="color:#6B7280;font-size:13px;">學會的注音</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#FEF3C7,#FDE68A);padding:18px;border-radius:14px;text-align:center;">
+          <div style="font-size:36px;font-weight:900;color:#B45309;">${clearedLevels}/7</div>
+          <div style="color:#6B7280;font-size:13px;">通過關卡</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#DBEAFE,#BFDBFE);padding:18px;border-radius:14px;text-align:center;">
+          <div style="font-size:36px;font-weight:900;color:#1D4ED8;">${overallAcc}%</div>
+          <div style="color:#6B7280;font-size:13px;">整體正確率</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#FCE7F3,#FBCFE8);padding:18px;border-radius:14px;text-align:center;">
+          <div style="font-size:36px;font-weight:900;color:#BE185D;">${state.finalGrade || '—'}</div>
+          <div style="color:#6B7280;font-size:13px;">${state.finalScore ? state.finalScore + '%' : '尚未測驗'}</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:white;border-radius:20px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+      <h3 style="color:#047857;font-size:18px;margin-bottom:12px;">📚 各關卡進度</h3>
+      ${levelStats.map(s => {
+        const pct = (s.learned/s.total*100);
+        return `<div style="margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;">
+            <b style="color:${s.color};">關卡 ${s.id} · ${s.name}</b>
+            <span>${s.learned}/${s.total}${state.levels[s.id]?.cleared?' ✓':''}</span>
+          </div>
+          <div style="background:#E5E7EB;height:10px;border-radius:5px;overflow:hidden;">
+            <div style="background:${s.color};height:100%;width:${pct}%;"></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    ${weakSymbols.length > 0 ? `<div style="background:white;border-radius:20px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+      <h3 style="color:#B91C1C;font-size:18px;margin-bottom:12px;">⚠️ 需加強的符號（正確率 &lt; 70%）</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        ${weakSymbols.map(s => {
+          const st = state.symbols[s.z];
+          const total = (st.correct||0)+(st.wrong||0);
+          const acc = Math.round((st.correct||0)/total*100);
+          return `<div style="background:#FEE2E2;border:2px solid #EF4444;border-radius:12px;padding:10px;text-align:center;min-width:80px;">
+            <div style="font-size:32px;font-family:'標楷體',serif;font-weight:bold;color:#B91C1C;">${s.z}</div>
+            <div style="font-size:12px;color:#6B7280;">${acc}% (${st.correct||0}/${total})</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>` : ''}
+
+    <div style="background:white;border-radius:20px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+      <h3 style="color:#047857;font-size:18px;margin-bottom:12px;">🎮 其他成就</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;">
+        <div style="background:#FEF3C7;padding:12px;border-radius:10px;text-align:center;">
+          <div style="font-size:24px;font-weight:bold;color:#92400E;">${state.toneScore || 0}/10</div>
+          <div style="color:#6B7280;font-size:13px;">🎵 聲調測驗</div>
+        </div>
+        <div style="background:#F3E8FF;padding:12px;border-radius:10px;text-align:center;">
+          <div style="font-size:24px;font-weight:bold;color:#7E22CE;">${state.gameScores?.pairs || '—'}</div>
+          <div style="color:#6B7280;font-size:13px;">🃏 配對最低步數</div>
+        </div>
+        <div style="background:#FEE2E2;padding:12px;border-radius:10px;text-align:center;">
+          <div style="font-size:24px;font-weight:bold;color:#B91C1C;">${state.gameScores?.speed || '—'}</div>
+          <div style="color:#6B7280;font-size:13px;">⚡ 快答最高分</div>
+        </div>
+      </div>
+    </div>
+
+    <p style="text-align:center;color:#6B7280;font-size:13px;margin-top:10px;">
+      📅 ${new Date().toLocaleDateString('zh-TW')} 報告 · 可按右上 🖨️ 列印給家長
+    </p>
+  `;
+}
+
+function resetProgress() {
+  if (!confirm('確定要重置所有進度嗎？這個動作無法復原！')) return;
+  state = freshState();
+  state.name = document.getElementById('playerName').value.trim() || '梅梅';
+  saveState();
+  renderTeacher();
 }
 
 // ============ Confetti ============

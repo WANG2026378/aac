@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="故事屋">
+<meta name="theme-color" content="#F59E0B">
+<link rel="apple-touch-icon" href="icons/story-180.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/story-180.png?v=1">
+<link rel="apple-touch-icon" sizes="512x512" href="icons/story-512.png?v=1">
+<link rel="icon" type="image/png" href="icons/story-512.png?v=1">
+<title>說故事學生字 · 故事屋</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body {
+  font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
+  background: linear-gradient(180deg, #FEF3C7 0%, #FED7AA 50%, #FECACA 100%);
+  color: #2D3748;
+  min-height: 100vh;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.screen { display: none; min-height: 100vh; padding: 16px; }
+.screen.active { display: flex; flex-direction: column; }
+
+.topbar {
+  background: rgba(255,255,255,0.92);
+  border-radius: 16px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.topbar h2 { font-size: 18px; color: #92400E; margin-right: auto; }
+.topbar-stat {
+  background: white;
+  border: 2px solid #FDE68A;
+  border-radius: 10px;
+  padding: 4px 10px;
+  font-weight: bold;
+  font-size: 14px;
+}
+.topbar-stat .val { color: #F59E0B; font-size: 17px; }
+.icon-btn {
+  background: white;
+  border: 2px solid #FDE68A;
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+/* ========== INTRO ========== */
+#intro { align-items: center; justify-content: flex-start; text-align: center; padding: 30px 20px; }
+#intro h1 {
+  font-size: clamp(36px, 6vw, 52px);
+  color: #92400E;
+  text-shadow: 3px 3px 0 #fff, 6px 6px 0 rgba(0,0,0,0.1);
+  margin-bottom: 12px;
+}
+#intro .sub {
+  font-size: 17px;
+  color: #92400E;
+  background: rgba(255,255,255,0.7);
+  padding: 10px 20px;
+  border-radius: 18px;
+  margin-bottom: 24px;
+}
+.story-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  max-width: 1100px;
+  width: 100%;
+}
+.story-card {
+  background: rgba(255,255,255,0.95);
+  border-radius: 20px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 3px solid transparent;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  text-align: left;
+}
+.story-card:hover { transform: translateY(-4px); border-color: #F59E0B; }
+.story-card.done { background: linear-gradient(135deg, #ECFDF5, #FFFFFF); border-color: #10B981; }
+.story-card .cover {
+  font-size: 90px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.story-card h3 {
+  font-size: 22px;
+  color: #92400E;
+  margin-bottom: 4px;
+}
+.story-card .meta {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  color: #92400E;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+.story-card .meta span {
+  background: #FEF3C7;
+  padding: 2px 10px;
+  border-radius: 10px;
+}
+.story-card .progress {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #6B7280;
+}
+.story-card .stars { color: #F59E0B; }
+
+.name-input {
+  font-size: 17px;
+  color: #92400E;
+  margin: 20px 0;
+}
+.name-input input {
+  font-size: 20px;
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: 3px solid #F59E0B;
+  text-align: center;
+  width: 200px;
+  font-family: inherit;
+  background: white;
+}
+
+/* ========== STORY READING ========== */
+.read-container {
+  flex: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.story-cover-big {
+  background: rgba(255,255,255,0.95);
+  border-radius: 24px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+.story-cover-big .emoji { font-size: 140px; display: block; }
+.story-cover-big h2 { font-size: 32px; color: #92400E; margin: 12px 0 6px; }
+.story-cover-big p { color: #6B7280; }
+
+.para-card {
+  background: rgba(255,255,255,0.95);
+  border-radius: 18px;
+  padding: 22px;
+  font-size: clamp(20px, 3vw, 24px);
+  line-height: 2.0;
+  color: #2D3748;
+  font-family: "標楷體", serif;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  position: relative;
+  border: 3px solid transparent;
+  transition: all 0.2s;
+}
+.para-card.active {
+  border-color: #F59E0B;
+  background: linear-gradient(135deg, #FFFBEB, #FFFFFF);
+}
+.para-card .num {
+  position: absolute;
+  top: -12px;
+  left: 16px;
+  background: #F59E0B;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+  font-family: sans-serif;
+}
+.para-card .play-btn {
+  position: absolute;
+  top: -16px;
+  right: 16px;
+  background: #10B981;
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid white;
+  cursor: pointer;
+  font-size: 18px;
+  font-family: inherit;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.para-card .play-btn:hover { transform: scale(1.1); }
+
+/* 生字標注音 */
+.vocab {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  padding: 0 2px;
+  color: #DC2626;
+  font-weight: bold;
+  text-decoration: underline dashed #FCA5A5;
+}
+.vocab:hover { background: #FEF3C7; border-radius: 4px; }
+.zh-mini {
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  vertical-align: middle;
+  margin-left: 4px;
+  color: #B45309;
+  font-family: sans-serif;
+  line-height: 1;
+}
+.zh-mini .zh-col { display: flex; flex-direction: column; gap: 1px; }
+.zh-mini .zh-tone { align-self: center; margin-left: 3px; font-size: 0.9em; font-weight: bold; }
+
+.read-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+.btn {
+  padding: 12px 24px;
+  border-radius: 14px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: inherit;
+  transition: transform 0.1s;
+}
+.btn:active { transform: translateY(2px); }
+.btn-primary { background: #F59E0B; color: white; box-shadow: 0 4px 0 #B45309; }
+.btn-success { background: #10B981; color: white; box-shadow: 0 4px 0 #047857; }
+.btn-warning { background: #FB923C; color: white; box-shadow: 0 4px 0 #C2410C; }
+.btn-secondary { background: white; color: #6B7280; border: 2px solid #E5E7EB; box-shadow: 0 4px 0 #E5E7EB; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; transform: none; }
+
+/* Vocab list */
+.vocab-list-panel {
+  background: rgba(255,255,255,0.95);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.vocab-list-panel h3 {
+  font-size: 18px;
+  color: #92400E;
+  margin-bottom: 12px;
+}
+.vocab-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+.vocab-item {
+  background: #FFFBEB;
+  border: 2px solid #FDE68A;
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+.vocab-item:hover { background: #FEF3C7; }
+.vocab-item .char {
+  font-size: 28px;
+  font-weight: 900;
+  color: #92400E;
+  font-family: "標楷體", serif;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.vocab-item .zh-mini { color: #B45309; }
+.vocab-item .word { font-size: 13px; color: #6B7280; margin-top: 4px; }
+
+/* ========== QUIZ ========== */
+.quiz-container {
+  flex: 1;
+  max-width: 700px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.quiz-progress {
+  display: flex;
+  gap: 4px;
+}
+.quiz-progress .pip {
+  flex: 1;
+  height: 10px;
+  background: #FDE68A;
+  border-radius: 5px;
+}
+.quiz-progress .pip.done { background: #10B981; }
+.quiz-progress .pip.wrong { background: #EF4444; }
+.quiz-progress .pip.current { background: #F59E0B; }
+
+.q-card {
+  background: rgba(255,255,255,0.98);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+.q-text {
+  font-size: 22px;
+  color: #1F2937;
+  margin-bottom: 18px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.q-options {
+  display: grid;
+  gap: 10px;
+}
+.q-opt {
+  background: white;
+  border: 3px solid #FDE68A;
+  border-radius: 14px;
+  padding: 16px 18px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 18px;
+  color: #1F2937;
+  text-align: left;
+  transition: all 0.15s;
+}
+.q-opt:hover:not(.correct):not(.wrong) {
+  border-color: #F59E0B;
+  background: #FFFBEB;
+}
+.q-opt.correct {
+  background: #D1FAE5;
+  border-color: #10B981;
+  color: #047857;
+  animation: pop 0.4s;
+}
+.q-opt.wrong {
+  background: #FEE2E2;
+  border-color: #EF4444;
+  color: #B91C1C;
+  animation: shake 0.4s;
+}
+@keyframes pop { 0%,100% { transform:scale(1); } 50% { transform:scale(1.03); } }
+@keyframes shake { 0%,100% { transform:translateX(0); } 25% { transform:translateX(-6px); } 75% { transform:translateX(6px); } }
+
+.q-feedback {
+  margin-top: 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 16px;
+  text-align: center;
+  display: none;
+}
+.q-feedback.show { display: block; }
+.q-feedback.success { background: #ECFDF5; color: #047857; border: 2px solid #10B981; }
+.q-feedback.error { background: #FEF2F2; color: #B91C1C; border: 2px solid #EF4444; }
+
+/* Modal */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+.modal-bg.show { display: flex; }
+.modal {
+  background: white;
+  border-radius: 28px;
+  padding: 32px 28px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: pop 0.5s;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal h2 { color: #92400E; font-size: 32px; margin-bottom: 12px; }
+.modal .big-emoji { font-size: 80px; margin: 12px 0; display: block; }
+.modal p { color: #4B5563; font-size: 17px; line-height: 1.7; margin-bottom: 8px; }
+.modal .grade {
+  font-size: 48px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #FBBF24, #F97316);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 10px 0;
+}
+.modal .scoreboard {
+  background: #FEF3C7;
+  padding: 14px;
+  border-radius: 14px;
+  margin: 14px 0;
+  font-size: 15px;
+}
+.modal .scoreboard .num {
+  font-size: 24px;
+  font-weight: bold;
+  color: #F59E0B;
+}
+
+.confetti {
+  position: fixed;
+  width: 12px;
+  height: 12px;
+  background: var(--c, #F59E0B);
+  pointer-events: none;
+  border-radius: 2px;
+  animation: fall 1.5s linear forwards;
+  z-index: 90;
+}
+@keyframes fall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+.voice-toggle {
+  display: flex;
+  gap: 4px;
+  background: white;
+  border-radius: 10px;
+  padding: 3px;
+  border: 2px solid #FDE68A;
+}
+.voice-toggle button {
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 7px;
+  cursor: pointer;
+  font-family: inherit;
+  color: #6B7280;
+}
+.voice-toggle button.active { background: #F59E0B; color: white; }
+</style>
+</head>
+<body>
+
+<!-- ============ INTRO ============ -->
+<div class="screen active" id="intro">
+  <h1>📖 故事屋</h1>
+  <p class="sub">聽故事 → 學生字 → 閱讀測驗</p>
+  <div class="name-input">
+    📛 名字：<input type="text" id="playerName" value="梅梅" maxlength="8">
+  </div>
+  <div class="story-grid" id="storyGrid"></div>
+</div>
+
+<!-- ============ READ ============ -->
+<div class="screen" id="read">
+  <div class="topbar">
+    <button class="icon-btn" onclick="goIntro()">📚 故事列表</button>
+    <h2 id="readTitle">故事</h2>
+    <div class="voice-toggle">
+      <button id="voiceTeacher" class="active" onclick="setVoice('teacher')">👩 老師</button>
+      <button id="voiceChild" onclick="setVoice('child')">🧒 童音</button>
+    </div>
+  </div>
+  <div class="read-container" id="readContent"></div>
+</div>
+
+<!-- ============ QUIZ ============ -->
+<div class="screen" id="quiz">
+  <div class="topbar">
+    <button class="icon-btn" onclick="goIntro()">📚 故事列表</button>
+    <h2 id="quizTitle">閱讀測驗</h2>
+    <div class="topbar-stat">第 <span class="val" id="qNum">1</span> / <span id="qTotal">3</span> 題</div>
+    <div class="topbar-stat">✓ <span class="val" id="qScore">0</span></div>
+  </div>
+  <div class="quiz-container">
+    <div class="quiz-progress" id="quizPipBar"></div>
+    <div id="quizContent"></div>
+  </div>
+</div>
+
+<!-- ============ Modal ============ -->
+<div class="modal-bg" id="resultModal">
+  <div class="modal">
+    <span class="big-emoji" id="resultEmoji">🏆</span>
+    <h2 id="resultTitle">測驗完成!</h2>
+    <div class="grade" id="resultGrade">優等</div>
+    <p id="resultDesc"></p>
+    <div class="scoreboard">
+      答對 <span class="num" id="resultCorrect">0</span> 題 / 共 <span class="num" id="resultTotal">3</span> 題<br>
+      正確率 <span class="num" id="resultRate">0</span>%
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
+      <button class="btn btn-primary" onclick="closeResult(); goIntro();">回故事列表</button>
+      <button class="btn btn-warning" onclick="closeResult(); startQuiz();">再測一次</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ DATA: 6 個小故事 ============
+// vocab: 重點生字（會在故事中標紅、列在側欄）
+// paragraphs: 每段附 vocab 標注 [[字|注音]]
+// questions: 閱讀測驗（讀完後 3-5 題）
+const STORIES = [
+  {
+    id: 'spring',
+    title: '春天的小花',
+    emoji: '🌸',
+    sub: '春天 / 花 / 雨 / 雲',
+    color: '#EC4899',
+    vocab: [
+      { c:'春', z:'ㄔㄨㄣ', word:'春天' },
+      { c:'花', z:'ㄏㄨㄚ', word:'小花' },
+      { c:'雨', z:'ㄩˇ', word:'下雨' },
+      { c:'雲', z:'ㄩㄣˊ', word:'白雲' },
+    ],
+    paragraphs: [
+      '[[春|ㄔㄨㄣ]]天到了，小白[[雲|ㄩㄣˊ]]飄過來。',
+      '天上下了一場[[雨|ㄩˇ]]，地上濕濕的。',
+      '小[[花|ㄏㄨㄚ]]喝飽了水，慢慢張開了笑臉。',
+      '太陽出來了，小花對著太陽說：「謝謝你！」',
+    ],
+    questions: [
+      { q:'故事在哪個季節?', opts:['夏天','冬天','春天','秋天'], answer:2 },
+      { q:'故事中天上飄的是什麼?', opts:['白雲','鳥','飛機','風箏'], answer:0 },
+      { q:'小花是怎麼喝到水的?', opts:['有人澆水','下雨','從河裡','喝牛奶'], answer:1 },
+      { q:'最後小花對誰說「謝謝」?', opts:['雲','雨','太陽','風'], answer:2 },
+    ]
+  },
+  {
+    id: 'puppy',
+    title: '小狗找媽媽',
+    emoji: '🐶',
+    sub: '狗 / 媽 / 家 / 哭',
+    color: '#3B82F6',
+    vocab: [
+      { c:'狗', z:'ㄍㄡˇ', word:'小狗' },
+      { c:'媽', z:'ㄇㄚ', word:'媽媽' },
+      { c:'家', z:'ㄐㄧㄚ', word:'家' },
+      { c:'哭', z:'ㄎㄨ', word:'哭哭' },
+    ],
+    paragraphs: [
+      '小[[狗|ㄍㄡˇ]]汪汪走出[[家|ㄐㄧㄚ]]門，去找牠的[[媽|ㄇㄚ]]媽。',
+      '走了好遠好遠，太陽快下山了，還是找不到媽媽。',
+      '小狗坐在路邊[[哭|ㄎㄨ]]起來，眼淚一滴一滴掉下來。',
+      '突然，遠遠傳來「汪！」的聲音。媽媽找來了！小狗笑了。',
+    ],
+    questions: [
+      { q:'故事主角是誰?', opts:['小貓','小狗','小鳥','小魚'], answer:1 },
+      { q:'小狗出門做什麼?', opts:['找媽媽','找朋友','找食物','找球'], answer:0 },
+      { q:'小狗為什麼哭?', opts:['肚子餓','找不到媽媽','受傷了','害怕'], answer:1 },
+      { q:'故事最後小狗的心情?', opts:['難過','生氣','害怕','開心'], answer:3 },
+    ]
+  },
+  {
+    id: 'school',
+    title: '小貓上學去',
+    emoji: '🐱',
+    sub: '貓 / 學 / 書 / 老',
+    color: '#10B981',
+    vocab: [
+      { c:'貓', z:'ㄇㄠ', word:'小貓' },
+      { c:'學', z:'ㄒㄩㄝˊ', word:'學校' },
+      { c:'書', z:'ㄕㄨ', word:'看書' },
+      { c:'老', z:'ㄌㄠˇ', word:'老師' },
+    ],
+    paragraphs: [
+      '小[[貓|ㄇㄠ]]咪今天第一天上[[學|ㄒㄩㄝˊ]]，揹著大書包。',
+      '到了學校，[[老|ㄌㄠˇ]]師笑著對小貓說：「歡迎你！」',
+      '上課了，大家拿出[[書|ㄕㄨ]]本，老師教大家念ㄅㄆㄇ。',
+      '下課小貓玩得好開心，回家跟媽媽說：「我喜歡學校！」',
+    ],
+    questions: [
+      { q:'小貓今天去哪裡?', opts:['公園','學校','市場','醫院'], answer:1 },
+      { q:'小貓揹著什麼?', opts:['書包','便當','玩具','水壺'], answer:0 },
+      { q:'老師對小貓說了什麼?', opts:['對不起','歡迎你','再見','加油'], answer:1 },
+      { q:'老師教大家念什麼?', opts:['數字','英文','ㄅㄆㄇ','歌'], answer:2 },
+      { q:'小貓回家覺得怎麼樣?', opts:['累','喜歡學校','想睡覺','想哭'], answer:1 },
+    ]
+  },
+  {
+    id: 'sun',
+    title: '太陽和月亮',
+    emoji: '🌞',
+    sub: '太陽 / 月 / 星 / 黑',
+    color: '#F59E0B',
+    vocab: [
+      { c:'太', z:'ㄊㄞˋ', word:'太陽' },
+      { c:'陽', z:'ㄧㄤˊ', word:'太陽' },
+      { c:'月', z:'ㄩㄝˋ', word:'月亮' },
+      { c:'星', z:'ㄒㄧㄥ', word:'星星' },
+    ],
+    paragraphs: [
+      '白天，[[太|ㄊㄞˋ]][[陽|ㄧㄤˊ]]公公照亮大地，小朋友開心去上學。',
+      '晚上，[[月|ㄩㄝˋ]]亮姐姐升上來，帶著好多[[星|ㄒㄧㄥ]]星。',
+      '太陽和月亮會見面嗎？「不會喔！」太陽說：「我白天上班。」',
+      '月亮笑著說：「我晚上上班，我們是好朋友！」',
+    ],
+    questions: [
+      { q:'白天天上有什麼?', opts:['月亮','太陽','星星','雲'], answer:1 },
+      { q:'晚上跟月亮一起出現的是?', opts:['太陽','雨','星星','風'], answer:2 },
+      { q:'太陽什麼時候上班?', opts:['白天','晚上','凌晨','下午'], answer:0 },
+      { q:'故事說太陽和月亮是什麼關係?', opts:['敵人','陌生人','好朋友','兄妹'], answer:2 },
+    ]
+  },
+  {
+    id: 'race',
+    title: '牛和馬比賽',
+    emoji: '🐮',
+    sub: '牛 / 馬 / 跑 / 快',
+    color: '#A855F7',
+    vocab: [
+      { c:'牛', z:'ㄋㄧㄡˊ', word:'水牛' },
+      { c:'馬', z:'ㄇㄚˇ', word:'白馬' },
+      { c:'跑', z:'ㄆㄠˇ', word:'跑步' },
+      { c:'快', z:'ㄎㄨㄞˋ', word:'快跑' },
+    ],
+    paragraphs: [
+      '水[[牛|ㄋㄧㄡˊ]]和白[[馬|ㄇㄚˇ]]比賽[[跑|ㄆㄠˇ]]步，看誰[[快|ㄎㄨㄞˋ]]。',
+      '比賽開始！白馬一下就衝出去了，水牛慢慢的走。',
+      '白馬跑到一半，太驕傲了，停下來休息一下。',
+      '結果水牛慢慢的、不停的走，第一個到終點！',
+    ],
+    questions: [
+      { q:'故事裡誰跟誰比賽?', opts:['牛跟羊','馬跟狗','牛跟馬','貓跟狗'], answer:2 },
+      { q:'比賽的項目是什麼?', opts:['跳','吃飯','跑步','睡覺'], answer:2 },
+      { q:'比賽一開始誰跑比較快?', opts:['水牛','白馬','一樣快','沒人跑'], answer:1 },
+      { q:'白馬為什麼輸了?', opts:['受傷','驕傲休息','迷路','肚子餓'], answer:1 },
+      { q:'最後誰贏了?', opts:['水牛','白馬','平手','取消比賽'], answer:0 },
+    ]
+  },
+  {
+    id: 'sea',
+    title: '大海邊',
+    emoji: '🌊',
+    sub: '海 / 魚 / 船 / 貝',
+    color: '#06B6D4',
+    vocab: [
+      { c:'海', z:'ㄏㄞˇ', word:'大海' },
+      { c:'魚', z:'ㄩˊ', word:'小魚' },
+      { c:'船', z:'ㄔㄨㄢˊ', word:'船' },
+      { c:'貝', z:'ㄅㄟˋ', word:'貝殼' },
+    ],
+    paragraphs: [
+      '我跟爸爸媽媽到大[[海|ㄏㄞˇ]]邊玩。',
+      '海裡有好多小[[魚|ㄩˊ]]游來游去，遠遠的有一艘大[[船|ㄔㄨㄢˊ]]。',
+      '我在沙灘上撿到了好幾個[[貝|ㄅㄟˋ]]殼，要帶回家當紀念。',
+      '太陽下山了，海邊變得好漂亮。我們開心的回家了。',
+    ],
+    questions: [
+      { q:'我跟誰一起去海邊?', opts:['朋友','哥哥','爸爸媽媽','老師'], answer:2 },
+      { q:'海裡有什麼?', opts:['小魚','鯊魚','龍','沒東西'], answer:0 },
+      { q:'我在沙灘上撿到什麼?', opts:['石頭','貝殼','錢','瓶子'], answer:1 },
+      { q:'故事最後天氣怎樣?', opts:['下雨','颱風','太陽下山','下雪'], answer:2 },
+    ]
+  },
+];
+
+const PRAISE = ['太棒了!','好厲害!','答對了!','你會了耶!','超棒的!','真聰明!','正確!'];
+
+// ============ STATE ============
+const STORAGE_KEY = 'aac-story-v1';
+let state = loadState();
+let currentStory = null;
+let currentParaIdx = 0;
+let quizIdx = 0;
+let quizCorrect = 0;
+let voiceMode = 'teacher';
+
+function loadState() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (s) return JSON.parse(s);
+  } catch(e) {}
+  return { name:'梅梅', progress:{} };
+}
+function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){} }
+
+// ============ TTS ============
+function speak(text, mode) {
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-TW';
+  const m = mode || voiceMode;
+  if (m === 'child') { u.pitch = 1.6; u.rate = 0.95; }
+  else { u.pitch = 1.0; u.rate = 0.8; }
+  const voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('zh'));
+  const preferred = ['Mei-Jia','Yating','Tingting','Sin-ji'];
+  for (const name of preferred) {
+    const v = voices.find(x => x.name.includes(name));
+    if (v) { u.voice = v; break; }
+  }
+  speechSynthesis.speak(u);
+}
+
+function setVoice(mode) {
+  voiceMode = mode;
+  document.querySelectorAll('.voice-toggle button').forEach(b => b.classList.remove('active'));
+  document.getElementById('voice' + mode.charAt(0).toUpperCase()+mode.slice(1)).classList.add('active');
+  speak('你好', mode);
+}
+
+// ============ Zhuyin render ============
+function zh(str) {
+  if (!str) return '';
+  const tm = str.match(/([ˊˇˋ˙])/);
+  const tone = tm ? tm[1] : '';
+  const letters = str.replace(/[ˊˇˋ˙]/g, '');
+  let html = '<span class="zh-mini"><span class="zh-col">';
+  for (const ch of letters) html += `<span>${ch}</span>`;
+  html += '</span>';
+  if (tone) html += `<span class="zh-tone">${tone}</span>`;
+  html += '</span>';
+  return html;
+}
+
+// 文字內 [[字|注音]] 標注
+function renderParaText(text, vocab) {
+  return text.replace(/\[\[([^|\]]+)\|([^\]]+)\]\]/g, (match, char, zhuyin) => {
+    return `<span class="vocab" onclick="speakVocab('${char}', '${zhuyin}')">${char}${zh(zhuyin)}</span>`;
+  });
+}
+
+function speakVocab(char, zhuyin) {
+  speak(char);
+}
+
+// ============ Screen nav ============
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goIntro() { showScreen('intro'); renderIntro(); }
+
+// ============ INTRO ============
+function renderIntro() {
+  state.name = document.getElementById('playerName').value.trim() || state.name;
+  const grid = document.getElementById('storyGrid');
+  grid.innerHTML = '';
+  STORIES.forEach(s => {
+    const prog = state.progress[s.id];
+    const done = prog?.done;
+    const card = document.createElement('div');
+    card.className = 'story-card' + (done ? ' done' : '');
+    card.onclick = () => startStory(s);
+    card.innerHTML = `
+      <div class="cover">${s.emoji}</div>
+      <h3>${s.title}</h3>
+      <div class="meta">
+        <span>📝 ${s.paragraphs.length} 段</span>
+        <span>📚 ${s.vocab.length} 生字</span>
+        <span>❓ ${s.questions.length} 題</span>
+      </div>
+      <div class="progress">
+        ${done ? `<span class="stars">${'⭐'.repeat(prog.stars)}</span> · 答對 ${prog.correct}/${s.questions.length}` : '👆 點開始看故事'}
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ============ STORY READING ============
+function startStory(story) {
+  currentStory = story;
+  currentParaIdx = 0;
+  showScreen('read');
+  document.getElementById('readTitle').textContent = `${story.emoji} ${story.title}`;
+  renderRead();
+}
+
+function renderRead() {
+  const s = currentStory;
+  const content = document.getElementById('readContent');
+  content.innerHTML = `
+    <div class="story-cover-big">
+      <span class="emoji">${s.emoji}</span>
+      <h2>${s.title}</h2>
+      <p>共 ${s.paragraphs.length} 段 · 重點生字 ${s.vocab.length} 個</p>
+    </div>
+    ${s.paragraphs.map((p, i) => `
+      <div class="para-card${i===currentParaIdx?' active':''}">
+        <div class="num">${i+1}</div>
+        <button class="play-btn" onclick="playPara(${i})">▶</button>
+        ${renderParaText(p, s.vocab)}
+      </div>
+    `).join('')}
+    <div class="vocab-list-panel">
+      <h3>📚 本故事重點生字（點念念看）</h3>
+      <div class="vocab-list">
+        ${s.vocab.map(v => `
+          <div class="vocab-item" onclick="speakVocab('${v.c}', '${v.z}')">
+            <div class="char">${v.c}</div>
+            ${zh(v.z)}
+            <div class="word">${v.word}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="read-controls">
+      <button class="btn btn-warning" onclick="playAllParas()">▶️ 從頭念</button>
+      <button class="btn btn-secondary" onclick="speechSynthesis.cancel()">⏸ 停止</button>
+      <button class="btn btn-success" onclick="startQuiz()">📝 閱讀測驗 →</button>
+    </div>
+  `;
+  // 自動念第一段
+  setTimeout(() => playPara(0), 600);
+}
+
+function playPara(idx) {
+  currentParaIdx = idx;
+  const s = currentStory;
+  // Active highlight
+  document.querySelectorAll('.para-card').forEach((c, i) => c.classList.toggle('active', i === idx));
+  // strip 標注 拿純文字
+  const plainText = s.paragraphs[idx].replace(/\[\[([^|\]]+)\|[^\]]+\]\]/g, '$1');
+  speak(plainText);
+}
+
+let allReadIdx = 0;
+function playAllParas() {
+  allReadIdx = 0;
+  readNext();
+}
+function readNext() {
+  const s = currentStory;
+  if (allReadIdx >= s.paragraphs.length) return;
+  playPara(allReadIdx);
+  const text = s.paragraphs[allReadIdx].replace(/\[\[([^|\]]+)\|[^\]]+\]\]/g, '$1');
+  // 預估 delay (每字約 350ms)
+  const delay = Math.max(2000, text.length * 350 + 800);
+  setTimeout(() => { allReadIdx++; readNext(); }, delay);
+}
+
+// ============ QUIZ ============
+function startQuiz() {
+  speechSynthesis.cancel();
+  quizIdx = 0;
+  quizCorrect = 0;
+  showScreen('quiz');
+  document.getElementById('quizTitle').textContent = `${currentStory.emoji} ${currentStory.title} · 測驗`;
+  document.getElementById('qTotal').textContent = currentStory.questions.length;
+  renderQuiz();
+}
+
+function renderQuiz() {
+  if (quizIdx >= currentStory.questions.length) {
+    showResult();
+    return;
+  }
+  const q = currentStory.questions[quizIdx];
+  document.getElementById('qNum').textContent = quizIdx + 1;
+  document.getElementById('qScore').textContent = quizCorrect;
+
+  // pip bar
+  const bar = document.getElementById('quizPipBar');
+  bar.innerHTML = currentStory.questions.map((_, i) => {
+    let cls = 'pip';
+    if (i < quizIdx) cls += ' done';
+    if (i === quizIdx) cls += ' current';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+
+  const opts = q.opts.map((o, i) => `<button class="q-opt" data-i="${i}">${String.fromCharCode(65+i)}. ${o}</button>`).join('');
+  document.getElementById('quizContent').innerHTML = `
+    <div class="q-card">
+      <div class="q-text">${q.q}</div>
+      <button class="btn btn-warning" onclick="speak('${q.q}')" style="margin-bottom:14px;">🔊 念題目</button>
+      <div class="q-options">${opts}</div>
+      <div class="q-feedback" id="qFeedback"></div>
+    </div>
+  `;
+  document.querySelectorAll('.q-opt').forEach(b => b.onclick = () => pickOption(b, q));
+  // 自動念題目
+  setTimeout(() => speak(q.q), 400);
+}
+
+function pickOption(btn, q) {
+  if (btn.classList.contains('correct') || btn.classList.contains('wrong')) return;
+  const picked = parseInt(btn.dataset.i);
+  const fb = document.getElementById('qFeedback');
+  if (picked === q.answer) {
+    btn.classList.add('correct');
+    const praise = PRAISE[Math.floor(Math.random()*PRAISE.length)];
+    fb.textContent = '✅ ' + praise;
+    fb.className = 'q-feedback show success';
+    speak(praise);
+    quizCorrect++;
+    document.getElementById('qScore').textContent = quizCorrect;
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.q-opt').forEach(b => {
+      if (parseInt(b.dataset.i) === q.answer) b.classList.add('correct');
+    });
+    fb.innerHTML = `❌ 正解是 <b>${String.fromCharCode(65+q.answer)}. ${q.opts[q.answer]}</b>`;
+    fb.className = 'q-feedback show error';
+    speak('正解是 ' + q.opts[q.answer]);
+  }
+  setTimeout(() => {
+    quizIdx++;
+    renderQuiz();
+  }, 2200);
+}
+
+function showResult() {
+  const total = currentStory.questions.length;
+  const rate = Math.round(quizCorrect / total * 100);
+  let grade, desc, stars;
+  if (rate >= 95) { grade='閱讀小達人 🏆'; desc='超棒的!故事完全聽懂了!'; stars=3; }
+  else if (rate >= 80) { grade='優等 ⭐⭐⭐'; desc='很厲害!幾乎都答對了!'; stars=3; }
+  else if (rate >= 60) { grade='甲等 ⭐⭐'; desc='不錯喔!再聽一次故事會更好!'; stars=2; }
+  else { grade='加油 ⭐'; desc='沒關係，再聽一次故事，多練幾次!'; stars=1; }
+
+  const prog = state.progress[currentStory.id] || {};
+  prog.done = true;
+  prog.correct = Math.max(prog.correct || 0, quizCorrect);
+  prog.stars = Math.max(prog.stars || 0, stars);
+  state.progress[currentStory.id] = prog;
+  saveState();
+
+  document.getElementById('resultEmoji').textContent = ['🏆','🎉','⭐','🥳','✨'][Math.floor(Math.random()*5)];
+  document.getElementById('resultGrade').textContent = grade;
+  document.getElementById('resultDesc').textContent = desc;
+  document.getElementById('resultCorrect').textContent = quizCorrect;
+  document.getElementById('resultTotal').textContent = total;
+  document.getElementById('resultRate').textContent = rate;
+  document.getElementById('resultModal').classList.add('show');
+  fireConfetti();
+  speak(`${state.name}，測驗結束！等級是 ${grade}`);
+}
+
+function closeResult() {
+  document.getElementById('resultModal').classList.remove('show');
+}
+
+// ============ Confetti ============
+function fireConfetti() {
+  const colors = ['#F59E0B','#3B82F6','#10B981','#EC4899','#A855F7','#EF4444'];
+  for (let i = 0; i < 40; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random()*100 + 'vw';
+    c.style.top = '-20px';
+    c.style.setProperty('--c', colors[i%colors.length]);
+    c.style.animationDuration = (1+Math.random()) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 2500);
+  }
+}
+
+// ============ Init ============
+document.body.addEventListener('touchend', function unlock() {
+  const u = new SpeechSynthesisUtterance(' ');
+  u.volume = 0;
+  speechSynthesis.speak(u);
+  document.body.removeEventListener('touchend', unlock);
+}, { once: true });
+
+document.getElementById('playerName').value = state.name || '梅梅';
+renderIntro();
+</script>
+</body>
+</html>

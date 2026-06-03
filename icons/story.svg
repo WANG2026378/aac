@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+<defs>
+<linearGradient id="sg1" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#FBBF24"/>
+<stop offset="100%" stop-color="#F59E0B"/>
+</linearGradient>
+</defs>
+<rect width="1024" height="1024" rx="230" fill="url(#sg1)"/>
+<!-- Open book -->
+<g transform="translate(180 280)">
+  <path d="M 0 80 Q 0 40 40 40 L 280 40 L 332 80 L 332 460 Q 332 480 312 480 L 40 480 Q 0 480 0 460 Z" fill="white" stroke="#92400E" stroke-width="6"/>
+  <path d="M 664 80 Q 664 40 624 40 L 384 40 L 332 80 L 332 460 Q 332 480 352 480 L 624 480 Q 664 480 664 460 Z" fill="white" stroke="#92400E" stroke-width="6"/>
+  <line x1="60" y1="120" x2="280" y2="120" stroke="#FCA5A5" stroke-width="6"/>
+  <line x1="60" y1="180" x2="280" y2="180" stroke="#FCA5A5" stroke-width="6"/>
+  <line x1="60" y1="240" x2="240" y2="240" stroke="#FCA5A5" stroke-width="6"/>
+  <line x1="60" y1="300" x2="280" y2="300" stroke="#FCA5A5" stroke-width="6"/>
+  <line x1="384" y1="120" x2="604" y2="120" stroke="#FCA5A5" stroke-width="6"/>
+  <line x1="384" y1="180" x2="604" y2="180" stroke="#FCA5A5" stroke-width="6"/>
+  <line x1="384" y1="240" x2="564" y2="240" stroke="#FCA5A5" stroke-width="6"/>
+  <line x1="384" y1="300" x2="604" y2="300" stroke="#FCA5A5" stroke-width="6"/>
+</g>
+<!-- Floating story emojis -->
+<text x="200" y="200" font-size="120" text-anchor="middle">🌸</text>
+<text x="850" y="200" font-size="120" text-anchor="middle">🐶</text>
+<text x="200" y="900" font-size="120" text-anchor="middle">🐱</text>
+<text x="850" y="900" font-size="120" text-anchor="middle">🌊</text>
+</svg>
