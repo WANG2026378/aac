@@ -348,6 +348,77 @@ body {
 .btn-success { background: #34D399; color: white; box-shadow: 0 4px 0 #10B981; }
 .btn-warning { background: #F59E0B; color: white; box-shadow: 0 4px 0 #B45309; }
 .btn-child { background: #FB7185; color: white; box-shadow: 0 4px 0 #BE123C; }
+
+/* 錄音面板 */
+.record-panel {
+  background: linear-gradient(135deg, #FEF3C7, #FFFBEB);
+  border: 4px dashed #F59E0B;
+  border-radius: 20px;
+  padding: 18px;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+.rec-row, .rec-mic-row, .rec-compare {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.rec-mic-btn {
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+  color: white;
+  border: 4px solid white;
+  padding: 18px 28px;
+  border-radius: 100px;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 6px 16px rgba(239,68,68,0.3);
+  transition: all 0.2s;
+}
+.rec-mic-btn:active { transform: scale(0.95); }
+.rec-mic-btn .mic-icon { font-size: 30px; }
+.rec-mic-btn.recording {
+  animation: micPulse 1.2s ease-in-out infinite;
+  background: linear-gradient(135deg, #DC2626, #991B1B);
+}
+.rec-mic-btn.has-recording {
+  background: linear-gradient(135deg, #10B981, #047857);
+  box-shadow: 0 6px 16px rgba(16,185,129,0.3);
+}
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 6px 16px rgba(239,68,68,0.3), 0 0 0 0 rgba(239,68,68,0.7); }
+  50% { box-shadow: 0 6px 16px rgba(239,68,68,0.5), 0 0 0 20px rgba(239,68,68,0); }
+}
+.rec-status {
+  font-size: 14px;
+  color: #92400E;
+  text-align: center;
+  min-height: 20px;
+  font-weight: 600;
+}
+.rec-status.recording { color: #DC2626; }
+.rec-status.recording::before {
+  content: '🔴 ';
+  animation: blink 1s infinite;
+}
+@keyframes blink { 0%,49% { opacity:1; } 50%,100% { opacity:0.3; } }
+.rec-status.done { color: #047857; }
+.rec-playback {
+  width: 100%;
+  background: white;
+  padding: 14px;
+  border-radius: 14px;
+  border: 2px solid #10B981;
+}
 .btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; transform: none; }
 
 .options-grid {
@@ -765,6 +836,97 @@ function speak(text, mode) {
   }
   speechSynthesis.speak(u);
 }
+// ============ 錄音功能 ============
+let mediaRecorder = null;
+let audioChunks = [];
+let recordedURL = null;
+let recordedSymbol = null;  // 紀錄這次錄音對應的符號
+
+async function toggleRecord() {
+  const btn = document.getElementById('recMicBtn');
+  if (!btn) return;
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop();
+    return;
+  }
+  try {
+    const status = document.getElementById('recStatus');
+    if (status) status.textContent = '正在開啟麥克風…';
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = [];
+    // 釋放舊的 URL
+    if (recordedURL) { URL.revokeObjectURL(recordedURL); recordedURL = null; }
+
+    // 選擇支援的 MIME type (iOS Safari 偏好 mp4)
+    let mime = '';
+    const candidates = ['audio/mp4', 'audio/webm', 'audio/webm;codecs=opus', 'audio/ogg'];
+    for (const c of candidates) {
+      if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(c)) { mime = c; break; }
+    }
+    mediaRecorder = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+
+    mediaRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) audioChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+      recordedURL = URL.createObjectURL(blob);
+      recordedSymbol = currentSymbol().z;
+      const btn = document.getElementById('recMicBtn');
+      if (btn) {
+        btn.classList.remove('recording');
+        btn.classList.add('has-recording');
+        btn.querySelector('.mic-icon').textContent = '✓';
+        btn.querySelector('.mic-label').textContent = '錄好了！再錄一次';
+      }
+      const status = document.getElementById('recStatus');
+      if (status) { status.textContent = '✅ 錄音完成！按 ▶️ 聽我念'; status.className = 'rec-status done'; }
+      const pb = document.getElementById('recPlayback');
+      if (pb) pb.style.display = 'block';
+      // 自動回放
+      setTimeout(() => playMyRecording(), 500);
+    };
+
+    mediaRecorder.start();
+    btn.classList.add('recording');
+    btn.classList.remove('has-recording');
+    btn.querySelector('.mic-icon').textContent = '⏹';
+    btn.querySelector('.mic-label').textContent = '停止錄音';
+    if (status) { status.textContent = '錄音中…請念出注音'; status.className = 'rec-status recording'; }
+  } catch (e) {
+    console.error(e);
+    const status = document.getElementById('recStatus');
+    if (status) {
+      status.innerHTML = '❌ 無法錄音：' + (e.name === 'NotAllowedError' ?
+        '請允許麥克風存取（設定 → Safari → 麥克風）' :
+        '此裝置不支援或被拒絕');
+      status.className = 'rec-status';
+      status.style.color = '#DC2626';
+    }
+  }
+}
+
+function playMyRecording() {
+  if (!recordedURL) return;
+  const audio = new Audio(recordedURL);
+  audio.play().catch(e => console.error('Play failed', e));
+}
+
+function resetRecording() {
+  if (recordedURL) URL.revokeObjectURL(recordedURL);
+  recordedURL = null;
+  audioChunks = [];
+  const btn = document.getElementById('recMicBtn');
+  if (btn) {
+    btn.classList.remove('recording', 'has-recording');
+    btn.querySelector('.mic-icon').textContent = '🎤';
+    btn.querySelector('.mic-label').textContent = '按一下開始錄音';
+  }
+  const pb = document.getElementById('recPlayback');
+  if (pb) pb.style.display = 'none';
+  const status = document.getElementById('recStatus');
+  if (status) { status.textContent = ''; status.className = 'rec-status'; }
+}
+
 function setVoice(mode) {
   voiceMode = mode;
   document.querySelectorAll('.voice-toggle button').forEach(b => b.classList.remove('active'));
@@ -929,20 +1091,41 @@ function renderLearn() {
     setTimeout(() => speakSymbol(), 300);
   }
 
-  // 階段 1: 跟讀
+  // 階段 1: 跟讀 + 錄音
   else if (currentStage === 1) {
     content.innerHTML = `
       <div class="stage-progress">
         ${[0,1,2].map(i => `<div class="stage-dot${i<1?' done':i===1?' current':''}"></div>`).join('')}
       </div>
-      <div style="text-align:center;color:#6B7280;">第 2 步：跟著念</div>
+      <div style="text-align:center;color:#6B7280;">第 2 步：跟著念，錄下自己的聲音</div>
       <div class="symbol-big" style="--c:${c}">${sym.z}</div>
       <div class="instruction" style="--c:${c}">
-        🎤 跟著念：先聽老師，再學小朋友
+        🎤 先聽老師念 → 自己跟著念 → 錄音 → 聽自己念得對不對
       </div>
+
+      <div class="record-panel" id="recPanel">
+        <div class="rec-row">
+          <button class="btn btn-warning" onclick="speakSymbol('teacher')">👩 老師念</button>
+          <button class="btn btn-child" onclick="speakSymbol('child')">🧒 小朋友念</button>
+        </div>
+        <div class="rec-mic-row">
+          <button class="rec-mic-btn" id="recMicBtn" onclick="toggleRecord()">
+            <span class="mic-icon">🎤</span>
+            <span class="mic-label">按一下開始錄音</span>
+          </button>
+        </div>
+        <div class="rec-status" id="recStatus"></div>
+        <div class="rec-playback" id="recPlayback" style="display:none;">
+          <div style="font-size:14px;color:#6B7280;margin-bottom:8px;">🎧 比對：</div>
+          <div class="rec-compare">
+            <button class="btn btn-warning" onclick="speakSymbol('teacher')">👩 老師</button>
+            <button class="btn btn-primary" onclick="playMyRecording()">▶️ 聽我念</button>
+            <button class="btn btn-secondary" onclick="resetRecording()">🗑 重錄</button>
+          </div>
+        </div>
+      </div>
+
       <div class="btn-row">
-        <button class="btn btn-warning" onclick="speakSymbol('teacher')">👩 老師念</button>
-        <button class="btn btn-child" onclick="speakSymbol('child')">🧒 小朋友念</button>
         <button class="btn btn-success" onclick="nextStage()">我會了 →</button>
       </div>
     `;

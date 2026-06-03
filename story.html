@@ -258,6 +258,61 @@ body {
 .btn-secondary { background: white; color: #6B7280; border: 2px solid #E5E7EB; box-shadow: 0 4px 0 #E5E7EB; }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; transform: none; }
 
+/* 錄音面板 */
+.rec-story-panel {
+  background: linear-gradient(135deg, #FEF3C7, #FFFBEB);
+  border: 4px dashed #F59E0B;
+  border-radius: 20px;
+  padding: 18px;
+  text-align: center;
+}
+.rec-mic-btn {
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+  color: white;
+  border: 4px solid white;
+  padding: 16px 28px;
+  border-radius: 100px;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 6px 16px rgba(239,68,68,0.3);
+  transition: all 0.2s;
+}
+.rec-mic-btn:active { transform: scale(0.95); }
+.rec-mic-btn .mic-icon { font-size: 28px; }
+.rec-mic-btn.recording {
+  animation: micPulse 1.2s ease-in-out infinite;
+}
+.rec-mic-btn.has-recording {
+  background: linear-gradient(135deg, #10B981, #047857);
+}
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 6px 16px rgba(239,68,68,0.3), 0 0 0 0 rgba(239,68,68,0.7); }
+  50% { box-shadow: 0 6px 16px rgba(239,68,68,0.5), 0 0 0 20px rgba(239,68,68,0); }
+}
+.rec-status {
+  font-size: 14px;
+  color: #92400E;
+  font-weight: 600;
+  margin-top: 12px;
+  min-height: 22px;
+}
+.rec-status.recording { color: #DC2626; }
+.rec-status.recording::before { content: '🔴 '; animation: blink 1s infinite; }
+@keyframes blink { 0%,49% { opacity:1; } 50%,100% { opacity:0.3; } }
+.rec-status.done { color: #047857; }
+.rec-playback {
+  background: white;
+  padding: 14px;
+  border-radius: 14px;
+  border: 2px solid #10B981;
+  margin-top: 14px;
+}
+
 /* Vocab list */
 .vocab-list-panel {
   background: rgba(255,255,255,0.95);
@@ -829,6 +884,91 @@ function speakVocab(char, zhuyin) {
   speak(char);
 }
 
+// ============ 錄音功能 ============
+let mediaRecorder = null;
+let audioChunks = [];
+let recordedURL = null;
+
+async function toggleRecord() {
+  const btn = document.getElementById('recMicBtn');
+  if (!btn) return;
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop();
+    return;
+  }
+  try {
+    const status = document.getElementById('recStatus');
+    if (status) status.textContent = '正在開啟麥克風…';
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = [];
+    if (recordedURL) { URL.revokeObjectURL(recordedURL); recordedURL = null; }
+
+    let mime = '';
+    const candidates = ['audio/mp4', 'audio/webm', 'audio/webm;codecs=opus', 'audio/ogg'];
+    for (const c of candidates) {
+      if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(c)) { mime = c; break; }
+    }
+    mediaRecorder = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+
+    mediaRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) audioChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+      recordedURL = URL.createObjectURL(blob);
+      const btn = document.getElementById('recMicBtn');
+      if (btn) {
+        btn.classList.remove('recording');
+        btn.classList.add('has-recording');
+        btn.querySelector('.mic-icon').textContent = '✓';
+        btn.querySelector('.mic-label').textContent = '錄好了！再錄一次';
+      }
+      const status = document.getElementById('recStatus');
+      if (status) { status.textContent = '✅ 錄音完成！按 ▶️ 聽我念'; status.className = 'rec-status done'; }
+      const pb = document.getElementById('recPlayback');
+      if (pb) pb.style.display = 'block';
+      setTimeout(() => playMyRecording(), 500);
+    };
+
+    mediaRecorder.start();
+    btn.classList.add('recording');
+    btn.classList.remove('has-recording');
+    btn.querySelector('.mic-icon').textContent = '⏹';
+    btn.querySelector('.mic-label').textContent = '停止錄音';
+    if (status) { status.textContent = '錄音中…請念故事'; status.className = 'rec-status recording'; }
+  } catch (e) {
+    console.error(e);
+    const status = document.getElementById('recStatus');
+    if (status) {
+      status.innerHTML = '❌ 無法錄音：' + (e.name === 'NotAllowedError' ?
+        '請允許麥克風存取（設定 → Safari → 麥克風）' :
+        '此裝置不支援');
+      status.style.color = '#DC2626';
+    }
+  }
+}
+
+function playMyRecording() {
+  if (!recordedURL) return;
+  const audio = new Audio(recordedURL);
+  audio.play().catch(e => console.error('Play failed', e));
+}
+
+function resetRecording() {
+  if (recordedURL) URL.revokeObjectURL(recordedURL);
+  recordedURL = null;
+  audioChunks = [];
+  const btn = document.getElementById('recMicBtn');
+  if (btn) {
+    btn.classList.remove('recording', 'has-recording');
+    btn.querySelector('.mic-icon').textContent = '🎤';
+    btn.querySelector('.mic-label').textContent = '按一下開始錄音';
+  }
+  const pb = document.getElementById('recPlayback');
+  if (pb) pb.style.display = 'none';
+  const status = document.getElementById('recStatus');
+  if (status) { status.textContent = ''; status.className = 'rec-status'; }
+}
+
 // ============ Screen nav ============
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -898,6 +1038,25 @@ function renderRead() {
             <div class="word">${v.word}</div>
           </div>
         `).join('')}
+      </div>
+    </div>
+    <div class="rec-story-panel">
+      <h3 style="color:#92400E;font-size:18px;margin-bottom:12px;">🎤 換你念故事看看</h3>
+      <p style="color:#6B7280;font-size:14px;margin-bottom:12px;">點麥克風開始錄，再點停止。錄完可以聽自己念得對不對！</p>
+      <div class="rec-mic-row" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button class="rec-mic-btn" id="recMicBtn" onclick="toggleRecord()">
+          <span class="mic-icon">🎤</span>
+          <span class="mic-label">按一下開始錄音</span>
+        </button>
+      </div>
+      <div class="rec-status" id="recStatus"></div>
+      <div class="rec-playback" id="recPlayback" style="display:none;">
+        <div style="font-size:14px;color:#6B7280;margin-bottom:8px;text-align:center;">🎧 比對：</div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-warning" onclick="playAllParas()">👩 老師念整個</button>
+          <button class="btn btn-primary" onclick="playMyRecording()">▶️ 聽我念</button>
+          <button class="btn btn-secondary" onclick="resetRecording()">🗑 重錄</button>
+        </div>
       </div>
     </div>
     <div class="read-controls">
