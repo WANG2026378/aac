@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+<defs>
+<linearGradient id="bgsky" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#87CEEB"/>
+<stop offset="60%" stop-color="#B8E0D2"/>
+<stop offset="100%" stop-color="#F5E6A8"/>
+</linearGradient>
+</defs>
+<rect width="1024" height="1024" rx="230" fill="url(#bgsky)"/>
+<!-- Taiwan island silhouette -->
+<path d="M 760 200 Q 770 180 780 200 L 790 320 Q 785 340 770 350 L 760 400 Q 750 410 745 400 L 740 320 Q 738 240 760 200 Z" fill="#5fb89e" opacity="0.7"/>
+<!-- Big seed mascot (紅種子) -->
+<g transform="translate(280 380)">
+  <!-- 嫩芽 -->
+  <path d="M 220 0 Q 220 -50 180 -55 Q 160 -40 200 -10" fill="#4CAF50" stroke="#2E7D32" stroke-width="6"/>
+  <path d="M 220 0 Q 220 -60 260 -55 Q 280 -40 240 -10" fill="#66BB6A" stroke="#2E7D32" stroke-width="6"/>
+  <!-- 種子身體 -->
+  <path d="M 220 -10 Q 80 30 80 200 Q 80 360 220 360 Q 360 360 360 200 Q 360 30 220 -10 Z" fill="#EF4444" stroke="#B91C1C" stroke-width="8"/>
+  <!-- 高光 -->
+  <ellipse cx="150" cy="120" rx="40" ry="60" fill="#FCA5A5" opacity="0.5"/>
+  <!-- 眼睛 -->
+  <circle cx="180" cy="170" r="22" fill="#1F2937"/>
+  <circle cx="260" cy="170" r="22" fill="#1F2937"/>
+  <circle cx="187" cy="163" r="8" fill="white"/>
+  <circle cx="267" cy="163" r="8" fill="white"/>
+  <!-- 紅暈臉頰 -->
+  <circle cx="120" cy="220" r="20" fill="#FB7185" opacity="0.4"/>
+  <circle cx="320" cy="220" r="20" fill="#FB7185" opacity="0.4"/>
+  <!-- 笑嘴 -->
+  <path d="M 200 230 Q 220 250 240 230" stroke="#1F2937" stroke-width="10" fill="none" stroke-linecap="round"/>
+</g>
+<!-- 副標 -->
+<text x="512" y="900" font-family="PingFang TC, sans-serif" font-size="56" font-weight="900" fill="#047857" text-anchor="middle">SEED × 台灣</text>
+</svg>

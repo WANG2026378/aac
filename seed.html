@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SEED 冒險">
+<meta name="theme-color" content="#87ceeb">
+<link rel="apple-touch-icon" href="icons/seed-180.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/seed-180.png?v=1">
+<link rel="apple-touch-icon" sizes="512x512" href="icons/seed-512.png?v=1">
+<link rel="icon" type="image/png" href="icons/seed-512.png?v=1">
+<title>SEED 台灣大冒險 · 習得字</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+    background: linear-gradient(180deg, #87ceeb 0%, #b8e0d2 50%, #f5e6a8 100%);
+    color: #2d3748;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* intro */
+  #intro { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+  #intro h1 { font-size: clamp(32px, 6vw, 56px); color: #2c5282; text-shadow: 3px 3px 0 #fff, 6px 6px 0 rgba(0,0,0,.1); margin-bottom: 16px; }
+  #intro .pikmin-row { display: flex; gap: 12px; margin: 24px 0; flex-wrap: wrap; justify-content: center; }
+  #intro .pikmin-row svg { width: 50px; height: 70px; }
+  #intro p { font-size: 18px; max-width: 600px; margin-bottom: 12px; line-height: 1.7; background: rgba(255,255,255,.7); padding: 12px 20px; border-radius: 16px; }
+  .name-input { margin: 16px 0; font-size: 18px; }
+  .name-input input { font-size: 22px; padding: 10px 16px; border-radius: 12px; border: 3px solid #4a90e2; text-align: center; width: 200px; font-family: inherit; }
+  .start-btn { background: linear-gradient(180deg, #ff7e5f, #feb47b); color: #fff; border: none; padding: 18px 48px; font-size: 24px; border-radius: 50px; cursor: pointer; box-shadow: 0 6px 0 #c53030, 0 8px 14px rgba(0,0,0,.2); font-weight: bold; transition: transform .15s, box-shadow .15s; font-family: inherit; margin-top: 12px; }
+  .start-btn:hover { transform: translateY(2px); box-shadow: 0 4px 0 #c53030; }
+  .start-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #c53030; }
+
+  /* layout */
+  #game { display: none; }
+  #game.active { display: grid; }
+  #game { grid-template-columns: 1fr 320px; grid-template-rows: auto 1fr auto; gap: 12px; padding: 12px; min-height: 100vh; }
+  @media (max-width: 900px) { #game.active { grid-template-columns: 1fr; } }
+
+  header.bar { grid-column: 1 / -1; background: rgba(255,255,255,.85); border-radius: 16px; padding: 12px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+  header.bar h2 { font-size: 22px; color: #2c5282; margin-right: auto; }
+  .stat { background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 6px 14px; font-weight: bold; font-size: 15px; display: flex; align-items: center; gap: 6px; }
+  .stat .label { color: #718096; font-size: 13px; }
+  .stat .val { color: #d97706; font-size: 20px; }
+  .header-btn { background: #fff; border: 2px solid #e2e8f0; border-radius: 10px; padding: 8px 12px; cursor: pointer; font-size: 18px; font-family: inherit; }
+  .header-btn:hover { background: #ebf8ff; }
+
+  /* map */
+  #map-wrap { background: linear-gradient(180deg, #b3d9f5 0%, #d4ecdb 100%); border-radius: 16px; padding: 12px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,.08); min-height: 380px; overflow: hidden; }
+  #taiwan-map { width: 100%; height: 100%; min-height: 360px; max-height: 70vh; display: block; }
+
+  .region-grp { cursor: pointer; transition: transform .2s; transform-origin: center; transform-box: fill-box; }
+  .region-grp:hover { filter: brightness(1.15); }
+  .region-grp:hover ellipse { stroke-width: 3; }
+  .region-grp.cleared { opacity: .75; cursor: default; }
+  .region-grp.cleared:hover { transform: none; filter: none; }
+  .region-grp.current ellipse { stroke: #c53030; stroke-width: 3; }
+  .region-grp.current .pulse-ring { animation: pulse 1.6s ease-out infinite; }
+  @keyframes pulse { 0% { r: 16; opacity: .8; } 100% { r: 38; opacity: 0; } }
+  .region-circle { transition: all .2s; }
+  .region-label { font-size: 13px; fill: #1a202c; font-weight: bold; pointer-events: none; paint-order: stroke; stroke: #fff; stroke-width: 3.5px; stroke-linejoin: round; }
+  .region-count { font-size: 16px; font-weight: bold; fill: #d97706; pointer-events: none; }
+  .region-clear-mark { font-size: 18px; pointer-events: none; }
+
+  /* sidebar */
+  .sidebar { display: flex; flex-direction: column; gap: 12px; }
+  .panel { background: rgba(255,255,255,.92); border-radius: 16px; padding: 14px; box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+  .panel h3 { font-size: 16px; color: #2c5282; margin-bottom: 8px; }
+
+  .pikmin-hand { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .pikmin-card { aspect-ratio: 0.85; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding: 4px 2px 6px; position: relative; box-shadow: 0 3px 8px rgba(0,0,0,.12); overflow: hidden; }
+  .pikmin-card svg { width: 100%; height: 70%; display: block; }
+  .pikmin-card .count { font-size: 16px; font-weight: bold; color: #1a202c; background: rgba(255,255,255,.85); padding: 1px 8px; border-radius: 10px; min-width: 22px; text-align: center; }
+  .pikmin-card.red    { background: linear-gradient(180deg, #fed7d7, #feb2b2); }
+  .pikmin-card.blue   { background: linear-gradient(180deg, #bee3f8, #90cdf4); }
+  .pikmin-card.yellow { background: linear-gradient(180deg, #fef3c7, #fbd38d); }
+  .pikmin-card.purple { background: linear-gradient(180deg, #e9d8fd, #d6bcfa); }
+  .pikmin-card.white  { background: linear-gradient(180deg, #f7fafc, #e2e8f0); }
+  .pikmin-card.rock   { background: linear-gradient(180deg, #e2e8f0, #a0aec0); }
+  .pikmin-card.flower { background: linear-gradient(180deg, #fed7e2, #fbb6ce); }
+  .pikmin-card.zero { opacity: .35; filter: grayscale(.6); }
+
+  .inventory { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; }
+  .inv-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: linear-gradient(90deg, #fef3c7, #fffbeb); border-radius: 8px; font-size: 14px; }
+  .inv-item.empty { background: #f7fafc; color: #a0aec0; justify-content: center; padding: 12px; }
+  .inv-item .word { font-weight: bold; color: #744210; font-size: 16px; }
+
+  /* action bar */
+  #action-bar { grid-column: 1 / -1; background: rgba(255,255,255,.92); border-radius: 16px; padding: 14px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+  .btn { padding: 12px 24px; border-radius: 14px; border: none; font-size: 16px; cursor: pointer; font-weight: bold; font-family: inherit; transition: transform .1s, box-shadow .1s; }
+  .btn:active { transform: translateY(2px); }
+  .btn-primary { background: #4299e1; color: #fff; box-shadow: 0 4px 0 #2b6cb0; }
+  .btn-success { background: #48bb78; color: #fff; box-shadow: 0 4px 0 #2f855a; }
+  .btn-warning { background: #ed8936; color: #fff; box-shadow: 0 4px 0 #c05621; }
+  .btn-secondary { background: #a0aec0; color: #fff; box-shadow: 0 4px 0 #718096; }
+  .btn-danger { background: #f56565; color: #fff; box-shadow: 0 4px 0 #c53030; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; transform: none; }
+
+  .msg { flex: 1; min-width: 200px; padding: 10px 14px; background: #fff; border-radius: 10px; border: 2px dashed #cbd5e0; font-size: 15px; color: #4a5568; }
+  .msg.success { border-color: #48bb78; color: #22543d; background: #f0fff4; }
+  .msg.error { border-color: #f56565; color: #742a2a; background: #fff5f5; }
+
+  /* modals */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+  .modal-bg.show { display: flex; }
+  .modal { background: #fff; border-radius: 24px; padding: 20px 24px; max-width: 540px; width: 100%; max-height: 90vh; overflow-y: auto; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.3); animation: pop .3s ease-out; }
+  .modal.wide { max-width: 720px; }
+  @keyframes pop { from { transform: scale(.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal h2 { color: #2c5282; margin-bottom: 8px; font-size: 20px; }
+
+  .level-banner { background: linear-gradient(135deg, #fbbf24, #f97316); color: #fff; padding: 6px 14px; border-radius: 20px; display: inline-block; font-weight: bold; font-size: 14px; margin-bottom: 6px; box-shadow: 0 3px 0 #c05621; }
+  .modal .treasure-emoji { font-size: 48px; margin: 6px 0; }
+  .audio-row { display: flex; gap: 10px; align-items: center; justify-content: center; margin: 8px 0; flex-wrap: wrap; }
+  .speaker-btn { background: linear-gradient(180deg, #4299e1, #2b6cb0); color: #fff; border: none; padding: 12px 22px; border-radius: 50px; font-size: 19px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #2c5282; font-family: inherit; }
+  .speaker-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #2c5282; }
+  .speaker-btn.playing { animation: speakerPulse .8s ease-in-out infinite; }
+  @keyframes speakerPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+  .zhuyin { font-size: 24px; color: #d97706; font-weight: bold; transition: opacity .3s; background: #fef3c7; padding: 4px 14px; border-radius: 10px; display: inline-block; margin: 4px 0; }
+  .zhuyin.hidden { opacity: 0; visibility: hidden; }
+  .hint-text { font-size: 15px; color: #4a5568; background: #ebf8ff; padding: 8px 14px; border-radius: 10px; margin: 8px 0; }
+
+  .option-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 12px 0; }
+  .opt { background: #fff; border: 4px solid #cbd5e0; border-radius: 18px; padding: 14px; font-size: clamp(44px, 10vw, 72px); font-weight: bold; color: #1a202c; cursor: pointer; transition: all .15s; font-family: inherit; user-select: none; line-height: 1.15; }
+  .opt:hover { background: #ebf8ff; border-color: #4299e1; transform: translateY(-2px); }
+  .opt:active { transform: translateY(2px); }
+  .opt.correct { background: #c6f6d5 !important; border-color: #48bb78 !important; animation: correctFlash .6s ease-out; }
+  .opt.wrong { background: #fed7d7 !important; border-color: #f56565 !important; animation: shake .5s ease-out; }
+  .opt.disabled { opacity: .5; pointer-events: none; }
+  @keyframes correctFlash { 0% { transform: scale(1); } 40% { transform: scale(1.15); box-shadow: 0 0 30px #48bb78; } 100% { transform: scale(1); } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+
+  .attempt-tracker { font-size: 14px; color: #718096; margin: 4px 0; }
+  .attempt-tracker .x { color: #f56565; }
+  .praise-text { font-size: 24px; font-weight: bold; color: #38a169; margin: 6px 0; min-height: 0; }
+  .modal-buttons { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; justify-content: center; }
+  .modal-buttons .btn { flex: 1; min-width: 120px; }
+
+  /* 答錯後的教學區 */
+  .teach-box { background: linear-gradient(135deg, #fef3c7, #fde68a); border: 3px solid #f59e0b; border-radius: 18px; padding: 16px; margin: 10px 0; animation: pop .35s ease-out; }
+  .teach-box.hidden { display: none; }
+  .btn.hidden { display: none; }
+  .teach-title { font-size: 16px; font-weight: bold; color: #92400e; margin-bottom: 8px; }
+  .teach-word { font-size: 72px; font-weight: bold; color: #92400e; line-height: 1; margin: 6px 0; text-shadow: 2px 3px 0 rgba(245,158,11,0.25); }
+  .teach-zhuyin { font-size: 28px; color: #b45309; font-weight: bold; background: #fff; padding: 6px 20px; border-radius: 12px; display: inline-block; margin: 4px 0; }
+  .teach-hint { font-size: 14px; color: #78350f; margin: 6px 0; }
+  .teach-listens { font-size: 14px; color: #92400e; margin: 8px 0 6px; font-weight: bold; }
+  .teach-listen-btn { background: linear-gradient(180deg, #f59e0b, #d97706); color: #fff; font-size: 17px; padding: 10px 20px; min-width: 160px; box-shadow: 0 4px 0 #92400e; }
+  .teach-listen-btn:disabled { opacity: 0.5; cursor: default; box-shadow: 0 2px 0 #92400e; transform: translateY(2px); }
+
+  /* region panel */
+  .region-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .region-header h2 { font-size: 26px; color: #2c5282; margin: 0; text-align: left; }
+  .region-header .close { background: #e2e8f0; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer; font-weight: bold; color: #4a5568; }
+  .treasure-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .treasure-card { background: linear-gradient(90deg, #f0fff4, #c6f6d5); border: 3px solid #48bb78; border-radius: 14px; padding: 12px; display: grid; grid-template-columns: 70px 1fr auto; gap: 12px; align-items: center; cursor: pointer; transition: all .2s; text-align: left; }
+  .treasure-card:hover { transform: translateX(3px); }
+  .treasure-card.cleared { background: #f7fafc; border-color: #cbd5e0; opacity: .55; cursor: not-allowed; }
+  .treasure-emoji-big { font-size: 50px; text-align: center; }
+  .treasure-info .word-preview { font-size: 22px; font-weight: bold; color: #2c5282; margin-bottom: 4px; }
+  .treasure-score { font-size: 18px; font-weight: bold; color: #d97706; text-align: center; background: #fef3c7; padding: 6px 10px; border-radius: 10px; min-width: 60px; }
+  .empty-region { text-align: center; padding: 32px; color: #a0aec0; font-size: 18px; }
+
+  /* settings panel */
+  .settings-section { background: #f7fafc; border-radius: 12px; padding: 12px; margin-bottom: 12px; text-align: left; }
+  .settings-section h3 { font-size: 18px; color: #2c5282; margin-bottom: 8px; }
+  .settings-tools { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .settings-tools .btn { padding: 8px 14px; font-size: 14px; }
+  .word-editor { background: #fff; border: 2px solid #e2e8f0; border-radius: 10px; padding: 10px; margin-bottom: 8px; }
+  .word-editor .row { display: grid; grid-template-columns: 80px 1fr; gap: 6px; align-items: center; margin-bottom: 4px; font-size: 13px; }
+  .word-editor input { padding: 6px 8px; border: 1px solid #cbd5e0; border-radius: 6px; font-family: inherit; font-size: 14px; width: 100%; }
+  .word-editor .actions { display: flex; gap: 6px; margin-top: 6px; }
+  .word-editor .actions .btn { padding: 4px 10px; font-size: 12px; }
+  .voice-test-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 10px; background: #ebf8ff; border-radius: 10px; margin-bottom: 12px; font-size: 14px; }
+
+  /* end screen */
+  #end-screen { display: none; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+  #end-screen.show { display: flex; }
+  #end-screen .badge { font-size: 100px; margin-bottom: 16px; }
+  #end-screen h1 { font-size: 40px; color: #2c5282; margin-bottom: 16px; }
+  #end-screen .final-score { font-size: 64px; color: #d97706; font-weight: bold; margin: 20px 0; }
+  #end-screen .summary { background: rgba(255,255,255,.85); padding: 20px 30px; border-radius: 16px; margin: 16px 0; text-align: left; max-width: 600px; }
+  .word-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0; }
+  .word-chip { padding: 6px 14px; background: #fef3c7; border-radius: 20px; font-weight: bold; color: #744210; font-size: 18px; }
+
+  .float-up { position: absolute; font-size: 32px; pointer-events: none; animation: floatUp 1.2s ease-out forwards; z-index: 50; }
+  @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-100px) scale(1.5); } }
+</style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div id="intro">
+  <h1>🌱 SEED × 台灣大冒險 🇹🇼</h1>
+  <div class="pikmin-row" id="intro-pikmin-row"></div>
+  <p>🗺️ 點地圖選地區 → 🎯 點關卡 → 🔊 聽聲音 → 選對的字!</p>
+  <p>每過一關就會收到一隻小種子 🌱</p>
+  <div class="name-input">
+    隊長的名字:<br>
+    <input id="player-name" type="text" placeholder="梅梅" maxlength="6">
+  </div>
+  <button class="start-btn" onclick="startGame()">開始冒險!</button>
+  <div style="margin-top:16px;font-size:13px;color:#4a5568;">
+    👨‍🏫 老師/家長:遊戲開始後可點右上角 ⚙️ 編輯字詞
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="game">
+  <header class="bar">
+    <h2>🎮 <span id="show-name">梅梅</span> 隊長</h2>
+    <div class="stat"><span class="label">分數</span><span class="val" id="score">0</span> 🌟</div>
+    <div class="stat"><span class="label">通關</span><span class="val" id="learned-count">0</span>/<span id="total-levels">33</span></div>
+    <button class="header-btn" onclick="openSettings()" title="老師設定">⚙️</button>
+    <button class="header-btn" onclick="resetGame()" title="重玩">↺</button>
+  </header>
+
+  <div id="map-wrap">
+    <svg id="taiwan-map" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+
+  <div class="sidebar">
+    <div class="panel">
+      <h3>🌱 我的種子(紀念品)</h3>
+      <div class="pikmin-hand" id="pikmin-hand"></div>
+    </div>
+    <div class="panel">
+      <h3>🎒 學會的字</h3>
+      <div class="inventory" id="inventory"></div>
+    </div>
+  </div>
+
+  <div id="action-bar">
+    <div class="msg" id="message">點地圖上任何一個地區開始挑戰!</div>
+    <button class="btn btn-warning" onclick="showEndScreen()">🏁 結束冒險</button>
+  </div>
+</div>
+
+<!-- REGION PANEL -->
+<div class="modal-bg" id="region-panel">
+  <div class="modal">
+    <div class="region-header">
+      <h2 id="region-name">📍 台北</h2>
+      <button class="close" onclick="closeRegionPanel()">✕</button>
+    </div>
+    <div class="treasure-list" id="treasure-list"></div>
+  </div>
+</div>
+
+<!-- LEVEL MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="level-banner" id="level-banner">關卡 1</div>
+    <h2 id="modal-title">聽聲音,選對的字!</h2>
+    <div class="audio-row">
+      <button class="speaker-btn" id="speaker-btn" onclick="playWord()">🔊 點我聽</button>
+    </div>
+    <div class="option-grid" id="option-grid"></div>
+    <div class="praise-text" id="praise-text"></div>
+    <div class="attempt-tracker" id="attempt-tracker"></div>
+    <!-- 答錯後的教學區(平時隱藏) -->
+    <div id="teach-box" class="teach-box hidden">
+      <div class="teach-title">📖 我們一起學這個字</div>
+      <div class="teach-word" id="teach-word">茶</div>
+      <div class="teach-zhuyin" id="teach-zhuyin">ㄔㄚˊ</div>
+      <div class="teach-hint" id="teach-hint"></div>
+      <div class="teach-listens" id="teach-listens">
+        <span>聽 <span id="teach-listen-count">0</span>/3 次</span>
+      </div>
+      <button class="btn teach-listen-btn" onclick="teachListen()">🔊 再聽一次</button>
+    </div>
+    <div class="treasure-emoji" id="modal-emoji">🥤</div>
+    <div class="hint-text" id="modal-hint">💡 提示</div>
+    <div class="zhuyin hidden" id="modal-zhuyin">ㄔㄚˊ</div>
+    <div class="modal-buttons">
+      <button class="btn btn-warning" id="btn-show-zhuyin" onclick="showZhuyin()">🔍 看注音</button>
+      <button class="btn btn-primary hidden" id="btn-next-level" onclick="goNextLevel()">➡ 下一關</button>
+      <button class="btn btn-secondary" id="btn-pause" onclick="closeReadModal()">↩ 等一下</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-bg" id="settings-modal">
+  <div class="modal wide">
+    <div class="region-header">
+      <h2>⚙️ 老師字詞設定</h2>
+      <button class="close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="voice-test-row">
+      🔊 測試聲音:
+      <input id="voice-test-input" placeholder="輸入字看效果" style="padding:6px 8px;border:1px solid #cbd5e0;border-radius:6px;font-family:inherit;">
+      <button class="btn btn-primary" style="padding:6px 12px;font-size:14px;" onclick="testVoice()">念念看</button>
+      <select id="voice-select" style="padding:6px;border-radius:6px;font-family:inherit;font-size:14px;"></select>
+    </div>
+    <div class="settings-tools">
+      <button class="btn btn-success" onclick="saveSettings()">💾 儲存</button>
+      <button class="btn btn-warning" onclick="resetWordsToDefault()">🔄 還原預設</button>
+      <button class="btn btn-secondary" onclick="exportSettings()">📤 匯出 JSON</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()">📥 匯入</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importSettings(event)">
+    </div>
+    <div id="settings-content"></div>
+    <div class="settings-tools" style="margin-top:16px;">
+      <button class="btn btn-success" onclick="saveSettings()">💾 儲存設定並關閉</button>
+    </div>
+  </div>
+</div>
+
+<!-- END -->
+<div id="end-screen">
+  <div class="badge" id="end-badge">🏆</div>
+  <h1 id="end-title">恭喜完成冒險!</h1>
+  <div class="final-score"><span id="end-score">0</span> 🌟</div>
+  <div class="summary">
+    <p>🗺️ 走過的地區:<span id="end-regions">-</span></p>
+    <p>📖 通過 <b id="end-learned-count">0</b> 個識字關卡:</p>
+    <div class="word-list" id="end-word-list"></div>
+  </div>
+  <button class="start-btn" onclick="resetGame()">再玩一次!</button>
+</div>
+
+<script>
+// ============================================================
+// 預設字詞庫(老師可以從設定面板修改)
+// 每個寶物 = 一個關卡
+// pronounce 是用「○○的○」格式幫語音念出正確發音
+// ============================================================
+const DEFAULT_REGIONS = [
+  { id:'taipei', name:'台北', x:238, y:100, theme:'yellow', treasures: [
+    { word:'雨', emoji:'☔', zhuyin:'ㄩˇ', pronounce:'下雨的雨', hint:'從天上掉下來的水', distractors:['兩','雪','霜'], score:2 },
+    { word:'樓', emoji:'🏢', zhuyin:'ㄌㄡˊ', pronounce:'高樓的樓', hint:'高高的房子,像 101', distractors:['樹','橋','棟'], score:3 },
+    { word:'市', emoji:'🏙️', zhuyin:'ㄕˋ', pronounce:'城市的市', hint:'熱鬧、有很多店', distractors:['布','巾','府'], score:2 }
+  ]},
+  { id:'taoyuan', name:'桃園', x:202, y:135, theme:'yellow', treasures: [
+    { word:'機', emoji:'✈️', zhuyin:'ㄐㄧ', pronounce:'飛機的機', hint:'會飛的大鳥', distractors:['棋','桃','楓'], score:3 },
+    { word:'池', emoji:'💧', zhuyin:'ㄔˊ', pronounce:'水池的池', hint:'裝水的小水塘', distractors:['地','他','也'], score:2 },
+    { word:'田', emoji:'🌾', zhuyin:'ㄊㄧㄢˊ', pronounce:'稻田的田', hint:'種米的綠色方格', distractors:['由','申','甲'], score:2 }
+  ]},
+  { id:'taichung', name:'台中', x:185, y:215, theme:'red', treasures: [
+    { word:'太', emoji:'🌞', zhuyin:'ㄊㄞˋ', pronounce:'太陽的太', hint:'比大還大', distractors:['大','犬','天'], score:2 },
+    { word:'餅', emoji:'🥮', zhuyin:'ㄅㄧㄥˇ', pronounce:'餅乾的餅', hint:'圓圓扁扁的點心', distractors:['飯','餃','麵'], score:3 },
+    { word:'紅', emoji:'🌹', zhuyin:'ㄏㄨㄥˊ', pronounce:'紅色的紅', hint:'像血、像蘋果的顏色', distractors:['綠','紫','級'], score:2 }
+  ]},
+  { id:'alishan', name:'阿里山', x:175, y:295, theme:'purple', treasures: [
+    { word:'山', emoji:'⛰️', zhuyin:'ㄕㄢ', pronounce:'高山的山', hint:'高高的可以爬', distractors:['出','凸','凹'], score:2 },
+    { word:'木', emoji:'🌳', zhuyin:'ㄇㄨˋ', pronounce:'木頭的木', hint:'會長葉子直直的', distractors:['本','未','末'], score:2 },
+    { word:'林', emoji:'🌲', zhuyin:'ㄌㄧㄣˊ', pronounce:'樹林的林', hint:'兩棵樹站在一起', distractors:['森','村','相'], score:3 }
+  ]},
+  { id:'tainan', name:'台南', x:170, y:348, theme:'white', treasures: [
+    { word:'廟', emoji:'⛩️', zhuyin:'ㄇㄧㄠˋ', pronounce:'廟宇的廟', hint:'拜拜的地方', distractors:['寺','宮','殿'], score:3 },
+    { word:'冰', emoji:'🍧', zhuyin:'ㄅㄧㄥ', pronounce:'冰塊的冰', hint:'冰冰涼涼的', distractors:['水','永','泳'], score:3 },
+    { word:'香', emoji:'🌸', zhuyin:'ㄒㄧㄤ', pronounce:'香香的香', hint:'聞起來很好聞', distractors:['甜','看','味'], score:3 }
+  ]},
+  { id:'kaohsiung', name:'高雄', x:178, y:400, theme:'blue', treasures: [
+    { word:'海', emoji:'🌊', zhuyin:'ㄏㄞˇ', pronounce:'大海的海', hint:'又大又藍', distractors:['河','湖','洋'], score:2 },
+    { word:'船', emoji:'⛴️', zhuyin:'ㄔㄨㄢˊ', pronounce:'輪船的船', hint:'在海上跑', distractors:['舟','般','艇'], score:3 },
+    { word:'港', emoji:'⚓', zhuyin:'ㄍㄤˇ', pronounce:'港口的港', hint:'船停的地方', distractors:['溝','洪','滴'], score:4 }
+  ]},
+  { id:'pingtung', name:'屏東', x:210, y:470, theme:'red', treasures: [
+    { word:'鹿', emoji:'🦌', zhuyin:'ㄌㄨˋ', pronounce:'梅花鹿的鹿', hint:'頭上有角會跑', distractors:['馬','虎','狼'], score:4 },
+    { word:'花', emoji:'🌺', zhuyin:'ㄏㄨㄚ', pronounce:'花朵的花', hint:'香香的有顏色', distractors:['草','葉','果'], score:2 },
+    { word:'椰', emoji:'🥥', zhuyin:'ㄧㄝˊ', pronounce:'椰子的椰', hint:'海邊高樹結大果', distractors:['棒','棚','楊'], score:4 }
+  ]},
+  { id:'yilan', name:'宜蘭', x:272, y:128, theme:'yellow', treasures: [
+    { word:'米', emoji:'🍚', zhuyin:'ㄇㄧˇ', pronounce:'米飯的米', hint:'白白的小顆,煮成飯', distractors:['來','未','半'], score:2 },
+    { word:'蔥', emoji:'🌿', zhuyin:'ㄘㄨㄥ', pronounce:'青蔥的蔥', hint:'綠色的,煮菜會放', distractors:['蘭','菜','葉'], score:4 },
+    { word:'雪', emoji:'❄️', zhuyin:'ㄒㄩㄝˇ', pronounce:'下雪的雪', hint:'冬天白白會下', distractors:['雲','雨','霜'], score:3 }
+  ]},
+  { id:'hualien', name:'花蓮', x:265, y:240, theme:'purple', treasures: [
+    { word:'石', emoji:'🪨', zhuyin:'ㄕˊ', pronounce:'石頭的石', hint:'硬硬的', distractors:['右','古','占'], score:2 },
+    { word:'洞', emoji:'🕳️', zhuyin:'ㄉㄨㄥˋ', pronounce:'山洞的洞', hint:'圓圓的可以鑽進去', distractors:['同','銅','桐'], score:3 },
+    { word:'岩', emoji:'🏔️', zhuyin:'ㄧㄢˊ', pronounce:'岩石的岩', hint:'山上的大石頭', distractors:['岸','崖','岡'], score:4 }
+  ]},
+  { id:'taitung', name:'台東', x:255, y:378, theme:'white', treasures: [
+    { word:'風', emoji:'💨', zhuyin:'ㄈㄥ', pronounce:'風吹的風', hint:'看不見會吹樹葉', distractors:['鳳','楓','瘋'], score:2 },
+    { word:'星', emoji:'⭐', zhuyin:'ㄒㄧㄥ', pronounce:'星星的星', hint:'晚上天上發光', distractors:['早','是','生'], score:3 },
+    { word:'雲', emoji:'☁️', zhuyin:'ㄩㄣˊ', pronounce:'雲朵的雲', hint:'天上白白軟軟的', distractors:['雪','零','雷'], score:3 }
+  ]},
+  { id:'penghu', name:'澎湖', x:105, y:67, theme:'blue', treasures: [
+    { word:'浪', emoji:'🌊', zhuyin:'ㄌㄤˋ', pronounce:'海浪的浪', hint:'海上一波一波', distractors:['狼','朗','郎'], score:3 },
+    { word:'貝', emoji:'🐚', zhuyin:'ㄅㄟˋ', pronounce:'貝殼的貝', hint:'海邊撿到的硬殼', distractors:['月','見','員'], score:3 },
+    { word:'魚', emoji:'🐟', zhuyin:'ㄩˊ', pronounce:'魚兒的魚', hint:'在水裡游游游', distractors:['鳥','虫','龜'], score:2 }
+  ]}
+];
+
+// 各縣市彩色分區路徑 — 依台灣真實縣市地理位置與相對形狀繪製
+// viewBox 400×600,本島 x:135–275, y:60–510(長寬比約 1:3,接近真實 1:2.7)
+// 配色:#e8794a 橘、#5fb89e 綠、#2d4a8a 深藍、#5b9bd5 中藍、#f4c542 黃、#a8c97f 淺綠
+const TAIWAN_REGIONS_PATHS = [
+  // === 北部 ===
+  // 台北(被新北環繞的盆地)
+  { id:'taipei',    fill:'#e8794a', d:'M 226 92 Q 234 86 244 88 Q 252 92 252 102 Q 250 110 240 113 Q 230 113 224 106 Q 222 98 226 92 Z' },
+  // 新北(環繞台北、北部最大塊、包含北海岸與東北角突角)
+  { id:'newtaipei', fill:'#f4c542', d:'M 210 65 Q 230 56 250 60 Q 268 64 275 76 Q 279 88 270 95 Q 260 88 252 92 Q 244 84 232 86 Q 222 90 220 100 Q 220 112 230 115 Q 244 116 254 110 Q 262 108 268 115 Q 272 128 263 134 Q 248 140 230 138 Q 212 135 200 122 Q 192 108 196 90 Q 200 75 210 65 Z' },
+  // 基隆(東北角突出小港)
+  { id:'keelung',   fill:'#2d4a8a', d:'M 250 60 Q 260 56 268 62 Q 272 70 266 76 Q 258 76 252 72 Q 248 65 250 60 Z' },
+  // 桃園(西北)
+  { id:'taoyuan',   fill:'#5fb89e', d:'M 196 90 Q 188 105 188 122 Q 192 132 205 132 Q 215 132 218 122 Q 218 110 215 100 Q 208 88 196 90 Z' },
+  // 新竹縣市(桃園下方)
+  { id:'hsinchu',   fill:'#5b9bd5', d:'M 180 130 Q 195 130 210 135 Q 218 145 215 158 Q 205 165 192 162 Q 178 158 173 145 Q 174 135 180 130 Z' },
+  // 宜蘭(東北部三角平原,蘭陽溪沖積扇形)
+  { id:'yilan',     fill:'#2d4a8a', d:'M 268 95 Q 280 100 286 115 Q 292 135 285 155 Q 272 162 260 152 Q 252 138 256 120 Q 260 105 268 95 Z' },
+
+  // === 中部 ===
+  // 苗栗(西部,新竹下方)
+  { id:'miaoli',    fill:'#e8794a', d:'M 173 158 Q 188 162 200 168 Q 208 178 202 190 Q 188 195 175 190 Q 165 180 165 168 Q 167 160 173 158 Z' },
+  // 台中(中部寬闊)
+  { id:'taichung',  fill:'#5fb89e', d:'M 165 188 Q 185 192 205 198 Q 222 208 220 225 Q 215 240 200 240 Q 180 240 165 232 Q 152 220 153 205 Q 156 192 165 188 Z' },
+  // 彰化(中部西海岸突角)
+  { id:'changhua',  fill:'#f4c542', d:'M 152 218 Q 160 232 158 248 Q 150 256 140 250 Q 135 240 138 228 Q 142 218 152 218 Z' },
+  // 南投(中央山區、唯一不靠海)
+  { id:'nantou',    fill:'#a8c97f', d:'M 200 232 Q 220 240 230 258 Q 235 285 228 310 Q 215 320 200 315 Q 188 305 188 285 Q 188 255 195 240 Q 198 232 200 232 Z' },
+  // 雲林
+  { id:'yunlin',    fill:'#5b9bd5', d:'M 140 252 Q 158 250 175 258 Q 188 270 186 282 Q 172 290 155 287 Q 142 282 138 270 Q 136 258 140 252 Z' },
+
+  // === 南部 ===
+  // 嘉義縣市
+  { id:'chiayi',    fill:'#e8794a', d:'M 152 288 Q 175 290 190 298 Q 200 310 195 322 Q 180 328 162 325 Q 148 320 145 308 Q 146 295 152 288 Z' },
+  // 台南
+  { id:'tainan',    fill:'#2d4a8a', d:'M 148 322 Q 175 322 198 330 Q 208 348 200 365 Q 178 375 158 370 Q 142 360 140 345 Q 142 328 148 322 Z' },
+  // 高雄(向東延伸到中央山脈)
+  { id:'kaohsiung', fill:'#5fb89e', d:'M 145 368 Q 175 370 200 378 Q 220 388 222 405 Q 218 425 205 432 Q 185 432 165 425 Q 148 415 142 398 Q 140 382 145 368 Z' },
+  // 屏東(南端半島收尖)
+  { id:'pingtung',  fill:'#f4c542', d:'M 198 430 Q 222 432 230 445 Q 232 465 225 482 Q 218 498 208 505 Q 200 498 198 482 Q 195 465 192 448 Q 194 435 198 430 Z' },
+
+  // === 東部 ===
+  // 花蓮(東部最長,從北到中)
+  { id:'hualien',   fill:'#e8794a', d:'M 263 158 Q 280 170 285 195 Q 290 230 285 270 Q 280 305 270 325 Q 256 330 248 318 Q 240 290 240 255 Q 240 215 246 185 Q 252 165 263 158 Z' },
+  // 台東(東部南段)
+  { id:'taitung',   fill:'#5b9bd5', d:'M 248 325 Q 268 330 275 350 Q 278 380 270 410 Q 258 430 245 425 Q 232 405 232 380 Q 232 350 240 332 Q 244 326 248 325 Z' },
+
+  // === 離島 ===
+  // 澎湖(西側海上群島)
+  { id:'penghu',    fill:'#5b9bd5', d:'M 95 55 Q 107 51 117 57 Q 123 65 117 73 Q 107 77 97 73 Q 91 65 95 55 Z M 110 80 Q 120 80 123 87 Q 120 95 112 95 Q 105 91 110 80 Z M 125 65 Q 130 63 132 70 Q 129 75 125 73 Q 123 69 125 65 Z' }
+];
+
+// 整體外輪廓(描邊強調台灣島形)— 北部圓鈍、西海岸平緩、彰化突角、屏東收尖、東岸略直
+const TAIWAN_OUTLINE = "M 210 62 Q 235 55 258 60 Q 275 64 280 78 Q 285 95 288 112 Q 294 135 290 158 Q 288 185 290 215 Q 290 250 286 285 Q 282 315 275 345 Q 268 380 258 410 Q 245 445 232 475 Q 218 500 208 505 Q 200 498 195 482 Q 188 460 180 432 Q 165 410 150 380 Q 138 350 135 318 Q 138 285 142 252 Q 145 218 140 232 Q 138 218 145 200 Q 152 180 160 162 Q 168 142 178 122 Q 188 100 198 82 Q 205 68 210 62 Z";
+
+const PIKMIN_TYPES = ['red','blue','yellow','purple','white','rock','flower'];
+const PIKMIN_CN = { red:'紅', blue:'藍', yellow:'黃', purple:'紫', white:'白', rock:'石', flower:'花' };
+
+// 迷你種子 SVG(用於開始畫面和側邊欄收藏格)
+// viewBox 50×70,身體中心 (25, 40)
+function miniPikminSVG(type) {
+  const c = { red:'#e85d5d', blue:'#4a90d9', yellow:'#f0c441', purple:'#9b6dd1', white:'#f5f5f5', rock:'#9ca3af', flower:'#f687b3' };
+  const light = { red:'#fc8181', blue:'#7eb8e8', yellow:'#f6e05e', purple:'#c4a5e0', white:'#ffffff', rock:'#cbd5e0', flower:'#fbb6ce' };
+  const body = c[type] || c.red;
+  const bodyLight = light[type] || light.red;
+  const stroke = type === 'white' ? '#a0aec0' : '#fff';
+
+  // === 各類型專屬頂部裝飾 ===
+  let topDeco = '';
+  if (type === 'flower') {
+    // 花蝶風:頭頂一朵完整的花 + 兩側小翅膀
+    topDeco = `
+      <line x1="25" y1="22" x2="25" y2="14" stroke="#3d8b5a" stroke-width="1.5" stroke-linecap="round"/>
+      <g transform="translate(25,9)">
+        <ellipse cx="0" cy="-4" rx="3" ry="3.5" fill="#f687b3"/>
+        <ellipse cx="3.8" cy="-1" rx="3" ry="3.5" fill="#f687b3" transform="rotate(72)"/>
+        <ellipse cx="2.3" cy="3.5" rx="3" ry="3.5" fill="#f687b3" transform="rotate(144)"/>
+        <ellipse cx="-2.3" cy="3.5" rx="3" ry="3.5" fill="#f687b3" transform="rotate(216)"/>
+        <ellipse cx="-3.8" cy="-1" rx="3" ry="3.5" fill="#f687b3" transform="rotate(288)"/>
+        <circle cx="0" cy="0" r="2" fill="#fef3c7"/>
+      </g>
+      <!-- 兩側小翅膀 -->
+      <ellipse cx="8" cy="40" rx="5" ry="7" fill="#fed7e2" stroke="#fff" stroke-width="1.2" opacity="0.85" transform="rotate(-20 8 40)"/>
+      <ellipse cx="42" cy="40" rx="5" ry="7" fill="#fed7e2" stroke="#fff" stroke-width="1.2" opacity="0.85" transform="rotate(20 42 40)"/>`;
+  } else if (type === 'rock') {
+    // 岩石風:頭頂沒花,身體呈現多角形邊緣
+    topDeco = `
+      <line x1="25" y1="22" x2="25" y2="16" stroke="#3d8b5a" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M 25 16 Q 21 13 22 9 Q 25 6 28 9 Q 29 13 25 16 Z" fill="#5fb89e" stroke="#2d6a4f" stroke-width="0.8"/>`;
+  } else {
+    // 一般葉子(紅藍黃紫白)
+    topDeco = `
+      <line x1="25" y1="22" x2="24.5" y2="13" stroke="#3d8b5a" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M 24.5 13 Q 20 9 21 4 Q 25 1 28 4 Q 30 9 24.5 13 Z" fill="#5fb89e" stroke="#2d6a4f" stroke-width="0.8" stroke-linejoin="round"/>
+      <line x1="24.5" y1="13" x2="25.5" y2="4" stroke="#2d6a4f" stroke-width="0.4" opacity="0.6"/>`;
+  }
+
+  // === 身體:岩石風用多邊形,其他用水滴形 ===
+  let bodyShape;
+  if (type === 'rock') {
+    // 岩石風:不規則多邊形
+    bodyShape = `
+      <path d="M 25 22 L 16 26 L 13 35 L 15 45 L 22 53 L 30 53 L 36 47 L 37 36 L 34 27 Z"
+        fill="${body}" stroke="${stroke}" stroke-width="1.8"/>
+      <!-- 岩石高光面 -->
+      <path d="M 16 26 L 22 28 L 22 40 L 15 45 Z" fill="${bodyLight}" opacity="0.5"/>
+      <!-- 岩石的小裂痕 -->
+      <line x1="24" y1="32" x2="22" y2="37" stroke="#4a5568" stroke-width="0.6" opacity="0.5"/>
+      <line x1="30" y1="36" x2="28" y2="42" stroke="#4a5568" stroke-width="0.6" opacity="0.5"/>`;
+  } else {
+    // 水滴形身體
+    bodyShape = `
+      <path d="M 25 22 Q 13 26 13 40 Q 13 53 25 55 Q 37 53 37 40 Q 37 26 25 22 Z"
+        fill="${body}" stroke="${stroke}" stroke-width="1.8"/>
+      <path d="M 18 28 Q 15 35 15 42" fill="none" stroke="${bodyLight}" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>`;
+  }
+
+  // === 眼睛(全部都有大眼) ===
+  const eyes = `
+    <ellipse cx="20" cy="36" rx="2.5" ry="3.3" fill="#fff"/>
+    <ellipse cx="30" cy="36" rx="2.5" ry="3.3" fill="#fff"/>
+    <ellipse cx="20" cy="36.5" rx="1.6" ry="2.3" fill="#1a202c"/>
+    <ellipse cx="30" cy="36.5" rx="1.6" ry="2.3" fill="#1a202c"/>
+    <circle cx="20.5" cy="35.5" r="0.8" fill="#fff"/>
+    <circle cx="30.5" cy="35.5" r="0.8" fill="#fff"/>`;
+
+  // === 表情(各類型不同個性) ===
+  let face = '';
+  if (type === 'rock') {
+    // 岩石風:酷酷的一字嘴
+    face = `<line x1="22" y1="44" x2="28" y2="44" stroke="#1a202c" stroke-width="1.5" stroke-linecap="round"/>`;
+  } else if (type === 'flower') {
+    // 花蝶風:O 形可愛驚訝嘴 + 大腮紅
+    face = `
+      <ellipse cx="14" cy="40" rx="2" ry="1.4" fill="#fc8181" opacity="0.6"/>
+      <ellipse cx="36" cy="40" rx="2" ry="1.4" fill="#fc8181" opacity="0.6"/>
+      <circle cx="25" cy="44" r="1.5" fill="#1a202c" opacity="0.85"/>`;
+  } else {
+    // 一般:小腮紅 + 嘟嘴
+    face = `
+      <ellipse cx="14" cy="40" rx="1.8" ry="1.2" fill="#fc8181" opacity="0.5"/>
+      <ellipse cx="36" cy="40" rx="1.8" ry="1.2" fill="#fc8181" opacity="0.5"/>
+      <ellipse cx="25" cy="44" rx="1.5" ry="1.2" fill="#1a202c" opacity="0.85"/>`;
+  }
+
+  // === 腳 ===
+  const feet = type === 'rock' ? '' : `
+    <path d="M 21 53 Q 20 58 21 60" fill="none" stroke="#1a202c" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M 29 53 Q 30 58 29 60" fill="none" stroke="#1a202c" stroke-width="1.8" stroke-linecap="round"/>`;
+
+  return `<svg viewBox="0 0 50 70" xmlns="http://www.w3.org/2000/svg">
+    ${topDeco}
+    ${bodyShape}
+    ${eyes}
+    ${face}
+    ${feet}
+  </svg>`;
+}
+const STORAGE_KEY = 'pikmin-taiwan-words-v3';
+
+const PRAISE_PHRASES = [
+  '太棒了!', '好厲害!', '答對了!', '哇,你會了耶!',
+  '超棒的!', '你真聰明!', '正確!', '好讚喔!', '答得真好!'
+];
+
+// ======== STATE ========
+let state;
+let regionsData = loadRegions();
+
+function loadRegions() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_REGIONS));
+}
+function saveRegions() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(regionsData)); } catch(e){}
+}
+
+function totalLevels() {
+  return regionsData.reduce((s,r) => s + r.treasures.length, 0);
+}
+
+function freshState() {
+  return {
+    name: '梅梅',
+    pikmin: { red:0, blue:0, yellow:0, purple:0, white:0, rock:0, flower:0 },
+    inventory: [],
+    learned: [],
+    score: 0,
+    currentRegion: 'taipei',
+    levelCleared: 0,
+    regions: JSON.parse(JSON.stringify(regionsData))
+  };
+}
+
+function startGame() {
+  state = freshState();
+  const nameInput = document.getElementById('player-name').value.trim();
+  state.name = nameInput || '梅梅';
+  document.getElementById('show-name').textContent = state.name;
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('game').classList.add('active');
+  document.getElementById('end-screen').classList.remove('show');
+  document.getElementById('total-levels').textContent = totalLevels();
+  drawMap();
+  renderHand();
+  renderInventory();
+  updateStats();
+  if ('speechSynthesis' in window) speechSynthesis.getVoices();
+  setMessage(`👋 ${state.name},點地圖任何一個地區開始挑戰!`);
+}
+
+function resetGame() {
+  document.getElementById('end-screen').classList.remove('show');
+  document.getElementById('game').classList.remove('active');
+  document.getElementById('intro').style.display = 'flex';
+  closeRegionPanel();
+  closeReadModal();
+  closeSettings();
+}
+
+// ======== MAP ========
+// 把直向的台灣旋轉 -90° 變成橫躺(像往左游的鯨魚)
+// 原座標 (x, y) ∈ [0,400]×[0,580] → 旋轉後 (y, 400-x)
+// 用 transform 把整個本島群組旋轉,標籤再反向旋轉回正
+function drawMap() {
+  const svg = document.getElementById('taiwan-map');
+  const NS = 'http://www.w3.org/2000/svg';
+  svg.innerHTML = '';
+
+  // 標題 TAIWAN(左上角)
+  const titleG = document.createElementNS(NS, 'g');
+  titleG.innerHTML = `
+    <text x="40" y="38" font-size="26" font-weight="bold" fill="#2c5282" letter-spacing="3" font-family="Georgia, serif">TAIWAN</text>
+    <line x1="40" y1="50" x2="240" y2="50" stroke="#2c5282" stroke-width="1.5" opacity=".5"/>
+    <text x="40" y="68" font-size="11" fill="#5b9bd5" letter-spacing="2" font-style="italic">— like a whale swimming west —</text>
+  `;
+  svg.appendChild(titleG);
+
+  // 海洋背景紋路(整個外圍)
+  for (let i = 0; i < 32; i++) {
+    const wx = (i * 73) % 580 + 10;
+    const wy = (i * 91) % 380 + 15;
+    // 避開本島區域(橫放後約 x:65-525, y:120-275)
+    if (wx > 60 && wx < 530 && wy > 110 && wy < 285) continue;
+    // 避開澎湖新位置(左下方)
+    if (wx > 35 && wx < 95 && wy > 275 && wy < 320) continue;
+    // 避開右下角資訊區
+    if (wx > 350 && wx < 590 && wy > 355 && wy < 400) continue;
+    // 避開左上標題區
+    if (wx < 260 && wy < 80) continue;
+    // 避開右上指北針
+    if (wx > 525 && wy < 90) continue;
+    const w = document.createElementNS(NS, 'text');
+    w.setAttribute('x', wx); w.setAttribute('y', wy);
+    w.setAttribute('font-size', '11'); w.setAttribute('opacity', '0.3');
+    w.setAttribute('fill', '#5b9bd5');
+    w.textContent = '〰'; svg.appendChild(w);
+  }
+
+  // ===== 旋轉容器:把原本縱向 400×580 的地圖旋轉成橫向 580×400 =====
+  // transform: 先平移,再旋轉 -90°,讓原本 (x, y) 映射到新座標 (y, 400-x)
+  // 等價於 transform="rotate(-90 200 200) translate(...)"
+  // 用 matrix(0 -1 1 0 0 400) 可達成:新x=原y, 新y=400-原x
+  const islandLayer = document.createElementNS(NS, 'g');
+  islandLayer.setAttribute('transform', 'matrix(0 -1 1 0 0 400)');
+  svg.appendChild(islandLayer);
+
+  // 縣市彩色分區(畫在旋轉層內)
+  TAIWAN_REGIONS_PATHS.forEach(rp => {
+    const p = document.createElementNS(NS, 'path');
+    p.setAttribute('d', rp.d);
+    p.setAttribute('fill', rp.fill);
+    p.setAttribute('stroke', '#fff');
+    p.setAttribute('stroke-width', '1.5');
+    p.setAttribute('stroke-linejoin', 'round');
+    p.setAttribute('opacity', '0.92');
+    islandLayer.appendChild(p);
+  });
+
+  // 整體外輪廓加深
+  const outline = document.createElementNS(NS, 'path');
+  outline.setAttribute('d', TAIWAN_OUTLINE);
+  outline.setAttribute('fill', 'none');
+  outline.setAttribute('stroke', '#2c5282');
+  outline.setAttribute('stroke-width', '1.2');
+  outline.setAttribute('stroke-linejoin', 'round');
+  outline.setAttribute('opacity', '0.5');
+  islandLayer.appendChild(outline);
+
+  // ===== 鯨魚造型裝飾(畫在旋轉層外,直接用最終橫向座標) =====
+  // 把宜蘭/花蓮東北角當成鯨魚頭部、屏東半島當尾鰭
+  const whaleDeco = document.createElementNS(NS, 'g');
+  whaleDeco.innerHTML = `
+    <!-- 鯨魚眼睛(畫在原本北端、橫放後左側,約對應宜蘭/台北附近) -->
+    <circle cx="135" cy="170" r="5" fill="#1a202c" opacity="0.85"/>
+    <circle cx="133" cy="168" r="1.6" fill="#fff"/>
+    <!-- 嘴角微笑線 -->
+    <path d="M 100 200 Q 115 210 135 205" fill="none" stroke="#2c5282" stroke-width="1.5" opacity="0.55" stroke-linecap="round"/>
+    <!-- 噴水(從鯨魚頭上方噴出) -->
+    <g opacity="0.7">
+      <path d="M 130 130 Q 128 115 132 100" fill="none" stroke="#5b9bd5" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M 140 130 Q 144 115 148 105" fill="none" stroke="#5b9bd5" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M 122 132 Q 116 118 112 108" fill="none" stroke="#5b9bd5" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="132" cy="95" r="3" fill="#b3d9f5"/>
+      <circle cx="148" cy="100" r="2.5" fill="#b3d9f5"/>
+      <circle cx="115" cy="103" r="2.5" fill="#b3d9f5"/>
+    </g>
+  `;
+  svg.appendChild(whaleDeco);
+
+  // ===== 底部資訊區塊(右下角貼邊) =====
+  const infoG = document.createElementNS(NS, 'g');
+  infoG.innerHTML = `
+    <line x1="360" y1="365" x2="585" y2="365" stroke="#2c5282" stroke-width="1.2" opacity=".4"/>
+    <circle cx="372" cy="385" r="9" fill="#2c5282"/>
+    <text x="372" y="389" text-anchor="middle" font-size="10" fill="#fff">📍</text>
+    <text x="386" y="380" font-size="8" fill="#718096" letter-spacing="1">TOTAL AREA</text>
+    <text x="386" y="392" font-size="12" font-weight="bold" fill="#2d3748">36,197 km²</text>
+    <circle cx="480" cy="385" r="9" fill="#e53e3e"/>
+    <text x="480" y="389" text-anchor="middle" font-size="10" fill="#fff">★</text>
+    <text x="494" y="380" font-size="8" fill="#718096" letter-spacing="1">CAPITAL</text>
+    <text x="494" y="392" font-size="12" font-weight="bold" fill="#2d3748">Taipei 台北</text>
+  `;
+  svg.appendChild(infoG);
+
+  // ===== 指北針(左上角,橫向版本仍標北方朝上) =====
+  const compass = document.createElementNS(NS, 'g');
+  compass.innerHTML = `
+    <circle cx="555" cy="55" r="22" fill="#fff" stroke="#4a5568" stroke-width="1.5" opacity=".85"/>
+    <text x="555" y="42" text-anchor="middle" font-size="11" font-weight="bold" fill="#c53030">北</text>
+    <text x="555" y="74" text-anchor="middle" font-size="11" fill="#4a5568">南</text>
+    <text x="540" y="60" text-anchor="middle" font-size="11" fill="#4a5568">西</text>
+    <text x="570" y="60" text-anchor="middle" font-size="11" fill="#4a5568">東</text>
+  `;
+  svg.appendChild(compass);
+
+  // ===== 遊戲地區標記(座標需要從原始 (x,y) 旋轉到新位置) =====
+  // 原座標 (rx, ry) → 橫放後 (ry, 400 - rx)
+  // 種子顏色對照(致敬風格原創設計)
+  const PIKMIN_COLORS = {
+    red:    { body:'#e85d5d', light:'#fc8181', dark:'#9b1c1c', leaf:'#5fb89e' },
+    blue:   { body:'#4a90d9', light:'#7eb8e8', dark:'#1e4a8a', leaf:'#5fb89e' },
+    yellow: { body:'#f0c441', light:'#f6e05e', dark:'#92710e', leaf:'#5fb89e' },
+    purple: { body:'#9b6dd1', light:'#c4a5e0', dark:'#5b2e8a', leaf:'#5fb89e' },
+    white:  { body:'#f5f5f5', light:'#ffffff', dark:'#4a5568', leaf:'#5fb89e' }
+  };
+
+  // 繪製一隻原創致敬風格的種子(中心 cx, cy)
+  // 設計:細長身體、橢圓大眼、頭頂植物隨進度變化(葉→花苞→開花)
+  function pikminSVG(cx, cy, theme, cleared, treasureCount) {
+    const col = PIKMIN_COLORS[theme] || PIKMIN_COLORS.red;
+    const bodyFill = cleared ? '#b8c2cc' : col.body;
+    const bodyLight = cleared ? '#cbd5e0' : col.light;
+    const eyeFill = cleared ? '#718096' : '#1a202c';
+    const opacity = cleared ? '0.7' : '1';
+
+    // 頭頂植物:已通關=綻放的花,進行中=葉子(剩越多關葉子越「新嫩」)
+    let topPlant;
+    if (cleared) {
+      // 五瓣花朵 — 致敬風格的開花表示通關
+      topPlant = `
+        <line x1="${cx}" y1="${cy-15}" x2="${cx}" y2="${cy-23}" stroke="#3d8b5a" stroke-width="1.5" stroke-linecap="round"/>
+        <g transform="translate(${cx},${cy-26})">
+          <ellipse cx="0" cy="-3.5" rx="2.5" ry="3" fill="#f687b3" transform="rotate(0)"/>
+          <ellipse cx="3.3" cy="-1" rx="2.5" ry="3" fill="#f687b3" transform="rotate(72)"/>
+          <ellipse cx="2" cy="3" rx="2.5" ry="3" fill="#f687b3" transform="rotate(144)"/>
+          <ellipse cx="-2" cy="3" rx="2.5" ry="3" fill="#f687b3" transform="rotate(216)"/>
+          <ellipse cx="-3.3" cy="-1" rx="2.5" ry="3" fill="#f687b3" transform="rotate(288)"/>
+          <circle cx="0" cy="0" r="1.8" fill="#fef3c7"/>
+        </g>`;
+    } else {
+      // 葉子(致敬風格:細長帶尖,有葉脈)
+      topPlant = `
+        <line x1="${cx}" y1="${cy-15}" x2="${cx-0.5}" y2="${cy-22}" stroke="#3d8b5a" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M ${cx-0.5} ${cy-22} Q ${cx-5} ${cy-26} ${cx-4} ${cy-31} Q ${cx} ${cy-34} ${cx+3} ${cy-31} Q ${cx+5} ${cy-26} ${cx-0.5} ${cy-22} Z" fill="${col.leaf}" stroke="#2d6a4f" stroke-width="0.8" stroke-linejoin="round"/>
+        <line x1="${cx-0.5}" y1="${cy-22}" x2="${cx+0.5}" y2="${cy-31}" stroke="#2d6a4f" stroke-width="0.5" opacity="0.6"/>`;
+    }
+
+    // 嘴巴 — 致敬風格:小小的圓嘟嘴
+    const mouth = cleared
+      ? `<circle cx="${cx}" cy="${cy+4}" r="1" fill="#1a202c" opacity="0.5"/>`
+      : `<ellipse cx="${cx}" cy="${cy+5}" rx="1.5" ry="1.2" fill="#1a202c" opacity="0.85"/>`;
+
+    // 腮紅(只在進行中顯示,增加可愛感)
+    const blush = cleared
+      ? ''
+      : `<ellipse cx="${cx-7}" cy="${cy+3}" rx="1.8" ry="1.2" fill="#fc8181" opacity="0.5"/>
+         <ellipse cx="${cx+7}" cy="${cy+3}" rx="1.8" ry="1.2" fill="#fc8181" opacity="0.5"/>`;
+
+    // 關卡數量徽章(右下角小圓)
+    const badge = !cleared && treasureCount > 0
+      ? `<circle cx="${cx+12}" cy="${cy+11}" r="7.5" fill="#fff" stroke="${col.dark}" stroke-width="1.8"/>
+         <text x="${cx+12}" y="${cy+14.5}" text-anchor="middle" font-size="11" font-weight="bold" fill="${col.dark}" font-family="Arial,sans-serif">${treasureCount}</text>`
+      : '';
+
+    // 通關打勾徽章
+    const checkMark = cleared
+      ? `<circle cx="${cx+12}" cy="${cy+11}" r="8" fill="#48bb78" stroke="#fff" stroke-width="1.5"/>
+         <path d="M ${cx+8.5} ${cy+11} L ${cx+11} ${cy+13.5} L ${cx+15.5} ${cy+8.5}" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`
+      : '';
+
+    return `
+      ${topPlant}
+      <!-- 身體(細長水滴形,有亮色高光) -->
+      <path d="M ${cx} ${cy-15} Q ${cx-9} ${cy-12} ${cx-9} ${cy+2} Q ${cx-9} ${cy+13} ${cx} ${cy+15} Q ${cx+9} ${cy+13} ${cx+9} ${cy+2} Q ${cx+9} ${cy-12} ${cx} ${cy-15} Z"
+        fill="${bodyFill}" stroke="#fff" stroke-width="1.8" opacity="${opacity}"/>
+      <!-- 高光(左側) -->
+      <path d="M ${cx-5} ${cy-10} Q ${cx-7} ${cy-5} ${cx-7} ${cy+2}" fill="none" stroke="${bodyLight}" stroke-width="2.5" stroke-linecap="round" opacity="${cleared?'0.4':'0.7'}"/>
+      <!-- 大眼睛(致敬風格:橢圓形比圓形更可愛) -->
+      <ellipse cx="${cx-3.5}" cy="${cy-3}" rx="2.2" ry="3" fill="#fff"/>
+      <ellipse cx="${cx+3.5}" cy="${cy-3}" rx="2.2" ry="3" fill="#fff"/>
+      <ellipse cx="${cx-3.5}" cy="${cy-2.5}" rx="1.5" ry="2.2" fill="${eyeFill}"/>
+      <ellipse cx="${cx+3.5}" cy="${cy-2.5}" rx="1.5" ry="2.2" fill="${eyeFill}"/>
+      <!-- 眼睛高光 -->
+      <circle cx="${cx-3}" cy="${cy-3.5}" r="0.7" fill="#fff"/>
+      <circle cx="${cx+4}" cy="${cy-3.5}" r="0.7" fill="#fff"/>
+      ${blush}
+      ${mouth}
+      <!-- 細長小腳 -->
+      <path d="M ${cx-4} ${cy+14} Q ${cx-5} ${cy+18} ${cx-4} ${cy+19}" fill="none" stroke="#1a202c" stroke-width="1.8" stroke-linecap="round" opacity="${opacity}"/>
+      <path d="M ${cx+4} ${cy+14} Q ${cx+5} ${cy+18} ${cx+4} ${cy+19}" fill="none" stroke="#1a202c" stroke-width="1.8" stroke-linecap="round" opacity="${opacity}"/>
+      ${badge}
+      ${checkMark}
+    `;
+  }
+
+  state.regions.forEach(r => {
+    const nx = r.y;         // 新 x = 原 y
+    const ny = 400 - r.x;   // 新 y = 400 - 原 x
+    const g = document.createElementNS(NS, 'g');
+    const cleared = r.treasures.length === 0;
+    const isCurrent = r.id === state.currentRegion;
+    g.setAttribute('class', `region-grp${cleared?' cleared':''}${isCurrent?' current':''}`);
+    if (!cleared) g.addEventListener('click', () => onRegionClick(r.id));
+
+    // 目前位置脈動光環(在種子底下)
+    if (isCurrent) {
+      const ring = document.createElementNS(NS, 'circle');
+      ring.setAttribute('class', 'pulse-ring');
+      ring.setAttribute('cx', nx); ring.setAttribute('cy', ny); ring.setAttribute('r', 16);
+      ring.setAttribute('fill', 'none'); ring.setAttribute('stroke', '#c53030');
+      ring.setAttribute('stroke-width', '3'); g.appendChild(ring);
+    }
+
+    // 點擊熱區(看不見的圓,確保整隻種子都能點)
+    const hit = document.createElementNS(NS, 'circle');
+    hit.setAttribute('class', 'region-circle');
+    hit.setAttribute('cx', nx); hit.setAttribute('cy', ny); hit.setAttribute('r', 18);
+    hit.setAttribute('fill', 'transparent');
+    hit.setAttribute('stroke', isCurrent ? '#c53030' : 'transparent');
+    hit.setAttribute('stroke-width', isCurrent ? 0 : 0);
+    g.appendChild(hit);
+
+    // 繪製種子角色
+    const pikmin = document.createElementNS(NS, 'g');
+    pikmin.innerHTML = pikminSVG(nx, ny, r.theme, cleared, r.treasures.length);
+    g.appendChild(pikmin);
+
+    // 縣市名稱標籤:預設在圓圈上方;特定地區為避免重疊放在下方
+    const labelBelow = { penghu: true, taoyuan: true, alishan: true };
+    const labelY = labelBelow[r.id] ? ny + 40 : ny - 36;
+    const label = document.createElementNS(NS, 'text');
+    label.setAttribute('x', nx); label.setAttribute('y', labelY);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('class', 'region-label');
+    label.textContent = r.name;
+    g.appendChild(label);
+
+    svg.appendChild(g);
+  });
+
+  const cur = getRegion(state.currentRegion);
+  if (cur) {
+    const player = document.createElementNS(NS, 'text');
+    player.setAttribute('x', cur.y + 22); player.setAttribute('y', (400 - cur.x) - 14);
+    player.setAttribute('text-anchor', 'middle'); player.setAttribute('font-size', '22');
+    player.textContent = '🧑‍🚀';
+    svg.appendChild(player);
+  }
+}
+
+// ======== REGION CLICK (no pikmin gating) ========
+function onRegionClick(regionId) {
+  state.currentRegion = regionId;
+  drawMap();
+  openRegionPanel(regionId);
+}
+
+function openRegionPanel(regionId) {
+  const r = getRegion(regionId);
+  document.getElementById('region-name').textContent = `📍 ${r.name}`;
+  const list = document.getElementById('treasure-list');
+  list.innerHTML = '';
+  if (r.treasures.length === 0) {
+    list.innerHTML = `<div class="empty-region">這裡的關卡都過完啦!<br>換一個地方吧 ✨</div>`;
+  } else {
+    r.treasures.forEach((t, idx) => {
+      const card = document.createElement('div');
+      card.className = 'treasure-card';
+      card.innerHTML = `
+        <div class="treasure-emoji-big">${t.emoji}</div>
+        <div class="treasure-info">
+          <div class="word-preview">${t.emoji} ?</div>
+          <div style="font-size:13px;color:#22543d;">✓ 點我開始挑戰</div>
+        </div>
+        <div class="treasure-score">${t.score}🌟</div>
+      `;
+      card.addEventListener('click', () => {
+        closeRegionPanel();
+        openReadModal(r, t);
+      });
+      list.appendChild(card);
+    });
+  }
+  document.getElementById('region-panel').classList.add('show');
+}
+
+function closeRegionPanel() { document.getElementById('region-panel').classList.remove('show'); }
+
+// ======== AUDIO ========
+let audioCtx = null;
+function getCtx() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  } catch(e) { return null; }
+}
+
+function playDing() {
+  const ctx = getCtx(); if (!ctx) return;
+  const notes = [523.25, 659.25, 783.99, 1046.5]; // C E G C
+  notes.forEach((freq, i) => {
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine'; o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = freq;
+    g.gain.value = 0;
+    g.gain.linearRampToValueAtTime(0.18, ctx.currentTime + i*0.08 + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.08 + 0.4);
+    o.start(ctx.currentTime + i*0.08);
+    o.stop(ctx.currentTime + i*0.08 + 0.4);
+  });
+}
+
+function playBuh() {
+  const ctx = getCtx(); if (!ctx) return;
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = 'sine'; o.connect(g); g.connect(ctx.destination);
+  o.frequency.value = 250;
+  o.frequency.linearRampToValueAtTime(160, ctx.currentTime + 0.25);
+  g.gain.value = 0.12;
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+  o.start(); o.stop(ctx.currentTime + 0.3);
+}
+
+function findCuteVoice() {
+  if (!('speechSynthesis' in window)) return null;
+  const voices = speechSynthesis.getVoices();
+  if (!voices.length) return null;
+  const userPick = document.getElementById('voice-select');
+  if (userPick && userPick.value) {
+    const v = voices.find(vv => vv.name === userPick.value);
+    if (v) return v;
+  }
+  // priority: known cute Taiwan voices
+  const preferred = ['Mei-Jia','Yating','Hanhan','Ya-ling','Tian-Tian','Sin-ji','Hui'];
+  for (const name of preferred) {
+    const v = voices.find(vv => vv.name && vv.name.includes(name));
+    if (v) return v;
+  }
+  // zh-TW first
+  let v = voices.find(vv => vv.lang === 'zh-TW');
+  if (v) return v;
+  v = voices.find(vv => /zh/i.test(vv.lang));
+  return v;
+}
+
+function speak(text, opts = {}) {
+  if (!('speechSynthesis' in window)) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'zh-TW';
+    u.rate = opts.rate ?? 0.75;
+    u.pitch = opts.pitch ?? 1.6;
+    const v = findCuteVoice();
+    if (v) u.voice = v;
+    if (opts.onstart) u.onstart = opts.onstart;
+    if (opts.onend) u.onend = opts.onend;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+function speakPraise() {
+  const phrases = [...PRAISE_PHRASES];
+  if (state && state.name) phrases.push(`${state.name}好棒!`, `${state.name}超聰明!`);
+  const text = phrases[Math.floor(Math.random()*phrases.length)];
+  document.getElementById('praise-text').textContent = '🌟 ' + text;
+  speak(text, { rate: 0.95, pitch: 1.8 });
+  return text;
+}
+
+// ======== LEVEL MODAL ========
+let modalContext = null;
+let modalAttempts = 0;
+let teachListens = 0;
+
+function openReadModal(region, treasure) {
+  modalContext = { region, treasure };
+  modalAttempts = 0;
+  teachListens = 0;
+  const levelNum = state.levelCleared + 1;
+  document.getElementById('level-banner').textContent = `🎯 關卡 ${levelNum} / ${totalLevels()}`;
+  document.getElementById('modal-title').textContent = `聽聲音,選對的字!`;
+  document.getElementById('modal-emoji').textContent = treasure.emoji;
+  document.getElementById('modal-zhuyin').textContent = treasure.zhuyin;
+  document.getElementById('modal-zhuyin').classList.add('hidden');
+  document.getElementById('modal-hint').innerHTML = `💡 提示:${treasure.hint}`;
+  document.getElementById('praise-text').textContent = '';
+  // 隱藏教學區、隱藏下一關按鈕
+  document.getElementById('teach-box').classList.add('hidden');
+  document.getElementById('btn-next-level').classList.add('hidden');
+  document.getElementById('btn-show-zhuyin').classList.remove('hidden');
+  document.getElementById('btn-pause').classList.remove('hidden');
+
+  const options = shuffle([treasure.word, ...(treasure.distractors || [])].slice(0, 4));
+  const grid = document.getElementById('option-grid');
+  grid.innerHTML = '';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => handleSelect(btn, opt));
+    grid.appendChild(btn);
+  });
+  document.getElementById('attempt-tracker').textContent = '';
+  document.getElementById('modal').classList.add('show');
+  setTimeout(playWord, 350);
+}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function playWord() {
+  if (!modalContext) return;
+  const t = modalContext.treasure;
+  const text = t.pronounce && t.pronounce.length > 0
+    ? `${t.word}。${t.pronounce}。`
+    : t.word;
+  const btn = document.getElementById('speaker-btn');
+  if (!('speechSynthesis' in window)) {
+    btn.textContent = '🔇 (此瀏覽器不支援語音)';
+    showZhuyin();
+    return;
+  }
+  btn.classList.add('playing');
+  speak(text, {
+    rate: 0.7, pitch: 1.6,
+    onend: () => btn.classList.remove('playing')
+  });
+}
+
+function handleSelect(btn, choice) {
+  if (!modalContext) return;
+  const correct = choice === modalContext.treasure.word;
+  if (correct) {
+    btn.classList.add('correct');
+    document.querySelectorAll('.opt').forEach(b => { if (b !== btn) b.classList.add('disabled'); });
+    playDing();
+    setTimeout(() => speakPraise(), 250);
+    setTimeout(() => onCorrectAnswer(), 1400);
+  } else {
+    btn.classList.add('wrong');
+    btn.classList.add('disabled');
+    playBuh();
+    modalAttempts++;
+    if (modalAttempts === 1) {
+      // 第 1 次答錯:給提示,再聽一次,顯示注音
+      document.getElementById('attempt-tracker').innerHTML =
+        '💪 答錯了 <span class="x">✕</span> — 再仔細聽一次,看注音慢慢念!';
+      showZhuyin();
+      setTimeout(() => playWord(), 400);
+    } else {
+      // 第 2 次答錯:停止讓他猜,進入教學模式
+      enterTeachMode();
+    }
+  }
+}
+
+// 進入「教學模式」— 直接顯示正確答案,讓孩子學會,而不是繼續亂猜
+function enterTeachMode() {
+  if (!modalContext) return;
+  const { treasure } = modalContext;
+  // 把所有選項標出來:正確的綠色閃,其他變灰
+  document.querySelectorAll('.opt').forEach(b => {
+    b.classList.add('disabled');
+    if (b.textContent === treasure.word) {
+      b.classList.remove('wrong');
+      b.classList.add('correct');
+    }
+  });
+  document.getElementById('attempt-tracker').innerHTML =
+    '<span style="color:#92400e;font-weight:bold;">沒關係!我們一起把這個字學會 📖</span>';
+  // 顯示教學區
+  document.getElementById('teach-word').textContent = treasure.word;
+  document.getElementById('teach-zhuyin').textContent = treasure.zhuyin;
+  document.getElementById('teach-hint').textContent = `${treasure.emoji} ${treasure.hint}`;
+  document.getElementById('teach-listen-count').textContent = teachListens;
+  document.getElementById('teach-box').classList.remove('hidden');
+  // 自動念一次正確答案
+  setTimeout(() => teachListen(), 500);
+}
+
+// 教學模式:聽正確答案,聽滿 3 次才出現「下一關」按鈕
+function teachListen() {
+  if (!modalContext) return;
+  teachListens++;
+  document.getElementById('teach-listen-count').textContent = teachListens;
+  const t = modalContext.treasure;
+  const text = t.pronounce && t.pronounce.length > 0
+    ? `${t.word}。${t.pronounce}。${t.word}。`
+    : `${t.word}。${t.word}。`;
+  if ('speechSynthesis' in window) {
+    speak(text, { rate: 0.65, pitch: 1.5 });
+  }
+  if (teachListens >= 3) {
+    // 聽滿 3 次才能往下,確保有學到
+    document.querySelector('.teach-listen-btn').textContent = '✓ 學會了!';
+    document.querySelector('.teach-listen-btn').disabled = true;
+    document.getElementById('teach-listens').firstElementChild.innerHTML =
+      '<span style="color:#16a34a;">✓ 太棒了!學會這個字了 🌟</span>';
+    setTimeout(() => {
+      // 標記為已學過(但不給分,因為是教學完成而非答對)
+      finishLevel(/* gotItRight */ false);
+    }, 1200);
+  } else {
+    document.querySelector('.teach-listen-btn').textContent = `🔊 再聽一次 (${teachListens}/3)`;
+  }
+}
+
+// 答對後的處理
+function onCorrectAnswer() {
+  finishLevel(/* gotItRight */ true);
+}
+
+function showZhuyin() { document.getElementById('modal-zhuyin').classList.remove('hidden'); }
+
+function closeReadModal() {
+  document.getElementById('modal').classList.remove('show');
+  modalContext = null;
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+}
+
+function finishLevel(gotItRight) {
+  if (!modalContext) return;
+  const { region, treasure } = modalContext;
+  // 答對才給分,教學完成不給分但會記錄已學
+  const earned = !gotItRight ? 0 : (modalAttempts === 0 ? treasure.score : Math.max(1, Math.floor(treasure.score / 2)));
+  if (gotItRight) {
+    state.score += earned;
+  }
+  state.levelCleared++;
+  state.inventory.push({ ...treasure, regionName: region.name, earned, viaTeach: !gotItRight });
+  if (!state.learned.includes(treasure.word)) state.learned.push(treasure.word);
+  // 答對才給主題色種子,教學完成只記學會
+  const themeColor = region.theme || 'red';
+  let pikminMsg = '';
+  if (gotItRight) {
+    state.pikmin[themeColor] = (state.pikmin[themeColor] || 0) + 1;
+    pikminMsg = `,還有一隻${PIKMIN_CN[themeColor]}種子!`;
+  }
+
+  const r = getRegion(region.id);
+  r.treasures = r.treasures.filter(t => t.word !== treasure.word);
+
+  // 地區全通關額外獎勵
+  let bonusMsg = '';
+  if (r.treasures.length === 0 && gotItRight) {
+    const bonus = Math.random() < 0.5 ? 'rock' : 'flower';
+    state.pikmin[bonus] = (state.pikmin[bonus] || 0) + 1;
+    bonusMsg = ` 🎁 還拿到一隻特別的${PIKMIN_CN[bonus]}種子!`;
+  }
+
+  if (earned > 0) showFloat(`+${earned}🌟`);
+  if (gotItRight) {
+    setMessage(`🎉 「${treasure.word}」過關!得到 ${earned} 分${pikminMsg}${bonusMsg}`, 'success');
+  } else {
+    setMessage(`📖 「${treasure.word}」這個字我們學會了,繼續加油!`, 'info');
+  }
+
+  renderHand();
+  renderInventory();
+  updateStats();
+  drawMap();
+
+  // 該地區還有關卡 → 直接接下一關(不關 modal)
+  if (r.treasures.length > 0) {
+    // 顯示「下一關」按鈕,讓孩子主動點(避免太突然)
+    document.getElementById('btn-show-zhuyin').classList.add('hidden');
+    document.getElementById('btn-pause').classList.add('hidden');
+    document.getElementById('btn-next-level').classList.remove('hidden');
+  } else {
+    // 該地區全部通完 → 關 modal 回地圖,檢查是否全部完成
+    closeReadModal();
+    if (allTreasuresGone()) showEndScreen();
+  }
+}
+
+// 接該地區下一關
+function goNextLevel() {
+  if (!modalContext) return;
+  const region = getRegion(modalContext.region.id);
+  if (region.treasures.length > 0) {
+    openReadModal(region, region.treasures[0]);
+  } else {
+    closeReadModal();
+    if (allTreasuresGone()) showEndScreen();
+  }
+}
+
+function showFloat(text) {
+  const el = document.createElement('div');
+  el.className = 'float-up';
+  el.textContent = text;
+  el.style.left = (Math.random()*60 + 20) + '%';
+  el.style.top = '50%';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1300);
+}
+
+function allTreasuresGone() { return state.regions.every(r => r.treasures.length === 0); }
+
+// ======== RENDER ========
+function renderHand() {
+  const hand = document.getElementById('pikmin-hand');
+  hand.innerHTML = '';
+  PIKMIN_TYPES.forEach(t => {
+    const div = document.createElement('div');
+    const count = state.pikmin[t] || 0;
+    div.className = 'pikmin-card ' + t + (count === 0 ? ' zero' : '');
+    div.innerHTML = `${miniPikminSVG(t)}<span class="count">${count}</span>`;
+    hand.appendChild(div);
+  });
+}
+function renderInventory() {
+  const inv = document.getElementById('inventory');
+  inv.innerHTML = '';
+  if (state.inventory.length === 0) {
+    inv.innerHTML = '<div class="inv-item empty">還沒學到字~</div>';
+    return;
+  }
+  state.inventory.forEach(t => {
+    const div = document.createElement('div');
+    div.className = 'inv-item';
+    const marker = t.viaTeach ? '<span title="教學模式學會" style="font-size:11px;color:#92400e;">📖</span>' : '';
+    const score = t.viaTeach ? '學會!' : `${t.earned ?? t.score} 🌟`;
+    div.innerHTML = `<span>${t.emoji} <span class="word">${t.word}</span> ${marker}</span><span>${score}</span>`;
+    inv.appendChild(div);
+  });
+}
+function updateStats() {
+  document.getElementById('score').textContent = state.score;
+  document.getElementById('learned-count').textContent = state.levelCleared;
+}
+function setMessage(text, kind = '') {
+  const m = document.getElementById('message');
+  m.textContent = text;
+  m.className = 'msg ' + kind;
+}
+function getRegion(id) { return state.regions.find(r => r.id === id); }
+
+// ======== END SCREEN ========
+function showEndScreen() {
+  document.getElementById('game').classList.remove('active');
+  let badge = '🥉', title = '完成冒險!';
+  if (state.score >= 70) { badge = '👑'; title = `${state.name} 是冒險之王!`; }
+  else if (state.score >= 50) { badge = '🏆'; title = `太厲害了 ${state.name}!`; }
+  else if (state.score >= 30) { badge = '🥇'; title = `${state.name} 冒險成功!`; }
+  else if (state.score >= 15) { badge = '🥈'; title = `${state.name} 努力過了!`; }
+  document.getElementById('end-badge').textContent = badge;
+  document.getElementById('end-title').textContent = title;
+  document.getElementById('end-score').textContent = state.score;
+  const visited = new Set(state.inventory.map(t => t.regionName));
+  document.getElementById('end-regions').textContent = visited.size > 0 ? Array.from(visited).join('、') : '沒走遠~下次加油!';
+  document.getElementById('end-learned-count').textContent = state.levelCleared;
+  const wl = document.getElementById('end-word-list');
+  wl.innerHTML = state.learned.length === 0
+    ? '<div style="color:#888">這次沒過關~下次加油!</div>'
+    : state.learned.map(w => `<span class="word-chip">${w}</span>`).join('');
+  document.getElementById('end-screen').classList.add('show');
+}
+
+// ======== SETTINGS PANEL ========
+function openSettings() {
+  renderSettings();
+  populateVoiceList();
+  document.getElementById('settings-modal').classList.add('show');
+}
+function closeSettings() { document.getElementById('settings-modal').classList.remove('show'); }
+
+function renderSettings() {
+  const root = document.getElementById('settings-content');
+  root.innerHTML = '';
+  regionsData.forEach((r, ri) => {
+    const sec = document.createElement('div');
+    sec.className = 'settings-section';
+    sec.innerHTML = `<h3>📍 ${r.name}</h3>`;
+    r.treasures.forEach((t, ti) => {
+      const ed = document.createElement('div');
+      ed.className = 'word-editor';
+      ed.innerHTML = `
+        <div class="row"><label>字</label><input data-r="${ri}" data-t="${ti}" data-f="word" value="${esc(t.word)}"></div>
+        <div class="row"><label>注音</label><input data-r="${ri}" data-t="${ti}" data-f="zhuyin" value="${esc(t.zhuyin || '')}"></div>
+        <div class="row"><label>念法</label><input data-r="${ri}" data-t="${ti}" data-f="pronounce" value="${esc(t.pronounce || '')}" placeholder="如:下雨的雨"></div>
+        <div class="row"><label>提示</label><input data-r="${ri}" data-t="${ti}" data-f="hint" value="${esc(t.hint || '')}"></div>
+        <div class="row"><label>圖示</label><input data-r="${ri}" data-t="${ti}" data-f="emoji" value="${esc(t.emoji || '')}"></div>
+        <div class="row"><label>干擾字</label><input data-r="${ri}" data-t="${ti}" data-f="distractors" value="${esc((t.distractors || []).join(','))}" placeholder="用逗號分隔,如:兩,雪,霜"></div>
+        <div class="row"><label>分數</label><input data-r="${ri}" data-t="${ti}" data-f="score" type="number" min="1" max="10" value="${t.score || 2}"></div>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="testWordFromSettings(${ri},${ti})">🔊 試聽</button>
+          <button class="btn btn-danger" onclick="deleteWord(${ri},${ti})">🗑 刪除</button>
+        </div>
+      `;
+      sec.appendChild(ed);
+    });
+    const addBtn = document.createElement('button');
+    addBtn.className = 'btn btn-success';
+    addBtn.style.fontSize = '13px';
+    addBtn.style.padding = '6px 12px';
+    addBtn.textContent = '+ 新增字';
+    addBtn.onclick = () => addWord(ri);
+    sec.appendChild(addBtn);
+    root.appendChild(sec);
+  });
+}
+
+function esc(s) { return String(s).replace(/"/g, '&quot;'); }
+
+function readSettingsBackToData() {
+  document.querySelectorAll('#settings-content input').forEach(inp => {
+    const r = +inp.dataset.r, t = +inp.dataset.t, f = inp.dataset.f;
+    if (Number.isNaN(r) || Number.isNaN(t)) return;
+    let v = inp.value.trim();
+    if (f === 'distractors') v = v.split(/[,,、\s]+/).filter(Boolean);
+    else if (f === 'score') v = parseInt(v) || 2;
+    regionsData[r].treasures[t][f] = v;
+  });
+}
+
+function saveSettings() {
+  readSettingsBackToData();
+  saveRegions();
+  if (state) {
+    // refresh in-game data while preserving cleared progress
+    const clearedWords = new Set();
+    DEFAULT_REGIONS.forEach(dr => {
+      const cur = state.regions.find(x => x.id === dr.id);
+      if (cur) {
+        const currentWords = cur.treasures.map(t => t.word);
+        dr.treasures.forEach(t => { if (!currentWords.includes(t.word)) clearedWords.add(t.word); });
+      }
+    });
+    state.regions = JSON.parse(JSON.stringify(regionsData));
+    state.regions.forEach(r => { r.treasures = r.treasures.filter(t => !clearedWords.has(t.word)); });
+    drawMap();
+    document.getElementById('total-levels').textContent = totalLevels();
+  }
+  closeSettings();
+  if (state) setMessage('✅ 字詞已儲存!', 'success');
+}
+
+function resetWordsToDefault() {
+  if (!confirm('確定要還原預設字詞?目前的編輯會消失。')) return;
+  regionsData = JSON.parse(JSON.stringify(DEFAULT_REGIONS));
+  saveRegions();
+  renderSettings();
+}
+
+function exportSettings() {
+  readSettingsBackToData();
+  const data = JSON.stringify(regionsData, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = '種子字詞設定.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 500);
+}
+
+function importSettings(ev) {
+  const f = ev.target.files[0]; if (!f) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (Array.isArray(data)) {
+        regionsData = data;
+        saveRegions();
+        renderSettings();
+        alert('已匯入字詞設定 ✅');
+      } else alert('檔案格式不正確');
+    } catch (err) { alert('檔案讀取失敗:' + err.message); }
+  };
+  reader.readAsText(f);
+}
+
+function testWordFromSettings(ri, ti) {
+  readSettingsBackToData();
+  const t = regionsData[ri].treasures[ti];
+  const text = t.pronounce && t.pronounce.length > 0 ? `${t.word}。${t.pronounce}。` : t.word;
+  speak(text, { rate: 0.7, pitch: 1.6 });
+}
+
+function testVoice() {
+  const txt = document.getElementById('voice-test-input').value.trim() || '你好梅梅';
+  speak(txt);
+}
+
+function deleteWord(ri, ti) {
+  if (!confirm('刪除這個字?')) return;
+  readSettingsBackToData();
+  regionsData[ri].treasures.splice(ti, 1);
+  renderSettings();
+}
+
+function addWord(ri) {
+  readSettingsBackToData();
+  regionsData[ri].treasures.push({
+    word: '新', emoji: '✨', zhuyin: 'ㄒㄧㄣ', pronounce: '新的新',
+    hint: '剛做出來的', distractors: ['薪','心','信'], score: 2
+  });
+  renderSettings();
+}
+
+function populateVoiceList() {
+  const sel = document.getElementById('voice-select');
+  sel.innerHTML = '<option value="">(自動選最可愛)</option>';
+  if (!('speechSynthesis' in window)) return;
+  const voices = speechSynthesis.getVoices().filter(v => /zh/i.test(v.lang) || /chinese|mandarin/i.test(v.name));
+  voices.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.name;
+    opt.textContent = `${v.name} (${v.lang})`;
+    sel.appendChild(opt);
+  });
+}
+
+// init
+state = freshState();
+// 開始畫面填入 5 隻代表種子(展示給玩家看會收集到什麼)
+(function fillIntroPikmin(){
+  const row = document.getElementById('intro-pikmin-row');
+  if (row) {
+    ['red','blue','yellow','purple','white','rock','flower'].forEach(t => {
+      const div = document.createElement('div');
+      div.style.cssText = 'display:flex;flex-direction:column;align-items:center;';
+      div.innerHTML = `${miniPikminSVG(t)}<span style="font-size:12px;color:#4a5568;margin-top:2px;">${PIKMIN_CN[t]}</span>`;
+      row.appendChild(div);
+    });
+  }
+})();
+if ('speechSynthesis' in window) {
+  speechSynthesis.onvoiceschanged = () => { try { populateVoiceList(); } catch(e){} };
+  speechSynthesis.getVoices();
+}
+</script>
+</body>
+</html>
