@@ -998,28 +998,50 @@ function onQuizPick(btn, correct) {
   const msg = document.getElementById('quizMsg');
   const sym = currentSymbol();
   const symState = state.symbols[sym.z] || {seen:0, correct:0, wrong:0};
+  const emojis = ['🎉','🌟','✨','🥳','🏆','💯','🎊'];
   if (picked === correct) {
     btn.classList.add('correct');
-    msg.textContent = '✅ ' + PRAISE[Math.floor(Math.random()*PRAISE.length)];
+    const em = emojis[Math.floor(Math.random()*emojis.length)];
+    const praise = PRAISE[Math.floor(Math.random()*PRAISE.length)];
+    msg.innerHTML = `
+      <div style="font-size:42px;line-height:1;margin-bottom:6px;">${em}</div>
+      <div style="font-size:22px;font-weight:900;">${praise}</div>
+      <div style="font-size:15px;margin-top:6px;">「${sym.word}」開頭是 <b style="font-size:24px;color:#047857;font-family:'標楷體',serif;">${correct}</b></div>
+    `;
     msg.className = 'instruction success';
-    speak(PRAISE[Math.floor(Math.random()*PRAISE.length)]);
+    msg.style.padding = '16px';
+    speak(praise);
+    setTimeout(() => speak(sym.word + '，開頭是 ' + sym.name), 700);
+    fireConfetti();
     symState.correct = (symState.correct||0)+1;
     symState.seen = true;
     state.symbols[sym.z] = symState;
     saveState();
-    setTimeout(() => nextSymbolOrFinish(), 1500);
+    setTimeout(() => nextSymbolOrFinish(), 2500);
   } else {
     btn.classList.add('wrong');
-    msg.textContent = `❌ 正解是 ${correct}，再聽一次「${sym.word}」`;
+    msg.innerHTML = `
+      <div style="font-size:42px;line-height:1;margin-bottom:6px;">🤔</div>
+      <div style="font-size:20px;font-weight:900;">沒關係，再試試看！</div>
+      <div style="font-size:15px;margin-top:8px;">
+        ❌ 你選的：<b>${picked}</b><br>
+        ✅ 正解是：<b style="font-size:28px;color:#047857;font-family:'標楷體',serif;">${correct}</b>
+      </div>
+      <div style="background:rgba(255,255,255,0.8);padding:10px;border-radius:10px;margin-top:10px;font-size:14px;">
+        ${sym.emoji} 「${sym.word}」念 <b>${sym.zhuyin}</b><br>開頭就是 <b style="color:#047857;">${correct}</b>
+      </div>
+    `;
     msg.className = 'instruction error';
+    msg.style.padding = '16px';
     document.querySelectorAll('.option-btn').forEach(b => {
       if (b.dataset.opt === correct) b.classList.add('correct');
     });
-    speakWord();
+    speak('沒關係，正解是 ' + sym.name);
+    setTimeout(() => speak(sym.word + ' 的開頭是 ' + sym.name), 1400);
     symState.wrong = (symState.wrong||0)+1;
     state.symbols[sym.z] = symState;
     saveState();
-    setTimeout(() => nextSymbolOrFinish(), 2200);
+    setTimeout(() => nextSymbolOrFinish(), 4500);
   }
 }
 
@@ -1136,21 +1158,43 @@ function onTestPick(btn, sym) {
   if (btn.classList.contains('correct') || btn.classList.contains('wrong')) return;
   const picked = btn.dataset.opt;
   const msg = document.getElementById('testMsg');
+  const emojis = ['🎉','🌟','✨','🥳','🏆','💯','🎊'];
   if (picked === sym.z) {
     btn.classList.add('correct');
-    msg.textContent = '✅ 答對了!';
+    const em = emojis[Math.floor(Math.random()*emojis.length)];
+    const praise = PRAISE[Math.floor(Math.random()*PRAISE.length)];
+    msg.innerHTML = `
+      <div style="font-size:42px;line-height:1;margin-bottom:6px;">${em}</div>
+      <div style="font-size:22px;font-weight:900;">${praise}</div>
+      <div style="font-size:15px;margin-top:6px;">${sym.emoji} 「${sym.word}」 念 <b style="font-size:22px;color:#047857;">${sym.zhuyin}</b></div>
+    `;
     msg.className = 'instruction success';
+    msg.style.padding = '16px';
     testCorrect++;
     document.getElementById('testScore').textContent = testCorrect;
-    speak(PRAISE[Math.floor(Math.random()*PRAISE.length)]);
+    speak(praise);
+    setTimeout(() => speak(sym.word + ' 念 ' + sym.name), 700);
+    fireConfetti();
   } else {
     btn.classList.add('wrong');
-    msg.innerHTML = `❌ 正解是 <b>${sym.z}</b> (${sym.word})`;
+    msg.innerHTML = `
+      <div style="font-size:42px;line-height:1;margin-bottom:6px;">🤔</div>
+      <div style="font-size:20px;font-weight:900;">再加油！</div>
+      <div style="font-size:15px;margin-top:8px;">
+        ❌ 你選的：<b>${picked}</b><br>
+        ✅ 正解是：<b style="font-size:28px;color:#047857;font-family:'標楷體',serif;">${sym.z}</b>
+      </div>
+      <div style="background:rgba(255,255,255,0.8);padding:10px;border-radius:10px;margin-top:10px;font-size:14px;">
+        ${sym.emoji} 「${sym.word}」念 <b>${sym.zhuyin}</b><br>開頭就是 <b style="color:#047857;">${sym.z}</b>
+      </div>
+    `;
     msg.className = 'instruction error';
+    msg.style.padding = '16px';
     document.querySelectorAll('.option-btn').forEach(b => {
       if (b.dataset.opt === sym.z) b.classList.add('correct');
     });
-    speak(`${sym.word}的${sym.name}`);
+    speak('正解是 ' + sym.name);
+    setTimeout(() => speak(sym.word + ' 念 ' + sym.name), 1400);
     // Update pip color
     const pips = document.querySelectorAll('#testPipBar .pip');
     if (pips[testIdx]) {
@@ -1158,10 +1202,11 @@ function onTestPick(btn, sym) {
       pips[testIdx].classList.add('wrong');
     }
   }
+  const delay = picked === sym.z ? 2800 : 4500;
   setTimeout(() => {
     testIdx++;
     renderTestQuestion();
-  }, 1700);
+  }, delay);
 }
 
 function showTestResult() {
