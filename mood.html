@@ -404,6 +404,494 @@
     cursor: pointer;
   }
 
+  /* ===== 高年級 心魔取經 RPG ===== */
+  :root {
+    --bg-rpg: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    --rpg-gold: #ffd700;
+    --rpg-red: #e94560;
+  }
+  #screen-high-map { color: #fff; }
+  .rpg-banner {
+    text-align: center; padding: 18px 20px;
+    background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(233,69,89,0.1));
+    border: 2px solid var(--rpg-gold); border-radius: 20px;
+    margin: 12px auto; max-width: 700px;
+    color: #fff; font-size: 17px; line-height: 1.7;
+  }
+  .rpg-banner strong { color: var(--rpg-gold); }
+  .demons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 18px;
+    max-width: 1100px; margin: 16px auto;
+  }
+  .demon-card {
+    background: linear-gradient(135deg, #2c3e50, #1a1a2e);
+    border-radius: 16px;
+    padding: 18px 12px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 3px solid #34495e;
+    position: relative;
+    min-height: 220px;
+    color: #fff;
+  }
+  .demon-card:active { transform: scale(0.96); }
+  .demon-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(233,69,89,0.5); }
+  .demon-card.defeated {
+    border-color: var(--rpg-gold);
+    background: linear-gradient(135deg, #2c3e50, #4a3c1a);
+  }
+  .demon-card.defeated::before {
+    content: "⚔️"; position: absolute; top: 8px; right: 10px; font-size: 22px;
+  }
+  .demon-card.locked-final {
+    background: linear-gradient(135deg, #4a0000, #1a0000);
+    border-color: #8b0000;
+    cursor: not-allowed; opacity: 0.6;
+  }
+  .demon-card.locked-final::before {
+    content: "🔒"; position: absolute; top: 8px; right: 10px; font-size: 22px;
+  }
+  .demon-card-svg { width: 120px; height: 130px; margin: 0 auto 4px; }
+  .demon-card-name { font-size: 19px; font-weight: bold; margin-top: 6px; color: var(--rpg-gold); }
+  .demon-card-trait { font-size: 13px; color: #b0bec5; margin-top: 2px; }
+
+  /* RPG 戰鬥畫面 */
+  #screen-demon-battle {
+    background: linear-gradient(180deg, #0f0f1e 0%, #1a0a1a 100%);
+    min-height: 100vh; color: #fff;
+  }
+  .rpg-top {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 14px;
+    margin-bottom: 12px;
+  }
+  .hp-bar-wrap {
+    flex: 1; margin: 0 10px;
+  }
+  .hp-label {
+    font-size: 13px; color: #fff;
+    display: flex; justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .hp-bar-bg {
+    background: #222;
+    height: 18px;
+    border-radius: 9px;
+    overflow: hidden;
+    border: 2px solid #fff;
+  }
+  .hp-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #66bb6a, #43a047);
+    border-radius: 7px;
+    transition: width 0.5s ease;
+  }
+  .hp-bar-fill.low { background: linear-gradient(90deg, #ff9800, #f57c00); }
+  .hp-bar-fill.critical { background: linear-gradient(90deg, #ef5350, #c62828); animation: pulseRed 0.6s infinite; }
+  @keyframes pulseRed {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .demon-stage {
+    text-align: center; padding: 20px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 20px;
+    margin: 12px 0;
+    border: 2px solid var(--rpg-gold);
+  }
+  .demon-stage svg { width: 200px; height: 220px; }
+  .demon-bubble {
+    background: linear-gradient(135deg, #4a0000, #8b0000);
+    border: 2px solid var(--rpg-red);
+    border-radius: 16px;
+    padding: 14px 18px;
+    margin: 12px auto;
+    max-width: 500px;
+    font-size: 18px;
+    color: #fff; line-height: 1.6;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(233,69,89,0.3);
+  }
+  .battle-scenario {
+    background: rgba(255,255,255,0.05);
+    border-left: 4px solid var(--rpg-gold);
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: 17px; line-height: 1.7;
+    color: #ecf0f1;
+  }
+  .battle-question {
+    background: rgba(255,215,0,0.1);
+    border: 2px solid var(--rpg-gold);
+    padding: 16px;
+    border-radius: 12px;
+    margin: 12px 0;
+    font-size: 20px;
+    color: #fff;
+    text-align: center;
+  }
+  .battle-options { display: grid; gap: 10px; margin-top: 12px; }
+  .battle-option {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: #ecf0f1;
+    border: 2px solid #607d8b;
+    padding: 16px;
+    border-radius: 10px;
+    font-size: 17px;
+    cursor: pointer;
+    text-align: left;
+    line-height: 1.5;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .battle-option:hover { background: linear-gradient(135deg, #34495e, #455a64); border-color: var(--rpg-gold); }
+  .battle-option:active { transform: scale(0.98); }
+  .battle-option.attack-correct {
+    background: linear-gradient(135deg, #1b5e20, #2e7d32);
+    border-color: var(--rpg-gold);
+    animation: attackFlash 0.4s;
+  }
+  .battle-option.attack-wrong {
+    background: linear-gradient(135deg, #b71c1c, #c62828);
+    border-color: var(--rpg-red);
+    animation: hurtFlash 0.4s;
+  }
+  @keyframes attackFlash {
+    0%,100% { box-shadow: 0 0 0 rgba(255,215,0,0); }
+    50% { box-shadow: 0 0 30px rgba(255,215,0,0.8); }
+  }
+  @keyframes hurtFlash {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+  .demon-shake { animation: demonShake 0.4s; }
+  @keyframes demonShake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-12px); }
+    75% { transform: translateX(12px); }
+  }
+  .demon-defeated { animation: demonFall 1.5s forwards; }
+  @keyframes demonFall {
+    0% { transform: rotate(0) scale(1); opacity: 1; }
+    50% { transform: rotate(15deg) scale(1.1); opacity: 1; filter: blur(0); }
+    100% { transform: rotate(90deg) scale(0.3) translateY(150px); opacity: 0; filter: blur(8px); }
+  }
+  .battle-log {
+    background: #000;
+    color: #ffd700;
+    font-family: monospace;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 10px 0;
+    font-size: 15px;
+    min-height: 50px;
+  }
+  .battle-log .you-attack { color: #66bb6a; }
+  .battle-log .demon-attack { color: #ef5350; }
+  .battle-log .system { color: #ffd700; }
+
+  /* 心經卷軸 */
+  .sutra-scroll {
+    width: 90px; height: 110px;
+    background: linear-gradient(180deg, #f5deb3, #d2b48c);
+    border-top: 8px solid #8b4513;
+    border-bottom: 8px solid #8b4513;
+    border-radius: 4px;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+    margin: 0 auto;
+  }
+  .sutra-scroll::before, .sutra-scroll::after {
+    content: ""; position: absolute;
+    left: -6px; right: -6px;
+    height: 8px;
+    background: linear-gradient(90deg, #5d2f0e, #8b4513, #5d2f0e);
+    border-radius: 4px;
+  }
+  .sutra-scroll::before { top: -8px; }
+  .sutra-scroll::after { bottom: -8px; }
+  .sutra-char {
+    font-size: 50px;
+    color: #4a0e0e;
+    font-family: "標楷體", "Heiti TC", serif;
+    text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff;
+  }
+
+  .sutra-area {
+    background: linear-gradient(180deg, #2c1810 0%, #4a3c1a 100%);
+    border-radius: 20px;
+    padding: 20px 12px; margin: 16px 0;
+    color: #ffd700;
+  }
+  .sutra-title {
+    text-align: center; font-size: 24px; font-weight: bold;
+    color: var(--rpg-gold); margin-bottom: 12px;
+  }
+  .sutra-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; margin-top: 12px;
+  }
+  @media (max-width: 500px) {
+    .sutra-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .sutra-slot {
+    background: rgba(0,0,0,0.3);
+    border-radius: 14px;
+    aspect-ratio: 0.85;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    border: 2px dashed #6d4c41;
+    cursor: pointer;
+    position: relative;
+  }
+  .sutra-slot.empty {
+    opacity: 0.4;
+  }
+  .sutra-slot.empty::before {
+    content: "🐉"; position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 40px; opacity: 0.4;
+  }
+  .sutra-slot.collected {
+    border-style: solid; border-color: var(--rpg-gold);
+    background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(74,60,26,0.5));
+  }
+  .sutra-slot-name {
+    font-size: 13px; color: var(--rpg-gold);
+    font-weight: bold; margin-top: 6px;
+  }
+
+  /* 戰鬥場景：對戰雙方 */
+  .battle-arena {
+    position: relative;
+    background: linear-gradient(180deg, #0a0a1f 0%, #1a0a2e 50%, #2a0a1a 100%);
+    border-radius: 20px;
+    padding: 16px;
+    min-height: 280px;
+    overflow: hidden;
+    border: 3px solid #34495e;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+  }
+  .battle-arena::before {
+    content: ""; position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center top, rgba(233,69,89,0.15), transparent 70%);
+    pointer-events: none;
+  }
+  .battle-arena-fx {
+    position: absolute; inset: 0; pointer-events: none;
+    overflow: hidden;
+  }
+  .arena-positions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: end;
+    min-height: 220px;
+    position: relative;
+    z-index: 1;
+  }
+  .arena-player, .arena-demon {
+    text-align: center;
+    position: relative;
+  }
+  .arena-player svg { width: 120px; height: 130px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
+  .arena-demon svg { width: 180px; height: 200px; filter: drop-shadow(0 4px 12px rgba(233,69,89,0.5)); }
+  .arena-label {
+    color: #ffd700; font-size: 14px; font-weight: bold;
+    margin-top: 4px;
+  }
+  .arena-name { color: #fff; font-size: 16px; font-weight: bold; }
+
+  /* 攻擊光球 */
+  .fx-attack-orb {
+    position: absolute;
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffd700, #ff9800, transparent);
+    box-shadow: 0 0 40px #ffd700, 0 0 80px #ff9800;
+    pointer-events: none;
+    animation: attackFly 0.6s ease-in forwards;
+    z-index: 10;
+  }
+  @keyframes attackFly {
+    0% { left: 15%; bottom: 30%; transform: scale(0.5); opacity: 0; }
+    20% { opacity: 1; transform: scale(1); }
+    100% { left: 70%; bottom: 60%; transform: scale(1.8); opacity: 0; }
+  }
+  .fx-attack-orb.demon-attack {
+    background: radial-gradient(circle, #e94560, #4a0000, transparent);
+    box-shadow: 0 0 40px #e94560, 0 0 80px #4a0000;
+    animation: attackFlyBack 0.6s ease-in forwards;
+  }
+  @keyframes attackFlyBack {
+    0% { right: 15%; bottom: 60%; transform: scale(0.5); opacity: 0; }
+    20% { opacity: 1; transform: scale(1); }
+    100% { right: 65%; bottom: 30%; transform: scale(1.8); opacity: 0; }
+  }
+  /* 傷害數字飄字 */
+  .fx-damage {
+    position: absolute;
+    font-size: 36px;
+    font-weight: bold;
+    text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+    pointer-events: none;
+    animation: dmgFloat 1.5s ease-out forwards;
+    z-index: 11;
+  }
+  .fx-damage.dmg-demon { color: #ffd700; right: 25%; top: 30%; }
+  .fx-damage.dmg-player { color: #ef5350; left: 25%; bottom: 40%; }
+  @keyframes dmgFloat {
+    0% { transform: translateY(0) scale(0.5); opacity: 0; }
+    20% { transform: translateY(-10px) scale(1.4); opacity: 1; }
+    60% { transform: translateY(-40px) scale(1); opacity: 1; }
+    100% { transform: translateY(-80px) scale(0.8); opacity: 0; }
+  }
+  /* 受擊閃光 */
+  .fx-hit-flash {
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.6);
+    pointer-events: none;
+    animation: hitFlash 0.3s ease-out;
+    z-index: 5;
+  }
+  @keyframes hitFlash {
+    0%,100% { opacity: 0; }
+    50% { opacity: 1; }
+  }
+  .fx-hit-flash.demon-flash { background: rgba(255,215,0,0.5); }
+  .fx-hit-flash.player-flash { background: rgba(233,69,89,0.5); }
+
+  /* 玩家被擊抖動 */
+  .arena-player.hurt { animation: playerHurt 0.4s; }
+  @keyframes playerHurt {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); filter: brightness(0.5); }
+    75% { transform: translateX(10px); filter: brightness(0.5); }
+  }
+  .arena-demon.hurt { animation: demonHurt 0.4s; }
+  @keyframes demonHurt {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(8px); filter: hue-rotate(180deg) brightness(2); }
+    75% { transform: translateX(-8px); filter: hue-rotate(180deg) brightness(2); }
+  }
+
+  /* 心法裝備系統 */
+  .equipment-bar {
+    background: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(74,60,26,0.6));
+    border: 2px solid #ffd700;
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 10px 0;
+    flex-wrap: wrap;
+  }
+  .equipment-slot {
+    width: 70px; height: 70px;
+    background: rgba(0,0,0,0.4);
+    border: 2px solid #607d8b;
+    border-radius: 12px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .equipment-slot.equipped { border-color: #ffd700; box-shadow: 0 0 12px rgba(255,215,0,0.6); }
+  .equipment-slot:hover { transform: translateY(-2px); }
+  .equipment-slot.empty {
+    background: repeating-linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 4px, transparent 4px, transparent 8px);
+    cursor: default;
+  }
+  .equipment-slot .eq-icon { font-size: 30px; line-height: 1; }
+  .equipment-slot .eq-name {
+    font-size: 10px; color: #ffd700;
+    margin-top: 2px; text-align: center;
+    line-height: 1.1;
+  }
+
+  .equipment-picker {
+    background: rgba(0,0,0,0.7);
+    border: 2px solid #ffd700;
+    border-radius: 12px;
+    padding: 14px;
+    margin: 10px 0;
+  }
+  .equipment-picker h3 {
+    color: #ffd700; margin: 0 0 10px;
+    font-size: 18px; text-align: center;
+  }
+  .picker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  .picker-item {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    border: 2px solid #607d8b;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    color: #fff;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .picker-item.selected {
+    border-color: #ffd700;
+    background: linear-gradient(135deg, #4a3c1a, #2c3e50);
+    box-shadow: 0 0 12px rgba(255,215,0,0.6);
+  }
+  .picker-item.selected::after {
+    content: " ✓";
+    color: #ffd700;
+  }
+  .picker-item .pi-icon { font-size: 28px; }
+  .picker-item .pi-name { font-size: 13px; font-weight: bold; color: #ffd700; margin: 4px 0; }
+  .picker-item .pi-stats { font-size: 11px; color: #b0bec5; line-height: 1.4; }
+
+  /* 配樂控制 */
+  .music-toggle {
+    position: fixed; top: 10px; right: 10px; z-index: 100;
+    background: rgba(0,0,0,0.7);
+    border: 2px solid #ffd700;
+    color: #ffd700;
+    border-radius: 50%;
+    width: 44px; height: 44px;
+    font-size: 20px;
+    cursor: pointer;
+    display: none;
+  }
+  .music-toggle.show { display: block; }
+  .music-toggle:active { transform: scale(0.9); }
+
+  /* 最終 boss 開啟 */
+  .final-boss-card {
+    background: radial-gradient(ellipse at center, #4a0000, #1a0000);
+    border: 3px solid var(--rpg-red);
+    border-radius: 20px;
+    padding: 24px;
+    margin: 20px 0;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(233,69,89,0.6);
+    animation: bossGlow 2s infinite;
+  }
+  @keyframes bossGlow {
+    0%,100% { box-shadow: 0 0 30px rgba(233,69,89,0.6); }
+    50% { box-shadow: 0 0 50px rgba(233,69,89,1); }
+  }
+  .final-boss-title { color: var(--rpg-red); font-size: 28px; font-weight: bold; }
+
   /* ===== 低年級 情緒小屋 ===== */
   :root {
     --bg-low: linear-gradient(180deg, #ffeaa7 0%, #fab1a0 50%, #fd79a8 100%);
@@ -824,11 +1312,11 @@
       <div class="stage-desc">六島大冒險<br>情緒調節技能</div>
       <div class="stage-tag">已開放</div>
     </div>
-    <div class="stage-card locked" data-stage="high">
-      <div class="stage-emoji">🛡️</div>
+    <div class="stage-card unlocked" data-stage="high" onclick="enterHigh()">
+      <div class="stage-emoji">🐉</div>
       <div class="stage-name">高年級</div>
-      <div class="stage-desc">守護者：同理<br>與衝突解決</div>
-      <div class="stage-tag coming">即將推出</div>
+      <div class="stage-desc">心魔取經之路<br>勇者鬥惡龍</div>
+      <div class="stage-tag">新上線</div>
     </div>
   </div>
 
@@ -884,6 +1372,37 @@
   <div id="monster-content"></div>
 </div>
 
+<button class="music-toggle" id="music-toggle" onclick="toggleMusic()" title="配樂開關">🔊</button>
+
+<!-- ==================== HIGH GRADE: 心魔取經地圖 ==================== -->
+<div id="screen-high-map" class="screen">
+  <div class="top-bar">
+    <button class="btn-back" onclick="document.body.style.background='var(--bg-sky)';showScreen('home')">← 回主畫面</button>
+    <div class="map-title" style="color:var(--rpg-gold);">🐉 心魔取經之路</div>
+    <div class="passport-mini" onclick="showPassport()">📜 心經</div>
+  </div>
+  <div class="rpg-banner">
+    <strong>勇者，歡迎踏上取經之路。</strong><br>
+    傳說有六隻心魔惡龍盤踞在你心裡——<br>
+    他們是你<strong>自閉的孤獨</strong>、<strong>學障的白目</strong>、<strong>ADHD 的衝動</strong>、<strong>情障的挑釁</strong>、<strong>沉迷的習慣</strong>、<strong>還有你自己的影子</strong>。<br><br>
+    打敗他們不是用拳頭，是用<strong>覺察</strong>與<strong>新的選擇</strong>。<br>
+    每勝一隻，取得一卷心經。<br>
+    集滿六卷 → 對戰最終心魔「<strong>影子龍</strong>」<br>
+    → 找回你的<strong>良知與良心</strong>。
+  </div>
+  <div class="demons-grid" id="demons-grid"></div>
+  <div id="final-boss-area"></div>
+</div>
+
+<!-- ==================== HIGH GRADE: RPG 戰鬥 ==================== -->
+<div id="screen-demon-battle" class="screen">
+  <div class="top-bar">
+    <button class="btn-back" onclick="confirmLeaveBattle()">← 撤退</button>
+    <button class="speaker-btn" onclick="repeatCurrentSpeech()">🔊 再念</button>
+  </div>
+  <div id="battle-content"></div>
+</div>
+
 <!-- ==================== PASSPORT SCREEN ==================== -->
 <div id="screen-passport" class="screen">
   <div class="top-bar">
@@ -913,6 +1432,12 @@
       <div class="pocket-title">🎒 我的口袋夥伴（低年級）🎒</div>
       <div style="text-align:center; font-size:14px; color:#888; margin-bottom:8px;">點夥伴聽他說話</div>
       <div class="pocket-grid" id="pocket-grid"></div>
+    </div>
+
+    <div class="sutra-area">
+      <div class="sutra-title">📜 心經卷藏（高年級）📜</div>
+      <div style="text-align:center; font-size:14px; color:#bdbdbd; margin-bottom:8px;">點心經卷重溫修練心法</div>
+      <div class="sutra-grid" id="sutra-grid"></div>
     </div>
 
     <div class="skills-collected">
@@ -965,6 +1490,22 @@
       <li>🟣 嗚嗚怪「悶不講話」→ <strong>呼呼</strong>（魔法話：我需要幫忙）</li>
       <li>⚪ 躲躲怪「不打招呼」→ <strong>招招</strong>（魔法話：老師早安）</li>
       <li>🔴 跺跺怪「等不及」→ <strong>等等</strong>（魔法話：我可以等）</li>
+    </ul>
+
+    <h3 style="color:#ffd700;">高年級｜心魔取經 RPG（勇者鬥惡龍 + 周處除三害 + 西遊記）</h3>
+    <p style="font-size:16px; line-height:1.8; background:#2c1810; color:#ffd700; padding:14px; border-radius:12px;">
+      你是<strong>勇者</strong>，要打敗 6 隻心魔惡龍。<br>
+      他們不是外面的敵人，是<strong>你心裡的自閉孤獨、學障白目、ADHD 衝動、情障挑釁、壞習慣，還有最終——你自己的影子</strong>。<br>
+      每勝一隻得一卷<strong>心經</strong>。集滿五卷 → 對戰最終心魔「<strong>影子龍</strong>」→ 找回良知良心。<br>
+      含 RPG 血條戰鬥、答錯掉 HP、答對破龍鱗的回合制設計。
+    </p>
+    <ul style="font-size:16px; line-height:1.9;">
+      <li>🟡 獨我龍（自閉孤獨）→ <strong>同理心經</strong></li>
+      <li>⚪ 白目龍（學障白目）→ <strong>察言觀色心經</strong></li>
+      <li>🟠 衝動龍（ADHD）→ <strong>停看聽心經</strong></li>
+      <li>🟣 挑釁龍（情障反社會）→ <strong>化敵為友心經</strong></li>
+      <li>🟢 習慣龍（沉迷/自傷）→ <strong>習慣換新心經</strong></li>
+      <li>🪞 鏡影龍（最終 boss：你自己）→ <strong>良知心經</strong></li>
     </ul>
 
     <h3 style="color:#6bcf7f;">每座島流程</h3>
@@ -1635,6 +2176,471 @@ const MONSTERS = {
 
 const MONSTER_ORDER = ["grabby", "cryyy", "pushy", "sulky", "hidey", "stompy"];
 
+// ========= 高年級 6 隻心魔 + 終極影子龍 =========
+const DEMONS = {
+  solo: {
+    name: "獨我龍",
+    trait: "自閉孤獨 · 自我中心",
+    sutra: "同理心經",
+    sutraChar: "同",
+    introVoice: "哼！這世界繞著我轉！別人的感覺？干我什麼事！",
+    scenario: "你看到同學阿嬤過世，獨自坐在角落哭。獨我龍說：「關我什麼事？我又沒認識他阿嬤！」可是…他真的「沒感覺」嗎？還是他不會表達？",
+    questions: [
+      {
+        q: "同學在哭，你的「心魔」叫你冷漠走過。勇者，怎麼破？",
+        options: [
+          { text: "走過去坐他旁邊，不講話也沒關係", correct: true, fb: "對！陪伴本身就是同理。不用講大道理。" },
+          { text: "對啊，干我什麼事，繼續玩", correct: false, fb: "獨我龍正在控制你！這是冷漠的陷阱。" },
+          { text: "笑他「哭那麼大聲幹嘛」", correct: false, fb: "嘲笑會傷得更深，獨我龍就更壯大。" },
+          { text: "假裝沒看到", correct: false, fb: "假裝沒看到，下次他不會幫你。" }
+        ]
+      },
+      {
+        q: "媽媽今天臉很臭。獨我龍說「不關我事」。怎麼破解？",
+        options: [
+          { text: "問一句：媽媽你怎麼了？", correct: true, fb: "一句關心，是同理最簡單的開始。" },
+          { text: "覺得她無聊", correct: false, fb: "她可能在強撐家庭，問一下會發現。" },
+          { text: "躲房間不想理她", correct: false, fb: "親近的人最值得你一句問候。" },
+          { text: "罵她臉臭幹嘛", correct: false, fb: "更糟！火上加油。" }
+        ]
+      },
+      {
+        q: "獨我龍說「先顧好自己最重要」。這句話對嗎？",
+        options: [
+          { text: "對一半：照顧自己是基礎，但能多關心一個人就多關心", correct: true, fb: "成熟！同理心和自我照顧不矛盾。" },
+          { text: "完全對，別人都不用管", correct: false, fb: "這樣會變孤狼，越來越孤獨。" },
+          { text: "完全錯，要把自己掏空給別人", correct: false, fb: "也不對，自己要先穩。" },
+          { text: "看心情決定", correct: false, fb: "看心情=沒原則，獨我龍會回來。" }
+        ]
+      }
+    ],
+    skill: "同理三問：他現在感覺什麼？為什麼？我能做什麼？",
+    color: "#ffd700"
+  },
+
+  clueless: {
+    name: "白目龍",
+    trait: "學障白目 · 不會看臉色",
+    sutra: "察言觀色心經",
+    sutraChar: "察",
+    introVoice: "嘿嘿！告白現場？葬禮場合？什麼氣氛我看不懂啦！我想說就說！",
+    scenario: "同學在跟你說阿嬤過世的事，你正想到笑話脫口而出：「哈哈我前天吃 XX 也是！」對方愣住。白目龍說「他幹嘛這表情」。其實…你沒讀懂這個場合。",
+    questions: [
+      {
+        q: "對方表情凝重在講難過的事。白目龍叫你繼續講笑話。怎麼破？",
+        options: [
+          { text: "先閉嘴聽，注意他的表情、語氣、肢體", correct: true, fb: "對！察言觀色從「先停下」開始。" },
+          { text: "繼續講想到的笑話", correct: false, fb: "白目龍贏了！對方會受傷。" },
+          { text: "突然轉話題講自己的事", correct: false, fb: "搶話題等於不重視他。" },
+          { text: "不講話直接走掉", correct: false, fb: "走掉也讓人受傷。先聽。" }
+        ]
+      },
+      {
+        q: "你不確定現在場合該不該開玩笑。怎麼判斷？",
+        options: [
+          { text: "看別人的表情和聲音大小，配合就對了", correct: true, fb: "正確！場合的線索就在別人身上。" },
+          { text: "看自己想不想笑", correct: false, fb: "白目陷阱！只看自己會出包。" },
+          { text: "賭一下，先講再說", correct: false, fb: "賭錯很尷尬，後果你承擔不了。" },
+          { text: "問：我可以講笑話嗎？", correct: false, fb: "比賭好，但也太突兀。先觀察。" }
+        ]
+      },
+      {
+        q: "說錯話傷到人了，白目龍叫你裝沒事。怎麼破？",
+        options: [
+          { text: "誠懇道歉：「對不起，我講錯了，沒考慮到你的感受」", correct: true, fb: "認錯比死撐有力量！" },
+          { text: "笑說「開玩笑的啦」", correct: false, fb: "笑帶過讓對方更受傷。" },
+          { text: "怪對方太敏感", correct: false, fb: "怪別人=完全沒省思。" },
+          { text: "從此不和他講話", correct: false, fb: "逃避不會修復關係。" }
+        ]
+      }
+    ],
+    skill: "場合三問：現在什麼場合？大家在做什麼？我該怎麼配合？",
+    color: "#b0bec5"
+  },
+
+  impulse: {
+    name: "衝動龍",
+    trait: "ADHD · 想到就做",
+    sutra: "停看聽心經",
+    sutraChar: "停",
+    introVoice: "想到就做！想到就買！想到就罵！停下來？我才不要！哈哈！",
+    scenario: "同學一句話讓你不爽，衝動龍叫你立刻揍他。結果你被記過、被叫家長、跟同學再也不能玩了。如果剛剛你停 5 秒…",
+    questions: [
+      {
+        q: "同學說你壞話，你超火大。衝動龍叫你「打他」。怎麼破？",
+        options: [
+          { text: "STOP-THINK-DO：先深呼吸 5 秒、想後果、再決定", correct: true, fb: "這是衝動龍最怕的招！" },
+          { text: "立刻揍他", correct: false, fb: "衝動龍贏了。後果你自己承擔。" },
+          { text: "也罵回去更難聽", correct: false, fb: "互罵會升級成打架。" },
+          { text: "把他東西丟掉", correct: false, fb: "破壞別人東西，你要賠+被處罰。" }
+        ]
+      },
+      {
+        q: "看到想要的東西在店裡，衝動龍叫你拿了就跑。怎麼破？",
+        options: [
+          { text: "深呼吸：我有錢嗎？我真的需要嗎？問大人", correct: true, fb: "對！停 + 想 = 不會犯大錯。" },
+          { text: "拿了就跑反正沒人看到", correct: false, fb: "店有監視器+這是偷竊+人生留紀錄。" },
+          { text: "藏起來想辦法", correct: false, fb: "藏不住的。先問大人能不能買。" },
+          { text: "和店員吵說為什麼要錢", correct: false, fb: "店員只是上班，吵架沒用。" }
+        ]
+      },
+      {
+        q: "你打 LOL 想罵隊友，衝動龍叫你打字幹翻。怎麼破？",
+        options: [
+          { text: "手指離開鍵盤 5 秒，把氣吐掉，再決定", correct: true, fb: "停 5 秒大腦才會回來工作！" },
+          { text: "馬上打髒話", correct: false, fb: "被檢舉 + 隊友更生氣 + 你被禁言。" },
+          { text: "故意送頭報復", correct: false, fb: "雙輸。輸的是你自己。" },
+          { text: "退出遊戲不講", correct: false, fb: "比罵好，但壓抑也不健康。深呼吸再玩。" }
+        ]
+      }
+    ],
+    skill: "STOP-THINK-DO：停 5 秒 → 想後果 → 再選擇",
+    color: "#ff6b35"
+  },
+
+  provoker: {
+    name: "挑釁龍",
+    trait: "情障 · 反社會挑釁",
+    sutra: "化敵為友心經",
+    sutraChar: "化",
+    introVoice: "來啊！打我啊！老師罰你我看你還敢嗎！哈哈哈！我就是要看你失控！",
+    scenario: "挑釁龍故意撞你、故意罵你、然後說「你打我啊」。如果你打了 → 你被處罰；如果你不打 → 他笑你慫。這是陷阱。怎麼破？",
+    questions: [
+      {
+        q: "他故意挑釁，怎麼讓他「失敗」？",
+        options: [
+          { text: "平靜走開找老師：「他在挑釁我，請處理」", correct: true, fb: "對！讓制度處理他，你不上當。" },
+          { text: "打回去讓他閉嘴", correct: false, fb: "你就上鉤了！被處罰的是你。" },
+          { text: "也罵回去更難聽", correct: false, fb: "他就是要你失控，這是他的勝利。" },
+          { text: "一個人在那哭", correct: false, fb: "哭不會解決，找大人。" }
+        ]
+      },
+      {
+        q: "為什麼挑釁龍要挑釁你？他真的想打架嗎？",
+        options: [
+          { text: "他內心其實孤單，用挑釁吸引注意，是錯誤的方法", correct: true, fb: "看穿他！挑釁者通常自己更受傷。" },
+          { text: "他天生就是壞人", correct: false, fb: "沒有人天生壞，都有原因。" },
+          { text: "他想跟我做朋友所以挑釁", correct: false, fb: "這想法太天真，挑釁就是傷害行為。" },
+          { text: "他閒著沒事做", correct: false, fb: "通常背後有更深的原因。" }
+        ]
+      },
+      {
+        q: "挑釁龍說「老師罰你看你還敢」。怎麼破他的陷阱？",
+        options: [
+          { text: "去找老師當證人，光明正大說出他的行為", correct: true, fb: "讓陷阱反咬挑釁者。" },
+          { text: "等他自己累再揍", correct: false, fb: "報復不會贏，會雙敗。" },
+          { text: "拍下他的行為當證據", correct: true, fb: "也對！證據+老師=他自食惡果。" },
+          { text: "全班宣告他是壞人", correct: false, fb: "霸凌不能反過來變霸凌他。" }
+        ]
+      }
+    ],
+    skill: "三不一找：不打、不罵、不上鉤，找大人或證據",
+    color: "#7e57c2"
+  },
+
+  hooked: {
+    name: "習慣龍",
+    trait: "壞習慣 · 沉迷或自傷",
+    sutra: "習慣換新心經",
+    sutraChar: "換",
+    introVoice: "我就是要滑手機！我就是要咬指甲！我就是不寫功課！你管不著！",
+    scenario: "你坐下來寫功課，習慣龍叫你「先滑 5 分鐘手機」，結果滑了 2 小時。或你緊張就咬指甲，咬到流血。壞習慣綁住你，越掙扎越緊。",
+    questions: [
+      {
+        q: "壞習慣最有效的對付方式是？",
+        options: [
+          { text: "找一個「替代行為」取代它（例：想滑手機→改捏壓力球）", correct: true, fb: "對！換新動作，不是空洞地禁止。" },
+          { text: "用意志力硬撐不要做", correct: false, fb: "意志力會用完。換新動作才有用。" },
+          { text: "假裝沒有這個習慣", correct: false, fb: "假裝會更失控。" },
+          { text: "全部投降隨它去", correct: false, fb: "習慣龍贏了！會更深。" }
+        ]
+      },
+      {
+        q: "想滑手機停不下來。怎麼用「環境設計」打敗習慣龍？",
+        options: [
+          { text: "手機放別的房間 + 設時段 + 替代活動（畫畫/運動）", correct: true, fb: "環境改了，習慣就難回來。" },
+          { text: "靠意志力放在桌上不要碰", correct: false, fb: "看得到就會碰，把它移走。" },
+          { text: "刪掉所有 App 永遠不用", correct: false, fb: "太極端，建議「分時段使用」更實際。" },
+          { text: "把手機摔壞", correct: false, fb: "摔壞還要買新的，浪費錢。" }
+        ]
+      },
+      {
+        q: "咬指甲咬到流血，怎麼破？",
+        options: [
+          { text: "壓力球 / 玩戒指 / 在指甲塗苦的東西", correct: true, fb: "替代行為+提醒物=有效！" },
+          { text: "罵自己沒用", correct: false, fb: "罵自己讓你更焦慮，更想咬。" },
+          { text: "繼續咬不在乎", correct: false, fb: "感染了會看醫生，更痛。" },
+          { text: "等長大自然就好", correct: false, fb: "可能不會自然好。現在處理。" }
+        ]
+      }
+    ],
+    skill: "三招拆鎖鏈：辨識觸發點 → 替代行為 → 改變環境",
+    color: "#2e7d32"
+  },
+
+  mirror: {
+    name: "鏡影龍",
+    trait: "你自己的影子 · 終極心魔",
+    sutra: "良知心經",
+    sutraChar: "良",
+    introVoice: "你...打敗了五個...但你看清楚！我是誰？我是...你啊！你逃得掉嗎？",
+    scenario: "走到最後，山上一面大鏡子。鏡裡的龍長得跟你一模一樣！你以為敵人在外面，原來最大的敵人是「不肯承認自己缺點」的那個你。周處除了三害，第三害就是他自己。",
+    questions: [
+      {
+        q: "鏡影龍是你的影子，他出現是因為什麼？",
+        options: [
+          { text: "因為你還沒「接納自己也會有壞情緒、壞習慣」", correct: true, fb: "對！接納自己才能改變自己。" },
+          { text: "因為我天生就是壞蛋", correct: false, fb: "你不壞，只是有些習慣還在學。" },
+          { text: "因為命運要害我", correct: false, fb: "命運不是借口，要為自己負責。" },
+          { text: "因為別人都對不起我", correct: false, fb: "怪別人=放棄自己改變的力量。" }
+        ]
+      },
+      {
+        q: "周處除了兩害（虎、龍），發現第三害就是「自己」。他怎麼做？",
+        options: [
+          { text: "承認自己以前的錯，痛改前非當好人", correct: true, fb: "周處精神！承認+改變=英雄。" },
+          { text: "繼續當壞人不認錯", correct: false, fb: "那就不是周處的故事了。" },
+          { text: "怪父母沒教好", correct: false, fb: "成熟人為自己負責。" },
+          { text: "假裝失憶逃避", correct: false, fb: "逃避不會讓你成為英雄。" }
+        ]
+      },
+      {
+        q: "你打敗了所有外在敵人。最後一招，怎麼跟「自己」和解？",
+        options: [
+          { text: "對自己說：「我有缺點，但我願意慢慢進步，我接納我自己」", correct: true, fb: "完美！自我接納+持續改變=真正的良知。" },
+          { text: "對自己說：「我是垃圾，我什麼都不會」", correct: false, fb: "自責不是改變。會更糟。" },
+          { text: "對自己說：「我完美，不需要進步」", correct: false, fb: "驕傲也是心魔的一種。" },
+          { text: "對自己說：「都是別人害的」", correct: false, fb: "推給別人，就沒救了。" }
+        ]
+      }
+    ],
+    skill: "三句良心話：承認問題、接納自己、修正自己",
+    color: "#bdbdbd",
+    isFinal: true
+  }
+};
+
+const DEMON_ORDER = ["solo", "clueless", "impulse", "provoker", "hooked"];
+const FINAL_DEMON = "mirror";
+
+// ========= 心法裝備系統 =========
+// 每打敗一隻心魔，獲得對應裝備（屬於那個 demon 的「方法」）
+const EQUIPMENT = {
+  solo: {
+    name: "同理之劍", icon: "⚔️", type: "weapon",
+    desc: "看見對方的感受",
+    atkBonus: 8, defBonus: 0,
+    flavor: "用「他現在感覺什麼？」這把劍，斬開冷漠的盔甲。"
+  },
+  clueless: {
+    name: "察言之鏡", icon: "🪞", type: "tool",
+    desc: "讀懂場合與表情",
+    atkBonus: 4, defBonus: 4,
+    flavor: "鏡中映出對方的眉、眼、嘴——你看懂了。"
+  },
+  impulse: {
+    name: "停看聽護腕", icon: "🛡️", type: "armor",
+    desc: "答錯傷害減半",
+    atkBonus: 2, defBonus: 8,
+    flavor: "戴上它，衝動的火箭就有了煞車。"
+  },
+  provoker: {
+    name: "化敵之笛", icon: "🎵", type: "tool",
+    desc: "識破挑釁陷阱",
+    atkBonus: 6, defBonus: 4,
+    flavor: "吹一聲，挑釁的毒霧就散了。"
+  },
+  hooked: {
+    name: "換新之鎖", icon: "🔓", type: "armor",
+    desc: "壞習慣場景免傷",
+    atkBonus: 2, defBonus: 10,
+    flavor: "舊鎖鏈解開的瞬間，新習慣的鑰匙就到手了。"
+  },
+  mirror: {
+    name: "良知之心", icon: "💛", type: "ultimate",
+    desc: "全屬性大幅提升",
+    atkBonus: 12, defBonus: 12,
+    flavor: "你接納了自己，所以你戰無不勝。"
+  }
+};
+
+// ========= 玩家勇者 SVG =========
+const PLAYER_SVG = `<svg viewBox="0 0 100 130">
+  <defs><radialGradient id="hero" cx="40%" cy="35%">
+    <stop offset="0%" stop-color="#fff9c4"/><stop offset="100%" stop-color="#1976d2"/>
+  </radialGradient></defs>
+  <!-- 披風 -->
+  <path d="M30,60 L20,120 L80,120 L70,60 Z" fill="#c62828"/>
+  <!-- 身體 -->
+  <ellipse cx="50" cy="80" rx="22" ry="28" fill="url(#hero)"/>
+  <!-- 頭 -->
+  <circle cx="50" cy="45" r="20" fill="#ffccbc"/>
+  <!-- 頭髮 -->
+  <path d="M30,40 Q35,25 50,25 Q65,25 70,40 L65,32 L55,28 L45,28 L35,32 Z" fill="#3e2723"/>
+  <!-- 勇者頭飾 -->
+  <path d="M40,30 L60,30 L55,18 L50,24 L45,18 Z" fill="#ffd700" stroke="#bf6800" stroke-width="1"/>
+  <!-- 眼睛 -->
+  <circle cx="44" cy="45" r="2.5" fill="#000"/>
+  <circle cx="56" cy="45" r="2.5" fill="#000"/>
+  <!-- 嘴 -->
+  <path d="M44,53 Q50,57 56,53" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- 劍 -->
+  <rect x="76" y="55" width="4" height="30" fill="#bdbdbd"/>
+  <rect x="72" y="83" width="12" height="4" fill="#8b4513"/>
+  <polygon points="76,40 80,55 76,55 72,55" fill="#e0e0e0"/>
+  <!-- 盾 -->
+  <ellipse cx="22" cy="75" rx="10" ry="14" fill="#1976d2" stroke="#bf6800" stroke-width="2"/>
+  <text x="22" y="80" font-size="14" text-anchor="middle" fill="#ffd700" font-weight="bold">心</text>
+</svg>`;
+
+// ========= 心魔 SVG（純原創龍形 + 各自特徵）=========
+const DEMON_SVG = {
+  solo: `<svg viewBox="0 0 200 200">
+    <defs><radialGradient id="d-solo" cx="40%" cy="35%">
+      <stop offset="0%" stop-color="#fff59d"/><stop offset="100%" stop-color="#f9a825"/>
+    </radialGradient></defs>
+    <!-- 龍身蜷曲 -->
+    <path d="M30,160 Q20,120 50,90 Q80,60 110,80 Q140,100 150,140 Q145,170 110,170 Q80,165 70,140 Q65,115 95,110 Q120,115 125,140"
+          fill="none" stroke="url(#d-solo)" stroke-width="22" stroke-linecap="round"/>
+    <!-- 龍頭 -->
+    <ellipse cx="100" cy="80" rx="35" ry="28" fill="url(#d-solo)"/>
+    <!-- 角 -->
+    <path d="M85,55 L80,30 L88,52" fill="#bf6800"/>
+    <path d="M115,55 L120,30 L112,52" fill="#bf6800"/>
+    <!-- 眼睛緊閉（自閉式）-->
+    <path d="M85,80 L95,80" stroke="#5d4037" stroke-width="3" stroke-linecap="round"/>
+    <path d="M105,80 L115,80" stroke="#5d4037" stroke-width="3" stroke-linecap="round"/>
+    <!-- 自我中心嘴 -->
+    <path d="M88,95 Q100,98 112,95" stroke="#5d4037" stroke-width="2.5" fill="none"/>
+    <!-- 孤獨字 -->
+    <text x="100" y="40" font-size="20" text-anchor="middle" fill="#7c3a00" font-weight="bold">我</text>
+  </svg>`,
+
+  clueless: `<svg viewBox="0 0 200 200">
+    <defs><radialGradient id="d-clue" cx="40%" cy="35%">
+      <stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#90a4ae"/>
+    </radialGradient></defs>
+    <path d="M30,160 Q20,120 50,90 Q80,60 110,80 Q140,100 150,140 Q145,170 110,170"
+          fill="none" stroke="url(#d-clue)" stroke-width="22" stroke-linecap="round"/>
+    <ellipse cx="100" cy="80" rx="35" ry="28" fill="url(#d-clue)"/>
+    <path d="M85,55 L80,30 L88,52" fill="#546e7a"/>
+    <path d="M115,55 L120,30 L112,52" fill="#546e7a"/>
+    <!-- 茫然白眼 -->
+    <circle cx="88" cy="78" r="7" fill="#fff"/>
+    <circle cx="112" cy="78" r="7" fill="#fff"/>
+    <circle cx="88" cy="78" r="2" fill="#90a4ae"/>
+    <circle cx="112" cy="78" r="2" fill="#90a4ae"/>
+    <!-- 大笑嘴（不分場合）-->
+    <path d="M85,92 Q100,108 115,92 Q100,102 85,92 Z" fill="#37474f"/>
+    <!-- 霧 -->
+    <ellipse cx="50" cy="50" rx="20" ry="6" fill="#fff" opacity="0.6"/>
+    <ellipse cx="150" cy="55" rx="18" ry="5" fill="#fff" opacity="0.6"/>
+  </svg>`,
+
+  impulse: `<svg viewBox="0 0 200 200">
+    <defs><radialGradient id="d-imp" cx="40%" cy="35%">
+      <stop offset="0%" stop-color="#ffeb3b"/><stop offset="100%" stop-color="#bf360c"/>
+    </radialGradient></defs>
+    <path d="M30,160 Q20,120 50,90 Q80,60 110,80 Q140,100 150,140 Q145,170 110,170"
+          fill="none" stroke="url(#d-imp)" stroke-width="22" stroke-linecap="round"/>
+    <ellipse cx="100" cy="80" rx="35" ry="28" fill="url(#d-imp)"/>
+    <!-- 火焰角 -->
+    <path d="M80,55 Q75,25 85,40 Q88,50 80,55 Z" fill="#ff5722"/>
+    <path d="M120,55 Q125,25 115,40 Q112,50 120,55 Z" fill="#ff5722"/>
+    <!-- 火焰眼 -->
+    <circle cx="88" cy="78" r="7" fill="#ffeb3b"/>
+    <circle cx="112" cy="78" r="7" fill="#ffeb3b"/>
+    <circle cx="88" cy="78" r="3" fill="#000"/>
+    <circle cx="112" cy="78" r="3" fill="#000"/>
+    <!-- 大叫嘴 -->
+    <ellipse cx="100" cy="98" rx="14" ry="10" fill="#5d1a1a"/>
+    <!-- 衝動火 -->
+    <text x="40" y="40" font-size="22">🔥</text>
+    <text x="155" y="45" font-size="22">🔥</text>
+  </svg>`,
+
+  provoker: `<svg viewBox="0 0 200 200">
+    <defs><radialGradient id="d-prov" cx="40%" cy="35%">
+      <stop offset="0%" stop-color="#ce93d8"/><stop offset="100%" stop-color="#4a148c"/>
+    </radialGradient></defs>
+    <path d="M30,160 Q20,120 50,90 Q80,60 110,80 Q140,100 150,140 Q145,170 110,170"
+          fill="none" stroke="url(#d-prov)" stroke-width="22" stroke-linecap="round"/>
+    <ellipse cx="100" cy="80" rx="35" ry="28" fill="url(#d-prov)"/>
+    <path d="M85,55 L80,30 L88,52" fill="#311b92"/>
+    <path d="M115,55 L120,30 L112,52" fill="#311b92"/>
+    <!-- 邪惡上挑眉 -->
+    <line x1="80" y1="70" x2="93" y2="78" stroke="#fff" stroke-width="3"/>
+    <line x1="120" y1="70" x2="107" y2="78" stroke="#fff" stroke-width="3"/>
+    <!-- 賊賊眼 -->
+    <circle cx="90" cy="83" r="5" fill="#fff"/>
+    <circle cx="110" cy="83" r="5" fill="#fff"/>
+    <circle cx="92" cy="83" r="3" fill="#000"/>
+    <circle cx="112" cy="83" r="3" fill="#000"/>
+    <!-- 挑釁笑 + 毒牙 -->
+    <path d="M82,98 Q100,108 118,98" stroke="#fff" stroke-width="3" fill="#fff"/>
+    <polygon points="92,100 95,108 98,100" fill="#fff"/>
+    <polygon points="102,100 105,108 108,100" fill="#fff"/>
+    <!-- 毒液 -->
+    <text x="95" y="125" font-size="14" fill="#76ff03">☠</text>
+  </svg>`,
+
+  hooked: `<svg viewBox="0 0 200 200">
+    <defs><radialGradient id="d-hook" cx="40%" cy="35%">
+      <stop offset="0%" stop-color="#a5d6a7"/><stop offset="100%" stop-color="#1b5e20"/>
+    </radialGradient></defs>
+    <path d="M30,160 Q20,120 50,90 Q80,60 110,80 Q140,100 150,140 Q145,170 110,170"
+          fill="none" stroke="url(#d-hook)" stroke-width="22" stroke-linecap="round"/>
+    <ellipse cx="100" cy="80" rx="35" ry="28" fill="url(#d-hook)"/>
+    <path d="M85,55 L80,30 L88,52" fill="#0d3f10"/>
+    <path d="M115,55 L120,30 L112,52" fill="#0d3f10"/>
+    <!-- 疲倦眼 -->
+    <path d="M82,80 Q88,84 94,80" stroke="#fff" stroke-width="3" fill="none"/>
+    <path d="M106,80 Q112,84 118,80" stroke="#fff" stroke-width="3" fill="none"/>
+    <!-- 嘴鬆鬆 -->
+    <path d="M90,98 Q100,102 110,98" stroke="#fff" stroke-width="2.5" fill="none"/>
+    <!-- 鎖鏈纏繞 -->
+    <g stroke="#bdbdbd" stroke-width="3" fill="none">
+      <circle cx="40" cy="120" r="6"/>
+      <circle cx="55" cy="135" r="6"/>
+      <circle cx="155" cy="115" r="6"/>
+      <circle cx="170" cy="130" r="6"/>
+    </g>
+  </svg>`,
+
+  mirror: `<svg viewBox="0 0 200 200">
+    <defs>
+      <radialGradient id="d-mirror" cx="40%" cy="35%">
+        <stop offset="0%" stop-color="#f5f5f5"/><stop offset="100%" stop-color="#616161"/>
+      </radialGradient>
+      <linearGradient id="d-mirror-glow" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#fff" stop-opacity="0.6"/>
+        <stop offset="50%" stop-color="#fff" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#fff" stop-opacity="0.6"/>
+      </linearGradient>
+    </defs>
+    <!-- 鏡框 -->
+    <ellipse cx="100" cy="100" rx="80" ry="90" fill="none" stroke="#8b4513" stroke-width="6"/>
+    <ellipse cx="100" cy="100" rx="74" ry="84" fill="url(#d-mirror-glow)"/>
+    <!-- 鏡中之龍（你自己）-->
+    <path d="M50,150 Q40,110 70,90 Q100,70 130,90 Q160,110 150,150 Q120,160 100,150 Q80,160 50,150 Z"
+          fill="url(#d-mirror)" opacity="0.85"/>
+    <!-- 龍頭 -->
+    <ellipse cx="100" cy="100" rx="32" ry="26" fill="url(#d-mirror)"/>
+    <!-- 你的眼睛（鏡像） -->
+    <circle cx="88" cy="98" r="6" fill="#fff"/>
+    <circle cx="112" cy="98" r="6" fill="#fff"/>
+    <circle cx="88" cy="98" r="3" fill="#000"/>
+    <circle cx="112" cy="98" r="3" fill="#000"/>
+    <!-- 哀傷嘴 -->
+    <path d="M88,115 Q100,108 112,115" stroke="#000" stroke-width="2.5" fill="none"/>
+    <!-- 鏡光 -->
+    <line x1="40" y1="60" x2="60" y2="80" stroke="#fff" stroke-width="2" opacity="0.7"/>
+    <line x1="145" y1="55" x2="125" y2="75" stroke="#fff" stroke-width="2" opacity="0.7"/>
+    <!-- 上方一個 -->
+    <text x="92" y="50" font-size="18" fill="#8b4513" font-weight="bold">影</text>
+  </svg>`
+};
+
 // ========= 怪獸 SVG（純原創）=========
 const MONSTER_SVG = {
   grabby: {
@@ -1924,9 +2930,14 @@ function loadState() {
     const raw = localStorage.getItem("moodIsland_v1");
     if (raw) {
       const s = JSON.parse(raw);
-      // 補上低年級新欄位（向後相容）
+      // 向後相容：補欄位
       if (!s.monstersDone) s.monstersDone = {};
       if (!s.pocketBuddies) s.pocketBuddies = [];
+      if (!s.demonsDone) s.demonsDone = {};
+      if (!s.heartSutras) s.heartSutras = [];
+      if (typeof s.finalBossDone === "undefined") s.finalBossDone = false;
+      if (!s.equipped) s.equipped = [];      // 當前裝備的 demon keys (最多 3 件)
+      if (typeof s.musicOn === "undefined") s.musicOn = true;
       return s;
     }
   } catch(e) {}
@@ -1935,7 +2946,12 @@ function loadState() {
     islandsDone: {},
     skills: [],
     monstersDone: {},
-    pocketBuddies: []
+    pocketBuddies: [],
+    demonsDone: {},
+    heartSutras: [],
+    finalBossDone: false,
+    equipped: [],
+    musicOn: true
   };
 }
 function saveState() {
@@ -2217,6 +3233,7 @@ function showScreen(id) {
   if (id === "passport") renderPassport();
   if (id === "map") renderMap();
   if (id === "low-map") { document.body.style.background = 'var(--bg-low)'; renderLowMap(); }
+  if (id === "high-map") { document.body.style.background = 'var(--bg-rpg)'; renderHighMap(); }
   if (id === "home") document.body.style.background = 'var(--bg-sky)';
 }
 
@@ -2229,6 +3246,12 @@ function enterLow() {
   document.body.style.background = 'var(--bg-low)';
   renderLowMap();
   showScreen("low-map");
+}
+
+function enterHigh() {
+  document.body.style.background = 'var(--bg-rpg)';
+  renderHighMap();
+  showScreen("high-map");
 }
 
 function showPassport() { showScreen("passport"); }
@@ -2447,7 +3470,620 @@ function renderMonsterAlreadyTamed() {
   setTimeout(() => speak(m.tamedName + "說：" + m.tamedVoice, 0.9), 400);
 }
 
-// ========= MAP =========
+// ========= 高年級：心魔取經 RPG =========
+let currentDemon = null;
+let currentDemonQ = 0;
+let playerHP = 100;
+let demonHP = 100;
+let battleLog = [];
+let battlePickedEquipment = []; // 戰前選好的裝備
+
+// ========= Web Audio 緊張配樂 =========
+let audioCtx = null;
+let musicTimerId = null;
+let musicPlaying = false;
+
+function getAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch(e) { return null; }
+  }
+  return audioCtx;
+}
+
+function playBattleMusic() {
+  if (!state.musicOn) return;
+  const ctx = getAudio();
+  if (!ctx) return;
+  if (musicPlaying) return;
+  musicPlaying = true;
+
+  // 緊張背景：低音節奏 (C2-G2-Eb2-G2) 循環，BPM 120
+  // 主節拍 + 不和諧高音裝飾
+  const noteBeat = 60 / 120 / 2; // 8分音符
+  const bassNotes = [65.41, 49.00, 77.78, 49.00, 65.41, 51.91, 77.78, 49.00]; // C2-G1-Eb2-G1-C2-Ab1-Eb2-G1
+  let step = 0;
+
+  musicTimerId = setInterval(() => {
+    if (!state.musicOn) return;
+    const t = ctx.currentTime;
+    const f = bassNotes[step % bassNotes.length];
+
+    // 低音
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = "sawtooth";
+    o.frequency.setValueAtTime(f, t);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.06, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, t + noteBeat * 0.9);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(t); o.stop(t + noteBeat);
+
+    // 鼓點（每 2 步一次）
+    if (step % 2 === 0) {
+      const k = ctx.createOscillator();
+      const kg = ctx.createGain();
+      k.type = "sine";
+      k.frequency.setValueAtTime(140, t);
+      k.frequency.exponentialRampToValueAtTime(40, t + 0.1);
+      kg.gain.setValueAtTime(0.15, t);
+      kg.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+      k.connect(kg); kg.connect(ctx.destination);
+      k.start(t); k.stop(t + 0.15);
+    }
+
+    // 第 4、8 拍加不和諧高音裝飾（緊張感）
+    if (step % 4 === 3) {
+      const h = ctx.createOscillator();
+      const hg = ctx.createGain();
+      h.type = "triangle";
+      h.frequency.setValueAtTime(622.25, t); // Eb5
+      hg.gain.setValueAtTime(0.03, t);
+      hg.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+      h.connect(hg); hg.connect(ctx.destination);
+      h.start(t); h.stop(t + 0.3);
+    }
+    step++;
+  }, noteBeat * 1000);
+}
+
+function stopBattleMusic() {
+  if (musicTimerId) clearInterval(musicTimerId);
+  musicTimerId = null;
+  musicPlaying = false;
+}
+
+function sfxAttack() {
+  if (!state.musicOn) return;
+  const ctx = getAudio(); if (!ctx) return;
+  const t = ctx.currentTime;
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = "square";
+  o.frequency.setValueAtTime(880, t);
+  o.frequency.exponentialRampToValueAtTime(1760, t + 0.08);
+  g.gain.setValueAtTime(0.2, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(t); o.stop(t + 0.15);
+}
+
+function sfxHurt() {
+  if (!state.musicOn) return;
+  const ctx = getAudio(); if (!ctx) return;
+  const t = ctx.currentTime;
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = "sawtooth";
+  o.frequency.setValueAtTime(220, t);
+  o.frequency.exponentialRampToValueAtTime(60, t + 0.4);
+  g.gain.setValueAtTime(0.2, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(t); o.stop(t + 0.4);
+}
+
+function sfxVictory() {
+  if (!state.musicOn) return;
+  const ctx = getAudio(); if (!ctx) return;
+  const notes = [523.25, 659.25, 783.99, 1046.50]; // C5-E5-G5-C6
+  notes.forEach((f, i) => {
+    const t = ctx.currentTime + i * 0.12;
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = "triangle";
+    o.frequency.setValueAtTime(f, t);
+    g.gain.setValueAtTime(0.2, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(t); o.stop(t + 0.4);
+  });
+}
+
+function toggleMusic() {
+  state.musicOn = !state.musicOn;
+  saveState();
+  document.getElementById("music-toggle").textContent = state.musicOn ? "🔊" : "🔇";
+  if (!state.musicOn) stopBattleMusic();
+}
+
+function showMusicToggle() {
+  const btn = document.getElementById("music-toggle");
+  if (btn) {
+    btn.classList.add("show");
+    btn.textContent = state.musicOn ? "🔊" : "🔇";
+  }
+}
+function hideMusicToggle() {
+  const btn = document.getElementById("music-toggle");
+  if (btn) btn.classList.remove("show");
+}
+
+// ========= 戰鬥動畫特效 =========
+function fxAttackPlayer() {
+  const arena = document.querySelector(".battle-arena");
+  if (!arena) return;
+  // 光球
+  const orb = document.createElement("div");
+  orb.className = "fx-attack-orb";
+  arena.querySelector(".battle-arena-fx").appendChild(orb);
+  setTimeout(() => orb.remove(), 700);
+  // 心魔受擊
+  setTimeout(() => {
+    const dem = arena.querySelector(".arena-demon");
+    if (dem) {
+      dem.classList.add("hurt");
+      setTimeout(() => dem.classList.remove("hurt"), 500);
+    }
+    // 閃光
+    const flash = document.createElement("div");
+    flash.className = "fx-hit-flash demon-flash";
+    arena.querySelector(".battle-arena-fx").appendChild(flash);
+    setTimeout(() => flash.remove(), 350);
+    sfxAttack();
+  }, 500);
+}
+
+function fxAttackDemon() {
+  const arena = document.querySelector(".battle-arena");
+  if (!arena) return;
+  // 反擊光球
+  const orb = document.createElement("div");
+  orb.className = "fx-attack-orb demon-attack";
+  arena.querySelector(".battle-arena-fx").appendChild(orb);
+  setTimeout(() => orb.remove(), 700);
+  // 玩家受擊
+  setTimeout(() => {
+    const p = arena.querySelector(".arena-player");
+    if (p) {
+      p.classList.add("hurt");
+      setTimeout(() => p.classList.remove("hurt"), 500);
+    }
+    const flash = document.createElement("div");
+    flash.className = "fx-hit-flash player-flash";
+    arena.querySelector(".battle-arena-fx").appendChild(flash);
+    setTimeout(() => flash.remove(), 350);
+    sfxHurt();
+  }, 500);
+}
+
+function fxDamage(amount, target) {
+  const arena = document.querySelector(".battle-arena");
+  if (!arena) return;
+  const dmg = document.createElement("div");
+  dmg.className = "fx-damage " + (target === "demon" ? "dmg-demon" : "dmg-player");
+  dmg.textContent = "-" + amount;
+  arena.querySelector(".battle-arena-fx").appendChild(dmg);
+  setTimeout(() => dmg.remove(), 1500);
+}
+
+function renderHighMap() {
+  const grid = document.getElementById("demons-grid");
+  grid.innerHTML = "";
+  DEMON_ORDER.forEach(key => {
+    const d = DEMONS[key];
+    const defeated = !!state.demonsDone[key];
+    const card = document.createElement("div");
+    card.className = "demon-card" + (defeated ? " defeated" : "");
+    card.innerHTML = `
+      <div class="demon-card-svg">${DEMON_SVG[key]}</div>
+      <div class="demon-card-name">${d.name}</div>
+      <div class="demon-card-trait">${d.trait}</div>
+      <div style="margin-top:6px; font-size:12px; color:${defeated?'#ffd700':'#90a4ae'};">
+        ${defeated ? '✓ 已破，得「'+d.sutra+'」' : '尚未對戰'}
+      </div>
+    `;
+    card.onclick = () => enterDemon(key);
+    grid.appendChild(card);
+  });
+
+  // 終極 boss 區
+  const finalArea = document.getElementById("final-boss-area");
+  const fiveDone = DEMON_ORDER.every(k => state.demonsDone[k]);
+  if (fiveDone) {
+    const finalDefeated = state.demonsDone[FINAL_DEMON];
+    finalArea.innerHTML = `
+      <div class="final-boss-card">
+        <div class="final-boss-title">⚡ 最終心魔 解鎖 ⚡</div>
+        <div style="margin:12px auto; width:140px;">${DEMON_SVG.mirror}</div>
+        <p style="color:#fff; font-size:18px; line-height:1.7;">
+          ${finalDefeated ? '你已戰勝最終心魔，<br>找回了良知與良心。<br><strong style="color:#ffd700;">恭喜成為心經守護者！</strong>' : '前五卷心經已集齊，<br>最後一隻心魔等著你——<br><strong style="color:#e94560;">那個影子，竟然是你自己。</strong>'}
+        </p>
+        <button class="speaker-btn big" style="background:#e94560; margin-top:12px;" onclick="enterDemon('${FINAL_DEMON}')">
+          ${finalDefeated ? '重溫終章' : '面對影子龍 ⚔️'}
+        </button>
+      </div>
+    `;
+  } else {
+    finalArea.innerHTML = `
+      <div class="final-boss-card locked-final" style="opacity:0.5; cursor:default;">
+        <div class="final-boss-title" style="color:#888;">🔒 終極心魔 封印中</div>
+        <p style="color:#aaa;">先打敗五隻心魔，集齊五卷心經，最終心魔才會現身。</p>
+        <p style="color:#aaa; font-size:14px;">目前進度：${Object.keys(state.demonsDone).filter(k=>k!==FINAL_DEMON).length} / 5</p>
+      </div>
+    `;
+  }
+}
+
+function enterDemon(key) {
+  currentDemon = key;
+  currentDemonQ = 0;
+  playerHP = 100;
+  demonHP = 100;
+  battleLog = [];
+  battlePickedEquipment = [...state.equipped]; // 預設用上次選的
+  showScreen("demon-battle");
+  showMusicToggle();
+  renderDemonIntro();
+}
+
+function confirmLeaveBattle() {
+  speechSynthesis.cancel();
+  stopBattleMusic();
+  if (confirm("勇者，戰場中撤退這次戰績不會儲存喔！確定撤退？")) {
+    hideMusicToggle();
+    document.body.style.background = 'var(--bg-rpg)';
+    showScreen("high-map");
+  } else {
+    if (musicPlaying === false) playBattleMusic();
+  }
+}
+
+// 計算當前裝備加成
+function getEquipmentBonus() {
+  let atk = 0, def = 0;
+  battlePickedEquipment.forEach(k => {
+    if (EQUIPMENT[k]) {
+      atk += EQUIPMENT[k].atkBonus;
+      def += EQUIPMENT[k].defBonus;
+    }
+  });
+  return { atk, def };
+}
+
+// 戰前裝備選擇器
+function renderEquipmentPicker(onProceed) {
+  const owned = Object.keys(state.demonsDone).filter(k => state.demonsDone[k]);
+  if (owned.length === 0) {
+    // 沒裝備，直接戰鬥
+    onProceed();
+    return "";
+  }
+  const html = `
+    <div class="equipment-picker">
+      <h3>⚔️ 選擇心法裝備（最多 3 件）</h3>
+      <div style="font-size:13px; color:#bdbdbd; text-align:center; margin-bottom:8px;">已選 ${battlePickedEquipment.length} / 3</div>
+      <div class="picker-grid" id="picker-grid">
+        ${owned.map(k => {
+          const eq = EQUIPMENT[k];
+          const selected = battlePickedEquipment.includes(k);
+          return `
+            <div class="picker-item ${selected?'selected':''}" onclick="toggleEquip('${k}')">
+              <div class="pi-icon">${eq.icon}</div>
+              <div class="pi-name">${eq.name}</div>
+              <div class="pi-stats">⚔️${eq.atkBonus} 🛡️${eq.defBonus}<br>${eq.desc}</div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+      <div style="text-align:center; margin-top:12px;">
+        <button class="speaker-btn big" style="background:#e94560;" onclick="proceedToBattle()">⚔️ 帶上裝備，開戰</button>
+      </div>
+    </div>
+  `;
+  return html;
+}
+
+function toggleEquip(key) {
+  const idx = battlePickedEquipment.indexOf(key);
+  if (idx >= 0) {
+    battlePickedEquipment.splice(idx, 1);
+  } else {
+    if (battlePickedEquipment.length >= 3) {
+      alert("最多只能帶 3 件裝備！");
+      return;
+    }
+    battlePickedEquipment.push(key);
+  }
+  state.equipped = [...battlePickedEquipment];
+  saveState();
+  // 重繪
+  document.getElementById("battle-content").innerHTML = renderEquipmentPickerInline();
+}
+function renderEquipmentPickerInline() {
+  // 重用 renderDemonIntro 內容但只更新 picker
+  const d = DEMONS[currentDemon];
+  return _introHTML(d);
+}
+
+function proceedToBattle() {
+  state.equipped = [...battlePickedEquipment];
+  saveState();
+  startDemonBattle();
+}
+
+function _introHTML(d) {
+  return `
+    <div class="demon-stage">
+      ${DEMON_SVG[currentDemon]}
+      <h2 style="color:#e94560; margin:8px 0;">${d.name} 現身！</h2>
+      <div style="color:#ffd700; font-size:15px;">${d.trait}</div>
+    </div>
+    <div class="demon-bubble">「${d.introVoice}」</div>
+    <button class="speaker-btn" onclick="speak('${d.name}說：${d.introVoice}', 0.92)">🔊 聽${d.name}嗆聲</button>
+    <div class="battle-scenario" id="scenario-text">${d.scenario}</div>
+    <button class="speaker-btn" onclick="speak(document.getElementById('scenario-text').innerText, 0.92)">🔊 念場景</button>
+    ${renderEquipmentPicker(() => startDemonBattle())}
+  `;
+}
+function renderDemonIntro() {
+  const d = DEMONS[currentDemon];
+  document.getElementById("battle-content").innerHTML = _introHTML(d);
+  setTimeout(() => speak(d.name + "嗆聲：" + d.introVoice, 0.92), 400);
+  setTimeout(() => speak(d.scenario, 0.92), 4500);
+  // 沒裝備可選時直接顯示開戰按鈕
+  const owned = Object.keys(state.demonsDone).filter(k => state.demonsDone[k]);
+  if (owned.length === 0) {
+    document.getElementById("battle-content").innerHTML += `
+      <div style="text-align:center; margin-top:16px;">
+        <button class="speaker-btn big" style="background:#e94560;" onclick="proceedToBattle()">⚔️ 開戰（首戰無裝備）</button>
+      </div>
+    `;
+  }
+}
+
+function startDemonBattle() {
+  currentDemonQ = 0;
+  playerHP = 100;
+  demonHP = 100;
+  battleLog = ["⚔️ 戰鬥開始！"];
+  playBattleMusic();
+  renderBattle();
+}
+
+function renderBattle() {
+  const d = DEMONS[currentDemon];
+  const q = d.questions[currentDemonQ];
+  const pHpCls = playerHP < 30 ? "critical" : (playerHP < 60 ? "low" : "");
+  const dHpCls = demonHP < 30 ? "critical" : (demonHP < 60 ? "low" : "");
+  const bonus = getEquipmentBonus();
+
+  // 裝備條
+  let equipBar = '<div class="equipment-bar">';
+  for (let i = 0; i < 3; i++) {
+    const eq = battlePickedEquipment[i] ? EQUIPMENT[battlePickedEquipment[i]] : null;
+    if (eq) {
+      equipBar += `<div class="equipment-slot equipped">
+        <div class="eq-icon">${eq.icon}</div>
+        <div class="eq-name">${eq.name}</div>
+      </div>`;
+    } else {
+      equipBar += `<div class="equipment-slot empty">
+        <div class="eq-icon" style="opacity:0.3">⚔️</div>
+        <div class="eq-name" style="opacity:0.4">空欄</div>
+      </div>`;
+    }
+  }
+  equipBar += `</div>
+    <div style="text-align:center; color:#ffd700; font-size:13px;">攻擊力+${bonus.atk} 防禦力+${bonus.def}</div>`;
+
+  const html = `
+    <div class="rpg-top">
+      <div class="hp-bar-wrap">
+        <div class="hp-label"><span>🛡️ 你的良心</span><span>${playerHP}/100</span></div>
+        <div class="hp-bar-bg"><div class="hp-bar-fill ${pHpCls}" style="width:${playerHP}%"></div></div>
+      </div>
+    </div>
+    <div class="battle-arena">
+      <div class="battle-arena-fx"></div>
+      <div class="arena-positions">
+        <div class="arena-player">
+          ${PLAYER_SVG}
+          <div class="arena-name">勇者</div>
+          <div class="arena-label">${state.name || "你"}</div>
+        </div>
+        <div class="arena-demon">
+          ${DEMON_SVG[currentDemon]}
+          <div class="arena-name" style="color:#e94560;">${d.name}</div>
+          <div class="arena-label">${d.trait}</div>
+        </div>
+      </div>
+      <div class="hp-bar-wrap" style="margin-top:10px;">
+        <div class="hp-label"><span style="color:#e94560;">🐉 ${d.name} HP</span><span>${demonHP}/100</span></div>
+        <div class="hp-bar-bg"><div class="hp-bar-fill ${dHpCls}" style="width:${demonHP}%"></div></div>
+      </div>
+    </div>
+    ${equipBar}
+    <div style="text-align:center; color:#fff; font-size:14px; margin-top:8px;">回合 ${currentDemonQ+1} / ${d.questions.length}</div>
+    <div class="battle-question" id="bq-text">${q.q}</div>
+    <button class="speaker-btn" onclick="speak(document.getElementById('bq-text').textContent, 0.92)">🔊 念題目</button>
+    <div class="battle-options" id="battle-options"></div>
+    <div class="battle-log" id="battle-log">${battleLog.map(l=>`<div>${l}</div>`).join("")}</div>
+  `;
+  document.getElementById("battle-content").innerHTML = html;
+  const optionsDiv = document.getElementById("battle-options");
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.className = "battle-option";
+    btn.textContent = `${String.fromCharCode(65+i)}. ${opt.text}`;
+    btn.onclick = () => chooseBattleOption(i, btn);
+    optionsDiv.appendChild(btn);
+  });
+  setTimeout(() => speak(q.q, 0.92), 300);
+}
+
+function logBattle(msg, type="system") {
+  battleLog.push(`<span class="${type}">${msg}</span>`);
+  const logEl = document.getElementById("battle-log");
+  if (logEl) {
+    logEl.innerHTML = battleLog.map(l=>`<div>${l}</div>`).join("");
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+}
+
+function chooseBattleOption(idx, btnEl) {
+  const d = DEMONS[currentDemon];
+  const q = d.questions[currentDemonQ];
+  const opt = q.options[idx];
+  const bonus = getEquipmentBonus();
+  document.querySelectorAll(".battle-option").forEach(b => b.disabled = true);
+
+  if (opt.correct) {
+    btnEl.classList.add("attack-correct");
+    const baseDmg = Math.ceil(100 / d.questions.length) + 2;
+    const dmg = baseDmg + bonus.atk;
+    demonHP = Math.max(0, demonHP - dmg);
+
+    // 觸發攻擊動畫
+    fxAttackPlayer();
+    setTimeout(() => fxDamage(dmg, "demon"), 500);
+
+    logBattle(`⚡ 你發動「覺察攻擊」！${d.name} -${dmg} HP ${bonus.atk>0?'(裝備+'+bonus.atk+')':''}`, "you-attack");
+    logBattle(`💡 ${opt.fb}`, "system");
+    setTimeout(() => speak("攻擊命中！" + opt.fb, 0.92), 600);
+
+    setTimeout(() => {
+      if (demonHP <= 0) {
+        stopBattleMusic();
+        sfxVictory();
+        defeatDemon();
+      } else {
+        currentDemonQ++;
+        if (currentDemonQ >= d.questions.length) {
+          if (demonHP < playerHP) { stopBattleMusic(); sfxVictory(); defeatDemon(); }
+          else demonWins();
+        } else {
+          renderBattle();
+        }
+      }
+    }, 2200);
+  } else {
+    btnEl.classList.add("attack-wrong");
+    const baseDmg = 15;
+    const dmg = Math.max(3, baseDmg - bonus.def);
+    playerHP = Math.max(0, playerHP - dmg);
+
+    fxAttackDemon();
+    setTimeout(() => fxDamage(dmg, "player"), 500);
+
+    logBattle(`💔 心魔反擊！你的良心 -${dmg} HP ${bonus.def>0?'(裝備擋住'+(baseDmg-dmg)+')':''}`, "demon-attack");
+    logBattle(`🤔 ${opt.fb}`, "system");
+    setTimeout(() => speak(opt.fb + " 再想想！", 0.92), 600);
+
+    setTimeout(() => {
+      if (playerHP <= 0) {
+        playerHP = 50;
+        logBattle(`💪 你深呼吸，撐住了！HP 回到 50`, "system");
+        speak("深呼吸，撐住了！再來一次。", 0.92);
+      }
+      document.querySelectorAll(".battle-option").forEach(b => {
+        if (!b.classList.contains("attack-wrong")) b.disabled = false;
+      });
+      renderBattle();
+    }, 2500);
+  }
+}
+
+function defeatDemon() {
+  const d = DEMONS[currentDemon];
+  // 標記破關
+  if (!state.demonsDone[currentDemon]) {
+    state.demonsDone[currentDemon] = true;
+    if (!state.heartSutras.includes(currentDemon)) {
+      state.heartSutras.push(currentDemon);
+    }
+    if (!state.skills.includes(d.skill)) {
+      state.skills.push(d.skill);
+    }
+    if (currentDemon === FINAL_DEMON) state.finalBossDone = true;
+    saveState();
+  }
+  const isFinal = d.isFinal;
+  const html = `
+    <div class="stamp-area" style="background:linear-gradient(135deg,#1a1a2e,#4a3c1a); color:#fff;">
+      <h2 style="color:#ffd700; font-size:32px;">🏆 戰勝${d.name}！</h2>
+      <div id="defeat-svg" style="min-height:200px; display:flex; align-items:center; justify-content:center;">
+        <div class="demon-defeated" style="display:inline-block;">${DEMON_SVG[currentDemon]}</div>
+      </div>
+      <div id="sutra-reveal" style="min-height:140px;"></div>
+      <div class="stamp-card" style="background:rgba(0,0,0,0.5); color:#fff; border-left-color:#ffd700;">
+        <h3 style="color:#ffd700;">📜 取得「${d.sutra}」</h3>
+        <p style="color:#fff;"><strong>修練心法：</strong>${d.skill}</p>
+        <p style="color:#fff;">下次遇到同類心魔，記得用這招！</p>
+      </div>
+      <div id="defeat-after" style="margin-top:20px;"></div>
+    </div>
+  `;
+  document.getElementById("battle-content").innerHTML = html;
+  speak("戰勝了" + d.name + "！取得" + d.sutra, 0.92);
+
+  // 心經卷軸出現
+  setTimeout(() => {
+    document.getElementById("sutra-reveal").innerHTML = `
+      <div class="sutra-scroll transform-in" style="margin:14px auto;"><span class="sutra-char">${d.sutraChar}</span></div>
+      <div style="color:#ffd700; font-size:18px; margin-top:8px;">「${d.sutra}」入手 ✨</div>
+    `;
+  }, 1700);
+
+  setTimeout(() => {
+    const after = document.getElementById("defeat-after");
+    if (isFinal) {
+      after.innerHTML = `
+        <div style="background:linear-gradient(135deg,#ffd700,#ff9800); color:#3e2723; padding:20px; border-radius:16px; margin:14px 0;">
+          <h3 style="margin:0 0 8px;">🏛️ 你找回了良知與良心 🏛️</h3>
+          <p style="font-size:16px; line-height:1.7;">你已戰勝所有心魔，包括最大的——你自己的影子。你現在是真正的心經守護者。</p>
+        </div>
+        <button class="speaker-btn big" onclick="hideMusicToggle();document.body.style.background='var(--bg-sky)';showScreen('high-map')">回取經之路</button>
+        <button class="speaker-btn secondary" onclick="hideMusicToggle();showPassport()">看我的心經</button>
+      `;
+      speak("你找回了良知與良心，成為真正的心經守護者！", 0.95);
+    } else {
+      after.innerHTML = `
+        <button class="speaker-btn big" onclick="hideMusicToggle();document.body.style.background='var(--bg-rpg)';showScreen('high-map')">下一隻心魔 →</button>
+        <button class="speaker-btn secondary" onclick="hideMusicToggle();showPassport()">看我的心經</button>
+      `;
+    }
+  }, 3200);
+}
+
+function demonWins() {
+  stopBattleMusic();
+  // 不會真的輸，給安慰+重來
+  const d = DEMONS[currentDemon];
+  const html = `
+    <div class="stamp-area" style="background:linear-gradient(135deg,#4a0000,#1a0000); color:#fff;">
+      <h2 style="color:#e94560;">這次心魔暫時贏了</h2>
+      <p style="font-size:18px; line-height:1.7;">勇者，戰敗不代表失敗。<br>${d.name} 太強，是因為他和你「最像」。<br>重整心情，再來一次！</p>
+      <div style="margin-top:20px;">
+        <button class="speaker-btn big" style="background:#ffd700; color:#000;" onclick="playBattleMusic();startDemonBattle()">⚔️ 再戰一次</button>
+        <button class="speaker-btn secondary" onclick="hideMusicToggle();document.body.style.background='var(--bg-rpg)';showScreen('high-map')">先回地圖</button>
+      </div>
+    </div>
+  `;
+  document.getElementById("battle-content").innerHTML = html;
+  speak("勇者，再來一次！", 0.95);
+}
 function renderMap() {
   const grid = document.getElementById("island-grid");
   grid.innerHTML = "";
@@ -2984,6 +4620,27 @@ function renderPassport() {
     });
   }
 
+  // 心經卷藏 (高年級)
+  const sutraGrid = document.getElementById("sutra-grid");
+  if (sutraGrid) {
+    sutraGrid.innerHTML = "";
+    const allDemons = [...DEMON_ORDER, FINAL_DEMON];
+    allDemons.forEach(key => {
+      const d = DEMONS[key];
+      const done = !!state.demonsDone[key];
+      const slot = document.createElement("div");
+      slot.className = "sutra-slot" + (done ? " collected" : " empty");
+      if (done) {
+        slot.innerHTML = `
+          <div class="sutra-scroll"><span class="sutra-char">${d.sutraChar}</span></div>
+          <div class="sutra-slot-name">${d.sutra}</div>
+        `;
+        slot.onclick = () => speak(d.sutra + "：" + d.skill, 0.92);
+      }
+      sutraGrid.appendChild(slot);
+    });
+  }
+
   const skillsList = document.getElementById("skills-list");
   if (state.skills.length === 0) {
     skillsList.textContent = "尚未收集到任何技能。";
@@ -2996,8 +4653,8 @@ function saveName() {
   saveState();
 }
 function resetProgress() {
-  if (!confirm("確定要清除所有進度？口袋夥伴和習德花園都會清空，無法復原！")) return;
-  state = { name: "", islandsDone: {}, skills: [], monstersDone: {}, pocketBuddies: [] };
+  if (!confirm("確定要清除所有進度？習德花園、口袋夥伴、心經卷藏全部會清空，無法復原！")) return;
+  state = { name: "", islandsDone: {}, skills: [], monstersDone: {}, pocketBuddies: [], demonsDone: {}, heartSutras: [], finalBossDone: false };
   saveState();
   renderPassport();
   alert("進度已清除。");
