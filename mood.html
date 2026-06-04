@@ -404,6 +404,187 @@
     cursor: pointer;
   }
 
+  /* ===== 低年級 情緒小屋 ===== */
+  :root {
+    --bg-low: linear-gradient(180deg, #ffeaa7 0%, #fab1a0 50%, #fd79a8 100%);
+    --bg-house: linear-gradient(180deg, #ffd6a5 0%, #fdffb6 50%, #caffbf 100%);
+  }
+  .low-banner {
+    text-align: center; padding: 14px 20px;
+    background: linear-gradient(135deg, #fff5e6, #ffe0b2);
+    border-radius: 24px; margin: 10px auto; max-width: 700px;
+    box-shadow: var(--shadow);
+    font-size: 17px; color: #5d4037; line-height: 1.6;
+  }
+  .low-banner strong { color: #d84315; font-size: 19px; }
+  .monsters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 16px;
+    max-width: 1000px; margin: 16px auto;
+  }
+  .monster-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 18px 12px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-big);
+    transition: transform 0.2s;
+    border: 4px solid transparent;
+    position: relative;
+    min-height: 200px;
+  }
+  .monster-card:active { transform: scale(0.96); }
+  .monster-card.tamed {
+    border-color: #fd79a8;
+    background: linear-gradient(135deg, #fff, #fff0f5);
+  }
+  .monster-card.tamed::before {
+    content: "💖"; position: absolute; top: 8px; right: 10px; font-size: 22px;
+  }
+  .monster-card-svg { width: 100px; height: 110px; margin: 0 auto 4px; }
+  .monster-card-name { font-size: 19px; font-weight: bold; margin-top: 4px; color: #444; }
+  .monster-card-mood { font-size: 13px; color: #888; margin-top: 2px; }
+
+  .encounter-stage {
+    background: #fff;
+    border-radius: 24px;
+    padding: 20px 16px;
+    margin: 12px auto;
+    max-width: 700px;
+    box-shadow: var(--shadow);
+  }
+  .encounter-svg-wrap { text-align: center; padding: 14px 0; }
+  .encounter-svg-wrap svg { width: 160px; height: 180px; }
+  .monster-bubble {
+    background: #fff0f5;
+    border: 3px dashed #ff6b9d;
+    border-radius: 20px;
+    padding: 14px 18px;
+    margin: 12px auto;
+    max-width: 420px;
+    font-size: 18px;
+    color: #c2185b;
+    position: relative;
+    line-height: 1.6;
+  }
+  .monster-bubble::before {
+    content: ""; position: absolute;
+    top: -12px; left: 30px;
+    width: 0; height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 14px solid #ff6b9d;
+  }
+  .monster-bubble.tamed-bubble {
+    background: #e8f5e9;
+    border-color: #66bb6a;
+    color: #2e7d32;
+  }
+  .monster-bubble.tamed-bubble::before {
+    border-bottom-color: #66bb6a;
+  }
+  .scenario-card {
+    background: linear-gradient(135deg, #fef9e7, #fff);
+    border-left: 6px solid #ff9800;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin: 12px 0;
+    font-size: 18px;
+    line-height: 1.7;
+    color: #555;
+  }
+  .magic-phrase-box {
+    background: linear-gradient(135deg, #fff5e6, #ffe0b2);
+    padding: 16px;
+    border-radius: 16px;
+    margin: 12px 0;
+    text-align: center;
+    font-size: 19px;
+    color: #d84315;
+    font-weight: bold;
+  }
+  .magic-phrase-box .label { font-size: 14px; color: #888; display: block; margin-bottom: 4px; font-weight: normal; }
+
+  /* 怪獸動畫 */
+  .villain-shake { animation: villainShake 0.5s ease-in-out infinite; transform-origin: center bottom; }
+  @keyframes villainShake {
+    0%,100% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+  }
+  .villain-jump { animation: villainJump 0.7s ease-in-out infinite; }
+  @keyframes villainJump {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .villain-cry { animation: villainCry 1.2s ease-in-out infinite; }
+  @keyframes villainCry {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+  }
+  .heart-burst {
+    position: relative; display: inline-block;
+  }
+  .heart-burst::after {
+    content: "💖💖💖"; position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 22px;
+    animation: heartUp 2s ease-out;
+  }
+  @keyframes heartUp {
+    0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    50% { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+  }
+
+  /* 口袋夥伴展示 */
+  .pocket-area {
+    background: linear-gradient(180deg, #e3f2fd 0%, #fff0f5 100%);
+    border-radius: 20px;
+    padding: 20px 12px; margin: 16px 0;
+  }
+  .pocket-title {
+    text-align: center; font-size: 22px; font-weight: bold;
+    color: #c2185b; margin-bottom: 12px;
+  }
+  .pocket-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; margin-top: 12px;
+  }
+  @media (max-width: 500px) {
+    .pocket-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .pocket-slot {
+    background: #fff; border-radius: 16px;
+    aspect-ratio: 0.9; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    border: 3px dashed #ff6b9d;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .pocket-slot:active { transform: scale(0.95); }
+  .pocket-slot.empty {
+    background: repeating-linear-gradient(45deg, #fce4ec, #fce4ec 8px, #f8bbd0 8px, #f8bbd0 16px);
+    opacity: 0.55;
+    cursor: default;
+  }
+  .pocket-slot.empty::before {
+    content: "?"; position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    color: #ad1457; font-size: 40px; font-weight: bold;
+  }
+  .pocket-slot.collected {
+    border-style: solid; background: linear-gradient(135deg, #fff, #fff0f5);
+  }
+  .pocket-slot svg { width: 70px; height: 80px; }
+  .pocket-slot-name {
+    font-size: 14px; color: #c2185b; font-weight: bold;
+    margin-top: 4px;
+  }
+
   /* ===== SEED 角色 SVG 包裝 + 各島動畫 ===== */
   .char-wrap {
     display: inline-block; text-align: center;
@@ -631,11 +812,11 @@
       <div class="stage-desc">認識五位<br>情緒小精靈</div>
       <div class="stage-tag coming">即將推出</div>
     </div>
-    <div class="stage-card locked" data-stage="low">
+    <div class="stage-card unlocked" data-stage="low" onclick="enterLow()">
       <div class="stage-emoji">🏠</div>
       <div class="stage-name">低年級</div>
-      <div class="stage-desc">情緒表達<br>與簡單社交</div>
-      <div class="stage-tag coming">即將推出</div>
+      <div class="stage-desc">情緒小屋<br>收服搗蛋怪</div>
+      <div class="stage-tag">新上線</div>
     </div>
     <div class="stage-card unlocked" data-stage="mid" onclick="enterMid()">
       <div class="stage-emoji">🗺️</div>
@@ -678,6 +859,31 @@
   <div id="island-content"></div>
 </div>
 
+<!-- ==================== LOW GRADE: 情緒小屋地圖 ==================== -->
+<div id="screen-low-map" class="screen">
+  <div class="top-bar">
+    <button class="btn-back" onclick="document.body.style.background='var(--bg-sky)';showScreen('home')">← 回主畫面</button>
+    <div class="map-title">🏠 情緒小屋</div>
+    <div class="passport-mini" onclick="showPassport()">🎒 口袋</div>
+  </div>
+  <div class="low-banner" id="low-banner">
+    <strong>歡迎來到情緒小屋！</strong><br>
+    這裡有 6 隻搗蛋怪在搞亂喔～<br>
+    他們不是壞蛋，只是<strong>不會用嘴巴說</strong>。<br>
+    教他們一句魔法話，就能<strong>收服</strong>變成你的口袋夥伴！
+  </div>
+  <div class="monsters-grid" id="monsters-grid"></div>
+</div>
+
+<!-- ==================== LOW GRADE: 收服怪獸 ==================== -->
+<div id="screen-monster" class="screen">
+  <div class="top-bar">
+    <button class="btn-back" onclick="confirmLeaveMonster()">← 回小屋</button>
+    <button class="speaker-btn" onclick="repeatCurrentSpeech()">🔊 再念</button>
+  </div>
+  <div id="monster-content"></div>
+</div>
+
 <!-- ==================== PASSPORT SCREEN ==================== -->
 <div id="screen-passport" class="screen">
   <div class="top-bar">
@@ -698,9 +904,15 @@
     </div>
 
     <div class="garden-area">
-      <div class="garden-title">🌿 我的習德花園 🌿</div>
+      <div class="garden-title">🌿 我的習德花園（中年級）🌿</div>
       <div style="text-align:center; font-size:14px; color:#558; margin-bottom:8px;">點花苗聽他說話</div>
       <div class="garden-grid" id="garden-grid"></div>
+    </div>
+
+    <div class="pocket-area">
+      <div class="pocket-title">🎒 我的口袋夥伴（低年級）🎒</div>
+      <div style="text-align:center; font-size:14px; color:#888; margin-bottom:8px;">點夥伴聽他說話</div>
+      <div class="pocket-grid" id="pocket-grid"></div>
     </div>
 
     <div class="skills-collected">
@@ -732,7 +944,7 @@
       <strong>習德</strong>＝練習六種美德。<br><br>
       情緒不是壞東西，只是還沒學會澆水。每通關一座島，<strong>情緒種子</strong>會長成<strong>習德苗</strong>，種進你的習德花園。
     </p>
-    <h3 style="color:#6bcf7f;">六德六苗</h3>
+    <h3 style="color:#6bcf7f;">中年級｜六德六苗</h3>
     <ul style="font-size:16px; line-height:1.9;">
       <li>🌋 怒怒種子 → 🌱 <strong>靜德苗</strong>（冷靜：烏龜呼吸）</li>
       <li>🌧 憂憂種子 → 🌷 <strong>說德苗</strong>（傾訴：說出來）</li>
@@ -741,6 +953,20 @@
       <li>🔥 酸酸種子 → 🌵 <strong>悅德苗</strong>（自悅：看見自己的好）</li>
       <li>🌸 喜喜種子 → 🌸 <strong>謝德苗</strong>（感恩：感謝分享）</li>
     </ul>
+
+    <h3 style="color:#c2185b;">低年級｜情緒小屋 6 隻搗蛋怪</h3>
+    <p style="font-size:16px; line-height:1.8; background:#fff0f5; padding:14px; border-radius:12px;">
+      搶搶 / 哭哭 / 推推 / 嗚嗚 / 躲躲 / 跺跺 6 隻搗蛋怪——他們不是壞蛋，只是「不會用嘴巴說」。教一句魔法話，就會變成<strong>口袋夥伴</strong>跟著你！
+    </p>
+    <ul style="font-size:16px; line-height:1.9;">
+      <li>🟠 搶搶怪「搶玩具」→ <strong>分分</strong>（魔法話：可以借我玩嗎？）</li>
+      <li>🔵 哭哭怪「大哭鬧」→ <strong>說說</strong>（魔法話：媽媽我好想要那個）</li>
+      <li>🟢 推推怪「用推的」→ <strong>請請</strong>（魔法話：請讓我過去）</li>
+      <li>🟣 嗚嗚怪「悶不講話」→ <strong>呼呼</strong>（魔法話：我需要幫忙）</li>
+      <li>⚪ 躲躲怪「不打招呼」→ <strong>招招</strong>（魔法話：老師早安）</li>
+      <li>🔴 跺跺怪「等不及」→ <strong>等等</strong>（魔法話：我可以等）</li>
+    </ul>
+
     <h3 style="color:#6bcf7f;">每座島流程</h3>
     <ol style="font-size:16px; line-height:1.9;">
       <li>聽情緒種子說話（語音）</li>
@@ -1152,6 +1378,541 @@ const ISLANDS = {
 
 const ISLAND_ORDER = ["volcano", "rain", "ice", "typhoon", "desert", "sakura"];
 
+// ========= 低年級 6 隻搗蛋怪 =========
+const MONSTERS = {
+  grabby: {
+    name: "搶搶怪",
+    mood: "看到玩具就搶",
+    villainVoice: "嘿嘿！這個玩具我也要！搶過來！哈哈～",
+    scenario: "小華正在玩積木，搶搶怪一把搶走啦！小華都哭了…搶搶怪不是壞，他只是<strong>不知道怎麼問</strong>。",
+    teach: "用嘴巴問問看！",
+    magicPhrase: "可以借我玩嗎？",
+    questions: [
+      {
+        q: "搶搶怪看到別人在玩玩具，他應該說什麼呢？",
+        options: [
+          { text: "我也要玩！（搶過來）", correct: false, fb: "搶東西小華會很難過喔～" },
+          { text: "可以借我玩嗎？", correct: true, fb: "答對了！用問的，大家都開心！" },
+          { text: "壞蛋！", correct: false, fb: "罵人沒有用喔，要好好問。" },
+          { text: "不講話直接拿走", correct: false, fb: "拿走別人東西要先問喔！" }
+        ]
+      },
+      {
+        q: "如果小華還在玩，搶搶怪可以怎麼說？",
+        options: [
+          { text: "我等你玩完，可以換我嗎？", correct: true, fb: "棒！會等就是大孩子！" },
+          { text: "快點啦！換我！", correct: false, fb: "催別人讓人壓力大喔～" },
+          { text: "我哭給你看", correct: false, fb: "用哭沒有用，會等才厲害！" },
+          { text: "把玩具丟掉", correct: false, fb: "破壞別人東西很糟糕～" }
+        ]
+      },
+      {
+        q: "拿到玩具後，搶搶怪要說什麼？",
+        options: [
+          { text: "哈哈！", correct: false, fb: "嗯…可以更有禮貌喔！" },
+          { text: "謝謝你借我！", correct: true, fb: "完美！說謝謝，下次還會借你～" },
+          { text: "我才不還你", correct: false, fb: "玩完要還喔，要當好朋友。" },
+          { text: "不講話", correct: false, fb: "說謝謝，朋友會更喜歡你！" }
+        ]
+      }
+    ],
+    tamedName: "分分小精靈",
+    tamedVoice: "原來問一下就可以一起玩！我以後最會說『請』和『一起玩』～",
+    color: "#ff7043",
+    skillName: "輪流與問問看"
+  },
+
+  cryyy: {
+    name: "哭哭怪",
+    mood: "不順意就大哭",
+    villainVoice: "嗚啊啊啊！我要！我就是要！嗚——",
+    scenario: "媽媽說等等再買糖，哭哭怪馬上坐在地上大哭給大家看！其實他只是<strong>不會用嘴巴說</strong>他多想要。",
+    teach: "用嘴巴說，告訴媽媽你的想法！",
+    magicPhrase: "媽媽，我好想要那個，可以嗎？",
+    questions: [
+      {
+        q: "哭哭怪好想要糖糖，可以怎麼說？",
+        options: [
+          { text: "坐地上大哭", correct: false, fb: "哭哭媽媽聽不懂你要什麼～" },
+          { text: "媽媽，我好想要那個糖糖", correct: true, fb: "對！說出來媽媽才知道！" },
+          { text: "罵媽媽小氣", correct: false, fb: "罵媽媽，糖糖會變更遠喔！" },
+          { text: "假裝不要", correct: false, fb: "想要就說，媽媽不會通靈～" }
+        ]
+      },
+      {
+        q: "如果媽媽說不行，哭哭怪可以？",
+        options: [
+          { text: "繼續哭到媽媽答應", correct: false, fb: "鬧太久媽媽會更生氣喔～" },
+          { text: "好難過喔，但我知道了", correct: true, fb: "棒！會說『難過』就是會表達！" },
+          { text: "丟東西", correct: false, fb: "丟東西很危險！" },
+          { text: "說媽媽是壞人", correct: false, fb: "媽媽很愛你，只是這次不行～" }
+        ]
+      },
+      {
+        q: "下次想要東西，哭哭怪要記得？",
+        options: [
+          { text: "嘴巴說，不用哭", correct: true, fb: "對！嘴巴是說話用的，眼睛才是哭的～" },
+          { text: "用力哭最大聲", correct: false, fb: "哭沒有用，說才有用！" },
+          { text: "踢家具", correct: false, fb: "踢家具腳會痛喔！" },
+          { text: "都不講", correct: false, fb: "都不講大家都不知道你要什麼啊！" }
+        ]
+      }
+    ],
+    tamedName: "說說小精靈",
+    tamedVoice: "嘴巴會說話了！我以後想要什麼，都用說的不用哭！",
+    color: "#42a5f5",
+    skillName: "用嘴巴表達"
+  },
+
+  pushy: {
+    name: "推推怪",
+    mood: "急的時候就用推的",
+    villainVoice: "走開走開！我要過去！讓開啦！",
+    scenario: "排隊裝水的時候，推推怪太急了，直接用手推前面的同學。前面同學跌倒了，好痛！其實他只是<strong>不會說『請』</strong>。",
+    teach: "用嘴巴說『請』！",
+    magicPhrase: "請讓我過去，謝謝！",
+    questions: [
+      {
+        q: "推推怪急著去裝水，前面有人排隊。要怎麼做？",
+        options: [
+          { text: "用力推開", correct: false, fb: "推人會跌倒受傷喔！" },
+          { text: "說：『請讓我過』", correct: true, fb: "『請』字一說，路就開啦！" },
+          { text: "罵別人擋路", correct: false, fb: "罵人不會讓你變快～" },
+          { text: "跳過去", correct: false, fb: "跳過會撞到人，危險！" }
+        ]
+      },
+      {
+        q: "如果不小心碰到同學，推推怪要說？",
+        options: [
+          { text: "對不起，我不小心", correct: true, fb: "對！『對不起』是魔法話～" },
+          { text: "誰叫你站這裡", correct: false, fb: "怪別人會吵架的！" },
+          { text: "假裝沒事", correct: false, fb: "撞到人要說對不起喔！" },
+          { text: "笑一笑跑掉", correct: false, fb: "跑掉不負責任，不是好行為。" }
+        ]
+      },
+      {
+        q: "推推怪以後排隊要記得？",
+        options: [
+          { text: "把手放好，不推人", correct: true, fb: "手放好是大孩子的樣子！" },
+          { text: "急就大叫", correct: false, fb: "大叫吵到大家～" },
+          { text: "推一下沒關係", correct: false, fb: "推一下也會痛的！" },
+          { text: "看誰擋路就推", correct: false, fb: "千萬不行！手是用來幫助人的～" }
+        ]
+      }
+    ],
+    tamedName: "請請小精靈",
+    tamedVoice: "說『請』和『謝謝』，大家都對我好溫柔～魔法話太好用了！",
+    color: "#66bb6a",
+    skillName: "說「請」與「對不起」"
+  },
+
+  sulky: {
+    name: "嗚嗚怪",
+    mood: "不會就悶不講話",
+    villainVoice: "哼……（嘟嘴+躲角落）",
+    scenario: "嗚嗚怪功課不會寫，老師問他，他都不講話只嘟嘴。越坐越難過，但又不敢說。其實他只是<strong>不會說「我需要幫忙」</strong>。",
+    teach: "說『我需要幫忙』！",
+    magicPhrase: "老師，我需要幫忙",
+    questions: [
+      {
+        q: "嗚嗚怪功課不會寫，可以怎麼辦？",
+        options: [
+          { text: "悶著不講，自己生氣", correct: false, fb: "悶著沒人知道你要幫忙喔～" },
+          { text: "舉手說：『老師，我需要幫忙』", correct: true, fb: "對！會求助是聰明的孩子！" },
+          { text: "亂寫一通", correct: false, fb: "亂寫等於沒寫，問問看吧！" },
+          { text: "撕掉作業", correct: false, fb: "撕掉還要重寫，更累！" }
+        ]
+      },
+      {
+        q: "肚子很痛，但又不好意思說，嗚嗚怪該？",
+        options: [
+          { text: "忍到下課", correct: false, fb: "忍著會更痛！要說出來。" },
+          { text: "老師，我肚子痛，可以去保健室嗎？", correct: true, fb: "棒！身體不舒服一定要說！" },
+          { text: "一直摸肚子讓人發現", correct: false, fb: "用嘴巴說比較快～" },
+          { text: "趴下不動", correct: false, fb: "老師會擔心，講出來吧！" }
+        ]
+      },
+      {
+        q: "和同學吵架了，心裡好難過。嗚嗚怪可以？",
+        options: [
+          { text: "找老師或大人說：『我心裡不舒服』", correct: true, fb: "對！說出來心會輕鬆！" },
+          { text: "一整天不講話", correct: false, fb: "悶起來越來越難過～" },
+          { text: "回家也不講", correct: false, fb: "找人說，難過會減一半。" },
+          { text: "假裝沒事", correct: false, fb: "假裝會更累，說出來吧！" }
+        ]
+      }
+    ],
+    tamedName: "呼呼小精靈",
+    tamedVoice: "我會說『我需要幫忙』了！說出來才有人能幫我，原來這麼簡單！",
+    color: "#ab47bc",
+    skillName: "說「我需要幫忙」"
+  },
+
+  hidey: {
+    name: "躲躲怪",
+    mood: "見到老師就低頭",
+    villainVoice: "（低頭…快走過去…裝沒看見…）",
+    scenario: "早上躲躲怪在校門口遇到老師，他低頭裝沒看到。老師看了好失望喔～其實他只是<strong>不知道怎麼打招呼</strong>。",
+    teach: "看著對方說『早安』！",
+    magicPhrase: "老師早安！",
+    questions: [
+      {
+        q: "早上遇到老師，躲躲怪要？",
+        options: [
+          { text: "低頭快快走過去", correct: false, fb: "老師會以為你不喜歡他喔～" },
+          { text: "看著老師說：『老師早安』", correct: true, fb: "對！說早安老師會超開心～" },
+          { text: "假裝沒看見", correct: false, fb: "假裝沒看見有點沒禮貌呢～" },
+          { text: "繞遠路躲開", correct: false, fb: "繞遠很累，打招呼很簡單！" }
+        ]
+      },
+      {
+        q: "放學要回家，遇到同學要說？",
+        options: [
+          { text: "再見！明天見！", correct: true, fb: "棒！說再見讓朋友記得你～" },
+          { text: "不講話走掉", correct: false, fb: "再見很簡單，講出來吧！" },
+          { text: "揮手就好不出聲", correct: false, fb: "出聲說更熱情喔！" },
+          { text: "跑很快", correct: false, fb: "跑步危險，慢慢走說再見～" }
+        ]
+      },
+      {
+        q: "新同學第一天來，躲躲怪可以？",
+        options: [
+          { text: "對他笑一下說：『你好』", correct: true, fb: "對！一個你好就是好朋友的開始！" },
+          { text: "盯著他看不講話", correct: false, fb: "盯著看新同學會緊張～" },
+          { text: "躲到別的位置", correct: false, fb: "新同學會很孤單喔！" },
+          { text: "在背後說他名字怪", correct: false, fb: "不可以！要對新朋友好～" }
+        ]
+      }
+    ],
+    tamedName: "招招小精靈",
+    tamedVoice: "我會打招呼了！說『早安』『你好』『再見』，大家都對我笑～",
+    color: "#26a69a",
+    skillName: "打招呼三句"
+  },
+
+  stompy: {
+    name: "跺跺怪",
+    mood: "等不及就跺腳",
+    villainVoice: "我不要等！為什麼還沒到我啦！哼！（跺跺跺）",
+    scenario: "玩盪鞦韆要排隊，跺跺怪等不到 5 秒就開始跺腳大叫。但其實他只是<strong>不會等</strong>。",
+    teach: "深呼吸，告訴自己『我可以等』！",
+    magicPhrase: "我可以等，等一下就到我了",
+    questions: [
+      {
+        q: "玩盪鞦韆要排隊，跺跺怪等不到。可以？",
+        options: [
+          { text: "跺腳大叫", correct: false, fb: "跺腳沒辦法快一點喔～" },
+          { text: "深呼吸告訴自己：『我可以等』", correct: true, fb: "對！等等就到你了～" },
+          { text: "把前面的同學推開", correct: false, fb: "推人很危險！" },
+          { text: "哭給大人看", correct: false, fb: "哭沒辦法跳過排隊喔！" }
+        ]
+      },
+      {
+        q: "媽媽說飯還沒煮好，跺跺怪好餓。可以？",
+        options: [
+          { text: "先喝水或吃水果等一下", correct: true, fb: "好聰明！等的時候做別的事～" },
+          { text: "一直跺腳吵媽媽", correct: false, fb: "媽媽會煮更慢喔！" },
+          { text: "自己亂翻冰箱", correct: false, fb: "要先問媽媽，不能自己亂拿！" },
+          { text: "倒在地上哭", correct: false, fb: "哭不會變快～" }
+        ]
+      },
+      {
+        q: "去看醫生要等好久，跺跺怪可以？",
+        options: [
+          { text: "看書、跟媽媽聊天、玩手指", correct: true, fb: "棒！會找事情做就不無聊～" },
+          { text: "在診所跑來跑去", correct: false, fb: "診所要安靜，會打擾人喔～" },
+          { text: "拉媽媽的手叫她快點", correct: false, fb: "拉媽媽，媽媽也會很累～" },
+          { text: "大聲說我要回家", correct: false, fb: "大聲說會打擾別人病人～" }
+        ]
+      }
+    ],
+    tamedName: "等等小精靈",
+    tamedVoice: "等一下就到我了！我會等以後變大孩子～等待原來不難！",
+    color: "#ef5350",
+    skillName: "等待與耐心"
+  }
+};
+
+const MONSTER_ORDER = ["grabby", "cryyy", "pushy", "sulky", "hidey", "stompy"];
+
+// ========= 怪獸 SVG（純原創）=========
+const MONSTER_SVG = {
+  grabby: {
+    villain: `<svg viewBox="0 0 120 130">
+      <defs><radialGradient id="m-grab-v" cx="40%" cy="35%">
+        <stop offset="0%" stop-color="#ffab91"/><stop offset="100%" stop-color="#d84315"/>
+      </radialGradient></defs>
+      <!-- 身體 -->
+      <ellipse cx="60" cy="75" rx="34" ry="38" fill="url(#m-grab-v)"/>
+      <!-- 左大手 -->
+      <ellipse cx="20" cy="70" rx="14" ry="10" fill="url(#m-grab-v)" transform="rotate(-30 20 70)"/>
+      <circle cx="14" cy="62" r="4" fill="#d84315"/>
+      <circle cx="14" cy="72" r="4" fill="#d84315"/>
+      <circle cx="14" cy="82" r="4" fill="#d84315"/>
+      <!-- 右大手 -->
+      <ellipse cx="100" cy="70" rx="14" ry="10" fill="url(#m-grab-v)" transform="rotate(30 100 70)"/>
+      <circle cx="106" cy="62" r="4" fill="#d84315"/>
+      <circle cx="106" cy="72" r="4" fill="#d84315"/>
+      <circle cx="106" cy="82" r="4" fill="#d84315"/>
+      <!-- 賊賊眉 -->
+      <path d="M44,55 L54,62" stroke="#3e2723" stroke-width="3" stroke-linecap="round"/>
+      <path d="M76,55 L66,62" stroke="#3e2723" stroke-width="3" stroke-linecap="round"/>
+      <!-- 賊眼 -->
+      <circle cx="48" cy="70" r="5" fill="#fff"/>
+      <circle cx="72" cy="70" r="5" fill="#fff"/>
+      <circle cx="50" cy="71" r="3" fill="#000"/>
+      <circle cx="74" cy="71" r="3" fill="#000"/>
+      <!-- 賊賊笑 -->
+      <path d="M46,88 Q60,98 74,88" stroke="#3e2723" stroke-width="3" fill="#fff" stroke-linecap="round"/>
+      <!-- 牙 -->
+      <polygon points="52,90 54,96 56,90" fill="#fff"/>
+      <polygon points="64,90 66,96 68,90" fill="#fff"/>
+    </svg>`,
+    tamed: `<svg viewBox="0 0 120 130">
+      <defs><radialGradient id="m-grab-t" cx="40%" cy="35%">
+        <stop offset="0%" stop-color="#ffe0b2"/><stop offset="100%" stop-color="#ff8a65"/>
+      </radialGradient></defs>
+      <ellipse cx="60" cy="75" rx="34" ry="38" fill="url(#m-grab-t)"/>
+      <!-- 握手手 -->
+      <ellipse cx="22" cy="78" rx="12" ry="9" fill="url(#m-grab-t)" transform="rotate(-15 22 78)"/>
+      <ellipse cx="98" cy="78" rx="12" ry="9" fill="url(#m-grab-t)" transform="rotate(15 98 78)"/>
+      <!-- 親切眉 -->
+      <path d="M44,58 Q49,55 54,58" stroke="#5d4037" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M76,58 Q71,55 66,58" stroke="#5d4037" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- 笑眼 -->
+      <path d="M44,70 Q49,66 54,70" stroke="#5d4037" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M66,70 Q71,66 76,70" stroke="#5d4037" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- 大笑 -->
+      <path d="M46,86 Q60,98 74,86" stroke="#5d4037" stroke-width="3" fill="#ff8a80" stroke-linecap="round"/>
+      <!-- 腮紅 -->
+      <circle cx="38" cy="80" r="4" fill="#ff6b6b" opacity="0.5"/>
+      <circle cx="82" cy="80" r="4" fill="#ff6b6b" opacity="0.5"/>
+    </svg>`
+  },
+
+  cryyy: {
+    villain: `<svg viewBox="0 0 120 130">
+      <defs><radialGradient id="m-cry-v" cx="40%" cy="30%">
+        <stop offset="0%" stop-color="#bbdefb"/><stop offset="100%" stop-color="#1565c0"/>
+      </radialGradient></defs>
+      <!-- 淚滴身體 -->
+      <path d="M60,15 C30,45 22,90 30,108 C30,122 90,122 90,108 C98,90 90,45 60,15 Z" fill="url(#m-cry-v)"/>
+      <!-- 大哭眉 -->
+      <path d="M40,55 Q48,62 55,55" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M80,55 Q72,62 65,55" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- 緊閉哭眼 -->
+      <path d="M40,72 Q48,80 55,72" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M65,72 Q72,80 80,72" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- 淚珠 -->
+      <ellipse cx="40" cy="88" rx="4" ry="8" fill="#90caf9"/>
+      <ellipse cx="80" cy="88" rx="4" ry="8" fill="#90caf9"/>
+      <ellipse cx="35" cy="105" rx="3" ry="6" fill="#90caf9"/>
+      <ellipse cx="85" cy="105" rx="3" ry="6" fill="#90caf9"/>
+      <!-- 大叫嘴 -->
+      <ellipse cx="60" cy="100" rx="10" ry="14" fill="#1565c0"/>
+      <ellipse cx="60" cy="105" rx="6" ry="8" fill="#ef5350"/>
+    </svg>`,
+    tamed: `<svg viewBox="0 0 120 130">
+      <defs><radialGradient id="m-cry-t" cx="40%" cy="30%">
+        <stop offset="0%" stop-color="#e3f2fd"/><stop offset="100%" stop-color="#64b5f6"/>
+      </radialGradient></defs>
+      <path d="M60,15 C30,45 22,90 30,108 C30,122 90,122 90,108 C98,90 90,45 60,15 Z" fill="url(#m-cry-t)"/>
+      <!-- 上揚眉 -->
+      <path d="M40,58 Q48,55 55,58" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M65,58 Q72,55 80,58" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- 笑眼 -->
+      <path d="M40,75 Q48,70 55,75" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M65,75 Q72,70 80,75" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- 開口笑 -->
+      <path d="M48,92 Q60,108 72,92 Q60,100 48,92 Z" fill="#fff"/>
+      <!-- 對話泡 -->
+      <ellipse cx="98" cy="50" rx="14" ry="10" fill="#fff" stroke="#1565c0" stroke-width="1.5"/>
+      <text x="92" y="54" font-size="14" fill="#1565c0">💬</text>
+      <!-- 腮紅 -->
+      <circle cx="38" cy="84" r="4" fill="#ff8a80" opacity="0.6"/>
+      <circle cx="82" cy="84" r="4" fill="#ff8a80" opacity="0.6"/>
+    </svg>`
+  },
+
+  pushy: {
+    villain: `<svg viewBox="0 0 120 130">
+      <defs><radialGradient id="m-push-v" cx="40%" cy="35%">
+        <stop offset="0%" stop-color="#a5d6a7"/><stop offset="100%" stop-color="#2e7d32"/>
+      </radialGradient></defs>
+      <!-- 矮胖身 -->
+      <ellipse cx="60" cy="80" rx="38" ry="32" fill="url(#m-push-v)"/>
+      <!-- 兩條長臂往前推 -->
+      <rect x="8" y="65" width="30" height="12" rx="6" fill="url(#m-push-v)"/>
+      <rect x="82" y="65" width="30" height="12" rx="6" fill="url(#m-push-v)"/>
+      <circle cx="8" cy="71" r="8" fill="#2e7d32"/>
+      <circle cx="112" cy="71" r="8" fill="#2e7d32"/>
+      <!-- 怒眉 -->
+      <line x1="42" y1="62" x2="54" y2="68" stroke="#1b5e20" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="78" y1="62" x2="66" y2="68" stroke="#1b5e20" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- 兇眼 -->
+      <circle cx="48" cy="76" r="5" fill="#fff"/>
+      <circle cx="72" cy="76" r="5" fill="#fff"/>
+      <circle cx="50" cy="77" r="3" fill="#000"/>
+      <circle cx="74" cy="77" r="3" fill="#000"/>
+      <!-- 喊叫嘴 -->
+      <ellipse cx="60" cy="94" rx="8" ry="6" fill="#1b5e20"/>
+    </svg>`,
+    tamed: `<svg viewBox="0 0 120 130">
+      <defs><radialGradient id="m-push-t" cx="40%" cy="35%">
+        <stop offset="0%" stop-color="#c8e6c9"/><stop offset="100%" stop-color="#81c784"/>
+      </radialGradient></defs>
+      <ellipse cx="60" cy="80" rx="38" ry="32" fill="url(#m-push-t)"/>
+      <!-- 鞠躬手（合十） -->
+      <ellipse cx="60" cy="105" rx="14" ry="8" fill="url(#m-push-t)"/>
+      <line x1="50" y1="100" x2="60" y2="115" stroke="#33691e" stroke-width="2"/>
+      <line x1="70" y1="100" x2="60" y2="115" stroke="#33691e" stroke-width="2"/>
+      <!-- 親切眉 -->
+      <path d="M44,62 Q49,59 54,62" stroke="#33691e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M76,62 Q71,59 66,62" stroke="#33691e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- 笑眼 -->
+      <path d="M44,76 Q49,72 54,76" stroke="#33691e" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M66,76 Q71,72 76,76" stroke="#33691e" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- 溫和微笑 -->
+      <path d="M46,90 Q60,98 74,90" stroke="#33691e" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- 腮紅 -->
+      <circle cx="38" cy="84" r="4" fill="#ff8a80" opacity="0.6"/>
+      <circle cx="82" cy="84" r="4" fill="#ff8a80" opacity="0.6"/>
+    </svg>`
+  },
+
+  sulky: {
+    villain: `<svg viewBox="0 0 120 130">
+      <defs><radialGradient id="m-sulk-v" cx="40%" cy="35%">
+        <stop offset="0%" stop-color="#e1bee7"/><stop offset="100%" stop-color="#6a1b9a"/>
+      </radialGradient></defs>
+      <!-- 橢圓身 -->
+      <ellipse cx="60" cy="75" rx="35" ry="42" fill="url(#m-sulk-v)"/>
+      <!-- 嘟嘴眉皺 -->
+      <path d="M40,55 Q46,50 52,55" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M80,55 Q74,50 68,55" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- 翻白眼 -->
+      <circle cx="46" cy="70" r="6" fill="#fff"/>
+      <circle cx="74" cy="70" r="6" fill="#fff"/>
+      <circle cx="46" cy="66" r="3" fill="#4a148c"/>
+      <circle cx="74" cy="66" r="3" fill="#4a148c"/>
+      <!-- 嘟嘴 -->
+      <ellipse cx="60" cy="92" rx="6" ry="8" fill="#4a148c"/>
+      <ellipse cx="60" cy="92" rx="3" ry="5" fill="#ef5350"/>
+      <!-- 烏雲 -->
+      <ellipse cx="30" cy="35" rx="14" ry="8" fill="#9575cd" opacity="0.6"/>
+      <ellipse cx="90" cy="32" rx="12" ry="7" fill="#9575cd" opacity="0.6"/>
+    </svg>`,
+    tamed: `<svg viewBox="0 0 120 130">
+      <defs><radialGradient id="m-sulk-t" cx="40%" cy="35%">
+        <stop offset="0%" stop-color="#f3e5f5"/><stop offset="100%" stop-color="#ba68c8"/>
+      </radialGradient></defs>
+      <ellipse cx="60" cy="75" rx="35" ry="42" fill="url(#m-sulk-t)"/>
+      <!-- 舉手求助 -->
+      <rect x="55" y="20" width="10" height="22" rx="5" fill="url(#m-sulk-t)"/>
+      <circle cx="60" cy="18" r="9" fill="url(#m-sulk-t)"/>
+      <!-- 親切眉 -->
+      <path d="M42,62 Q48,59 54,62" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M78,62 Q72,59 66,62" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- 笑眼 -->
+      <path d="M44,74 Q49,70 54,74" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M66,74 Q71,70 76,74" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- 微笑 -->
+      <path d="M48,90 Q60,98 72,90" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- 腮紅 -->
+      <circle cx="38" cy="84" r="4" fill="#ff8a80" opacity="0.6"/>
+      <circle cx="82" cy="84" r="4" fill="#ff8a80" opacity="0.6"/>
+      <!-- HELP 字 -->
+      <text x="44" y="20" font-size="13" fill="#fff" font-weight="bold">HELP!</text>
+    </svg>`
+  },
+
+  hidey: {
+    villain: `<svg viewBox="0 0 120 130">
+      <defs><radialGradient id="m-hide-v" cx="40%" cy="35%">
+        <stop offset="0%" stop-color="#e0e0e0"/><stop offset="100%" stop-color="#757575"/>
+      </radialGradient></defs>
+      <!-- 幽靈狀身體（底波浪） -->
+      <path d="M30,40 Q30,15 60,15 Q90,15 90,40 L90,100 Q85,95 80,100 Q75,95 70,100 Q65,95 60,100 Q55,95 50,100 Q45,95 40,100 Q35,95 30,100 Z" fill="url(#m-hide-v)" opacity="0.85"/>
+      <!-- 低頭眼睛閉著 -->
+      <path d="M44,60 L52,60" stroke="#424242" stroke-width="3" stroke-linecap="round"/>
+      <path d="M68,60 L76,60" stroke="#424242" stroke-width="3" stroke-linecap="round"/>
+      <!-- 害羞嘴 -->
+      <ellipse cx="60" cy="78" rx="3" ry="2" fill="#424242"/>
+      <!-- 隱身效果線 -->
+      <line x1="10" y1="50" x2="22" y2="50" stroke="#9e9e9e" stroke-width="2" opacity="0.6"/>
+      <line x1="98" y1="55" x2="110" y2="55" stroke="#9e9e9e" stroke-width="2" opacity="0.6"/>
+    </svg>`,
+    tamed: `<svg viewBox="0 0 120 130">
+      <defs><radialGradient id="m-hide-t" cx="40%" cy="35%">
+        <stop offset="0%" stop-color="#b2dfdb"/><stop offset="100%" stop-color="#26a69a"/>
+      </radialGradient></defs>
+      <path d="M30,40 Q30,15 60,15 Q90,15 90,40 L90,100 Q85,95 80,100 Q75,95 70,100 Q65,95 60,100 Q55,95 50,100 Q45,95 40,100 Q35,95 30,100 Z" fill="url(#m-hide-t)"/>
+      <!-- 揮手 -->
+      <rect x="8" y="40" width="22" height="10" rx="5" fill="url(#m-hide-t)" transform="rotate(-30 19 45)"/>
+      <circle cx="10" cy="32" r="8" fill="url(#m-hide-t)"/>
+      <!-- 上揚眉 -->
+      <path d="M40,52 Q46,49 52,52" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M76,52 Q70,49 64,52" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- 大眼睛 -->
+      <circle cx="46" cy="65" r="6" fill="#fff"/>
+      <circle cx="70" cy="65" r="6" fill="#fff"/>
+      <circle cx="46" cy="66" r="3" fill="#004d40"/>
+      <circle cx="70" cy="66" r="3" fill="#004d40"/>
+      <!-- 大笑 -->
+      <path d="M46,82 Q58,92 70,82" stroke="#fff" stroke-width="3" fill="#fff" stroke-linecap="round"/>
+      <!-- HI 字 -->
+      <text x="86" y="38" font-size="16" fill="#fff" font-weight="bold">HI!</text>
+    </svg>`
+  },
+
+  stompy: {
+    villain: `<svg viewBox="0 0 120 130">
+      <defs><radialGradient id="m-stomp-v" cx="40%" cy="30%">
+        <stop offset="0%" stop-color="#ffab91"/><stop offset="100%" stop-color="#bf360c"/>
+      </radialGradient></defs>
+      <!-- 蛋形身 -->
+      <ellipse cx="60" cy="60" rx="34" ry="40" fill="url(#m-stomp-v)"/>
+      <!-- 大腳左右 -->
+      <ellipse cx="40" cy="110" rx="18" ry="8" fill="#bf360c"/>
+      <ellipse cx="80" cy="110" rx="18" ry="8" fill="#bf360c"/>
+      <!-- 怒眉 -->
+      <line x1="42" y1="48" x2="54" y2="55" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="78" y1="48" x2="66" y2="55" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- 火眼 -->
+      <circle cx="48" cy="62" r="5" fill="#ffeb3b"/>
+      <circle cx="72" cy="62" r="5" fill="#ffeb3b"/>
+      <circle cx="48" cy="63" r="3" fill="#000"/>
+      <circle cx="72" cy="63" r="3" fill="#000"/>
+      <!-- 大叫嘴 -->
+      <ellipse cx="60" cy="80" rx="10" ry="8" fill="#5d1a1a"/>
+      <!-- 怒氣 -->
+      <text x="20" y="35" font-size="20" fill="#ff5252">💢</text>
+      <text x="90" y="35" font-size="20" fill="#ff5252">💢</text>
+    </svg>`,
+    tamed: `<svg viewBox="0 0 120 130">
+      <defs><radialGradient id="m-stomp-t" cx="40%" cy="30%">
+        <stop offset="0%" stop-color="#ffe0b2"/><stop offset="100%" stop-color="#ff8a65"/>
+      </radialGradient></defs>
+      <ellipse cx="60" cy="60" rx="34" ry="40" fill="url(#m-stomp-t)"/>
+      <!-- 平靜腳 -->
+      <ellipse cx="45" cy="110" rx="14" ry="6" fill="#bf360c" opacity="0.7"/>
+      <ellipse cx="75" cy="110" rx="14" ry="6" fill="#bf360c" opacity="0.7"/>
+      <!-- 雙手放胸前（沙漏狀） -->
+      <ellipse cx="60" cy="85" rx="14" ry="6" fill="url(#m-stomp-t)" stroke="#bf360c" stroke-width="1.5"/>
+      <!-- 平靜眉 -->
+      <path d="M42,52 Q48,49 54,52" stroke="#5d4037" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M78,52 Q72,49 66,52" stroke="#5d4037" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- 笑眼 -->
+      <path d="M44,64 Q49,60 54,64" stroke="#5d4037" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M66,64 Q71,60 76,64" stroke="#5d4037" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- 微笑 -->
+      <path d="M48,76 Q60,82 72,76" stroke="#5d4037" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- 沙漏在頭頂 -->
+      <text x="50" y="22" font-size="20">⏳</text>
+    </svg>`
+  }
+};
+
 // ========= STATE =========
 let state = loadState();
 let currentIsland = null;
@@ -1161,12 +1922,20 @@ let lastSpokenText = "";
 function loadState() {
   try {
     const raw = localStorage.getItem("moodIsland_v1");
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const s = JSON.parse(raw);
+      // 補上低年級新欄位（向後相容）
+      if (!s.monstersDone) s.monstersDone = {};
+      if (!s.pocketBuddies) s.pocketBuddies = [];
+      return s;
+    }
   } catch(e) {}
   return {
     name: "",
     islandsDone: {},
-    skills: []
+    skills: [],
+    monstersDone: {},
+    pocketBuddies: []
   };
 }
 function saveState() {
@@ -1447,6 +2216,8 @@ function showScreen(id) {
   window.scrollTo(0, 0);
   if (id === "passport") renderPassport();
   if (id === "map") renderMap();
+  if (id === "low-map") { document.body.style.background = 'var(--bg-low)'; renderLowMap(); }
+  if (id === "home") document.body.style.background = 'var(--bg-sky)';
 }
 
 function enterMid() {
@@ -1454,8 +2225,227 @@ function enterMid() {
   showScreen("map");
 }
 
+function enterLow() {
+  document.body.style.background = 'var(--bg-low)';
+  renderLowMap();
+  showScreen("low-map");
+}
+
 function showPassport() { showScreen("passport"); }
 function showAbout() { showScreen("about"); }
+
+// ========= 低年級：情緒小屋地圖 =========
+function renderLowMap() {
+  const grid = document.getElementById("monsters-grid");
+  grid.innerHTML = "";
+  MONSTER_ORDER.forEach(key => {
+    const m = MONSTERS[key];
+    const tamed = !!state.monstersDone[key];
+    const card = document.createElement("div");
+    card.className = "monster-card" + (tamed ? " tamed" : "");
+    card.innerHTML = `
+      <div class="monster-card-svg">${tamed ? MONSTER_SVG[key].tamed : MONSTER_SVG[key].villain}</div>
+      <div class="monster-card-name">${tamed ? m.tamedName : m.name}</div>
+      <div class="monster-card-mood">${tamed ? "已收服 💖" : m.mood}</div>
+    `;
+    card.onclick = () => enterMonster(key);
+    grid.appendChild(card);
+  });
+}
+
+let currentMonster = null;
+let currentMonsterQ = 0;
+
+function enterMonster(key) {
+  currentMonster = key;
+  currentMonsterQ = 0;
+  showScreen("monster");
+  renderMonsterStory();
+}
+
+function confirmLeaveMonster() {
+  speechSynthesis.cancel();
+  if (confirm("這次的進度不會儲存喔～確定要回小屋嗎？")) {
+    showScreen("low-map");
+  }
+}
+
+function renderMonsterStory() {
+  const m = MONSTERS[currentMonster];
+  const tamed = !!state.monstersDone[currentMonster];
+  if (tamed) {
+    // 已收服：直接看夥伴對話
+    renderMonsterAlreadyTamed();
+    return;
+  }
+  const html = `
+    <div class="encounter-stage">
+      <div class="encounter-svg-wrap"><div class="villain-shake">${MONSTER_SVG[currentMonster].villain}</div></div>
+      <h2 style="text-align:center; color:#c2185b; margin:4px 0;">${m.name} 出現了！</h2>
+      <div class="monster-bubble">「${m.villainVoice}」</div>
+      <button class="speaker-btn" onclick="speak('${m.name}說：${m.villainVoice}', 0.9)">🔊 聽${m.name}說話</button>
+      <div class="scenario-card" id="scenario-text">${m.scenario}</div>
+      <button class="speaker-btn" onclick="speak(document.getElementById('scenario-text').innerText, 0.9)">🔊 念故事</button>
+      <div class="magic-phrase-box">
+        <span class="label">教他這句魔法話 👇</span>
+        「${m.magicPhrase}」
+      </div>
+      <div style="text-align:center; margin-top:16px;">
+        <button class="speaker-btn big secondary" onclick="startMonsterQuestions()">開始教他 →</button>
+      </div>
+    </div>
+  `;
+  document.getElementById("monster-content").innerHTML = html;
+  setTimeout(() => speak(m.name + "說：" + m.villainVoice, 0.9), 400);
+  setTimeout(() => {
+    speak(m.scenario.replace(/<[^>]+>/g, ""), 0.9);
+  }, 4500);
+}
+
+function startMonsterQuestions() {
+  currentMonsterQ = 0;
+  renderMonsterQuestion();
+}
+
+function renderMonsterQuestion() {
+  const m = MONSTERS[currentMonster];
+  const q = m.questions[currentMonsterQ];
+  const html = `
+    <div class="encounter-stage">
+      <div style="text-align:center;"><div class="villain-jump" style="display:inline-block;">${MONSTER_SVG[currentMonster].villain}</div></div>
+      <div style="text-align:center; color:#888; font-size:15px;">第 ${currentMonsterQ+1} / ${m.questions.length} 題</div>
+      <div class="question-text" id="monster-q" style="margin:14px 0;">${q.q}</div>
+      <button class="speaker-btn" onclick="speak(document.getElementById('monster-q').textContent, 0.9)">🔊 念題目</button>
+      <div class="options-grid" id="monster-options" style="margin-top:14px;"></div>
+      <div class="feedback" id="monster-fb"></div>
+      <div class="next-btn-wrap" id="monster-next"></div>
+    </div>
+  `;
+  document.getElementById("monster-content").innerHTML = html;
+  const grid = document.getElementById("monster-options");
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.className = "option-btn";
+    btn.textContent = `${String.fromCharCode(65+i)}. ${opt.text}`;
+    btn.onclick = () => chooseMonsterOption(i, btn);
+    grid.appendChild(btn);
+  });
+  setTimeout(() => speak(q.q, 0.9), 300);
+}
+
+function chooseMonsterOption(idx, btnEl) {
+  const m = MONSTERS[currentMonster];
+  const q = m.questions[currentMonsterQ];
+  const opt = q.options[idx];
+  document.querySelectorAll(".option-btn").forEach(b => b.disabled = true);
+  const fb = document.getElementById("monster-fb");
+  if (opt.correct) {
+    btnEl.classList.add("correct");
+    fb.textContent = "✅ " + opt.fb;
+    fb.className = "feedback show right";
+    speak("答對了！" + opt.fb, 0.9);
+    setTimeout(() => {
+      const last = currentMonsterQ === m.questions.length - 1;
+      document.getElementById("monster-next").innerHTML =
+        `<button class="speaker-btn big" onclick="${last ? 'tameMonster()' : 'nextMonsterQuestion()'}">${last ? '收服他 💖' : '下一題 →'}</button>`;
+    }, 800);
+  } else {
+    btnEl.classList.add("wrong");
+    fb.textContent = "🤔 " + opt.fb;
+    fb.className = "feedback show wrong";
+    speak(opt.fb + " 再想想看～", 0.9);
+    setTimeout(() => {
+      document.querySelectorAll(".option-btn").forEach(b => {
+        if (!b.classList.contains("wrong")) b.disabled = false;
+      });
+      fb.classList.remove("show");
+    }, 2200);
+  }
+}
+
+function nextMonsterQuestion() {
+  currentMonsterQ++;
+  renderMonsterQuestion();
+}
+
+function tameMonster() {
+  const m = MONSTERS[currentMonster];
+  // 標記收服
+  if (!state.monstersDone[currentMonster]) {
+    state.monstersDone[currentMonster] = true;
+    if (!state.pocketBuddies.includes(currentMonster)) {
+      state.pocketBuddies.push(currentMonster);
+    }
+    if (!state.skills.includes(m.skillName)) {
+      state.skills.push(m.skillName);
+    }
+    saveState();
+  }
+  // 收服動畫畫面
+  const html = `
+    <div class="stamp-area">
+      <h2 style="color:#c2185b; font-size:30px;">收服成功！💖</h2>
+      <p style="font-size:18px; color:#555;">${m.name} 變身中…</p>
+      <div id="tame-svg-area" style="min-height:200px; display:flex; align-items:center; justify-content:center;">
+        ${MONSTER_SVG[currentMonster].villain}
+      </div>
+      <div id="tame-bubble-area"></div>
+      <div class="stamp-card" style="border-left-color:#fd79a8;">
+        <h3 style="color:#c2185b;">🎒 學到的魔法話</h3>
+        <p style="font-size:20px; font-weight:bold; color:#d84315;">「${m.magicPhrase}」</p>
+        <p>下次遇到一樣的狀況，記得用這句話喔！</p>
+      </div>
+      <div id="tame-after" style="margin-top:16px;"></div>
+    </div>
+  `;
+  document.getElementById("monster-content").innerHTML = html;
+  speak(m.name + "變成 " + m.tamedName + "！", 0.9);
+
+  // 變身動畫
+  setTimeout(() => {
+    const area = document.getElementById("tame-svg-area");
+    area.innerHTML = `<div class="heart-burst transform-in" style="display:inline-block;">${MONSTER_SVG[currentMonster].tamed}</div>`;
+  }, 1500);
+  setTimeout(() => {
+    document.getElementById("tame-bubble-area").innerHTML = `
+      <h3 style="color:#c2185b; margin-top:10px;">${m.tamedName} 加入你的口袋！</h3>
+      <div class="monster-bubble tamed-bubble">「${m.tamedVoice}」</div>
+      <button class="speaker-btn" onclick="speak('${m.tamedName}說：${m.tamedVoice}', 0.9)">🔊 聽他說話</button>
+    `;
+    speak(m.tamedName + "說：" + m.tamedVoice, 0.9);
+  }, 3000);
+  setTimeout(() => {
+    document.getElementById("tame-after").innerHTML = `
+      <button class="speaker-btn big" onclick="showScreen('low-map')">回小屋找下一隻 →</button>
+      <button class="speaker-btn secondary" onclick="showPassport()">看我的口袋</button>
+    `;
+  }, 3500);
+
+  if (Object.keys(state.monstersDone).length === 6) {
+    setTimeout(() => speak("哇！六隻搗蛋怪都收服了！你是真正的口袋夥伴大師！", 0.95), 5500);
+  }
+}
+
+function renderMonsterAlreadyTamed() {
+  const m = MONSTERS[currentMonster];
+  const html = `
+    <div class="encounter-stage">
+      <h2 style="text-align:center; color:#c2185b;">${m.tamedName} 找你玩！</h2>
+      <div class="encounter-svg-wrap"><div class="heart-burst" style="display:inline-block;">${MONSTER_SVG[currentMonster].tamed}</div></div>
+      <div class="monster-bubble tamed-bubble">「${m.tamedVoice}」</div>
+      <button class="speaker-btn" onclick="speak('${m.tamedName}說：${m.tamedVoice}', 0.9)">🔊 聽他說話</button>
+      <div class="magic-phrase-box">
+        <span class="label">他學會的魔法話 ✨</span>
+        「${m.magicPhrase}」
+      </div>
+      <div style="text-align:center; margin-top:16px;">
+        <button class="speaker-btn big" onclick="showScreen('low-map')">回小屋</button>
+      </div>
+    </div>
+  `;
+  document.getElementById("monster-content").innerHTML = html;
+  setTimeout(() => speak(m.tamedName + "說：" + m.tamedVoice, 0.9), 400);
+}
 
 // ========= MAP =========
 function renderMap() {
@@ -1973,6 +2963,27 @@ function renderPassport() {
     }
     grid.appendChild(plot);
   });
+
+  // 口袋夥伴 (低年級)
+  const pocketGrid = document.getElementById("pocket-grid");
+  if (pocketGrid) {
+    pocketGrid.innerHTML = "";
+    MONSTER_ORDER.forEach(key => {
+      const m = MONSTERS[key];
+      const tamed = !!state.monstersDone[key];
+      const slot = document.createElement("div");
+      slot.className = "pocket-slot" + (tamed ? " collected" : " empty");
+      if (tamed) {
+        slot.innerHTML = `
+          ${MONSTER_SVG[key].tamed}
+          <div class="pocket-slot-name">${m.tamedName}</div>
+        `;
+        slot.onclick = () => speak(m.tamedName + "說：" + m.tamedVoice, 0.9);
+      }
+      pocketGrid.appendChild(slot);
+    });
+  }
+
   const skillsList = document.getElementById("skills-list");
   if (state.skills.length === 0) {
     skillsList.textContent = "尚未收集到任何技能。";
@@ -1985,8 +2996,8 @@ function saveName() {
   saveState();
 }
 function resetProgress() {
-  if (!confirm("確定要清除所有進度？護照會清空、印章會消失，無法復原！")) return;
-  state = { name: "", islandsDone: {}, skills: [] };
+  if (!confirm("確定要清除所有進度？口袋夥伴和習德花園都會清空，無法復原！")) return;
+  state = { name: "", islandsDone: {}, skills: [], monstersDone: {}, pocketBuddies: [] };
   saveState();
   renderPassport();
   alert("進度已清除。");
