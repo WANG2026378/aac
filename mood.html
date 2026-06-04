@@ -1,0 +1,2004 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>心情島大冒險 — 王川銘老師特教情緒社交課程</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg-sky: linear-gradient(180deg, #87ceeb 0%, #b8e0d2 50%, #fef9d7 100%);
+    --bg-volcano: linear-gradient(180deg, #ff6b35 0%, #f7c59f 100%);
+    --bg-rain: linear-gradient(180deg, #4a6fa5 0%, #9bb7d4 100%);
+    --bg-ice: linear-gradient(180deg, #b8e1ff 0%, #ffffff 100%);
+    --bg-typhoon: linear-gradient(180deg, #586f7c 0%, #b8dbd9 100%);
+    --bg-desert: linear-gradient(180deg, #f4a261 0%, #fcd5a5 100%);
+    --bg-sakura: linear-gradient(180deg, #ffb7c5 0%, #fff0f5 100%);
+    --primary: #ff7b54;
+    --shadow: 0 4px 12px rgba(0,0,0,0.15);
+    --shadow-big: 0 8px 24px rgba(0,0,0,0.2);
+  }
+  body {
+    margin: 0; padding: 0;
+    font-family: "Noto Sans TC", "PingFang TC", "Heiti TC", sans-serif;
+    background: var(--bg-sky);
+    min-height: 100vh;
+    color: #333;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .screen {
+    display: none;
+    min-height: 100vh;
+    padding: 20px;
+    animation: fadeIn 0.4s ease;
+  }
+  .screen.active { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ==== HOME ==== */
+  #screen-home { text-align: center; padding-top: 30px; }
+  .title-main {
+    font-size: clamp(36px, 7vw, 64px);
+    color: #fff;
+    text-shadow: 3px 3px 0 #ff7b54, 6px 6px 0 rgba(0,0,0,0.1);
+    margin: 10px 0;
+    letter-spacing: 4px;
+  }
+  .title-sub {
+    font-size: clamp(16px, 3vw, 22px);
+    color: #555; margin-bottom: 20px;
+  }
+  .stage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 30px auto;
+  }
+  .stage-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 28px 20px;
+    box-shadow: var(--shadow-big);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 4px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+  .stage-card:active { transform: scale(0.96); }
+  .stage-card.unlocked { border-color: #6bcf7f; }
+  .stage-card.unlocked:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(107,207,127,0.3); }
+  .stage-card.locked { opacity: 0.65; cursor: not-allowed; }
+  .stage-card.locked::after {
+    content: "🔒"; position: absolute; top: 12px; right: 14px;
+    font-size: 28px;
+  }
+  .stage-emoji { font-size: 60px; margin-bottom: 8px; }
+  .stage-name { font-size: 26px; font-weight: bold; color: #333; margin: 6px 0; }
+  .stage-desc { font-size: 15px; color: #666; line-height: 1.5; }
+  .stage-tag { display:inline-block; background:#6bcf7f; color:#fff; padding:4px 12px; border-radius:12px; font-size:13px; margin-top:8px; }
+  .stage-tag.coming { background:#bbb; }
+
+  .home-bottom { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:30px; }
+  .btn-mini {
+    background: #fff;
+    border: 2px solid #ff7b54; color: #ff7b54;
+    padding: 10px 20px; border-radius: 24px;
+    font-size: 16px; cursor: pointer;
+    font-weight: bold;
+  }
+  .btn-mini:active { transform: scale(0.95); }
+  .credit { text-align:center; color:#888; font-size:13px; margin-top:20px; padding-bottom:20px; }
+
+  /* ==== MAP ==== */
+  #screen-map { background: var(--bg-sky); padding: 16px; }
+  .top-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; gap: 10px; flex-wrap: wrap;
+  }
+  .btn-back {
+    background: #fff; border: none; padding: 10px 18px;
+    border-radius: 20px; font-size: 16px; cursor: pointer;
+    box-shadow: var(--shadow); font-weight: bold;
+  }
+  .btn-back:active { transform: scale(0.95); }
+  .map-title { font-size: 24px; font-weight: bold; color: #fff; text-shadow: 2px 2px 0 #ff7b54; }
+  .passport-mini {
+    background: #fff; padding: 8px 14px; border-radius: 20px;
+    box-shadow: var(--shadow); font-size: 15px; cursor: pointer; font-weight: bold;
+  }
+  .map-instruction { text-align:center; color:#555; font-size:16px; margin: 8px 0 16px; background:rgba(255,255,255,0.7); padding:10px; border-radius:12px; max-width:600px; margin-left:auto; margin-right:auto; }
+  .island-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 18px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .island-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px 16px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-big);
+    transition: transform 0.2s;
+    border: 4px solid transparent;
+    position: relative;
+    min-height: 200px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+  }
+  .island-card:active { transform: scale(0.96); }
+  .island-card.done { border-color: gold; background: linear-gradient(135deg,#fff,#fff8dc); }
+  .island-card.done::before {
+    content:"⭐"; position:absolute; top:8px; right:10px; font-size:24px;
+  }
+  .island-emoji { font-size: 70px; line-height: 1; }
+  .island-name { font-size: 22px; font-weight: bold; margin-top: 8px; color: #333; }
+  .island-emotion { font-size: 14px; color: #888; margin-top: 4px; }
+
+  /* ==== ISLAND ==== */
+  #screen-island { padding: 16px; min-height: 100vh; }
+  .island-header {
+    text-align: center; padding: 20px 10px;
+    background: rgba(255,255,255,0.85); border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  .island-header-emoji { font-size: 80px; }
+  .island-header-name { font-size: 28px; font-weight: bold; margin: 6px 0; }
+  .island-stage-pill {
+    display: inline-block;
+    background: #ff7b54; color: #fff;
+    padding: 6px 16px; border-radius: 16px;
+    font-size: 14px; margin: 6px 0;
+  }
+
+  .story-box, .question-box, .skill-box, .complete-box {
+    background: #fff; border-radius: 20px;
+    padding: 24px 20px; margin: 16px auto; max-width: 700px;
+    box-shadow: var(--shadow);
+  }
+  .story-text { font-size: 22px; line-height: 1.8; color: #333; }
+  .speaker-btn {
+    background: #ff7b54; color: #fff; border: none;
+    padding: 10px 20px; border-radius: 24px;
+    font-size: 18px; cursor: pointer; font-weight: bold;
+    margin: 12px 8px 0 0;
+  }
+  .speaker-btn:active { transform: scale(0.95); }
+  .speaker-btn.secondary { background: #6bcf7f; }
+  .speaker-btn.big { font-size: 20px; padding: 14px 28px; }
+
+  .question-num { color: #888; font-size: 16px; margin-bottom: 8px; }
+  .question-text { font-size: 24px; line-height: 1.7; font-weight: bold; margin: 12px 0 20px; }
+  .options-grid {
+    display: grid; gap: 12px;
+  }
+  .option-btn {
+    background: #fffaf0;
+    border: 3px solid #ffd7a8; color: #333;
+    padding: 18px 16px; border-radius: 16px;
+    font-size: 19px; cursor: pointer;
+    text-align: left; line-height: 1.5;
+    transition: all 0.2s;
+    font-family: inherit;
+    font-weight: 500;
+  }
+  .option-btn:hover { background: #fff3e0; }
+  .option-btn:active { transform: scale(0.98); }
+  .option-btn.correct {
+    background: #c6f1c6; border-color: #6bcf7f;
+    animation: bounce 0.5s ease;
+  }
+  .option-btn.wrong {
+    background: #ffd6d6; border-color: #ff8a8a;
+    animation: shake 0.4s ease;
+  }
+  @keyframes bounce {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+  .feedback {
+    margin-top: 16px; padding: 16px;
+    border-radius: 12px; font-size: 18px; line-height: 1.6;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.right { background: #e8f5e9; color: #2e7d32; }
+  .feedback.wrong { background: #fff3e0; color: #e65100; }
+  .next-btn-wrap { text-align: center; margin-top: 16px; }
+
+  /* SKILL mini-games */
+  .skill-title { font-size: 26px; font-weight: bold; text-align: center; margin-bottom: 12px; }
+  .skill-instruction { text-align: center; font-size: 18px; color: #555; line-height: 1.6; margin-bottom: 20px; }
+
+  /* breathing circle */
+  .breathe-stage { text-align: center; padding: 20px; }
+  .breathe-circle {
+    width: 200px; height: 200px; border-radius: 50%;
+    margin: 30px auto;
+    background: radial-gradient(circle, #6bcf7f, #4caf50);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 24px; font-weight: bold;
+    transition: transform 4s ease-in-out;
+  }
+  .breathe-circle.in { transform: scale(1.5); }
+  .breathe-circle.out { transform: scale(0.8); }
+  .breathe-count { font-size: 28px; color:#ff7b54; font-weight:bold; }
+
+  /* grounding 5-4-3-2-1 */
+  .grounding-step { text-align:center; padding: 20px; }
+  .grounding-prompt { font-size:24px; margin: 16px 0; color: #333; font-weight: bold; }
+  .grounding-input {
+    width: 100%; max-width: 400px;
+    padding: 14px; font-size: 20px;
+    border: 3px solid #b8e1ff; border-radius: 12px;
+    margin: 12px 0;
+    font-family: inherit;
+  }
+  .grounding-input:focus { outline:none; border-color:#4a90e2; }
+  .grounding-progress {
+    display:flex; justify-content:center; gap:6px; margin: 20px 0;
+  }
+  .progress-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #ddd;
+  }
+  .progress-dot.active { background: #4a90e2; }
+  .progress-dot.done { background: #6bcf7f; }
+
+  /* worry box */
+  .worry-box-area { text-align: center; padding: 20px; }
+  .worry-input-wrap textarea {
+    width: 100%; max-width:500px; min-height:100px;
+    padding: 14px; font-size: 18px;
+    border: 3px solid #b8dbd9; border-radius: 12px;
+    font-family: inherit; line-height: 1.6; resize: vertical;
+  }
+  .worry-box-icon {
+    font-size: 100px; margin: 16px 0;
+    transition: transform 0.5s;
+  }
+  .worry-box-icon.shake { animation: wiggle 0.6s; }
+  @keyframes wiggle {
+    0%,100% { transform: rotate(0); }
+    25% { transform: rotate(-10deg); }
+    75% { transform: rotate(10deg); }
+  }
+  .worry-list {
+    background: #f7f7f7; border-radius: 12px;
+    padding: 12px; margin: 12px 0; text-align: left;
+    max-width: 500px; margin-left: auto; margin-right: auto;
+  }
+  .worry-list-item {
+    padding: 8px; border-bottom: 1px dashed #ddd;
+    font-size: 16px;
+  }
+
+  /* desert oasis */
+  .strength-area { text-align:center; padding: 20px; }
+  .strength-input {
+    width: 100%; max-width: 450px;
+    padding: 14px; font-size: 19px;
+    border: 3px solid #fcd5a5; border-radius: 12px;
+    margin: 8px 0; font-family: inherit;
+  }
+  .strength-list { max-width: 450px; margin: 16px auto; text-align: left; }
+  .strength-item {
+    background: linear-gradient(90deg, #fef9d7, #c6f1c6);
+    padding: 12px 16px; border-radius: 12px; margin: 8px 0;
+    font-size: 18px; font-weight: bold;
+  }
+  .oasis-display { font-size: 100px; margin: 20px 0; }
+
+  /* sakura gratitude */
+  .sakura-tree { font-size: 100px; margin: 16px 0; }
+  .sakura-petals { font-size: 40px; letter-spacing: 8px; line-height: 1.2; min-height: 40px; }
+
+  /* COMPLETE */
+  .stamp-area {
+    text-align: center; padding: 40px 20px;
+    background: linear-gradient(135deg, #fef9d7, #fff);
+    border-radius: 20px;
+  }
+  .stamp-circle {
+    width: 180px; height: 180px;
+    border: 6px solid #d4a373;
+    border-radius: 50%;
+    margin: 20px auto;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 80px;
+    background: #fef9d7;
+    animation: stampDrop 0.6s ease;
+    transform: rotate(-12deg);
+    box-shadow: 4px 4px 0 rgba(212, 163, 115, 0.3);
+  }
+  @keyframes stampDrop {
+    0% { transform: rotate(-12deg) scale(2); opacity: 0; }
+    50% { transform: rotate(-12deg) scale(1.2); opacity: 1; }
+    100% { transform: rotate(-12deg) scale(1); }
+  }
+  .stamp-title { font-size: 32px; font-weight: bold; color: #d4a373; margin: 12px 0; }
+  .stamp-card {
+    background: #fff; border-radius: 16px;
+    padding: 20px; margin: 20px auto; max-width: 500px;
+    box-shadow: var(--shadow);
+    border-left: 6px solid #6bcf7f;
+  }
+  .stamp-card h3 { margin: 0 0 8px; color: #2e7d32; font-size: 20px; }
+  .stamp-card p { margin: 0; line-height: 1.7; font-size: 17px; }
+
+  /* PASSPORT */
+  #screen-passport { padding: 16px; }
+  .passport-page {
+    background: linear-gradient(135deg, #fff5e6, #fef9d7);
+    border-radius: 20px;
+    padding: 24px; max-width: 800px; margin: 16px auto;
+    box-shadow: var(--shadow-big);
+    border: 6px double #d4a373;
+  }
+  .passport-title { text-align:center; font-size: 28px; color: #8b4513; font-weight: bold; margin-bottom: 16px; }
+  .passport-name { text-align:center; font-size: 18px; color: #555; margin-bottom: 20px; }
+  .passport-name input {
+    border: none; border-bottom: 2px solid #8b4513;
+    background: transparent; font-size: 20px;
+    padding: 4px 8px; text-align: center;
+    font-family: inherit; width: 200px;
+  }
+  .passport-name input:focus { outline: none; background: #fff5e6; }
+  .stamps-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; margin: 20px 0;
+  }
+  @media (max-width: 500px) {
+    .stamps-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .stamp-slot {
+    background: #fff; border-radius: 12px;
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    border: 3px dashed #d4a373;
+    position: relative;
+  }
+  .stamp-slot.collected { border-style: solid; background: #fef9d7; }
+  .stamp-slot-emoji { font-size: 50px; opacity: 0.3; }
+  .stamp-slot.collected .stamp-slot-emoji { opacity: 1; transform: rotate(-12deg); }
+  .stamp-slot-name { position:absolute; bottom:6px; left:0; right:0; text-align:center; font-size:13px; color:#555; font-weight:bold; }
+
+  .guardian-badge-area { text-align: center; padding: 20px; }
+  .guardian-badge {
+    display: inline-block;
+    font-size: 100px;
+    background: linear-gradient(135deg, #ffd700, #ffaa00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    margin: 16px 0;
+  }
+  .guardian-locked { opacity: 0.3; filter: grayscale(1); }
+  .guardian-text { font-size: 20px; color: #8b4513; margin-top: 12px; font-weight: bold; }
+
+  .skills-collected {
+    background: #fff; border-radius: 12px;
+    padding: 16px; margin: 16px 0;
+  }
+  .skills-collected h3 { color: #ff7b54; margin: 0 0 8px; }
+  .skill-tag {
+    display: inline-block;
+    background: #fff3e0; color: #e65100;
+    padding: 6px 14px; border-radius: 16px;
+    font-size: 14px; margin: 4px;
+  }
+
+  .footer-actions { text-align: center; margin: 20px 0; }
+  .danger-btn {
+    background: #fff; color: #999; border: 2px solid #ddd;
+    padding: 8px 16px; border-radius: 16px; font-size: 14px;
+    cursor: pointer;
+  }
+
+  /* ===== SEED 角色 SVG 包裝 + 各島動畫 ===== */
+  .char-wrap {
+    display: inline-block; text-align: center;
+    padding: 8px;
+  }
+  .char-label {
+    margin-top: 4px;
+    font-size: 16px; font-weight: bold; color: #444;
+  }
+  .char-wrap svg { display: block; margin: 0 auto; }
+  .wiggle-char svg { animation: charWiggle 1.6s ease-in-out infinite; transform-origin: center bottom; }
+  @keyframes charWiggle {
+    0%,100% { transform: rotate(0); }
+    25% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+  }
+  /* 怕怕：發抖 */
+  .shaky-char { animation: shakeChar 0.18s ease-in-out infinite; }
+  @keyframes shakeChar {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+  }
+  /* 慌慌：旋風轉 */
+  .spin-body { animation: spinBody 2.5s linear infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes spinBody {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  /* 喜喜：跳舞 */
+  .dancing-char { animation: danceChar 1.6s ease-in-out infinite; transform-origin: center bottom; }
+  @keyframes danceChar {
+    0%,100% { transform: rotate(-6deg) translateY(0); }
+    25% { transform: rotate(0) translateY(-4px); }
+    50% { transform: rotate(6deg) translateY(0); }
+    75% { transform: rotate(0) translateY(-4px); }
+  }
+  /* 酸酸發芽：花朵綻放 */
+  .bloom-flower-g { animation: bloomFlower 1.2s ease-out 0.5s both; transform-origin: 50px 25px; }
+  @keyframes bloomFlower {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  /* 種子變身放大 */
+  .transform-in {
+    animation: transformIn 1.2s ease-out;
+  }
+  @keyframes transformIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.25); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* ===== SEED 習德種子角色（純原創 CSS） ===== */
+  .seed-stage {
+    display: inline-block; position: relative;
+    width: 140px; height: 160px;
+    vertical-align: bottom;
+  }
+  .seed-pod {
+    position: absolute; left: 50%; bottom: 10px;
+    transform: translateX(-50%);
+    width: 110px; height: 130px;
+    border-radius: 55% 55% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: inset -8px -12px 18px rgba(0,0,0,0.18), 0 6px 10px rgba(0,0,0,0.15);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: transform 0.3s;
+  }
+  .seed-pod::before {
+    content: ""; position: absolute; top: -10px; left: 50%;
+    transform: translateX(-50%);
+    width: 18px; height: 18px;
+    background: #6b4423;
+    border-radius: 50% 50% 0 50%;
+    transform: translateX(-50%) rotate(-30deg);
+  }
+  .seed-face { font-size: 42px; line-height: 1; margin-top: 8px; }
+  .seed-name { text-align:center; font-size: 16px; font-weight: bold; margin-top: 6px; color: #555; }
+  .seed-pod.wiggle { animation: seedWiggle 1.4s ease-in-out infinite; }
+  @keyframes seedWiggle {
+    0%,100% { transform: translateX(-50%) rotate(0); }
+    25% { transform: translateX(-50%) rotate(-4deg); }
+    75% { transform: translateX(-50%) rotate(4deg); }
+  }
+
+  .sprout-stage {
+    display: inline-block; position: relative;
+    width: 160px; height: 200px;
+    vertical-align: bottom;
+  }
+  .sprout-stem {
+    position: absolute; left: 50%; bottom: 0;
+    transform: translateX(-50%);
+    width: 8px; height: 90px;
+    background: linear-gradient(180deg, #6abf69 0%, #2e7d32 100%);
+    border-radius: 4px;
+  }
+  .sprout-leaf {
+    position: absolute; bottom: 30px;
+    width: 36px; height: 24px;
+    background: linear-gradient(135deg, #81c784, #4caf50);
+    border-radius: 100% 0 100% 0;
+  }
+  .sprout-leaf.left { left: calc(50% - 38px); transform: rotate(-30deg); }
+  .sprout-leaf.right { right: calc(50% - 38px); transform: rotate(30deg) scaleX(-1); }
+  .sprout-flower {
+    position: absolute; left: 50%; bottom: 80px;
+    transform: translateX(-50%);
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18), inset -6px -8px 14px rgba(0,0,0,0.1);
+  }
+  .sprout-face { font-size: 40px; line-height: 1; }
+  .sprout-name { position: absolute; bottom: -28px; left: 0; right: 0; text-align: center; font-size: 16px; font-weight: bold; color: #2e7d32; }
+  .sprout-petal {
+    position: absolute; width: 30px; height: 30px; border-radius: 50%;
+    opacity: 0.85;
+  }
+  .virtue-badge {
+    display: inline-block; padding: 4px 14px;
+    background: linear-gradient(135deg, #ffd700, #ff9800);
+    color: #fff; border-radius: 14px; font-size: 14px;
+    font-weight: bold; margin-top: 6px;
+    box-shadow: 0 2px 6px rgba(255,152,0,0.4);
+  }
+  @keyframes growUp {
+    0% { transform: translateX(-50%) scaleY(0); transform-origin: bottom; }
+    100% { transform: translateX(-50%) scaleY(1); }
+  }
+  @keyframes bloom {
+    0% { transform: translateX(-50%) scale(0); opacity: 0; }
+    60% { transform: translateX(-50%) scale(1.15); opacity: 1; }
+    100% { transform: translateX(-50%) scale(1); opacity: 1; }
+  }
+  .sprout-stage.growing .sprout-stem { animation: growUp 1.2s ease-out forwards; }
+  .sprout-stage.growing .sprout-leaf.left { animation: bloom 0.6s 1.0s both; }
+  .sprout-stage.growing .sprout-leaf.right { animation: bloom 0.6s 1.1s both; }
+  .sprout-stage.growing .sprout-flower { animation: bloom 0.8s 1.5s both; }
+
+  /* SEED 對話框 */
+  .seed-bubble {
+    background: #fff; border: 3px solid #ff7b54;
+    border-radius: 16px; padding: 12px 16px;
+    margin: 8px auto; max-width: 320px;
+    font-size: 16px; line-height: 1.6; color: #333;
+    position: relative;
+  }
+  .seed-bubble::after {
+    content: ""; position: absolute;
+    bottom: -10px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 10px solid #ff7b54;
+  }
+
+  /* 習德花園 */
+  .garden-area {
+    background: linear-gradient(180deg, #c8e6c9 0%, #fff9c4 100%);
+    border-radius: 16px;
+    padding: 20px 12px; margin: 16px 0;
+  }
+  .garden-title {
+    text-align: center; font-size: 22px; font-weight: bold;
+    color: #2e7d32; margin-bottom: 12px;
+  }
+  .garden-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; margin-top: 12px;
+  }
+  @media (max-width: 500px) {
+    .garden-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .garden-plot {
+    background: rgba(255,255,255,0.5);
+    border-radius: 12px;
+    padding: 12px 4px 36px;
+    min-height: 200px;
+    position: relative;
+    text-align: center;
+    cursor: pointer;
+  }
+  .garden-plot.empty {
+    background: repeating-linear-gradient(45deg, #d7ccc8, #d7ccc8 8px, #c8b8a8 8px, #c8b8a8 16px);
+    opacity: 0.55;
+  }
+  .garden-plot.empty::before {
+    content: "尚未種下"; position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    color: #6d4c41; font-size: 14px; font-weight: bold;
+  }
+  .garden-plot:active { transform: scale(0.97); }
+
+  /* coming soon */
+  .coming-soon-msg {
+    text-align: center; padding: 40px 20px;
+    background: #fff; border-radius: 16px;
+    max-width: 500px; margin: 40px auto;
+    box-shadow: var(--shadow);
+  }
+  .coming-soon-msg h2 { color: #ff7b54; }
+
+  /* utility */
+  .hidden { display: none !important; }
+  .center { text-align: center; }
+  .mt20 { margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<!-- ==================== HOME SCREEN ==================== -->
+<div id="screen-home" class="screen active">
+  <div style="text-align:center; padding-top:20px;">
+    <div style="font-size:80px; line-height:1;">🏝️</div>
+    <h1 class="title-main">心情島大冒險</h1>
+    <p class="title-sub">🌱 SEED 習德課程 ｜ 種子發芽，習得六德 🌱</p>
+  </div>
+
+  <div class="stage-grid">
+    <div class="stage-card locked" data-stage="preschool">
+      <div class="stage-emoji">🧚</div>
+      <div class="stage-name">學前</div>
+      <div class="stage-desc">認識五位<br>情緒小精靈</div>
+      <div class="stage-tag coming">即將推出</div>
+    </div>
+    <div class="stage-card locked" data-stage="low">
+      <div class="stage-emoji">🏠</div>
+      <div class="stage-name">低年級</div>
+      <div class="stage-desc">情緒表達<br>與簡單社交</div>
+      <div class="stage-tag coming">即將推出</div>
+    </div>
+    <div class="stage-card unlocked" data-stage="mid" onclick="enterMid()">
+      <div class="stage-emoji">🗺️</div>
+      <div class="stage-name">中年級</div>
+      <div class="stage-desc">六島大冒險<br>情緒調節技能</div>
+      <div class="stage-tag">已開放</div>
+    </div>
+    <div class="stage-card locked" data-stage="high">
+      <div class="stage-emoji">🛡️</div>
+      <div class="stage-name">高年級</div>
+      <div class="stage-desc">守護者：同理<br>與衝突解決</div>
+      <div class="stage-tag coming">即將推出</div>
+    </div>
+  </div>
+
+  <div class="home-bottom">
+    <button class="btn-mini" onclick="showPassport()">🌿 我的習德花園</button>
+    <button class="btn-mini" onclick="showAbout()">ℹ️ 關於課程</button>
+  </div>
+  <div class="credit">王川銘老師｜永芳國小集中式特教班｜v1.0</div>
+</div>
+
+<!-- ==================== MAP SCREEN ==================== -->
+<div id="screen-map" class="screen">
+  <div class="top-bar">
+    <button class="btn-back" onclick="showScreen('home')">← 回主畫面</button>
+    <div class="map-title">🗺️ 六島大冒險</div>
+    <div class="passport-mini" onclick="showPassport()">🎖️ 護照</div>
+  </div>
+  <div class="map-instruction">點選任何一座島開始冒險！每座島會教你一個情緒小技能。</div>
+  <div class="island-grid" id="island-grid"></div>
+</div>
+
+<!-- ==================== ISLAND SCREEN ==================== -->
+<div id="screen-island" class="screen">
+  <div class="top-bar">
+    <button class="btn-back" onclick="confirmLeaveIsland()">← 回地圖</button>
+    <button class="speaker-btn" onclick="repeatCurrentSpeech()">🔊 再念一次</button>
+  </div>
+  <div id="island-content"></div>
+</div>
+
+<!-- ==================== PASSPORT SCREEN ==================== -->
+<div id="screen-passport" class="screen">
+  <div class="top-bar">
+    <button class="btn-back" onclick="showScreen('home')">← 回主畫面</button>
+    <div class="map-title">🎖️ 守護者護照</div>
+    <div style="width:60px;"></div>
+  </div>
+
+  <div class="passport-page">
+    <div class="passport-title">🌱 SEED 習德花園｜守護者護照 🌱</div>
+    <div class="passport-name">
+      園丁：<input type="text" id="adventurer-name" placeholder="輸入你的名字" maxlength="10" oninput="saveName()">
+    </div>
+
+    <div class="guardian-badge-area">
+      <div class="guardian-badge" id="guardian-badge">🛡️</div>
+      <div class="guardian-text" id="guardian-text">種出六顆習德苗，解鎖六德守護者</div>
+    </div>
+
+    <div class="garden-area">
+      <div class="garden-title">🌿 我的習德花園 🌿</div>
+      <div style="text-align:center; font-size:14px; color:#558; margin-bottom:8px;">點花苗聽他說話</div>
+      <div class="garden-grid" id="garden-grid"></div>
+    </div>
+
+    <div class="skills-collected">
+      <h3>🎒 冒險者背包｜學到的技能</h3>
+      <div id="skills-list" style="margin-top:10px;">尚未收集到任何技能。</div>
+    </div>
+
+    <div class="footer-actions">
+      <button class="danger-btn" onclick="resetProgress()">重新開始（清除進度）</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== ABOUT SCREEN ==================== -->
+<div id="screen-about" class="screen">
+  <div class="top-bar">
+    <button class="btn-back" onclick="showScreen('home')">← 回主畫面</button>
+    <div class="map-title">ℹ️ 關於課程</div>
+    <div style="width:60px;"></div>
+  </div>
+  <div class="passport-page">
+    <h2 style="text-align:center; color:#ff7b54;">🌱 心情島大冒險｜SEED 習德課程</h2>
+    <p style="font-size:17px; line-height:1.8;">
+      由<strong>教育、輔導、心理諮商、社交技巧</strong>四領域共同設計，適合<strong>過動、自閉、智障、學障、情障</strong>學生使用。
+    </p>
+    <h3 style="color:#6bcf7f;">什麼是 SEED 習德？</h3>
+    <p style="font-size:16px; line-height:1.8; background:#fff3e0; padding:14px; border-radius:12px;">
+      <strong>SEED</strong>＝把每一個情緒當成一顆<strong>種子</strong>，<br>
+      <strong>習德</strong>＝練習六種美德。<br><br>
+      情緒不是壞東西，只是還沒學會澆水。每通關一座島，<strong>情緒種子</strong>會長成<strong>習德苗</strong>，種進你的習德花園。
+    </p>
+    <h3 style="color:#6bcf7f;">六德六苗</h3>
+    <ul style="font-size:16px; line-height:1.9;">
+      <li>🌋 怒怒種子 → 🌱 <strong>靜德苗</strong>（冷靜：烏龜呼吸）</li>
+      <li>🌧 憂憂種子 → 🌷 <strong>說德苗</strong>（傾訴：說出來）</li>
+      <li>❄️ 怕怕種子 → 🌿 <strong>定德苗</strong>（心安：五感著陸）</li>
+      <li>🌪 慌慌種子 → 🍀 <strong>安德苗</strong>（安定：擔心盒）</li>
+      <li>🔥 酸酸種子 → 🌵 <strong>悅德苗</strong>（自悅：看見自己的好）</li>
+      <li>🌸 喜喜種子 → 🌸 <strong>謝德苗</strong>（感恩：感謝分享）</li>
+    </ul>
+    <h3 style="color:#6bcf7f;">每座島流程</h3>
+    <ol style="font-size:16px; line-height:1.9;">
+      <li>聽情緒種子說話（語音）</li>
+      <li>聽故事、瞭解情境</li>
+      <li>5 題情境選擇題（答對才能澆水）</li>
+      <li>技能練習小遊戲</li>
+      <li>種子發芽 → 長成習德苗 → 進入花園</li>
+    </ol>
+    <p style="font-size:14px; color:#888; text-align:center; margin-top:30px;">
+      原創設計，無侵權疑慮 ✓<br>
+      設計者：王川銘老師｜永芳國小集中式特教班
+    </p>
+  </div>
+</div>
+
+<script>
+// ========= DATA: 六座島 =========
+const ISLANDS = {
+  volcano: {
+    emoji: "🌋", name: "火山島", emotion: "憤怒",
+    bg: "var(--bg-volcano)",
+    story: "歡迎來到火山島！這裡有一顆「怒怒種子」，它說：「我氣到要爆炸了！」其實它不是壞種子，只是需要學會深呼吸。你願意幫它澆水嗎？澆對了水，它會長成「靜德苗」。",
+    skillName: "烏龜呼吸法",
+    skillDesc: "深呼吸 5 次，把火山降溫。",
+    seed: {
+      name: "怒怒種子", color: "#e74c3c", face: "😠",
+      voice: "我...我氣到要爆炸了！但我不想再傷害別人。"
+    },
+    sprout: {
+      name: "靜德苗", virtue: "靜德", flowerColor: "linear-gradient(135deg,#ff6b6b,#ffa07a)",
+      face: "😌",
+      voice: "深呼吸三次，火山就會降溫。我學會冷靜了！"
+    },
+    questions: [
+      {
+        q: "弟弟把你最愛的玩具弄壞了，你覺得火山要爆發了。你會怎麼做？",
+        options: [
+          { text: "馬上打弟弟", correct: false, fb: "打人會被罵，玩具也不會回來。試試烏龜呼吸吧。" },
+          { text: "做烏龜呼吸，深呼吸 3 次", correct: true, fb: "對！先讓火山降溫，再說話才不會更糟。" },
+          { text: "大聲尖叫亂摔東西", correct: false, fb: "東西摔壞了，心裡還是不舒服。深呼吸試試看。" },
+          { text: "假裝沒事忍住氣", correct: false, fb: "忍下來的火山，下次會爆更大。要讓情緒流動。" }
+        ]
+      },
+      {
+        q: "媽媽說不准你看手機，你超生氣。最好的做法是？",
+        options: [
+          { text: "用力摔東西", correct: false, fb: "東西壞了媽媽更生氣，雙輸。" },
+          { text: "數到 10 再開口", correct: true, fb: "數數字可以讓大腦冷靜，再說話才有用。" },
+          { text: "罵媽媽好討厭", correct: false, fb: "罵人傷感情，事情也不會改變。" },
+          { text: "一整天不講話", correct: false, fb: "悶在心裡會更難受。試試說出來。" }
+        ]
+      },
+      {
+        q: "同學笑你寫字很醜，你火大了。怎麼辦？",
+        options: [
+          { text: "馬上罵他更難聽的話", correct: false, fb: "互罵會變吵架，老師也會處罰。" },
+          { text: "深呼吸後告訴老師", correct: true, fb: "對，找老師幫忙是聰明的選擇。" },
+          { text: "把作業撕掉", correct: false, fb: "撕掉作業要重寫，受傷的是自己。" },
+          { text: "哭著跑出教室", correct: false, fb: "跑出去很危險，先深呼吸再找老師。" }
+        ]
+      },
+      {
+        q: "你排隊排很久，有人插隊了！",
+        options: [
+          { text: "把他推出去", correct: false, fb: "推人會打架，也會被處罰。" },
+          { text: "平靜地說：請排隊", correct: true, fb: "用嘴巴解決問題，最有勇氣！" },
+          { text: "不理他默默生悶氣", correct: false, fb: "悶氣會累積，試著說出來。" },
+          { text: "大聲尖叫", correct: false, fb: "尖叫嚇到別人，問題沒解決。" }
+        ]
+      },
+      {
+        q: "老師說你作業沒寫完不能下課，你覺得超不公平：",
+        options: [
+          { text: "對老師大吼大叫", correct: false, fb: "老師會更生氣，下課更遠。" },
+          { text: "把作業撕掉", correct: false, fb: "撕了還是要寫，何必呢？" },
+          { text: "深呼吸後說：老師我可以下課再補嗎？", correct: true, fb: "用嘴巴談條件，是真本事！" },
+          { text: "趴在桌上不講話", correct: false, fb: "不表達老師不知道你的想法。" }
+        ]
+      }
+    ],
+    skillType: "breathing"
+  },
+
+  rain: {
+    emoji: "🌧", name: "雨雲島", emotion: "難過",
+    bg: "var(--bg-rain)",
+    story: "雨雲島下著大雨，「憂憂種子」蜷在地上：「我好難過，又不敢說。」其實它只是需要有人聽。你能教它說出來嗎？學會說出來，它會長成「說德苗」，雨會變成彩虹。",
+    skillName: "說出來，雨會停",
+    skillDesc: "把難過寫下來，按下按鈕讓彩虹出現。",
+    seed: {
+      name: "憂憂種子", color: "#4a6fa5", face: "😢",
+      voice: "我好難過...可是我不知道怎麼說..."
+    },
+    sprout: {
+      name: "說德苗", virtue: "說德", flowerColor: "linear-gradient(135deg,#64b5f6,#ba68c8,#f48fb1)",
+      face: "🥹",
+      voice: "說出來，雨會停。我願意把心打開了！"
+    },
+    questions: [
+      {
+        q: "你最愛的阿嬤生病住院，你很想哭：",
+        options: [
+          { text: "忍住絕對不能哭", correct: false, fb: "忍住的眼淚會變成肚子痛。哭出來沒關係。" },
+          { text: "哭出來，再跟媽媽說你很擔心", correct: true, fb: "對，哭是身體在幫你釋放難過。" },
+          { text: "一個人躲起來不講", correct: false, fb: "躲起來會更孤單，找人陪你。" },
+          { text: "用力打牆壁", correct: false, fb: "打牆會受傷，難過還在。試著說出來。" }
+        ]
+      },
+      {
+        q: "好朋友突然不跟你玩了，你好失落：",
+        options: [
+          { text: "自己一個人不講話到放學", correct: false, fb: "悶著會越想越難過。" },
+          { text: "找老師或家人聊一聊", correct: true, fb: "說出來，難過會減一半。" },
+          { text: "在背後罵那個朋友", correct: false, fb: "罵人不會讓你開心，也會傳到對方耳裡。" },
+          { text: "假裝完全不在乎", correct: false, fb: "假裝會更累。承認難過才能修復。" }
+        ]
+      },
+      {
+        q: "你的小狗過世了，你心裡好痛：",
+        options: [
+          { text: "把難過寫下來、抱抱小狗的照片", correct: true, fb: "悼念是愛的延續。讓難過慢慢走。" },
+          { text: "馬上要爸媽買新的", correct: false, fb: "新的不能取代舊的。先好好說再見。" },
+          { text: "都是我的錯，自己懲罰自己", correct: false, fb: "這不是你的錯。找大人陪你度過。" },
+          { text: "假裝沒這件事發生", correct: false, fb: "假裝會讓難過留在心裡更久。" }
+        ]
+      },
+      {
+        q: "考試考不好，覺得自己好笨：",
+        options: [
+          { text: "哭一場，再想想下次怎麼進步", correct: true, fb: "哭完還能想辦法，你比想像中堅強。" },
+          { text: "把考卷撕掉", correct: false, fb: "撕掉也不會變高分。看看哪裡可以進步。" },
+          { text: "不告訴爸媽偷偷藏起來", correct: false, fb: "藏起來壓力會更大。誠實才能得到幫助。" },
+          { text: "罵自己是笨蛋", correct: false, fb: "你不笨，只是這次沒準備好。對自己好一點。" }
+        ]
+      },
+      {
+        q: "看到別人很快樂，自己卻悶悶不樂：",
+        options: [
+          { text: "去找信任的人說：我心情不太好", correct: true, fb: "說出來不丟臉，是勇敢。" },
+          { text: "強迫自己也要笑", correct: false, fb: "假笑會更累。先承認自己難過。" },
+          { text: "罵那個快樂的人", correct: false, fb: "別人快樂不是你難過的原因。" },
+          { text: "一直想著悲傷的事情", correct: false, fb: "鑽牛角尖會更深。找人陪你。" }
+        ]
+      }
+    ],
+    skillType: "rainbow"
+  },
+
+  ice: {
+    emoji: "❄️", name: "薄冰島", emotion: "害怕",
+    bg: "var(--bg-ice)",
+    story: "薄冰島滑滑的，「怕怕種子」抖個不停：「腳下都是冰，我好怕掉下去。」其實它需要的是把心拉回此刻。教它五感著陸，它會長成「定德苗」，心就穩了。",
+    skillName: "五感著陸法 5-4-3-2-1",
+    skillDesc: "找 5 個看到的、4 個聽到的、3 個摸到的、2 個聞到的、1 個嘗到的。",
+    seed: {
+      name: "怕怕種子", color: "#9575cd", face: "😨",
+      voice: "好可怕...我一直在發抖..."
+    },
+    sprout: {
+      name: "定德苗", virtue: "定德", flowerColor: "linear-gradient(135deg,#b39ddb,#e1bee7)",
+      face: "😇",
+      voice: "看一看、聽一聽，我的心穩住了。"
+    },
+    questions: [
+      {
+        q: "晚上一個人睡覺好怕：",
+        options: [
+          { text: "開小夜燈、抱抱抱枕", correct: true, fb: "光和擁抱是最好的安全感。" },
+          { text: "矇著棉被一直亂想", correct: false, fb: "亂想會越想越怕。試試五感法。" },
+          { text: "大哭大叫吵醒全家", correct: false, fb: "全家都累就更難過。先試試自我安撫。" },
+          { text: "整夜不睡覺看天花板", correct: false, fb: "不睡明天會很累。試試開夜燈。" }
+        ]
+      },
+      {
+        q: "要上台報告，你的腳一直發抖：",
+        options: [
+          { text: "假裝肚子痛逃避", correct: false, fb: "逃了下次更難。試試 5-4-3-2-1。" },
+          { text: "用五感法：先看 5 樣東西、聽 4 種聲音", correct: true, fb: "把注意力拉回身體，緊張會慢慢退。" },
+          { text: "跑出教室", correct: false, fb: "跑出去要被找回來。先深呼吸試試。" },
+          { text: "一直發抖到結束", correct: false, fb: "讓身體動一動，會比僵在那好。" }
+        ]
+      },
+      {
+        q: "打雷下大雨，雷聲好可怕：",
+        options: [
+          { text: "戴耳機聽喜歡的歌、跟家人在一起", correct: true, fb: "用聲音和陪伴蓋過害怕。" },
+          { text: "一直盯著窗外的閃電看", correct: false, fb: "盯著看會更怕。拉上窗簾吧。" },
+          { text: "躲在棉被裡尖叫", correct: false, fb: "尖叫不會讓雷停。找人陪你。" },
+          { text: "假裝聽不到", correct: false, fb: "假裝沒用。承認害怕才能處理。" }
+        ]
+      },
+      {
+        q: "看醫生要打針，你超怕：",
+        options: [
+          { text: "抓緊媽媽的手、用五感法分散注意", correct: true, fb: "有人陪+專注其他事=克服害怕的祕訣。" },
+          { text: "大哭大鬧死不讓打", correct: false, fb: "鬧完還是要打。試試深呼吸和媽媽抱。" },
+          { text: "逃出診所", correct: false, fb: "逃了病不會好。請媽媽陪你。" },
+          { text: "假裝沒事但偷偷流淚", correct: false, fb: "說出害怕沒關係，大家會理解。" }
+        ]
+      },
+      {
+        q: "第一次到新教室，好怕沒朋友：",
+        options: [
+          { text: "對旁邊同學微笑說早安", correct: true, fb: "一個微笑就是開始，你比想像中勇敢。" },
+          { text: "整天低頭不講話", correct: false, fb: "不講話別人不知道你想交朋友。" },
+          { text: "假裝肚子痛回家", correct: false, fb: "今天回了明天還要再來。先試試打招呼。" },
+          { text: "跟著別人但不出聲", correct: false, fb: "至少打個招呼，會更輕鬆。" }
+        ]
+      }
+    ],
+    skillType: "grounding"
+  },
+
+  typhoon: {
+    emoji: "🌪", name: "颱風島", emotion: "焦慮",
+    bg: "var(--bg-typhoon)",
+    story: "颱風島刮著大風，「慌慌種子」轉個不停：「腦袋裡好多擔心轉來轉去！」教它把擔心寫進盒子，它就能停下來，長成「安德苗」。",
+    skillName: "擔心盒",
+    skillDesc: "把擔心一個一個寫下來，放進盒子裡。",
+    seed: {
+      name: "慌慌種子", color: "#90a4ae", face: "😰",
+      voice: "好多擔心...腦袋停不下來..."
+    },
+    sprout: {
+      name: "安德苗", virtue: "安德", flowerColor: "linear-gradient(135deg,#b0bec5,#80deea)",
+      face: "😊",
+      voice: "把擔心放進盒子，我的腦袋變清爽了。"
+    },
+    questions: [
+      {
+        q: "明天要月考，你緊張到睡不著：",
+        options: [
+          { text: "把擔心寫下來放進擔心盒，然後睡覺", correct: true, fb: "寫出來腦袋會清空，比較好睡。" },
+          { text: "一直滑手機到天亮", correct: false, fb: "滑手機反而更難睡，明天會更慘。" },
+          { text: "一直想「我一定會考爛」", correct: false, fb: "想很多次也不會變真。試試寫下來。" },
+          { text: "起床再讀書到三點", correct: false, fb: "睡眠不足表現會更差。先休息。" }
+        ]
+      },
+      {
+        q: "爸媽吵架，你覺得是不是自己害的：",
+        options: [
+          { text: "找一個信任的大人說：我覺得很不安", correct: true, fb: "大人的事不是你的錯，說出來會輕鬆。" },
+          { text: "一直自責是我害的", correct: false, fb: "爸媽吵架是他們的事，不是你的錯。" },
+          { text: "躲房間整晚哭", correct: false, fb: "哭完會更累，找人說會好點。" },
+          { text: "計畫離家出走", correct: false, fb: "離家更危險。問題還是要解決。" }
+        ]
+      },
+      {
+        q: "要去新的安親班，緊張到肚子痛：",
+        options: [
+          { text: "深呼吸+提早一天去看環境", correct: true, fb: "事先準備，緊張會減一半。" },
+          { text: "假裝生病不去", correct: false, fb: "今天逃明天還是要去。先去看看。" },
+          { text: "路上一直哭", correct: false, fb: "新環境試試 5 分鐘再決定。" },
+          { text: "整夜想最壞的情況", correct: false, fb: "最壞通常不會發生。寫下擔心放下。" }
+        ]
+      },
+      {
+        q: "朋友還沒回 LINE，你開始亂想：",
+        options: [
+          { text: "提醒自己：他可能在忙，等等再說", correct: true, fb: "正確！別人沒回不代表討厭你。" },
+          { text: "一直連續傳訊息追問", correct: false, fb: "追問會讓對方壓力大，反而疏遠。" },
+          { text: "覺得他一定討厭我", correct: false, fb: "腦補不是事實。問問本人。" },
+          { text: "直接刪除好友", correct: false, fb: "衝動決定常後悔。先冷靜。" }
+        ]
+      },
+      {
+        q: "阿公生病你很擔心，無法專心上課：",
+        options: [
+          { text: "跟老師說：我今天狀態不好", correct: true, fb: "誠實說，老師會幫你。" },
+          { text: "整節課發呆什麼都聽不進去", correct: false, fb: "發呆沒幫助。找老師說。" },
+          { text: "強迫自己不准想阿公", correct: false, fb: "越壓抑越想。允許自己擔心。" },
+          { text: "假裝沒事但下課偷哭", correct: false, fb: "找人說會減輕負擔。" }
+        ]
+      }
+    ],
+    skillType: "worrybox"
+  },
+
+  desert: {
+    emoji: "🔥", name: "沙漠島", emotion: "嫉妒",
+    bg: "var(--bg-desert)",
+    story: "沙漠島乾旱炎熱，「酸酸種子」躲在仙人掌下：「為什麼別人有，我都沒有？」教它看見自己的好，它就會長成「悅德苗」，沙漠裡也會冒出綠洲。",
+    skillName: "看見自己的好",
+    skillDesc: "寫下 3 個自己很棒的地方，沙漠就會變綠洲。",
+    seed: {
+      name: "酸酸種子", color: "#f4a261", face: "😒",
+      voice: "別人都有...為什麼我沒有...我好酸..."
+    },
+    sprout: {
+      name: "悅德苗", virtue: "悅德", flowerColor: "linear-gradient(135deg,#ffb74d,#ffd54f)",
+      face: "🥰",
+      voice: "我看見自己的好了，原來我也很棒！"
+    },
+    questions: [
+      {
+        q: "同學考 100 分，你考 60 分，你好嫉妒：",
+        options: [
+          { text: "猜他作弊", correct: false, fb: "猜測不是事實，會讓自己更糟。" },
+          { text: "寫下自己這次比上次進步的地方", correct: true, fb: "和自己比較才有意義。你有進步！" },
+          { text: "不跟他講話", correct: false, fb: "不講話傷友誼，問題還在。" },
+          { text: "把自己的考卷撕掉", correct: false, fb: "撕掉也不會變高分。下次再加油。" }
+        ]
+      },
+      {
+        q: "弟弟得到新玩具，你沒有：",
+        options: [
+          { text: "偷弟弟的玩具來玩", correct: false, fb: "偷東西會被罵，弟弟也會難過。" },
+          { text: "跟爸媽好好說：我也想要", correct: true, fb: "說出來，爸媽才知道你的想法。" },
+          { text: "故意弄壞弟弟的", correct: false, fb: "弄壞別人東西要賠，得不償失。" },
+          { text: "整天臭臉不講話", correct: false, fb: "臭臉沒人懂你的需要。" }
+        ]
+      },
+      {
+        q: "好朋友交了新朋友，冷落你：",
+        options: [
+          { text: "跟他說：你最近少陪我，我有點失落", correct: true, fb: "說出感受才能修復關係。" },
+          { text: "在背後散播他的壞話", correct: false, fb: "說壞話會被傳回去，失去朋友。" },
+          { text: "也找新朋友來報復他", correct: false, fb: "報復沒人贏，友情就斷了。" },
+          { text: "假裝不在乎心裡很受傷", correct: false, fb: "誠實說比假裝好。" }
+        ]
+      },
+      {
+        q: "看到 IG 朋友出國玩，自己沒得去：",
+        options: [
+          { text: "提醒自己：每個人有不同生活", correct: true, fb: "別人的精彩不是你的失敗。" },
+          { text: "留酸言酸語在他貼文下", correct: false, fb: "留言會傷關係，也讓自己更酸。" },
+          { text: "把他封鎖看不到", correct: false, fb: "封鎖不會讓你開心，問題在心裡。" },
+          { text: "一直滑一直難過", correct: false, fb: "放下手機做別的事。" }
+        ]
+      },
+      {
+        q: "同學被老師稱讚，你也很想被稱讚：",
+        options: [
+          { text: "想想自己的優點、找機會表現", correct: true, fb: "每個人有不同強項，你也有！" },
+          { text: "對那個同學翻白眼", correct: false, fb: "翻白眼傷感情，自己也不快樂。" },
+          { text: "故意搗蛋讓老師注意", correct: false, fb: "搗蛋被罵不是稱讚。用好行為換稱讚。" },
+          { text: "整節課鬧脾氣", correct: false, fb: "鬧脾氣只會被罵。" }
+        ]
+      }
+    ],
+    skillType: "strengths"
+  },
+
+  sakura: {
+    emoji: "🌸", name: "櫻花島", emotion: "快樂",
+    bg: "var(--bg-sakura)",
+    story: "櫻花島開滿粉色花朵，「喜喜種子」笑咪咪：「我好開心，可是不知道怎麼分享！」教它寫下感謝，它會長成「謝德苗」，櫻花就會開滿整座島。",
+    skillName: "感謝與分享",
+    skillDesc: "寫下 3 個感謝的人事物，櫻花樹會盛開。",
+    seed: {
+      name: "喜喜種子", color: "#f48fb1", face: "😊",
+      voice: "我好開心！但不知道怎麼讓快樂變更久..."
+    },
+    sprout: {
+      name: "謝德苗", virtue: "謝德", flowerColor: "linear-gradient(135deg,#f8bbd0,#f06292)",
+      face: "🥰",
+      voice: "謝謝你！分享後，快樂變得更多了！"
+    },
+    questions: [
+      {
+        q: "你考試大進步，超開心：",
+        options: [
+          { text: "跟家人分享、給自己一個小獎勵", correct: true, fb: "分享快樂讓快樂更多。" },
+          { text: "嘲笑考不好的同學", correct: false, fb: "嘲笑會失去朋友，也不是真快樂。" },
+          { text: "不講出來怕被嫉妒", correct: false, fb: "好事可以低調但要分享給愛你的人。" },
+          { text: "高興到亂跑亂叫吵到別人", correct: false, fb: "快樂也要有界線。" }
+        ]
+      },
+      {
+        q: "得到很想要的生日禮物，怎麼讓快樂更久：",
+        options: [
+          { text: "寫感謝卡給送禮的人", correct: true, fb: "感謝會讓關係更好，禮物也更有意義。" },
+          { text: "馬上玩到壞掉", correct: false, fb: "好好用會更長久。" },
+          { text: "拿去炫耀給沒有的人", correct: false, fb: "炫耀讓別人難過。好東西可以分享但別炫耀。" },
+          { text: "收起來都不用怕弄壞", correct: false, fb: "禮物是要用的，珍惜地用就好。" }
+        ]
+      },
+      {
+        q: "你今天心情超好：",
+        options: [
+          { text: "主動幫助同學", correct: true, fb: "把好心情變成善行，全班都受益。" },
+          { text: "自己快樂就好，別管別人", correct: false, fb: "分享的快樂比較大。" },
+          { text: "大吵大鬧到處宣告", correct: false, fb: "別人不一定想被打擾。" },
+          { text: "不分享怕快樂被搶走", correct: false, fb: "快樂分享不會少，只會多。" }
+        ]
+      },
+      {
+        q: "朋友陪你度過難關，你很感謝：",
+        options: [
+          { text: "寫感謝小卡或當面說謝謝", correct: true, fb: "說出感謝是禮物，朋友會記很久。" },
+          { text: "默默記在心裡都不說", correct: false, fb: "朋友不會通靈，說出來吧。" },
+          { text: "怕欠人情就避開他", correct: false, fb: "感謝不是負擔，是連結。" },
+          { text: "等他需要時才回報", correct: false, fb: "可以等，但先說聲謝謝更好。" }
+        ]
+      },
+      {
+        q: "春天到了，看到櫻花你好開心：",
+        options: [
+          { text: "拍下來、跟家人分享美景", correct: true, fb: "美景共享，快樂加倍。" },
+          { text: "摘下來帶回家", correct: false, fb: "摘了花就枯了，留在樹上更多人看。" },
+          { text: "抱怨人太多影響我", correct: false, fb: "大家都想看美景，學會包容。" },
+          { text: "看一眼就走完全沒感覺", correct: false, fb: "停下來感受美好，心會變柔軟。" }
+        ]
+      }
+    ],
+    skillType: "gratitude"
+  }
+};
+
+const ISLAND_ORDER = ["volcano", "rain", "ice", "typhoon", "desert", "sakura"];
+
+// ========= STATE =========
+let state = loadState();
+let currentIsland = null;
+let currentQuestionIndex = 0;
+let lastSpokenText = "";
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem("moodIsland_v1");
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return {
+    name: "",
+    islandsDone: {},
+    skills: []
+  };
+}
+function saveState() {
+  localStorage.setItem("moodIsland_v1", JSON.stringify(state));
+}
+
+// ========= TTS =========
+let voicesReady = false;
+function loadVoices() {
+  const v = speechSynthesis.getVoices();
+  voicesReady = v.length > 0;
+  if (!voicesReady) setTimeout(loadVoices, 200);
+}
+if ("speechSynthesis" in window) {
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+function speak(text, rate=0.95) {
+  if (!("speechSynthesis" in window)) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "zh-TW";
+    u.rate = rate;
+    u.pitch = 1.0;
+    const voices = speechSynthesis.getVoices();
+    const tw = voices.find(v => v.lang === "zh-TW") || voices.find(v => v.lang.startsWith("zh"));
+    if (tw) u.voice = tw;
+    lastSpokenText = text;
+    speechSynthesis.speak(u);
+  } catch(e) {}
+}
+function repeatCurrentSpeech() {
+  if (lastSpokenText) speak(lastSpokenText);
+}
+
+// ========= SEED 角色：六島各別主題 SVG（純原創） =========
+const CHARACTER_SVG = {
+  volcano: {
+    seed: `<svg viewBox="0 0 100 130" width="120" height="156">
+      <defs><radialGradient id="g-vol-s" cx="35%" cy="35%">
+        <stop offset="0%" stop-color="#ff8a65"/><stop offset="60%" stop-color="#e74c3c"/><stop offset="100%" stop-color="#8b0000"/>
+      </radialGradient></defs>
+      <path d="M50,8 C30,25 15,55 22,92 C22,122 78,122 78,92 C85,55 70,25 50,8 Z" fill="url(#g-vol-s)"/>
+      <path d="M30,38 Q26,30 32,28 Q34,34 30,38" fill="#ffd54f" opacity="0.9"/>
+      <path d="M70,38 Q74,30 68,28 Q66,34 70,38" fill="#ffd54f" opacity="0.9"/>
+      <line x1="32" y1="55" x2="44" y2="62" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="68" y1="55" x2="56" y2="62" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+      <circle cx="40" cy="72" r="5" fill="#fff"/><circle cx="60" cy="72" r="5" fill="#fff"/>
+      <circle cx="40" cy="73" r="3" fill="#000"/><circle cx="60" cy="73" r="3" fill="#000"/>
+      <ellipse cx="50" cy="93" rx="9" ry="11" fill="#5d1a1a"/>
+      <ellipse cx="50" cy="98" rx="4" ry="5" fill="#ff5252"/>
+    </svg>`,
+    sprout: `<svg viewBox="0 0 100 130" width="120" height="156">
+      <defs><radialGradient id="g-vol-p" cx="35%" cy="35%">
+        <stop offset="0%" stop-color="#ffe0b2"/><stop offset="100%" stop-color="#ffb74d"/>
+      </radialGradient></defs>
+      <path d="M50,15 C32,30 22,55 30,90 C30,118 70,118 70,90 C78,55 68,30 50,15 Z" fill="url(#g-vol-p)"/>
+      <path d="M32,60 Q38,57 44,60" stroke="#7b341a" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M56,60 Q62,57 68,60" stroke="#7b341a" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M34,72 Q39,68 44,72" stroke="#7b341a" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M56,72 Q61,68 66,72" stroke="#7b341a" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="32" cy="82" rx="5" ry="3" fill="#ff8a80" opacity="0.5"/>
+      <ellipse cx="68" cy="82" rx="5" ry="3" fill="#ff8a80" opacity="0.5"/>
+      <path d="M40,93 Q50,103 60,93" stroke="#7b341a" stroke-width="3.5" fill="#ffab91" stroke-linecap="round"/>
+    </svg>`
+  },
+  rain: {
+    seed: `<svg viewBox="0 0 100 130" width="120" height="156">
+      <defs><radialGradient id="g-rain-s" cx="35%" cy="30%">
+        <stop offset="0%" stop-color="#90caf9"/><stop offset="100%" stop-color="#1976d2"/>
+      </radialGradient></defs>
+      <path d="M50,10 C30,35 22,75 30,100 C30,120 70,120 70,100 C78,75 70,35 50,10 Z" fill="url(#g-rain-s)"/>
+      <ellipse cx="40" cy="40" rx="8" ry="14" fill="#fff" opacity="0.35"/>
+      <path d="M32,58 Q38,64 44,60" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M68,58 Q62,64 56,60" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M34,70 Q39,75 44,70" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M56,70 Q61,75 66,70" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="35" cy="83" rx="3" ry="6" fill="#b3e5fc"/>
+      <ellipse cx="65" cy="83" rx="3" ry="6" fill="#b3e5fc"/>
+      <ellipse cx="50" cy="98" rx="5" ry="7" fill="#1565c0"/>
+    </svg>`,
+    sprout: `<svg viewBox="0 0 100 130" width="120" height="156">
+      <defs><linearGradient id="g-rain-p" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#ef5350"/><stop offset="20%" stop-color="#ff9800"/>
+        <stop offset="40%" stop-color="#ffeb3b"/><stop offset="60%" stop-color="#66bb6a"/>
+        <stop offset="80%" stop-color="#42a5f5"/><stop offset="100%" stop-color="#ab47bc"/>
+      </linearGradient></defs>
+      <path d="M50,10 C30,35 22,75 30,100 C30,120 70,120 70,100 C78,75 70,35 50,10 Z" fill="url(#g-rain-p)"/>
+      <path d="M32,58 Q38,55 44,58" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M68,58 Q62,55 56,58" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M34,72 Q39,67 44,72" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M56,72 Q61,67 66,72" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M38,90 Q50,105 62,90 Q50,98 38,90 Z" fill="#fff"/>
+      <circle cx="30" cy="83" r="4" fill="#ff8a80" opacity="0.6"/>
+      <circle cx="70" cy="83" r="4" fill="#ff8a80" opacity="0.6"/>
+    </svg>`
+  },
+  ice: {
+    seed: `<svg viewBox="0 0 100 130" width="120" height="156" class="shaky-char">
+      <defs><linearGradient id="g-ice-s" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#e1bee7"/><stop offset="100%" stop-color="#7e57c2"/>
+      </linearGradient></defs>
+      <polygon points="50,10 90,40 80,110 20,110 10,40" fill="url(#g-ice-s)" stroke="#fff" stroke-width="2"/>
+      <line x1="50" y1="10" x2="50" y2="110" stroke="#fff" stroke-width="1.5" opacity="0.5"/>
+      <line x1="10" y1="40" x2="90" y2="40" stroke="#fff" stroke-width="1.5" opacity="0.5"/>
+      <path d="M30,55 Q38,49 46,55" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M70,55 Q62,49 54,55" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="38" cy="70" r="7" fill="#fff"/><circle cx="62" cy="70" r="7" fill="#fff"/>
+      <circle cx="38" cy="71" r="3" fill="#000"/><circle cx="62" cy="71" r="3" fill="#000"/>
+      <circle cx="50" cy="93" r="6" fill="#4a148c"/>
+      <text x="18" y="35" font-size="16" fill="#fff" opacity="0.85">❄</text>
+      <text x="72" y="35" font-size="16" fill="#fff" opacity="0.85">❄</text>
+    </svg>`,
+    sprout: `<svg viewBox="0 0 100 130" width="120" height="156">
+      <defs><linearGradient id="g-ice-p" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#f3e5f5"/><stop offset="100%" stop-color="#9c27b0"/>
+      </linearGradient></defs>
+      <polygon points="50,10 90,40 80,110 20,110 10,40" fill="url(#g-ice-p)" stroke="#fff" stroke-width="2"/>
+      <line x1="50" y1="10" x2="50" y2="110" stroke="#fff" stroke-width="1.5" opacity="0.5"/>
+      <line x1="10" y1="40" x2="90" y2="40" stroke="#fff" stroke-width="1.5" opacity="0.5"/>
+      <line x1="32" y1="55" x2="44" y2="58" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="68" y1="55" x2="56" y2="58" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+      <path d="M32,70 Q38,65 44,70" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M56,70 Q62,65 68,70" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M38,90 Q50,100 62,90" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <text x="18" y="35" font-size="18" fill="#fff">❄</text>
+      <text x="72" y="35" font-size="18" fill="#fff">❄</text>
+    </svg>`
+  },
+  typhoon: {
+    seed: `<svg viewBox="0 0 100 130" width="120" height="156">
+      <defs><radialGradient id="g-typ-s" cx="50%" cy="50%">
+        <stop offset="0%" stop-color="#cfd8dc"/><stop offset="100%" stop-color="#546e7a"/>
+      </radialGradient></defs>
+      <g class="spin-body" style="transform-origin:50px 65px">
+        <path d="M50,15 Q85,30 80,65 Q70,90 45,90 Q25,85 25,65 Q30,45 50,45 Q60,50 60,60 Q55,68 50,65"
+              fill="url(#g-typ-s)" stroke="#37474f" stroke-width="1.5"/>
+      </g>
+      <line x1="33" y1="55" x2="43" y2="65" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="43" y1="55" x2="33" y2="65" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="62" cy="60" r="5" fill="none" stroke="#fff" stroke-width="3"/>
+      <path d="M40,80 L43,76 L46,80 L49,76 L52,80 L55,76 L58,80 L61,76" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M15,30 Q25,30 30,35" stroke="#fff" stroke-width="2" fill="none" opacity="0.7"/>
+      <path d="M75,40 Q85,40 88,45" stroke="#fff" stroke-width="2" fill="none" opacity="0.7"/>
+    </svg>`,
+    sprout: `<svg viewBox="0 0 100 130" width="120" height="156">
+      <defs><radialGradient id="g-typ-p" cx="50%" cy="50%">
+        <stop offset="0%" stop-color="#e0f7fa"/><stop offset="100%" stop-color="#80deea"/>
+      </radialGradient></defs>
+      <ellipse cx="50" cy="70" rx="40" ry="32" fill="url(#g-typ-p)" stroke="#26c6da" stroke-width="1.5"/>
+      <circle cx="30" cy="60" r="14" fill="url(#g-typ-p)"/>
+      <circle cx="70" cy="60" r="14" fill="url(#g-typ-p)"/>
+      <circle cx="50" cy="50" r="14" fill="url(#g-typ-p)"/>
+      <path d="M34,70 Q40,65 46,70" stroke="#00695c" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M56,70 Q62,65 68,70" stroke="#00695c" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M40,82 Q50,90 60,82" stroke="#00695c" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="32" cy="80" r="3.5" fill="#ff8a80" opacity="0.5"/>
+      <circle cx="68" cy="80" r="3.5" fill="#ff8a80" opacity="0.5"/>
+    </svg>`
+  },
+  desert: {
+    seed: `<svg viewBox="0 0 100 130" width="120" height="156">
+      <defs><linearGradient id="g-des-s" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#ffb74d"/><stop offset="100%" stop-color="#e65100"/>
+      </linearGradient></defs>
+      <rect x="40" y="25" width="20" height="90" rx="10" fill="url(#g-des-s)"/>
+      <rect x="18" y="55" width="22" height="14" rx="7" fill="url(#g-des-s)"/>
+      <rect x="18" y="55" width="14" height="35" rx="7" fill="url(#g-des-s)"/>
+      <rect x="60" y="50" width="22" height="14" rx="7" fill="url(#g-des-s)"/>
+      <rect x="68" y="50" width="14" height="30" rx="7" fill="url(#g-des-s)"/>
+      <g stroke="#fff" stroke-width="1.5" stroke-linecap="round">
+        <line x1="45" y1="40" x2="44" y2="36"/><line x1="55" y1="50" x2="56" y2="46"/>
+        <line x1="50" y1="65" x2="49" y2="61"/><line x1="48" y1="80" x2="47" y2="76"/>
+        <line x1="55" y1="95" x2="56" y2="91"/><line x1="25" y1="62" x2="24" y2="58"/>
+        <line x1="73" y1="58" x2="74" y2="54"/>
+      </g>
+      <line x1="44" y1="56" x2="48" y2="60" stroke="#3e2723" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="56" y1="56" x2="52" y2="60" stroke="#3e2723" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="46" cy="68" r="2" fill="#3e2723"/><circle cx="54" cy="68" r="2" fill="#3e2723"/>
+      <path d="M46,80 Q50,78 54,80" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>`,
+    sprout: `<svg viewBox="0 0 100 130" width="120" height="156">
+      <defs><linearGradient id="g-des-p" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#aed581"/><stop offset="100%" stop-color="#558b2f"/>
+      </linearGradient></defs>
+      <rect x="40" y="40" width="20" height="75" rx="10" fill="url(#g-des-p)"/>
+      <rect x="18" y="65" width="22" height="14" rx="7" fill="url(#g-des-p)"/>
+      <rect x="18" y="65" width="14" height="30" rx="7" fill="url(#g-des-p)"/>
+      <rect x="60" y="60" width="22" height="14" rx="7" fill="url(#g-des-p)"/>
+      <rect x="68" y="60" width="14" height="25" rx="7" fill="url(#g-des-p)"/>
+      <g class="bloom-flower-g">
+        <circle cx="42" cy="22" r="8" fill="#ff80ab"/>
+        <circle cx="58" cy="22" r="8" fill="#ff80ab"/>
+        <circle cx="50" cy="14" r="8" fill="#ff80ab"/>
+        <circle cx="42" cy="34" r="8" fill="#ff80ab"/>
+        <circle cx="58" cy="34" r="8" fill="#ff80ab"/>
+        <circle cx="50" cy="25" r="6" fill="#fff59d"/>
+      </g>
+      <path d="M43,62 Q46,59 49,62" stroke="#33691e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M51,62 Q54,59 57,62" stroke="#33691e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M44,72 Q46,69 48,72" stroke="#33691e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M52,72 Q54,69 56,72" stroke="#33691e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M45,82 Q50,87 55,82" stroke="#33691e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <circle cx="42" cy="78" r="2" fill="#ff8a80" opacity="0.6"/>
+      <circle cx="58" cy="78" r="2" fill="#ff8a80" opacity="0.6"/>
+    </svg>`
+  },
+  sakura: {
+    seed: `<svg viewBox="0 0 100 130" width="120" height="156">
+      <defs><radialGradient id="g-sak-s" cx="50%" cy="50%">
+        <stop offset="0%" stop-color="#fce4ec"/><stop offset="100%" stop-color="#f48fb1"/>
+      </radialGradient></defs>
+      <ellipse cx="25" cy="100" rx="14" ry="6" fill="#81c784" transform="rotate(-30 25 100)"/>
+      <ellipse cx="75" cy="100" rx="14" ry="6" fill="#81c784" transform="rotate(30 75 100)"/>
+      <rect x="48" y="80" width="4" height="30" fill="#558b2f"/>
+      <path d="M50,20 C30,30 30,75 50,80 C70,75 70,30 50,20 Z" fill="url(#g-sak-s)"/>
+      <path d="M50,20 C45,40 45,70 50,80" stroke="#ec407a" stroke-width="1.5" fill="none"/>
+      <path d="M40,55 Q44,58 48,55" stroke="#880e4f" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M52,55 Q56,58 60,55" stroke="#880e4f" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="50" cy="68" rx="3" ry="2" fill="#ad1457"/>
+      <circle cx="38" cy="62" r="3" fill="#f06292" opacity="0.6"/>
+      <circle cx="62" cy="62" r="3" fill="#f06292" opacity="0.6"/>
+    </svg>`,
+    sprout: `<svg viewBox="0 0 100 130" width="120" height="156" class="dancing-char">
+      <defs><radialGradient id="g-sak-p" cx="50%" cy="50%">
+        <stop offset="0%" stop-color="#fff"/><stop offset="80%" stop-color="#f8bbd0"/>
+        <stop offset="100%" stop-color="#ec407a"/>
+      </radialGradient></defs>
+      <ellipse cx="25" cy="115" rx="14" ry="6" fill="#81c784" transform="rotate(-30 25 115)"/>
+      <ellipse cx="75" cy="115" rx="14" ry="6" fill="#81c784" transform="rotate(30 75 115)"/>
+      <rect x="48" y="85" width="4" height="30" fill="#558b2f"/>
+      <g>
+        <ellipse cx="50" cy="30" rx="15" ry="20" fill="url(#g-sak-p)"/>
+        <ellipse cx="29" cy="45" rx="15" ry="20" fill="url(#g-sak-p)" transform="rotate(-60 29 45)"/>
+        <ellipse cx="71" cy="45" rx="15" ry="20" fill="url(#g-sak-p)" transform="rotate(60 71 45)"/>
+        <ellipse cx="38" cy="70" rx="15" ry="20" fill="url(#g-sak-p)" transform="rotate(-130 38 70)"/>
+        <ellipse cx="62" cy="70" rx="15" ry="20" fill="url(#g-sak-p)" transform="rotate(130 62 70)"/>
+        <circle cx="50" cy="50" r="11" fill="#fff59d"/>
+        <circle cx="50" cy="50" r="6" fill="#ffd54f"/>
+      </g>
+      <path d="M45,47 Q47,44 49,47" stroke="#8e24aa" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M51,47 Q53,44 55,47" stroke="#8e24aa" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M46,54 Q50,57 54,54" stroke="#8e24aa" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    </svg>`
+  }
+};
+
+function renderCharacter(islandKey, stage, opts={}) {
+  const island = ISLANDS[islandKey];
+  const svg = CHARACTER_SVG[islandKey][stage];
+  const name = stage === "seed" ? island.seed.name : island.sprout.name;
+  const wrapCls = opts.wiggle ? "char-wrap wiggle-char" : "char-wrap";
+  const virtue = stage === "sprout" ? `<div style="text-align:center; margin-top:6px;"><span class="virtue-badge">⭐ ${island.sprout.virtue}</span></div>` : "";
+  return `
+    <div class="${wrapCls}">
+      ${svg}
+      <div class="char-label">${name}</div>
+      ${virtue}
+    </div>
+  `;
+}
+// 相容舊呼叫
+function renderSeed(seed, opts={}) {
+  const key = Object.keys(ISLANDS).find(k => ISLANDS[k].seed.name === seed.name);
+  return key ? renderCharacter(key, "seed", opts) : "";
+}
+function renderSprout(sprout, opts={}) {
+  const key = Object.keys(ISLANDS).find(k => ISLANDS[k].sprout.name === sprout.name);
+  return key ? renderCharacter(key, "sprout", opts) : "";
+}
+
+// ========= NAVIGATION =========
+function showScreen(id) {
+  speechSynthesis.cancel();
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById("screen-" + id).classList.add("active");
+  window.scrollTo(0, 0);
+  if (id === "passport") renderPassport();
+  if (id === "map") renderMap();
+}
+
+function enterMid() {
+  renderMap();
+  showScreen("map");
+}
+
+function showPassport() { showScreen("passport"); }
+function showAbout() { showScreen("about"); }
+
+// ========= MAP =========
+function renderMap() {
+  const grid = document.getElementById("island-grid");
+  grid.innerHTML = "";
+  ISLAND_ORDER.forEach(key => {
+    const island = ISLANDS[key];
+    const done = !!state.islandsDone[key];
+    const card = document.createElement("div");
+    card.className = "island-card" + (done ? " done" : "");
+    card.innerHTML = `
+      <div class="island-emoji">${island.emoji}</div>
+      <div class="island-name">${island.name}</div>
+      <div class="island-emotion">${island.emotion}</div>
+    `;
+    card.onclick = () => enterIsland(key);
+    grid.appendChild(card);
+  });
+}
+
+// ========= ISLAND ENTRY =========
+function enterIsland(key) {
+  currentIsland = key;
+  currentQuestionIndex = 0;
+  document.body.style.background = ISLANDS[key].bg;
+  showScreen("island");
+  renderStory();
+}
+
+function confirmLeaveIsland() {
+  speechSynthesis.cancel();
+  if (confirm("確定要離開這座島嗎？這次的進度不會儲存喔。")) {
+    document.body.style.background = "var(--bg-sky)";
+    showScreen("map");
+  }
+}
+
+// ========= STORY =========
+function renderStory() {
+  const island = ISLANDS[currentIsland];
+  const html = `
+    <div class="island-header">
+      <div class="island-header-emoji">${island.emoji}</div>
+      <div class="island-header-name">${island.name}</div>
+      <div class="island-stage-pill">情緒：${island.emotion}</div>
+    </div>
+    <div class="story-box">
+      <div style="text-align:center; margin-bottom:12px;">
+        ${renderCharacter(currentIsland, "seed", {wiggle: true})}
+        <div class="seed-bubble">「${island.seed.voice}」</div>
+        <button class="speaker-btn" onclick="speak('${island.seed.name}說：${island.seed.voice}')">🔊 聽${island.seed.name}說話</button>
+      </div>
+      <hr style="border:none; border-top:2px dashed #ffd7a8; margin:20px 0;">
+      <div class="story-text" id="story-text">${island.story}</div>
+      <div style="margin-top:16px;">
+        <button class="speaker-btn" onclick="speak(document.getElementById('story-text').textContent)">🔊 念故事</button>
+        <button class="speaker-btn secondary big" onclick="startQuestions()">開始幫種子 →</button>
+      </div>
+    </div>
+  `;
+  document.getElementById("island-content").innerHTML = html;
+  setTimeout(() => speak(island.seed.name + "說：" + island.seed.voice), 400);
+  setTimeout(() => speak(island.story), 4500);
+}
+
+// ========= QUESTIONS =========
+function startQuestions() {
+  currentQuestionIndex = 0;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const island = ISLANDS[currentIsland];
+  const q = island.questions[currentQuestionIndex];
+  const html = `
+    <div class="island-header">
+      <div class="island-header-emoji">${island.emoji}</div>
+      <div class="island-stage-pill">${island.name} — 第 ${currentQuestionIndex+1} / ${island.questions.length} 關</div>
+    </div>
+    <div class="question-box">
+      <div class="question-num">情境 ${currentQuestionIndex+1}</div>
+      <div class="question-text" id="question-text">${q.q}</div>
+      <button class="speaker-btn" onclick="speak(document.getElementById('question-text').textContent)">🔊 念題目</button>
+      <div class="options-grid" id="options-grid" style="margin-top:16px;"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="next-btn-wrap" id="next-btn-wrap"></div>
+    </div>
+  `;
+  document.getElementById("island-content").innerHTML = html;
+  const grid = document.getElementById("options-grid");
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.className = "option-btn";
+    btn.textContent = `${String.fromCharCode(65+i)}. ${opt.text}`;
+    btn.onclick = () => chooseOption(i, btn);
+    grid.appendChild(btn);
+  });
+  setTimeout(() => speak(q.q), 300);
+}
+
+function chooseOption(idx, btnEl) {
+  const island = ISLANDS[currentIsland];
+  const q = island.questions[currentQuestionIndex];
+  const opt = q.options[idx];
+  document.querySelectorAll(".option-btn").forEach(b => b.disabled = true);
+  if (opt.correct) {
+    btnEl.classList.add("correct");
+    showFeedback(opt.fb, true);
+    speak("答對了！" + opt.fb);
+    setTimeout(() => {
+      const wrap = document.getElementById("next-btn-wrap");
+      wrap.innerHTML = `<button class="speaker-btn big" onclick="nextQuestion()">${currentQuestionIndex < island.questions.length-1 ? "下一題 →" : "練習技能 →"}</button>`;
+    }, 800);
+  } else {
+    btnEl.classList.add("wrong");
+    showFeedback(opt.fb, false);
+    speak(opt.fb + " 再想想看。");
+    setTimeout(() => {
+      document.querySelectorAll(".option-btn").forEach(b => {
+        if (!b.classList.contains("wrong")) b.disabled = false;
+      });
+      document.getElementById("feedback").classList.remove("show");
+    }, 2200);
+  }
+}
+
+function showFeedback(text, isCorrect) {
+  const fb = document.getElementById("feedback");
+  fb.textContent = (isCorrect ? "✅ " : "🤔 ") + text;
+  fb.className = "feedback show " + (isCorrect ? "right" : "wrong");
+}
+
+function nextQuestion() {
+  const island = ISLANDS[currentIsland];
+  currentQuestionIndex++;
+  if (currentQuestionIndex >= island.questions.length) {
+    renderSkill();
+  } else {
+    renderQuestion();
+  }
+}
+
+// ========= SKILL MINI-GAMES =========
+function renderSkill() {
+  const island = ISLANDS[currentIsland];
+  const html = `
+    <div class="island-header">
+      <div class="island-header-emoji">${island.emoji}</div>
+      <div class="island-stage-pill">技能練習：${island.skillName}</div>
+    </div>
+    <div class="skill-box">
+      <div class="skill-title">${island.skillName}</div>
+      <div class="skill-instruction">${island.skillDesc}</div>
+      <div id="skill-area"></div>
+    </div>
+  `;
+  document.getElementById("island-content").innerHTML = html;
+  speak(island.skillName + "。" + island.skillDesc);
+  const area = document.getElementById("skill-area");
+  switch(island.skillType) {
+    case "breathing": renderBreathing(area); break;
+    case "rainbow": renderRainbow(area); break;
+    case "grounding": renderGrounding(area); break;
+    case "worrybox": renderWorryBox(area); break;
+    case "strengths": renderStrengths(area); break;
+    case "gratitude": renderGratitude(area); break;
+  }
+}
+
+// --- breathing (volcano) ---
+function renderBreathing(area) {
+  area.innerHTML = `
+    <div class="breathe-stage">
+      <div class="breathe-count" id="breathe-count">準備好就開始</div>
+      <div class="breathe-circle" id="breathe-circle">點我開始</div>
+      <div id="breathe-status" style="font-size:18px; color:#666; margin:12px 0;"></div>
+      <div id="breathe-action"></div>
+    </div>
+  `;
+  const circle = document.getElementById("breathe-circle");
+  const count = document.getElementById("breathe-count");
+  const status = document.getElementById("breathe-status");
+  let round = 0;
+  let phase = 0;
+  circle.onclick = () => {
+    if (round >= 5) return;
+    circle.onclick = null;
+    runCycle();
+  };
+  function runCycle() {
+    if (round >= 5) {
+      count.textContent = "完成！火山降溫了 🎉";
+      circle.textContent = "❄️";
+      circle.className = "breathe-circle";
+      status.textContent = "";
+      speak("做得很棒！火山降溫了。");
+      document.getElementById("breathe-action").innerHTML = `<button class="speaker-btn big" onclick="completeIsland()">完成 → 蓋章</button>`;
+      return;
+    }
+    round++;
+    count.textContent = `第 ${round} / 5 次`;
+    // breathe in
+    circle.classList.remove("out");
+    circle.classList.add("in");
+    circle.textContent = "吸氣";
+    status.textContent = "慢慢吸氣 4 秒...";
+    speak("吸氣");
+    setTimeout(() => {
+      circle.classList.remove("in");
+      circle.classList.add("out");
+      circle.textContent = "吐氣";
+      status.textContent = "慢慢吐氣 6 秒...";
+      speak("吐氣");
+      setTimeout(() => {
+        runCycle();
+      }, 6000);
+    }, 4000);
+  }
+}
+
+// --- rainbow (rain) ---
+function renderRainbow(area) {
+  area.innerHTML = `
+    <div class="worry-box-area">
+      <p style="font-size:18px;">把現在難過的事，或想到的難過寫下來：</p>
+      <textarea id="sad-input" placeholder="例如：我今天被同學笑..." style="width:100%; max-width:500px; min-height:80px; padding:12px; font-size:18px; border:3px solid #9bb7d4; border-radius:12px; font-family:inherit;"></textarea>
+      <div id="rain-cloud" style="font-size:80px; margin:20px 0;">🌧</div>
+      <button class="speaker-btn big" onclick="sayItOut()">告訴雨雲，讓彩虹出現 🌈</button>
+      <div id="rainbow-result" style="margin-top:20px;"></div>
+    </div>
+  `;
+}
+function sayItOut() {
+  const text = document.getElementById("sad-input").value.trim();
+  if (!text) {
+    alert("先寫一句話再來喔！");
+    return;
+  }
+  const cloud = document.getElementById("rain-cloud");
+  cloud.style.transition = "opacity 1s";
+  cloud.style.opacity = "0";
+  speak("你說：" + text + "。說出來了，難過會慢慢退。");
+  setTimeout(() => {
+    cloud.textContent = "🌈";
+    cloud.style.opacity = "1";
+    document.getElementById("rainbow-result").innerHTML = `
+      <div style="background:linear-gradient(90deg,#ff7b7b,#ffb74d,#ffd54f,#81c784,#4fc3f7,#9575cd,#f48fb1); padding:16px; border-radius:12px; color:#fff; font-weight:bold; font-size:20px;">
+        彩虹出現了！說出難過，是勇敢的表現。
+      </div>
+      <div style="margin-top:20px;"><button class="speaker-btn big" onclick="completeIsland()">完成 → 蓋章</button></div>
+    `;
+  }, 1200);
+}
+
+// --- grounding 5-4-3-2-1 (ice) ---
+function renderGrounding(area) {
+  const steps = [
+    { n: 5, prompt: "找 5 個你看得到的東西", sense: "看到" },
+    { n: 4, prompt: "找 4 個你聽得到的聲音", sense: "聽到" },
+    { n: 3, prompt: "找 3 個你摸得到的東西", sense: "摸到" },
+    { n: 2, prompt: "找 2 個你聞得到的味道", sense: "聞到" },
+    { n: 1, prompt: "找 1 個你嘗得到的味道", sense: "嘗到" }
+  ];
+  let stepIdx = 0;
+  area.innerHTML = `
+    <div class="grounding-step" id="grounding-step"></div>
+  `;
+  renderStep();
+  function renderStep() {
+    if (stepIdx >= steps.length) {
+      document.getElementById("grounding-step").innerHTML = `
+        <div style="font-size:60px;">❄️→☀️</div>
+        <div class="grounding-prompt">薄冰變成大地了！</div>
+        <div style="font-size:18px; color:#666; margin:16px 0;">你的心已經拉回現在，害怕變小了。</div>
+        <button class="speaker-btn big" onclick="completeIsland()">完成 → 蓋章</button>
+      `;
+      speak("做得很好！你的心已經拉回現在了。");
+      return;
+    }
+    const s = steps[stepIdx];
+    let dots = "";
+    for (let i=0;i<s.n;i++) dots += `<div class="progress-dot" id="dot-${i}"></div>`;
+    document.getElementById("grounding-step").innerHTML = `
+      <div style="font-size:36px; color:#4a90e2; font-weight:bold;">${s.n} 個</div>
+      <div class="grounding-prompt">${s.prompt}</div>
+      <button class="speaker-btn" onclick="speak('${s.prompt}')">🔊 念一次</button>
+      <div class="grounding-progress">${dots}</div>
+      <input class="grounding-input" id="grounding-input" placeholder="輸入 1 個你${s.sense}的">
+      <div style="margin-top:10px;"><button class="speaker-btn" id="grounding-add">加進去</button></div>
+    `;
+    speak(s.prompt);
+    let count = 0;
+    const input = document.getElementById("grounding-input");
+    const btn = document.getElementById("grounding-add");
+    function add() {
+      const v = input.value.trim();
+      if (!v) return;
+      document.getElementById("dot-" + count).classList.add("done");
+      input.value = "";
+      input.focus();
+      count++;
+      if (count >= s.n) {
+        stepIdx++;
+        setTimeout(renderStep, 400);
+      }
+    }
+    btn.onclick = add;
+    input.addEventListener("keydown", e => { if (e.key === "Enter") add(); });
+    setTimeout(() => input.focus(), 100);
+  }
+}
+
+// --- worrybox (typhoon) ---
+function renderWorryBox(area) {
+  area.innerHTML = `
+    <div class="worry-box-area">
+      <div class="worry-input-wrap">
+        <textarea id="worry-input" placeholder="寫下一個你的擔心..."></textarea>
+      </div>
+      <div style="margin-top:10px;">
+        <button class="speaker-btn" onclick="addWorry()">放進擔心盒</button>
+      </div>
+      <div class="worry-box-icon" id="worry-box">📦</div>
+      <div style="font-size:16px; color:#666;" id="worry-counter">擔心盒裡：0 個</div>
+      <div class="worry-list" id="worry-list" style="display:none;"></div>
+      <div id="worry-finish" style="margin-top:20px;"></div>
+    </div>
+  `;
+}
+let worryList = [];
+function addWorry() {
+  const input = document.getElementById("worry-input");
+  const text = input.value.trim();
+  if (!text) {
+    alert("先寫一個擔心再丟進盒子！");
+    return;
+  }
+  worryList.push(text);
+  input.value = "";
+  const box = document.getElementById("worry-box");
+  box.classList.add("shake");
+  setTimeout(() => box.classList.remove("shake"), 600);
+  document.getElementById("worry-counter").textContent = `擔心盒裡：${worryList.length} 個`;
+  const list = document.getElementById("worry-list");
+  list.style.display = "block";
+  list.innerHTML = "<strong>盒子裡的擔心：</strong>" + worryList.map((w,i) => `<div class="worry-list-item">${i+1}. ${w}</div>`).join("");
+  speak("第 " + worryList.length + " 個擔心放進去了。");
+  if (worryList.length >= 1) {
+    document.getElementById("worry-finish").innerHTML = `
+      <p style="font-size:17px; color:#555; margin-top:16px;">把擔心放進盒子，腦袋就清空了。<br>可以繼續放，或完成這座島。</p>
+      <button class="speaker-btn big" onclick="completeIsland()">完成 → 蓋章</button>
+    `;
+  }
+}
+
+// --- strengths (desert) ---
+function renderStrengths(area) {
+  area.innerHTML = `
+    <div class="strength-area">
+      <p style="font-size:18px;">寫下 3 個自己很棒的地方：</p>
+      <input class="strength-input" id="strength-1" placeholder="第 1 個我很棒：例如 我很會畫畫">
+      <input class="strength-input" id="strength-2" placeholder="第 2 個我很棒：例如 我會幫忙">
+      <input class="strength-input" id="strength-3" placeholder="第 3 個我很棒：例如 我有耐心">
+      <div style="margin:16px 0;"><button class="speaker-btn big" onclick="grewOasis()">讓綠洲出現 🌴</button></div>
+      <div id="oasis-result"></div>
+    </div>
+  `;
+}
+function grewOasis() {
+  const s1 = document.getElementById("strength-1").value.trim();
+  const s2 = document.getElementById("strength-2").value.trim();
+  const s3 = document.getElementById("strength-3").value.trim();
+  if (!s1 || !s2 || !s3) {
+    alert("三個都要寫喔！想想看你的好。");
+    return;
+  }
+  document.getElementById("oasis-result").innerHTML = `
+    <div class="oasis-display">🌴💧🌴</div>
+    <div class="strength-list">
+      <div class="strength-item">✨ ${s1}</div>
+      <div class="strength-item">✨ ${s2}</div>
+      <div class="strength-item">✨ ${s3}</div>
+    </div>
+    <p style="font-size:17px; color:#8b4513;">沙漠長出綠洲了！你本來就有很多好。</p>
+    <button class="speaker-btn big" onclick="completeIsland()">完成 → 蓋章</button>
+  `;
+  speak("你說：" + s1 + "，" + s2 + "，" + s3 + "。你本來就有很多好。");
+}
+
+// --- gratitude (sakura) ---
+function renderGratitude(area) {
+  area.innerHTML = `
+    <div class="strength-area">
+      <p style="font-size:18px;">寫下 3 個你想感謝的人事物：</p>
+      <input class="strength-input" id="thank-1" placeholder="感謝 1：例如 媽媽煮飯給我吃">
+      <input class="strength-input" id="thank-2" placeholder="感謝 2：例如 老師教我數學">
+      <input class="strength-input" id="thank-3" placeholder="感謝 3：例如 朋友陪我玩">
+      <div style="margin:16px 0;"><button class="speaker-btn big" onclick="bloomSakura()">讓櫻花盛開 🌸</button></div>
+      <div id="sakura-result"></div>
+    </div>
+  `;
+}
+function bloomSakura() {
+  const t1 = document.getElementById("thank-1").value.trim();
+  const t2 = document.getElementById("thank-2").value.trim();
+  const t3 = document.getElementById("thank-3").value.trim();
+  if (!t1 || !t2 || !t3) {
+    alert("三個感謝都要寫喔！");
+    return;
+  }
+  document.getElementById("sakura-result").innerHTML = `
+    <div class="sakura-tree">🌸🌳🌸</div>
+    <div class="sakura-petals">🌸 🌸 🌸 🌸 🌸</div>
+    <div class="strength-list">
+      <div class="strength-item">💖 ${t1}</div>
+      <div class="strength-item">💖 ${t2}</div>
+      <div class="strength-item">💖 ${t3}</div>
+    </div>
+    <p style="font-size:17px; color:#c2185b;">櫻花盛開了！感謝讓快樂變更多。</p>
+    <button class="speaker-btn big" onclick="completeIsland()">完成 → 蓋章</button>
+  `;
+  speak("你感謝：" + t1 + "，" + t2 + "，" + t3 + "。感謝是最美的禮物。");
+}
+
+// ========= ISLAND COMPLETE =========
+function completeIsland() {
+  const island = ISLANDS[currentIsland];
+  // mark done
+  if (!state.islandsDone[currentIsland]) {
+    state.islandsDone[currentIsland] = true;
+    if (!state.skills.includes(island.skillName)) {
+      state.skills.push(island.skillName);
+    }
+    saveState();
+  }
+  const html = `
+    <div class="stamp-area">
+      <div class="stamp-title">種子發芽了！</div>
+      <p style="font-size:18px; color:#555; margin:8px 0 20px;">${island.seed.name} 學會了 ${island.skillName}，正在發芽…</p>
+      <div id="sprout-area" style="min-height:240px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        ${renderCharacter(currentIsland, "seed")}
+      </div>
+      <div id="sprout-bubble"></div>
+      <div class="stamp-card">
+        <h3>🎒 學到的技能：${island.skillName}</h3>
+        <p>${island.skillDesc}<br><br>下次遇到「${island.emotion}」的時候，記得用這個技能！</p>
+      </div>
+      <div id="after-bloom" style="margin-top:20px;"></div>
+    </div>
+  `;
+  document.getElementById("island-content").innerHTML = html;
+  speak(island.seed.name + " 學會了 " + island.skillName + "，正在發芽。");
+
+  // 種子→苗 變身動畫
+  setTimeout(() => {
+    const area = document.getElementById("sprout-area");
+    area.innerHTML = renderCharacter(currentIsland, "sprout");
+    const wrap = area.querySelector(".char-wrap");
+    if (wrap) wrap.classList.add("transform-in");
+  }, 1500);
+  setTimeout(() => {
+    document.getElementById("sprout-bubble").innerHTML = `
+      <div class="seed-bubble" style="border-color:#6bcf7f;">「${island.sprout.voice}」</div>
+      <div style="text-align:center;">
+        <button class="speaker-btn" onclick="speak('${island.sprout.name}說：${island.sprout.voice}')">🔊 聽${island.sprout.name}說話</button>
+      </div>
+    `;
+    speak(island.sprout.name + "說：" + island.sprout.voice);
+  }, 3000);
+  setTimeout(() => {
+    document.getElementById("after-bloom").innerHTML = `
+      <button class="speaker-btn big" onclick="document.body.style.background='var(--bg-sky)';showScreen('map')">回地圖種下一顆 →</button>
+      <button class="speaker-btn secondary" onclick="document.body.style.background='var(--bg-sky)';showPassport()">看我的習德花園</button>
+    `;
+  }, 3500);
+
+  if (Object.keys(state.islandsDone).length === 6) {
+    setTimeout(() => {
+      speak("六德齊放！你已經是真正的六德守護者！");
+    }, 5500);
+  }
+}
+
+// ========= PASSPORT =========
+function renderPassport() {
+  document.getElementById("adventurer-name").value = state.name || "";
+  const doneCount = Object.keys(state.islandsDone).length;
+  const badge = document.getElementById("guardian-badge");
+  const text = document.getElementById("guardian-text");
+  if (doneCount === 6) {
+    badge.classList.remove("guardian-locked");
+    badge.textContent = "🛡️✨";
+    text.innerHTML = `<span style="color:#d4a373; font-size:24px;">🎉 你是心情島守護者！🎉</span><br>${state.name || "你"} 已通關全部六座島！`;
+    speak("恭喜你成為心情島守護者！");
+  } else {
+    badge.classList.add("guardian-locked");
+    badge.textContent = "🛡️";
+    text.textContent = `已通關 ${doneCount} / 6 座島，加油！`;
+  }
+  const grid = document.getElementById("garden-grid");
+  grid.innerHTML = "";
+  ISLAND_ORDER.forEach(key => {
+    const island = ISLANDS[key];
+    const done = !!state.islandsDone[key];
+    const plot = document.createElement("div");
+    plot.className = "garden-plot" + (done ? "" : " empty");
+    if (done) {
+      plot.innerHTML = `
+        <div style="font-size:12px; color:#888; margin-bottom:4px;">${island.emoji} ${island.name}</div>
+        ${renderCharacter(key, "sprout")}
+      `;
+      plot.onclick = () => {
+        speak(island.sprout.name + "說：" + island.sprout.voice);
+      };
+    }
+    grid.appendChild(plot);
+  });
+  const skillsList = document.getElementById("skills-list");
+  if (state.skills.length === 0) {
+    skillsList.textContent = "尚未收集到任何技能。";
+  } else {
+    skillsList.innerHTML = state.skills.map(s => `<span class="skill-tag">🎯 ${s}</span>`).join("");
+  }
+}
+function saveName() {
+  state.name = document.getElementById("adventurer-name").value.trim();
+  saveState();
+}
+function resetProgress() {
+  if (!confirm("確定要清除所有進度？護照會清空、印章會消失，無法復原！")) return;
+  state = { name: "", islandsDone: {}, skills: [] };
+  saveState();
+  renderPassport();
+  alert("進度已清除。");
+}
+
+// ========= INIT =========
+window.addEventListener("load", () => {
+  // 預先試喚醒 TTS
+  if ("speechSynthesis" in window) {
+    setTimeout(() => speechSynthesis.getVoices(), 200);
+  }
+});
+</script>
+</body>
+</html>
