@@ -670,6 +670,231 @@
     font-weight: bold; margin-top: 6px;
   }
 
+  /* ===== JRPG 大地圖系統 ===== */
+  .overworld {
+    background: linear-gradient(180deg, #1a3a2e 0%, #2d4a3e 100%);
+    border: 3px solid #ffd700;
+    border-radius: 12px;
+    padding: 10px;
+    margin: 10px auto;
+    max-width: 600px;
+    position: relative;
+  }
+  .ow-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 2px;
+    background: #0a1a14;
+    padding: 4px;
+    border-radius: 8px;
+  }
+  .ow-cell {
+    aspect-ratio: 1;
+    background: #4a7c4e;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .ow-cell.forest { background: #2d5034; }
+  .ow-cell.mountain { background: #5d4e3a; }
+  .ow-cell.water { background: #1e3a5f; }
+  .ow-cell.castle { background: linear-gradient(135deg, #8b4513, #d4a373); }
+  .ow-cell.castle.cleared { background: linear-gradient(135deg, #ffd700, #ffa500); }
+  .ow-cell.player {
+    background: #c62828;
+    box-shadow: 0 0 16px #ff5252, inset 0 0 8px rgba(255,255,255,0.3);
+    z-index: 2;
+    animation: playerPulse 1.2s infinite;
+  }
+  @keyframes playerPulse {
+    0%,100% { box-shadow: 0 0 16px #ff5252; }
+    50% { box-shadow: 0 0 24px #ffeb3b; }
+  }
+  .ow-cell.start { background: #1976d2; }
+  .ow-cell.shop { background: #6a1b9a; }
+
+  .ow-info {
+    text-align: center; color: #ffd700;
+    font-size: 14px; padding: 6px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 8px; margin: 6px 0;
+  }
+  .dpad {
+    display: grid;
+    grid-template-columns: 60px 60px 60px;
+    grid-template-rows: 60px 60px 60px;
+    gap: 4px;
+    margin: 16px auto;
+    width: 192px;
+  }
+  .dpad-btn {
+    background: linear-gradient(135deg, #455a64, #263238);
+    color: #ffd700;
+    border: 2px solid #ffd700;
+    border-radius: 8px;
+    font-size: 28px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.1s, background 0.1s;
+  }
+  .dpad-btn:active { transform: scale(0.9); background: linear-gradient(135deg, #ffd700, #ff9800); color: #000; }
+  .dpad-up { grid-column: 2; grid-row: 1; }
+  .dpad-left { grid-column: 1; grid-row: 2; }
+  .dpad-action { grid-column: 2; grid-row: 2; background: #c62828; color: #fff; font-size: 12px; }
+  .dpad-right { grid-column: 3; grid-row: 2; }
+  .dpad-down { grid-column: 2; grid-row: 3; }
+  .dpad-menu { grid-column: 1; grid-row: 1; background: #2e7d32; color: #fff; font-size: 12px; }
+  .dpad-bag { grid-column: 3; grid-row: 1; background: #6a1b9a; color: #fff; font-size: 12px; }
+  .dpad-stats { grid-column: 1; grid-row: 3; background: #1565c0; color: #fff; font-size: 12px; }
+  .dpad-save { grid-column: 3; grid-row: 3; background: #ef6c00; color: #fff; font-size: 12px; }
+
+  /* 玩家狀態列 */
+  .player-status {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: rgba(0,0,0,0.6);
+    border: 2px solid #ffd700;
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin: 10px auto;
+    max-width: 600px;
+    color: #fff;
+    font-size: 14px;
+  }
+  .ps-row { display: flex; align-items: center; gap: 8px; }
+  .ps-label { color: #ffd700; min-width: 50px; }
+  .ps-mini-bar {
+    flex: 1;
+    background: #222;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid #fff;
+  }
+  .ps-mini-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #66bb6a, #43a047);
+    transition: width 0.4s;
+  }
+  .ps-mini-fill.mp { background: linear-gradient(90deg, #42a5f5, #1565c0); }
+  .ps-mini-fill.exp { background: linear-gradient(90deg, #ab47bc, #6a1b9a); }
+
+  /* 戰鬥指令選單（攻擊/防守/逃跑/魔法/特殊技/道具） */
+  .battle-cmd-menu {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 12px 0;
+  }
+  .cmd-btn {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: #fff;
+    border: 2px solid #ffd700;
+    border-radius: 10px;
+    padding: 14px 8px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .cmd-btn:active { transform: scale(0.95); background: linear-gradient(135deg, #ffd700, #ff9800); color: #000; }
+  .cmd-btn.attack { border-color: #ff5252; }
+  .cmd-btn.defend { border-color: #42a5f5; }
+  .cmd-btn.run { border-color: #9e9e9e; }
+  .cmd-btn.magic { border-color: #ba68c8; }
+  .cmd-btn.special { border-color: #ffd700; }
+  .cmd-btn.item { border-color: #66bb6a; }
+  .cmd-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* 子選單（魔法/道具列表） */
+  .sub-menu {
+    background: rgba(0,0,0,0.8);
+    border: 2px solid #ffd700;
+    border-radius: 12px;
+    padding: 12px;
+    margin: 10px 0;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+  .sub-menu h4 { color: #ffd700; margin: 0 0 8px; text-align: center; }
+  .sub-item {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    border: 2px solid #607d8b;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 6px 0;
+    color: #fff;
+    cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 15px;
+  }
+  .sub-item:hover { border-color: #ffd700; }
+  .sub-item:active { transform: scale(0.98); }
+  .sub-item.disabled { opacity: 0.4; cursor: not-allowed; }
+  .sub-item .si-icon { font-size: 22px; margin-right: 8px; }
+  .sub-item .si-cost { color: #42a5f5; font-size: 13px; }
+  .sub-item .si-count { color: #ffd700; font-size: 13px; }
+
+  /* 道具背包視窗 */
+  .inventory-modal {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 99;
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .inventory-modal.show { display: flex; }
+  .inv-box {
+    background: linear-gradient(180deg, #1a1a2e, #2c1810);
+    border: 3px solid #ffd700;
+    border-radius: 16px;
+    padding: 16px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    color: #fff;
+  }
+  .inv-box h3 { color: #ffd700; margin: 0 0 12px; text-align: center; }
+  .inv-tabs {
+    display: flex; gap: 6px;
+    flex-wrap: wrap;
+    border-bottom: 2px solid #ffd700;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+  .inv-tab {
+    background: rgba(255,255,255,0.1);
+    color: #ffd700;
+    border: 1px solid #ffd700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .inv-tab.active { background: #ffd700; color: #000; font-weight: bold; }
+  .inv-list { min-height: 200px; }
+  .inv-empty { color: #888; text-align: center; padding: 40px 0; }
+
+  /* 隨機遇敵警示 */
+  .encounter-flash {
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse, transparent, #000);
+    z-index: 95;
+    pointer-events: none;
+    animation: encounterFlash 1.2s ease-out forwards;
+  }
+  @keyframes encounterFlash {
+    0% { opacity: 0; background: radial-gradient(ellipse, transparent, transparent); }
+    20% { opacity: 1; background: radial-gradient(ellipse, transparent, #c62828); }
+    40% { opacity: 1; background: radial-gradient(ellipse, #ffeb3b, #c62828); }
+    100% { opacity: 0; }
+  }
+
   /* 戰鬥場景：對戰雙方 */
   .battle-arena {
     position: relative;
@@ -2464,6 +2689,201 @@ const EQUIPMENT = {
   }
 };
 
+// ========= JRPG 大地圖（8 欄 × 6 列）=========
+// . = 草地, F = 森林, M = 山(不可走), W = 水, S = 商店, B = boss 城堡(對應五心魔)
+// 起點玩家在 (0,0)
+const WORLD_MAP = [
+  ".  .  .  .  F  F  .  ⚔️1",
+  ".  S  .  F  F  M  .  .",
+  ".  .  F  ⚔️2 .  M  .  F",
+  "M  M  .  .  .  .  F  ⚔️3",
+  ".  ⚔️4 .  F  F  .  .  .",
+  ".  .  .  .  M  M  ⚔️5 ."
+];
+const BOSS_POSITIONS = {
+  "0,7": "solo",       // ⚔️1 = 獨我龍
+  "2,3": "clueless",   // ⚔️2 = 白目龍
+  "3,7": "impulse",    // ⚔️3 = 衝動龍
+  "4,1": "provoker",   // ⚔️4 = 挑釁龍
+  "5,6": "hooked"      // ⚔️5 = 習慣龍
+};
+const SHOP_POSITION = "1,1";
+
+// ========= 5 隻小怪（隨機遇敵）=========
+const SMALL_ENEMIES = {
+  procrast: {
+    name: "拖拖鬼",
+    hp: 30,
+    atk: 8,
+    voice: "明天再做啦～拖一下沒差！",
+    expDrop: 8,
+    goldDrop: 5,
+    questions: [
+      {
+        q: "拖拖鬼說「功課明天再寫」。怎麼破？",
+        options: [
+          { text: "先寫 5 分鐘看看", correct: true, fb: "啟動就贏一半！" },
+          { text: "對啊明天再說", correct: false, fb: "拖拖鬼贏了。" },
+          { text: "整天滑手機", correct: false, fb: "拖延加深陷阱。" },
+          { text: "假裝忘了", correct: false, fb: "明天還是要寫。" }
+        ]
+      }
+    ],
+    svg: `<svg viewBox="0 0 100 100">
+      <ellipse cx="50" cy="55" rx="32" ry="35" fill="#5d4037"/>
+      <ellipse cx="42" cy="48" rx="5" ry="6" fill="#fff"/>
+      <ellipse cx="58" cy="48" rx="5" ry="6" fill="#fff"/>
+      <circle cx="42" cy="50" r="2" fill="#000"/>
+      <circle cx="58" cy="50" r="2" fill="#000"/>
+      <path d="M40,70 Q50,68 60,70" stroke="#fff" stroke-width="2" fill="none"/>
+      <text x="20" y="25" font-size="14" fill="#fff">💤</text>
+    </svg>`
+  },
+  envy: {
+    name: "嫉妒小毛",
+    hp: 25,
+    atk: 12,
+    voice: "為什麼他有我沒有！酸死了！",
+    expDrop: 10,
+    goldDrop: 8,
+    questions: [
+      {
+        q: "嫉妒小毛刺你「為什麼他比較強」。怎麼破？",
+        options: [
+          { text: "想自己這次比上次進步什麼", correct: true, fb: "和自己比才有意義！" },
+          { text: "罵他作弊", correct: false, fb: "酸民攻擊，沒贏。" },
+          { text: "也說我也很厲害（騙）", correct: false, fb: "撐場沒用。" },
+          { text: "不跟他講話", correct: false, fb: "孤立自己，更酸。" }
+        ]
+      }
+    ],
+    svg: `<svg viewBox="0 0 100 100">
+      <path d="M30,75 Q20,40 50,25 Q80,40 70,75 L65,80 L60,75 L55,80 L50,75 L45,80 L40,75 L35,80 Z" fill="#7cb342"/>
+      <circle cx="40" cy="50" r="6" fill="#fff"/>
+      <circle cx="60" cy="50" r="6" fill="#fff"/>
+      <circle cx="40" cy="50" r="3" fill="#1b5e20"/>
+      <circle cx="60" cy="50" r="3" fill="#1b5e20"/>
+      <path d="M40,65 L45,60 L50,65 L55,60 L60,65" stroke="#fff" stroke-width="2" fill="none"/>
+    </svg>`
+  },
+  anxiety: {
+    name: "焦慮蜘蛛",
+    hp: 20,
+    atk: 10,
+    voice: "完了完了完了！絕對會出事的！",
+    expDrop: 12,
+    goldDrop: 6,
+    questions: [
+      {
+        q: "蜘蛛把你纏住「考試會死你」。怎麼破？",
+        options: [
+          { text: "寫下擔心並深呼吸 5 次", correct: true, fb: "焦慮怕被「看見」！" },
+          { text: "整夜不睡硬讀", correct: false, fb: "更累更焦慮。" },
+          { text: "裝病不去", correct: false, fb: "明天還是要面對。" },
+          { text: "罵自己沒用", correct: false, fb: "自我攻擊只會更糟。" }
+        ]
+      }
+    ],
+    svg: `<svg viewBox="0 0 100 100">
+      <circle cx="50" cy="60" r="28" fill="#212121"/>
+      <line x1="22" y1="50" x2="10" y2="35" stroke="#212121" stroke-width="3"/>
+      <line x1="22" y1="65" x2="8" y2="65" stroke="#212121" stroke-width="3"/>
+      <line x1="22" y1="80" x2="10" y2="92" stroke="#212121" stroke-width="3"/>
+      <line x1="78" y1="50" x2="90" y2="35" stroke="#212121" stroke-width="3"/>
+      <line x1="78" y1="65" x2="92" y2="65" stroke="#212121" stroke-width="3"/>
+      <line x1="78" y1="80" x2="90" y2="92" stroke="#212121" stroke-width="3"/>
+      <circle cx="40" cy="55" r="6" fill="#ffeb3b"/>
+      <circle cx="60" cy="55" r="6" fill="#ffeb3b"/>
+      <circle cx="40" cy="55" r="3" fill="#000"/>
+      <circle cx="60" cy="55" r="3" fill="#000"/>
+    </svg>`
+  },
+  shame: {
+    name: "自卑霧",
+    hp: 35,
+    atk: 6,
+    voice: "你不行的...你做不到的...",
+    expDrop: 14,
+    goldDrop: 10,
+    questions: [
+      {
+        q: "自卑霧說「你什麼都不會」。怎麼破？",
+        options: [
+          { text: "列出自己會的 3 件事", correct: true, fb: "看見自己的好打散迷霧！" },
+          { text: "對啊我什麼都不會", correct: false, fb: "自卑霧贏了。" },
+          { text: "假裝很厲害騙人", correct: false, fb: "假裝撐不住的。" },
+          { text: "從此不嘗試", correct: false, fb: "自卑會越來越深。" }
+        ]
+      }
+    ],
+    svg: `<svg viewBox="0 0 100 100">
+      <ellipse cx="50" cy="55" rx="35" ry="28" fill="#90a4ae" opacity="0.7"/>
+      <ellipse cx="30" cy="45" rx="14" ry="10" fill="#90a4ae" opacity="0.5"/>
+      <ellipse cx="70" cy="50" rx="16" ry="11" fill="#90a4ae" opacity="0.5"/>
+      <path d="M40,55 L50,55" stroke="#fff" stroke-width="2"/>
+      <path d="M50,55 L60,55" stroke="#fff" stroke-width="2"/>
+      <path d="M40,65 Q50,62 60,65" stroke="#fff" stroke-width="2" fill="none"/>
+    </svg>`
+  },
+  bully: {
+    name: "嗆嗆怪",
+    hp: 28,
+    atk: 11,
+    voice: "蛋糕！廢物！沒人喜歡你！",
+    expDrop: 11,
+    goldDrop: 7,
+    questions: [
+      {
+        q: "嗆嗆怪用言語霸凌你。怎麼破？",
+        options: [
+          { text: "平靜走開找老師", correct: true, fb: "不上鉤+找大人=雙贏。" },
+          { text: "也罵回去更難聽", correct: false, fb: "升級成戰爭。" },
+          { text: "相信他說的是真的", correct: false, fb: "他在攻擊不是真實。" },
+          { text: "哭一整天", correct: false, fb: "找信任的人說。" }
+        ]
+      }
+    ],
+    svg: `<svg viewBox="0 0 100 100">
+      <circle cx="50" cy="55" r="30" fill="#c62828"/>
+      <path d="M30,45 L40,50 L30,55" stroke="#fff" stroke-width="3" fill="none"/>
+      <path d="M70,45 L60,50 L70,55" stroke="#fff" stroke-width="3" fill="none"/>
+      <path d="M35,75 Q50,65 65,75 Q50,72 35,75 Z" fill="#fff"/>
+      <polygon points="42,73 45,80 48,73" fill="#c62828"/>
+      <polygon points="52,73 55,80 58,73" fill="#c62828"/>
+    </svg>`
+  }
+};
+
+// ========= 道具/魔法/裝備系統 =========
+const ITEMS = {
+  // 恢復類
+  herb: { name: "良心藥草", icon: "🌿", type: "heal", desc: "+30 HP", effect: { hp: 30 } },
+  potion: { name: "良心藥水", icon: "🧪", type: "heal", desc: "+60 HP", effect: { hp: 60 } },
+  fullCure: { name: "神聖回復露", icon: "✨", type: "heal", desc: "全滿 HP", effect: { hp: 999 } },
+  mpCrystal: { name: "魔力結晶", icon: "💎", type: "mp", desc: "+20 MP", effect: { mp: 20 } },
+  // 配件
+  charm: { name: "勇氣護符", icon: "🔮", type: "accessory", desc: "ATK +5, DEF +5", atkBonus: 5, defBonus: 5 },
+  // 弓箭
+  arrow: { name: "光明箭", icon: "🏹", type: "ammo", desc: "搭配弓使用，1 支 = 1 發", consumable: true }
+};
+
+const MAGIC_BOOKS = {
+  heal: { name: "治療術", icon: "💚", desc: "回 30 HP", mpCost: 8, type: "heal", power: 30 },
+  fireball: { name: "火球術", icon: "🔥", desc: "傷害 25", mpCost: 10, type: "damage", power: 25 },
+  thunder: { name: "雷鳴術", icon: "⚡", desc: "傷害 40", mpCost: 18, type: "damage", power: 40 },
+  light: { name: "大光明", icon: "☀️", desc: "傷害 60 + 自癒 20", mpCost: 30, type: "damage", power: 60, heal: 20 }
+};
+
+const SPECIAL_SKILLS = {
+  // 由心經卷觸發，要破關該心魔才能用
+  solo: { name: "同理斬", desc: "看穿心魔的痛，造成 50 傷害", power: 50, mpCost: 15 },
+  clueless: { name: "察言之眼", desc: "看穿心魔意圖，下回合必命中重擊 60", power: 60, mpCost: 18 },
+  impulse: { name: "停心結界", desc: "造成 35 傷害+下回合免疫反擊", power: 35, mpCost: 20 },
+  provoker: { name: "化敵之歌", desc: "傷害 45 + 暫時降低心魔攻擊", power: 45, mpCost: 22 },
+  hooked: { name: "鎖鏈解放", desc: "傷害 55 + 回 15 HP", power: 55, heal: 15, mpCost: 25 },
+  mirror: { name: "良知之光", desc: "傷害 80 + 全恢復", power: 80, mpCost: 40 }
+};
+
 // ========= 玩家勇者 SVG =========
 const PLAYER_SVG = `<svg viewBox="0 0 100 130">
   <defs><radialGradient id="hero" cx="40%" cy="35%">
@@ -2938,6 +3358,11 @@ function loadState() {
       if (typeof s.finalBossDone === "undefined") s.finalBossDone = false;
       if (!s.equipped) s.equipped = [];      // 當前裝備的 demon keys (最多 3 件)
       if (typeof s.musicOn === "undefined") s.musicOn = true;
+      // JRPG 欄位
+      if (!s.player) s.player = { row: 0, col: 0, hp: 100, maxHp: 100, mp: 30, maxMp: 30, atk: 10, def: 5, lv: 1, exp: 0, gold: 50 };
+      if (!s.inventory) s.inventory = { herb: 3, potion: 1, mpCrystal: 1, arrow: 5 };
+      if (!s.magicLearned) s.magicLearned = ["heal", "fireball"]; // 起始魔法
+      if (!s.defending) s.defending = false;
       return s;
     }
   } catch(e) {}
@@ -2951,7 +3376,11 @@ function loadState() {
     heartSutras: [],
     finalBossDone: false,
     equipped: [],
-    musicOn: true
+    musicOn: true,
+    player: { row: 0, col: 0, hp: 100, maxHp: 100, mp: 30, maxMp: 30, atk: 10, def: 5, lv: 1, exp: 0, gold: 50 },
+    inventory: { herb: 3, potion: 1, mpCrystal: 1, arrow: 5 },
+    magicLearned: ["heal", "fireball"],
+    defending: false
   };
 }
 function saveState() {
@@ -3679,27 +4108,102 @@ function fxDamage(amount, target) {
 }
 
 function renderHighMap() {
+  // 替換成 JRPG 大地圖
+  renderJRPGMap();
+}
+
+// ========= JRPG 大地圖渲染 + 方向鍵 =========
+function parseMapCell(cellStr) {
+  cellStr = cellStr.trim();
+  if (cellStr === ".") return { type: "grass", icon: "" };
+  if (cellStr === "F") return { type: "forest", icon: "🌲" };
+  if (cellStr === "M") return { type: "mountain", icon: "🏔️" };
+  if (cellStr === "W") return { type: "water", icon: "🌊" };
+  if (cellStr === "S") return { type: "shop", icon: "🏪" };
+  if (cellStr.startsWith("⚔️")) return { type: "castle", icon: "🏰", bossId: cellStr.substring(2) };
+  return { type: "grass", icon: "" };
+}
+
+function getMapCell(row, col) {
+  const rowStr = WORLD_MAP[row];
+  const cells = rowStr.match(/\S+/g);
+  return parseMapCell(cells[col]);
+}
+
+function renderJRPGMap() {
   const grid = document.getElementById("demons-grid");
-  grid.innerHTML = "";
-  DEMON_ORDER.forEach(key => {
-    const d = DEMONS[key];
-    const defeated = !!state.demonsDone[key];
-    const card = document.createElement("div");
-    card.className = "demon-card" + (defeated ? " defeated" : "");
-    card.innerHTML = `
-      <div class="demon-card-svg">${DEMON_SVG[key]}</div>
-      <div class="demon-card-name">${d.name}</div>
-      <div class="demon-card-trait">${d.trait}</div>
-      <div style="margin-top:6px; font-size:12px; color:${defeated?'#ffd700':'#90a4ae'};">
-        ${defeated ? '✓ 已破，得「'+d.sutra+'」' : '尚未對戰'}
+  const finalArea = document.getElementById("final-boss-area");
+
+  // 玩家狀態
+  const p = state.player;
+  const hpPct = (p.hp / p.maxHp * 100);
+  const mpPct = (p.mp / p.maxMp * 100);
+  const expPct = (p.exp / (p.lv * 50) * 100);
+
+  // 8 列 6 行格子
+  let cells = "";
+  for (let r = 0; r < 6; r++) {
+    const row = WORLD_MAP[r].match(/\S+/g);
+    for (let c = 0; c < 8; c++) {
+      const cell = parseMapCell(row[c]);
+      let cls = "ow-cell " + cell.type;
+      let content = cell.icon;
+      // 已破關城堡顯示金色
+      if (cell.type === "castle") {
+        const bossKey = BOSS_POSITIONS[r+","+c];
+        if (bossKey && state.demonsDone[bossKey]) cls += " cleared";
+      }
+      // 玩家在這格
+      if (p.row === r && p.col === c) {
+        cls += " player";
+        content = "🦸";
+      }
+      cells += `<div class="${cls}">${content}</div>`;
+    }
+  }
+
+  grid.outerHTML = `
+    <div class="player-status">
+      <div class="ps-row">
+        <span class="ps-label">❤️ HP</span>
+        <div class="ps-mini-bar"><div class="ps-mini-fill" style="width:${hpPct}%"></div></div>
+        <span style="min-width:55px; text-align:right;">${p.hp}/${p.maxHp}</span>
       </div>
-    `;
-    card.onclick = () => enterDemon(key);
-    grid.appendChild(card);
-  });
+      <div class="ps-row">
+        <span class="ps-label">💙 MP</span>
+        <div class="ps-mini-bar"><div class="ps-mini-fill mp" style="width:${mpPct}%"></div></div>
+        <span style="min-width:55px; text-align:right;">${p.mp}/${p.maxMp}</span>
+      </div>
+      <div class="ps-row">
+        <span class="ps-label">⭐ LV</span>
+        <span>${p.lv}</span>
+        <div class="ps-mini-bar"><div class="ps-mini-fill exp" style="width:${expPct}%"></div></div>
+        <span style="min-width:55px; text-align:right;">${p.exp}/${p.lv * 50}</span>
+      </div>
+      <div class="ps-row">
+        <span class="ps-label">💰</span><span>${p.gold} 兩</span>
+        <span class="ps-label">⚔️</span><span>${p.atk}</span>
+        <span class="ps-label">🛡️</span><span>${p.def}</span>
+      </div>
+    </div>
+    <div class="overworld">
+      <div class="ow-info" id="ow-info">用 ↑↓←→ 移動。走在 🌲 森林容易遇敵！</div>
+      <div class="ow-grid" id="ow-grid">${cells}</div>
+    </div>
+    <div class="dpad">
+      <button class="dpad-btn dpad-menu" onclick="document.body.style.background='var(--bg-sky)';showScreen('home')">回主畫面</button>
+      <button class="dpad-btn dpad-up" onclick="movePlayer(-1,0)">↑</button>
+      <button class="dpad-btn dpad-bag" onclick="openInventory()">🎒</button>
+      <button class="dpad-btn dpad-left" onclick="movePlayer(0,-1)">←</button>
+      <button class="dpad-btn dpad-action" onclick="actionTile()">A</button>
+      <button class="dpad-btn dpad-right" onclick="movePlayer(0,1)">→</button>
+      <button class="dpad-btn dpad-stats" onclick="showPlayerInfo()">📊</button>
+      <button class="dpad-btn dpad-down" onclick="movePlayer(1,0)">↓</button>
+      <button class="dpad-btn dpad-save" onclick="saveState();alert('進度已存')">💾</button>
+    </div>
+  `;
 
   // 終極 boss 區
-  const finalArea = document.getElementById("final-boss-area");
   const fiveDone = DEMON_ORDER.every(k => state.demonsDone[k]);
   if (fiveDone) {
     const finalDefeated = state.demonsDone[FINAL_DEMON];
@@ -3708,22 +4212,501 @@ function renderHighMap() {
         <div class="final-boss-title">⚡ 最終心魔 解鎖 ⚡</div>
         <div style="margin:12px auto; width:140px;">${DEMON_SVG.mirror}</div>
         <p style="color:#fff; font-size:18px; line-height:1.7;">
-          ${finalDefeated ? '你已戰勝最終心魔，<br>找回了良知與良心。<br><strong style="color:#ffd700;">恭喜成為心經守護者！</strong>' : '前五卷心經已集齊，<br>最後一隻心魔等著你——<br><strong style="color:#e94560;">那個影子，竟然是你自己。</strong>'}
+          ${finalDefeated ? '你已戰勝最終心魔。<br><strong style="color:#ffd700;">心經守護者！</strong>' : '集齊五卷心經，最終心魔——<br><strong style="color:#e94560;">那個影子，竟然是你自己。</strong>'}
         </p>
-        <button class="speaker-btn big" style="background:#e94560; margin-top:12px;" onclick="enterDemon('${FINAL_DEMON}')">
+        <button class="speaker-btn big" style="background:#e94560;" onclick="enterDemon('${FINAL_DEMON}')">
           ${finalDefeated ? '重溫終章' : '面對影子龍 ⚔️'}
         </button>
       </div>
     `;
   } else {
-    finalArea.innerHTML = `
-      <div class="final-boss-card locked-final" style="opacity:0.5; cursor:default;">
-        <div class="final-boss-title" style="color:#888;">🔒 終極心魔 封印中</div>
-        <p style="color:#aaa;">先打敗五隻心魔，集齊五卷心經，最終心魔才會現身。</p>
-        <p style="color:#aaa; font-size:14px;">目前進度：${Object.keys(state.demonsDone).filter(k=>k!==FINAL_DEMON).length} / 5</p>
+    finalArea.innerHTML = "";
+  }
+}
+
+function movePlayer(dr, dc) {
+  const p = state.player;
+  const nr = p.row + dr;
+  const nc = p.col + dc;
+  if (nr < 0 || nr > 5 || nc < 0 || nc > 7) return;
+  const dest = getMapCell(nr, nc);
+  if (dest.type === "mountain" || dest.type === "water") {
+    flashInfo("⛰️ 走不過去！");
+    return;
+  }
+  p.row = nr; p.col = nc;
+  saveState();
+  renderJRPGMap();
+  // 隨機遇敵
+  let encounterRate = 0;
+  if (dest.type === "grass") encounterRate = 0.08;
+  if (dest.type === "forest") encounterRate = 0.22;
+  if (Math.random() < encounterRate) {
+    triggerEncounter();
+  }
+}
+
+function flashInfo(msg) {
+  const el = document.getElementById("ow-info");
+  if (el) {
+    const old = el.textContent;
+    el.textContent = msg;
+    setTimeout(() => { if (el.textContent === msg) el.textContent = old; }, 1800);
+  }
+}
+
+function actionTile() {
+  const p = state.player;
+  const cell = getMapCell(p.row, p.col);
+  if (cell.type === "castle") {
+    const bossKey = BOSS_POSITIONS[p.row+","+p.col];
+    if (bossKey) {
+      if (state.demonsDone[bossKey]) {
+        if (confirm("這座城已破。要重溫戰鬥嗎？")) enterDemon(bossKey);
+      } else {
+        if (confirm("城堡前佇立著 " + DEMONS[bossKey].name + "！要對戰嗎？")) enterDemon(bossKey);
+      }
+    }
+  } else if (cell.type === "shop") {
+    openShop();
+  } else {
+    flashInfo("這格沒什麼特別的。");
+  }
+}
+
+function showPlayerInfo() {
+  const p = state.player;
+  const ownedEq = Object.keys(state.demonsDone).filter(k => state.demonsDone[k]);
+  alert(`勇者狀態
+LV ${p.lv}　EXP ${p.exp}/${p.lv*50}
+HP ${p.hp}/${p.maxHp}　MP ${p.mp}/${p.maxMp}
+ATK ${p.atk}　DEF ${p.def}
+💰 ${p.gold} 兩
+已破心魔：${Object.keys(state.demonsDone).length}/6
+已學魔法：${state.magicLearned.map(k=>MAGIC_BOOKS[k].name).join("、") || "無"}
+心法裝備：${ownedEq.length} 件`);
+}
+
+// ========= 隨機遇敵 =========
+let currentSmallEnemy = null;
+let smallEnemyHP = 0;
+
+function triggerEncounter() {
+  // 閃光
+  const flash = document.createElement("div");
+  flash.className = "encounter-flash";
+  document.body.appendChild(flash);
+  setTimeout(() => flash.remove(), 1200);
+  sfxAttack();
+  setTimeout(() => {
+    const keys = Object.keys(SMALL_ENEMIES);
+    const key = keys[Math.floor(Math.random() * keys.length)];
+    startSmallBattle(key);
+  }, 900);
+}
+
+function startSmallBattle(key) {
+  currentSmallEnemy = key;
+  const e = SMALL_ENEMIES[key];
+  smallEnemyHP = e.hp;
+  state.defending = false;
+  playBattleMusic();
+  showMusicToggle();
+  showScreen("demon-battle");
+  renderSmallBattle();
+}
+
+function renderSmallBattle(logMsg) {
+  const e = SMALL_ENEMIES[currentSmallEnemy];
+  const p = state.player;
+  const hpPct = (p.hp / p.maxHp * 100);
+  const mpPct = (p.mp / p.maxMp * 100);
+  const ehpPct = (smallEnemyHP / e.hp * 100);
+  const log = logMsg ? `<div class="battle-log">${logMsg}</div>` : "";
+
+  document.getElementById("battle-content").innerHTML = `
+    <div class="rpg-top">
+      <div class="hp-bar-wrap">
+        <div class="hp-label"><span>🛡️ 良心 HP</span><span>${p.hp}/${p.maxHp}</span></div>
+        <div class="hp-bar-bg"><div class="hp-bar-fill" style="width:${hpPct}%"></div></div>
+        <div class="hp-label" style="margin-top:4px;"><span>💙 魔力 MP</span><span>${p.mp}/${p.maxMp}</span></div>
+        <div class="hp-bar-bg"><div class="hp-bar-fill mp" style="width:${mpPct}%; background:linear-gradient(90deg,#42a5f5,#1565c0);"></div></div>
+      </div>
+    </div>
+    <div class="battle-arena">
+      <div class="battle-arena-fx"></div>
+      <div class="arena-positions">
+        <div class="arena-player">${PLAYER_SVG}<div class="arena-name">勇者</div></div>
+        <div class="arena-demon" style="display:flex; flex-direction:column; align-items:center;">
+          <div style="width:120px;">${e.svg}</div>
+          <div class="arena-name" style="color:#ff8a80;">${e.name}</div>
+        </div>
+      </div>
+      <div class="hp-bar-wrap" style="margin-top:10px;">
+        <div class="hp-label"><span style="color:#ff8a80;">🐉 ${e.name} HP</span><span>${smallEnemyHP}/${e.hp}</span></div>
+        <div class="hp-bar-bg"><div class="hp-bar-fill ${ehpPct<30?'critical':''}" style="width:${ehpPct}%"></div></div>
+      </div>
+    </div>
+    <div class="demon-bubble" style="font-size:15px; padding:10px;">「${e.voice}」</div>
+    ${log}
+    <div class="battle-cmd-menu">
+      <button class="cmd-btn attack" onclick="smallCmdAttack()">⚔️<br>攻擊</button>
+      <button class="cmd-btn defend" onclick="smallCmdDefend()">🛡️<br>防守</button>
+      <button class="cmd-btn run" onclick="smallCmdRun()">🏃<br>逃跑</button>
+      <button class="cmd-btn magic" onclick="smallCmdMagicMenu()">✨<br>魔法</button>
+      <button class="cmd-btn special" onclick="smallCmdSpecialMenu()">🌟<br>特殊技</button>
+      <button class="cmd-btn item" onclick="smallCmdItemMenu()">🎒<br>道具</button>
+    </div>
+    <div id="sub-menu-area"></div>
+  `;
+}
+
+function smallEnemyAttack() {
+  const e = SMALL_ENEMIES[currentSmallEnemy];
+  const dmg = Math.max(1, e.atk - state.player.def - (state.defending ? 5 : 0));
+  state.player.hp = Math.max(0, state.player.hp - dmg);
+  state.defending = false;
+  fxAttackDemon();
+  setTimeout(() => fxDamage(dmg, "player"), 500);
+  setTimeout(() => {
+    if (state.player.hp <= 0) {
+      smallEnemyVictory();
+    } else {
+      renderSmallBattle(`💔 ${e.name} 攻擊！你 -${dmg} HP`);
+    }
+  }, 1500);
+}
+
+function smallCmdAttack() {
+  // 答對情境題就攻擊；簡化：直接攻擊不抽題（保持節奏快）
+  // 但保留教育性：30% 機率出小題
+  const e = SMALL_ENEMIES[currentSmallEnemy];
+  if (Math.random() < 0.6) {
+    // 抽情境題
+    const q = e.questions[0];
+    document.getElementById("sub-menu-area").innerHTML = `
+      <div class="sub-menu">
+        <h4>⚔️ 攻擊時機：選對的應對才命中</h4>
+        <div style="color:#fff; padding:8px 0;">${q.q}</div>
+        ${q.options.map((opt,i) => `<div class="sub-item" onclick="smallAttackResolve(${i})">
+          <span>${String.fromCharCode(65+i)}. ${opt.text}</span>
+        </div>`).join("")}
       </div>
     `;
+  } else {
+    // 普通攻擊
+    resolveAttack(state.player.atk);
   }
+}
+
+function smallAttackResolve(idx) {
+  const e = SMALL_ENEMIES[currentSmallEnemy];
+  const q = e.questions[0];
+  const opt = q.options[idx];
+  if (opt.correct) {
+    resolveAttack(state.player.atk + 8);
+    renderSmallBattle(`💡 ${opt.fb}（覺察+8 攻擊）`);
+  } else {
+    renderSmallBattle(`🤔 ${opt.fb}（攻擊失手）`);
+    setTimeout(smallEnemyAttack, 1200);
+  }
+}
+
+function resolveAttack(dmg) {
+  smallEnemyHP = Math.max(0, smallEnemyHP - dmg);
+  fxAttackPlayer();
+  setTimeout(() => fxDamage(dmg, "demon"), 500);
+  setTimeout(() => {
+    if (smallEnemyHP <= 0) smallEnemyDefeated();
+    else { renderSmallBattle(`⚡ 攻擊命中！-${dmg} HP`); setTimeout(smallEnemyAttack, 1400); }
+  }, 1500);
+}
+
+function smallCmdDefend() {
+  state.defending = true;
+  renderSmallBattle(`🛡️ 你進入防守姿態（本回合受傷-5）`);
+  setTimeout(smallEnemyAttack, 1200);
+}
+
+function smallCmdRun() {
+  if (Math.random() < 0.7) {
+    stopBattleMusic();
+    hideMusicToggle();
+    alert("成功逃跑！");
+    document.body.style.background = 'var(--bg-rpg)';
+    showScreen("high-map");
+  } else {
+    renderSmallBattle(`💨 逃跑失敗！對方先攻！`);
+    setTimeout(smallEnemyAttack, 1200);
+  }
+}
+
+function smallCmdMagicMenu() {
+  if (state.magicLearned.length === 0) {
+    alert("尚未學會任何魔法！"); return;
+  }
+  document.getElementById("sub-menu-area").innerHTML = `
+    <div class="sub-menu"><h4>✨ 魔法</h4>
+      ${state.magicLearned.map(k => {
+        const m = MAGIC_BOOKS[k];
+        const enough = state.player.mp >= m.mpCost;
+        return `<div class="sub-item ${enough?'':'disabled'}" onclick="${enough?`smallCastMagic('${k}')`:'alert(\'MP 不足\')'}">
+          <span><span class="si-icon">${m.icon}</span>${m.name} <span style="color:#888;font-size:13px">- ${m.desc}</span></span>
+          <span class="si-cost">${m.mpCost} MP</span>
+        </div>`;
+      }).join("")}
+      <div style="text-align:center; margin-top:8px;"><button class="speaker-btn" onclick="renderSmallBattle()">取消</button></div>
+    </div>
+  `;
+}
+
+function smallCastMagic(key) {
+  const m = MAGIC_BOOKS[key];
+  state.player.mp -= m.mpCost;
+  if (m.type === "heal") {
+    state.player.hp = Math.min(state.player.maxHp, state.player.hp + m.power);
+    renderSmallBattle(`💚 ${m.name}！恢復 ${m.power} HP`);
+    sfxVictory();
+    setTimeout(smallEnemyAttack, 1500);
+  } else {
+    const dmg = m.power + Math.floor(state.player.atk / 3);
+    smallEnemyHP = Math.max(0, smallEnemyHP - dmg);
+    fxAttackPlayer();
+    setTimeout(() => fxDamage(dmg, "demon"), 500);
+    setTimeout(() => {
+      if (smallEnemyHP <= 0) smallEnemyDefeated();
+      else { renderSmallBattle(`${m.icon} ${m.name}！${dmg} 傷害`); setTimeout(smallEnemyAttack, 1400); }
+    }, 1500);
+  }
+}
+
+function smallCmdSpecialMenu() {
+  const owned = Object.keys(state.demonsDone).filter(k => SPECIAL_SKILLS[k]);
+  if (owned.length === 0) { alert("還沒學會任何特殊技！打敗心魔後可習得。"); return; }
+  document.getElementById("sub-menu-area").innerHTML = `
+    <div class="sub-menu"><h4>🌟 特殊技</h4>
+      ${owned.map(k => {
+        const s = SPECIAL_SKILLS[k];
+        const enough = state.player.mp >= s.mpCost;
+        return `<div class="sub-item ${enough?'':'disabled'}" onclick="${enough?`smallCastSpecial('${k}')`:'alert(\'MP 不足\')'}">
+          <span>🌟 ${s.name}<br><span style="color:#888;font-size:12px">${s.desc}</span></span>
+          <span class="si-cost">${s.mpCost} MP</span>
+        </div>`;
+      }).join("")}
+      <div style="text-align:center; margin-top:8px;"><button class="speaker-btn" onclick="renderSmallBattle()">取消</button></div>
+    </div>
+  `;
+}
+
+function smallCastSpecial(key) {
+  const s = SPECIAL_SKILLS[key];
+  state.player.mp -= s.mpCost;
+  smallEnemyHP = Math.max(0, smallEnemyHP - s.power);
+  if (s.heal) state.player.hp = Math.min(state.player.maxHp, state.player.hp + s.heal);
+  fxAttackPlayer();
+  setTimeout(() => fxDamage(s.power, "demon"), 500);
+  setTimeout(() => {
+    if (smallEnemyHP <= 0) smallEnemyDefeated();
+    else { renderSmallBattle(`🌟 ${s.name}！${s.power} 傷害${s.heal?'+回'+s.heal+'HP':''}`); setTimeout(smallEnemyAttack, 1400); }
+  }, 1500);
+}
+
+function smallCmdItemMenu() {
+  const inv = state.inventory;
+  const usable = Object.keys(inv).filter(k => inv[k] > 0 && ITEMS[k] && ITEMS[k].effect);
+  if (usable.length === 0) { alert("背包沒有可用道具！"); return; }
+  document.getElementById("sub-menu-area").innerHTML = `
+    <div class="sub-menu"><h4>🎒 道具</h4>
+      ${usable.map(k => {
+        const it = ITEMS[k];
+        return `<div class="sub-item" onclick="smallUseItem('${k}')">
+          <span><span class="si-icon">${it.icon}</span>${it.name} <span style="color:#888;font-size:13px">- ${it.desc}</span></span>
+          <span class="si-count">×${inv[k]}</span>
+        </div>`;
+      }).join("")}
+      <div style="text-align:center; margin-top:8px;"><button class="speaker-btn" onclick="renderSmallBattle()">取消</button></div>
+    </div>
+  `;
+}
+
+function smallUseItem(key) {
+  const it = ITEMS[key];
+  state.inventory[key]--;
+  let msg = "";
+  if (it.effect.hp) {
+    const h = Math.min(it.effect.hp, state.player.maxHp - state.player.hp);
+    state.player.hp = Math.min(state.player.maxHp, state.player.hp + it.effect.hp);
+    msg = `🌿 用了 ${it.name}，HP +${h}`;
+  }
+  if (it.effect.mp) {
+    const m = Math.min(it.effect.mp, state.player.maxMp - state.player.mp);
+    state.player.mp = Math.min(state.player.maxMp, state.player.mp + it.effect.mp);
+    msg = `💎 用了 ${it.name}，MP +${m}`;
+  }
+  renderSmallBattle(msg);
+  sfxVictory();
+  setTimeout(smallEnemyAttack, 1500);
+}
+
+function smallEnemyDefeated() {
+  const e = SMALL_ENEMIES[currentSmallEnemy];
+  stopBattleMusic();
+  sfxVictory();
+  state.player.exp += e.expDrop;
+  state.player.gold += e.goldDrop;
+  // 隨機掉道具
+  let drop = "";
+  if (Math.random() < 0.35) {
+    const keys = ["herb", "potion", "mpCrystal"];
+    const k = keys[Math.floor(Math.random() * keys.length)];
+    state.inventory[k] = (state.inventory[k] || 0) + 1;
+    drop = `<br>💝 拾獲：${ITEMS[k].icon} ${ITEMS[k].name}！`;
+  }
+  // 升級判定
+  let levelMsg = "";
+  while (state.player.exp >= state.player.lv * 50) {
+    state.player.exp -= state.player.lv * 50;
+    state.player.lv++;
+    state.player.maxHp += 20;
+    state.player.maxMp += 8;
+    state.player.atk += 3;
+    state.player.def += 2;
+    state.player.hp = state.player.maxHp;
+    state.player.mp = state.player.maxMp;
+    levelMsg += `<br>🎉 升級到 LV ${state.player.lv}！HP/MP 全滿`;
+  }
+  saveState();
+  document.getElementById("battle-content").innerHTML = `
+    <div class="stamp-area" style="background:linear-gradient(135deg,#1a3a2e,#2c4a3e); color:#fff;">
+      <h2 style="color:#ffd700;">⚔️ 戰勝 ${e.name}！</h2>
+      <p style="font-size:17px; line-height:1.7;">
+        經驗 +${e.expDrop} ｜ 金幣 +${e.goldDrop} 兩 ${drop}${levelMsg}
+      </p>
+      <button class="speaker-btn big" onclick="hideMusicToggle();document.body.style.background='var(--bg-rpg)';showScreen('high-map')">繼續冒險</button>
+    </div>
+  `;
+}
+
+function smallEnemyVictory() {
+  stopBattleMusic();
+  const e = SMALL_ENEMIES[currentSmallEnemy];
+  state.player.hp = Math.floor(state.player.maxHp / 2);
+  state.player.gold = Math.max(0, state.player.gold - 5);
+  saveState();
+  document.getElementById("battle-content").innerHTML = `
+    <div class="stamp-area" style="background:linear-gradient(135deg,#4a0000,#1a0000); color:#fff;">
+      <h2 style="color:#e94560;">你昏倒了…</h2>
+      <p style="font-size:17px; line-height:1.7;">${e.name} 暫時贏了。<br>你被路人扶起，HP 回到一半，掉了 5 金。<br>休息一下，再試一次！</p>
+      <button class="speaker-btn big" onclick="hideMusicToggle();document.body.style.background='var(--bg-rpg)';showScreen('high-map')">回地圖</button>
+    </div>
+  `;
+}
+
+// ========= 道具背包視窗 =========
+function openInventory() {
+  const inv = state.inventory;
+  const p = state.player;
+  const list = Object.keys(inv).filter(k => inv[k] > 0).map(k => {
+    const it = ITEMS[k];
+    if (!it) return "";
+    return `<div class="sub-item">
+      <span><span class="si-icon">${it.icon}</span>${it.name} <span style="color:#888;font-size:13px">- ${it.desc}</span></span>
+      <span class="si-count">×${inv[k]}</span>
+    </div>`;
+  }).join("") || `<div class="inv-empty">背包空空如也…</div>`;
+
+  const magicList = state.magicLearned.map(k => {
+    const m = MAGIC_BOOKS[k];
+    return `<div class="sub-item"><span><span class="si-icon">${m.icon}</span>${m.name} - ${m.desc}</span><span class="si-cost">${m.mpCost} MP</span></div>`;
+  }).join("") || `<div class="inv-empty">未習得魔法</div>`;
+
+  const equipList = Object.keys(state.demonsDone).filter(k => state.demonsDone[k]).map(k => {
+    const eq = EQUIPMENT[k];
+    const equipped = state.equipped.includes(k);
+    return `<div class="sub-item ${equipped?'':''}" style="${equipped?'border-color:#ffd700':''}">
+      <span><span class="si-icon">${eq.icon}</span>${eq.name} ⚔️+${eq.atkBonus} 🛡️+${eq.defBonus}${equipped?' ✓裝備中':''}</span>
+    </div>`;
+  }).join("") || `<div class="inv-empty">尚未獲得心法裝備</div>`;
+
+  document.body.insertAdjacentHTML("beforeend", `
+    <div class="inventory-modal show" id="inv-modal" onclick="if(event.target.id==='inv-modal')closeInventory()">
+      <div class="inv-box">
+        <h3>🎒 勇者的背包</h3>
+        <div style="text-align:center; color:#ffd700; margin-bottom:10px;">
+          ❤️${p.hp}/${p.maxHp} 💙${p.mp}/${p.maxMp} ⭐LV${p.lv} 💰${p.gold}兩
+        </div>
+        <div class="inv-tabs">
+          <button class="inv-tab active" onclick="switchTab(this,'items')">道具</button>
+          <button class="inv-tab" onclick="switchTab(this,'magic')">魔法</button>
+          <button class="inv-tab" onclick="switchTab(this,'equip')">心法裝備</button>
+        </div>
+        <div class="inv-list" id="inv-items">${list}</div>
+        <div class="inv-list" id="inv-magic" style="display:none">${magicList}</div>
+        <div class="inv-list" id="inv-equip" style="display:none">${equipList}</div>
+        <div style="text-align:center; margin-top:14px;">
+          <button class="speaker-btn" onclick="closeInventory()">關閉</button>
+        </div>
+      </div>
+    </div>
+  `);
+}
+
+function switchTab(btn, target) {
+  btn.parentElement.querySelectorAll(".inv-tab").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  ["items", "magic", "equip"].forEach(t => {
+    document.getElementById("inv-" + t).style.display = t === target ? "" : "none";
+  });
+}
+
+function closeInventory() {
+  const m = document.getElementById("inv-modal");
+  if (m) m.remove();
+}
+
+// ========= 商店 =========
+function openShop() {
+  const items = [
+    { key: "herb", price: 10 },
+    { key: "potion", price: 25 },
+    { key: "fullCure", price: 80 },
+    { key: "mpCrystal", price: 18 },
+    { key: "arrow", price: 3 }
+  ];
+  const list = items.map(s => {
+    const it = ITEMS[s.key];
+    const canBuy = state.player.gold >= s.price;
+    return `<div class="sub-item ${canBuy?'':'disabled'}" onclick="${canBuy?`buyItem('${s.key}',${s.price})`:'alert(\'金幣不足！\')'}">
+      <span><span class="si-icon">${it.icon}</span>${it.name} <span style="color:#888;font-size:13px">- ${it.desc}</span></span>
+      <span class="si-cost">💰 ${s.price} 兩</span>
+    </div>`;
+  }).join("");
+  document.body.insertAdjacentHTML("beforeend", `
+    <div class="inventory-modal show" id="shop-modal" onclick="if(event.target.id==='shop-modal')closeShop()">
+      <div class="inv-box">
+        <h3>🏪 心法商店</h3>
+        <div style="text-align:center; color:#ffd700;">你的金幣：💰 <span id="shop-gold">${state.player.gold}</span> 兩</div>
+        <div class="inv-list" style="margin-top:12px;">${list}</div>
+        <div style="text-align:center; margin-top:14px;">
+          <button class="speaker-btn" onclick="closeShop()">離開</button>
+        </div>
+      </div>
+    </div>
+  `);
+}
+
+function buyItem(key, price) {
+  if (state.player.gold < price) return;
+  state.player.gold -= price;
+  state.inventory[key] = (state.inventory[key] || 0) + 1;
+  saveState();
+  closeShop();
+  setTimeout(openShop, 100);
+}
+
+function closeShop() {
+  const m = document.getElementById("shop-modal");
+  if (m) m.remove();
 }
 
 function enterDemon(key) {
@@ -4007,6 +4990,7 @@ function chooseBattleOption(idx, btnEl) {
 
 function defeatDemon() {
   const d = DEMONS[currentDemon];
+  let bossReward = "";
   // 標記破關
   if (!state.demonsDone[currentDemon]) {
     state.demonsDone[currentDemon] = true;
@@ -4017,6 +5001,26 @@ function defeatDemon() {
       state.skills.push(d.skill);
     }
     if (currentDemon === FINAL_DEMON) state.finalBossDone = true;
+    // 主 boss 大量獎勵
+    const expGain = 80;
+    const goldGain = 100;
+    state.player.exp += expGain;
+    state.player.gold += goldGain;
+    state.player.hp = state.player.maxHp;
+    state.player.mp = state.player.maxMp;
+    bossReward = `<br>🎁 經驗 +${expGain}　💰 +${goldGain} 兩　HP/MP 全滿`;
+    // 升級
+    while (state.player.exp >= state.player.lv * 50) {
+      state.player.exp -= state.player.lv * 50;
+      state.player.lv++;
+      state.player.maxHp += 20;
+      state.player.maxMp += 8;
+      state.player.atk += 3;
+      state.player.def += 2;
+      state.player.hp = state.player.maxHp;
+      state.player.mp = state.player.maxMp;
+      bossReward += `<br>🎉 升級到 LV ${state.player.lv}！`;
+    }
     saveState();
   }
   const isFinal = d.isFinal;
@@ -4028,8 +5032,9 @@ function defeatDemon() {
       </div>
       <div id="sutra-reveal" style="min-height:140px;"></div>
       <div class="stamp-card" style="background:rgba(0,0,0,0.5); color:#fff; border-left-color:#ffd700;">
-        <h3 style="color:#ffd700;">📜 取得「${d.sutra}」</h3>
+        <h3 style="color:#ffd700;">📜 取得「${d.sutra}」+ ${EQUIPMENT[currentDemon]?EQUIPMENT[currentDemon].name:''}</h3>
         <p style="color:#fff;"><strong>修練心法：</strong>${d.skill}</p>
+        ${bossReward ? `<p style="color:#ffd700;">${bossReward}</p>` : ''}
         <p style="color:#fff;">下次遇到同類心魔，記得用這招！</p>
       </div>
       <div id="defeat-after" style="margin-top:20px;"></div>
