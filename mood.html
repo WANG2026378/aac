@@ -3388,17 +3388,46 @@ function saveState() {
 }
 
 // ========= TTS =========
+// 台灣女聲優先級（避免 fallback 抓到普通話/廣東話腔）
+const PREFERRED_VOICES = [
+  "美佳", "Mei-Jia",          // Apple zh-TW 女（macOS/iOS 顯示為中文名「美佳」）
+  "雅婷", "Yating", "Ya-ting",
+  "Hanhan", "Ya-ling",
+  "Microsoft HsiaoChen", "Microsoft HsiaoYu",  // Edge zh-TW
+  "Microsoft Hanhan", "Microsoft Zhiwei",
+  "Google 國語",
+];
+let cachedVoice = null;
 let voicesReady = false;
+function pickTaiwanVoice() {
+  const voices = speechSynthesis.getVoices();
+  if (!voices.length) return null;
+  // 1) 指定名稱優先（只在 zh-* 範圍內）
+  for (const name of PREFERRED_VOICES) {
+    const v = voices.find(x => x.name.includes(name) && x.lang && x.lang.toLowerCase().startsWith("zh"));
+    if (v) return v;
+  }
+  // 2) zh-TW 任何一支
+  let v = voices.find(x => x.lang === "zh-TW" || x.lang === "zh_TW");
+  if (v) return v;
+  // 3) zh-Hant 系列（繁體）
+  v = voices.find(x => x.lang && x.lang.toLowerCase().startsWith("zh-hant"));
+  if (v) return v;
+  // 4) 最後才退到任意中文（普通話/廣東話）
+  v = voices.find(x => x.lang && x.lang.toLowerCase().startsWith("zh"));
+  return v;
+}
 function loadVoices() {
   const v = speechSynthesis.getVoices();
   voicesReady = v.length > 0;
-  if (!voicesReady) setTimeout(loadVoices, 200);
+  if (voicesReady) cachedVoice = pickTaiwanVoice();
+  else setTimeout(loadVoices, 200);
 }
 if ("speechSynthesis" in window) {
   loadVoices();
   speechSynthesis.onvoiceschanged = loadVoices;
 }
-function speak(text, rate=0.95) {
+function speak(text, rate=0.9) {
   if (!("speechSynthesis" in window)) return;
   try {
     speechSynthesis.cancel();
@@ -3406,9 +3435,8 @@ function speak(text, rate=0.95) {
     u.lang = "zh-TW";
     u.rate = rate;
     u.pitch = 1.0;
-    const voices = speechSynthesis.getVoices();
-    const tw = voices.find(v => v.lang === "zh-TW") || voices.find(v => v.lang.startsWith("zh"));
-    if (tw) u.voice = tw;
+    const voice = cachedVoice || pickTaiwanVoice();
+    if (voice) { u.voice = voice; u.lang = voice.lang; cachedVoice = voice; }
     lastSpokenText = text;
     speechSynthesis.speak(u);
   } catch(e) {}
@@ -4162,7 +4190,8 @@ function renderJRPGMap() {
     }
   }
 
-  grid.outerHTML = `
+  grid.style.display = "block";
+  grid.innerHTML = `
     <div class="player-status">
       <div class="ps-row">
         <span class="ps-label">❤️ HP</span>
