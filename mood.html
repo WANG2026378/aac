@@ -578,11 +578,21 @@
     25% { transform: translateX(-12px); }
     75% { transform: translateX(12px); }
   }
-  .demon-defeated { animation: demonFall 1.5s forwards; }
-  @keyframes demonFall {
-    0% { transform: rotate(0) scale(1); opacity: 1; }
-    50% { transform: rotate(15deg) scale(1.1); opacity: 1; filter: blur(0); }
-    100% { transform: rotate(90deg) scale(0.3) translateY(150px); opacity: 0; filter: blur(8px); }
+  .demon-defeated { animation: demonShatter 1.6s ease-in forwards; position: relative; }
+  .demon-defeated::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 30% 40%, rgba(255,215,0,0.9), transparent 30%),
+      radial-gradient(circle at 70% 60%, rgba(255,255,255,0.9), transparent 30%),
+      radial-gradient(circle at 50% 30%, rgba(233,69,96,0.9), transparent 30%);
+    pointer-events: none;
+    opacity: 0;
+    animation: shatterSparks 1.6s ease-out forwards;
+  }
+  @keyframes shatterSparks {
+    0% { opacity: 0; transform: scale(0.5); }
+    40% { opacity: 1; transform: scale(1.5); }
+    100% { opacity: 0; transform: scale(2.5); }
   }
   .battle-log {
     background: #000;
@@ -1139,6 +1149,102 @@
   }
   .music-toggle.show { display: block; }
   .music-toggle:active { transform: scale(0.9); }
+  /* 語速切換（永遠顯示在右上） */
+  .tts-speed-bar {
+    position: fixed; top: 60px; right: 10px; z-index: 100;
+    display: flex; flex-direction: column; gap: 4px;
+    background: rgba(0,0,0,0.55);
+    border: 2px solid #ffd700;
+    border-radius: 16px;
+    padding: 5px 5px;
+  }
+  .tts-speed-label { color:#ffd700; font-size:10px; text-align:center; padding:1px 0; line-height:1.2;}
+  .tts-speed-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid transparent;
+    color: #fff;
+    font-size: 16px;
+    width: 36px; height: 30px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .tts-speed-btn:hover { background: rgba(255,215,0,0.15); }
+  .tts-speed-btn.active {
+    background: linear-gradient(135deg, #ffd700, #ff9800);
+    color: #1a1a1a;
+    border-color: #fff;
+    box-shadow: 0 0 8px rgba(255,215,0,0.6);
+  }
+  /* 過場閃光 */
+  .scene-flash {
+    position: fixed; inset: 0; z-index: 9000;
+    background: radial-gradient(circle, rgba(255,255,255,0.85), rgba(255,215,0,0.3) 60%, transparent);
+    pointer-events: none;
+    animation: sceneFlash 0.6s ease-out forwards;
+  }
+  @keyframes sceneFlash {
+    0%   { opacity: 0; }
+    25%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  /* 心魔擊敗動畫 */
+  @keyframes demonShatter {
+    0%   { transform: scale(1); opacity: 1; filter: brightness(1); }
+    30%  { transform: scale(1.15) rotate(3deg); filter: brightness(2.5); opacity: 1; }
+    60%  { transform: scale(0.9) rotate(-5deg); filter: brightness(1.5); opacity: 0.6; }
+    100% { transform: scale(0.3) rotate(20deg); filter: blur(8px); opacity: 0; }
+  }
+  .demon-shatter { animation: demonShatter 1.4s ease-in forwards; }
+  /* 心經卷取得動畫 */
+  @keyframes sutraDescend {
+    0%   { transform: translateY(-200px) scale(0.4) rotate(-15deg); opacity: 0; filter: brightness(2); }
+    50%  { transform: translateY(0) scale(1.25) rotate(2deg); opacity: 1; filter: brightness(1.5) drop-shadow(0 0 30px #ffd700); }
+    100% { transform: translateY(0) scale(1) rotate(0); opacity: 1; filter: drop-shadow(0 0 14px rgba(255,215,0,0.7)); }
+  }
+  .sutra-descend { animation: sutraDescend 1.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+  /* 選答案後的震動閃光 */
+  @keyframes optionShake {
+    0%,100% { transform: translateX(0); }
+    20%     { transform: translateX(-4px); }
+    40%     { transform: translateX(4px); }
+    60%     { transform: translateX(-2px); }
+    80%     { transform: translateX(2px); }
+  }
+  .option-flashing { animation: optionShake 0.35s ease-in-out; box-shadow: 0 0 20px rgba(255,255,255,0.8); }
+  /* 旁白與怪獸對白 */
+  .narration-line {
+    background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
+    border-left: 4px solid #ffd700;
+    color: #fff8e1; font-style: italic;
+    padding: 10px 14px; margin: 8px auto; max-width: 600px;
+    border-radius: 0 12px 12px 0;
+    font-size: 17px; line-height: 1.6;
+    opacity: 0; transform: translateY(8px);
+    animation: narrIn 0.4s ease-out forwards;
+  }
+  .demon-line {
+    background: linear-gradient(135deg, rgba(233,69,96,0.18), rgba(139,0,0,0.18));
+    border-left: 4px solid #e94560;
+    color: #ffe0e0;
+    padding: 10px 14px; margin: 8px auto; max-width: 600px;
+    border-radius: 0 12px 12px 0;
+    font-size: 17px; line-height: 1.6;
+    opacity: 0; transform: translateY(8px);
+    animation: narrIn 0.4s ease-out forwards;
+  }
+  @keyframes narrIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .scene-line-speaking {
+    box-shadow: 0 0 16px rgba(255,215,0,0.6);
+    transform: scale(1.02);
+  }
+  .scene-line-demon-speaking {
+    box-shadow: 0 0 16px rgba(233,69,96,0.6);
+    transform: scale(1.02);
+  }
 
   /* 最終 boss 開啟 */
   .final-boss-card {
@@ -1638,6 +1744,12 @@
 </div>
 
 <button class="music-toggle" id="music-toggle" onclick="toggleMusic()" title="配樂開關">🔊</button>
+<div class="tts-speed-bar" id="tts-speed-bar" title="語速切換">
+  <div class="tts-speed-label">語速</div>
+  <button class="tts-speed-btn" data-rate="0.85" onclick="setTtsRate(0.85);speak('比較慢的速度',1.0)" title="慢">🐢</button>
+  <button class="tts-speed-btn" data-rate="1.15" onclick="setTtsRate(1.15);speak('中等速度',1.0)" title="中">🐇</button>
+  <button class="tts-speed-btn" data-rate="1.45" onclick="setTtsRate(1.45);speak('快一點的速度',1.0)" title="快">🚀</button>
+</div>
 
 <!-- ==================== HIGH GRADE: 心魔取經地圖 ==================== -->
 <div id="screen-high-map" class="screen">
@@ -1649,7 +1761,7 @@
   <div class="rpg-banner">
     <strong>勇者，歡迎踏上取經之路。</strong><br>
     傳說有六隻心魔惡龍盤踞在你心裡——<br>
-    他們是你<strong>自閉的孤獨</strong>、<strong>學障的白目</strong>、<strong>ADHD 的衝動</strong>、<strong>情障的挑釁</strong>、<strong>沉迷的習慣</strong>、<strong>還有你自己的影子</strong>。<br><br>
+    他們是你<strong>心裡的孤獨</strong>、<strong>不會看場合</strong>、<strong>想到就做</strong>、<strong>愛挑釁</strong>、<strong>戒不掉的壞習慣</strong>、<strong>還有你自己的影子</strong>。<br><br>
     打敗他們不是用拳頭，是用<strong>覺察</strong>與<strong>新的選擇</strong>。<br>
     每勝一隻，取得一卷心經。<br>
     集滿六卷 → 對戰最終心魔「<strong>影子龍</strong>」<br>
@@ -1729,7 +1841,7 @@
   <div class="passport-page">
     <h2 style="text-align:center; color:#ff7b54;">🌱 心情島大冒險｜SEED 習德課程</h2>
     <p style="font-size:17px; line-height:1.8;">
-      由<strong>教育、輔導、心理諮商、社交技巧</strong>四領域共同設計，適合<strong>過動、自閉、智障、學障、情障</strong>學生使用。
+      由<strong>教育、輔導、心理諮商、社交技巧</strong>四領域共同設計，適合<strong>所有需要學習情緒管理與社交技巧</strong>的孩子使用。
     </p>
     <h3 style="color:#6bcf7f;">什麼是 SEED 習德？</h3>
     <p style="font-size:16px; line-height:1.8; background:#fff3e0; padding:14px; border-radius:12px;">
@@ -1763,16 +1875,16 @@
     <h3 style="color:#ffd700;">高年級｜心魔取經 RPG（勇者鬥惡龍 + 周處除三害 + 西遊記）</h3>
     <p style="font-size:16px; line-height:1.8; background:#2c1810; color:#ffd700; padding:14px; border-radius:12px;">
       你是<strong>勇者</strong>，要打敗 6 隻心魔惡龍。<br>
-      他們不是外面的敵人，是<strong>你心裡的自閉孤獨、學障白目、ADHD 衝動、情障挑釁、壞習慣，還有最終——你自己的影子</strong>。<br>
+      他們不是外面的敵人，是<strong>你心裡的孤獨、不會看場合、想到就做、愛挑釁、戒不掉的壞習慣，還有最終——你自己的影子</strong>。<br>
       每勝一隻得一卷<strong>心經</strong>。集滿五卷 → 對戰最終心魔「<strong>影子龍</strong>」→ 找回良知良心。<br>
       含 RPG 血條戰鬥、答錯掉 HP、答對破龍鱗的回合制設計。
     </p>
     <ul style="font-size:16px; line-height:1.9;">
-      <li>🟡 獨我龍（自閉孤獨）→ <strong>同理心經</strong></li>
-      <li>⚪ 白目龍（學障白目）→ <strong>察言觀色心經</strong></li>
-      <li>🟠 衝動龍（ADHD）→ <strong>停看聽心經</strong></li>
-      <li>🟣 挑釁龍（情障反社會）→ <strong>化敵為友心經</strong></li>
-      <li>🟢 習慣龍（沉迷/自傷）→ <strong>習慣換新心經</strong></li>
+      <li>🟡 獨我龍（心裡的孤獨）→ <strong>同理心經</strong></li>
+      <li>⚪ 白目龍（不會看場合）→ <strong>察言觀色心經</strong></li>
+      <li>🟠 衝動龍（想到就做）→ <strong>停看聽心經</strong></li>
+      <li>🟣 挑釁龍（愛挑釁）→ <strong>化敵為友心經</strong></li>
+      <li>🟢 習慣龍（戒不掉的壞習慣）→ <strong>習慣換新心經</strong></li>
       <li>🪞 鏡影龍（最終 boss：你自己）→ <strong>良知心經</strong></li>
     </ul>
 
@@ -2448,7 +2560,7 @@ const MONSTER_ORDER = ["grabby", "cryyy", "pushy", "sulky", "hidey", "stompy"];
 const DEMONS = {
   solo: {
     name: "獨我龍",
-    trait: "自閉孤獨 · 自我中心",
+    trait: "心裡的孤獨 · 自我中心",
     sutra: "同理心經",
     sutraChar: "同",
     introVoice: "哼！這世界繞著我轉！別人的感覺？干我什麼事！",
@@ -2488,7 +2600,7 @@ const DEMONS = {
 
   clueless: {
     name: "白目龍",
-    trait: "學障白目 · 不會看臉色",
+    trait: "不會看場合 · 不會看臉色",
     sutra: "察言觀色心經",
     sutraChar: "察",
     introVoice: "嘿嘿！告白現場？葬禮場合？什麼氣氛我看不懂啦！我想說就說！",
@@ -2528,7 +2640,7 @@ const DEMONS = {
 
   impulse: {
     name: "衝動龍",
-    trait: "ADHD · 想到就做",
+    trait: "想到就做 · 停不下來",
     sutra: "停看聽心經",
     sutraChar: "停",
     introVoice: "想到就做！想到就買！想到就罵！停下來？我才不要！哈哈！",
@@ -2568,7 +2680,7 @@ const DEMONS = {
 
   provoker: {
     name: "挑釁龍",
-    trait: "情障 · 反社會挑釁",
+    trait: "愛挑釁 · 故意惹人",
     sutra: "化敵為友心經",
     sutraChar: "化",
     introVoice: "來啊！打我啊！老師罰你我看你還敢嗎！哈哈哈！我就是要看你失控！",
@@ -2608,7 +2720,7 @@ const DEMONS = {
 
   hooked: {
     name: "習慣龍",
-    trait: "壞習慣 · 沉迷或自傷",
+    trait: "戒不掉的壞習慣 · 越掙扎越緊",
     sutra: "習慣換新心經",
     sutraChar: "換",
     introVoice: "我就是要滑手機！我就是要咬指甲！我就是不寫功課！你管不著！",
@@ -2690,6 +2802,54 @@ const DEMONS = {
 
 const DEMON_ORDER = ["solo", "clueless", "impulse", "provoker", "hooked"];
 const FINAL_DEMON = "mirror";
+
+// ========= 心魔登場劇情（旁白 ↔ 怪獸對白來回）=========
+// type: 'narrator' = 旁白；'demon' = 心魔說話
+const DEMON_SCENES = {
+  solo: [
+    { type:'narrator', text:'風塵僕僕地，你來到孤獨之峰。山頂坐著一條金色的龍——獨我龍。' },
+    { type:'demon',    text:'哼！這世界繞著我轉！別人的感覺？干我什麼事！' },
+    { type:'narrator', text:'他閉著眼，不看任何人。你向他提起隔壁同學的阿嬤過世了。' },
+    { type:'demon',    text:'關我什麼事啦！我又沒認識他阿嬤！' },
+    { type:'narrator', text:'他真的「沒感覺」嗎？還是——他根本不會表達？勇者，你要怎麼破？' }
+  ],
+  clueless: [
+    { type:'narrator', text:'你走入霧氣繚繞的迷糊森林，飄著一隻茫然的灰白龍——白目龍。' },
+    { type:'demon',    text:'嘿嘿！告白現場？葬禮場合？什麼氣氛我看不懂啦！' },
+    { type:'narrator', text:'他大聲笑著，旁邊的人正在難過。氣氛凝重，他卻聽不見。' },
+    { type:'demon',    text:'我想說就說啊！哪有什麼錯？' },
+    { type:'narrator', text:'他不是壞，是真的「看不懂」場合。你要怎麼教他停下來呢？' }
+  ],
+  impulse: [
+    { type:'narrator', text:'戰火紛飛的火山口，一條火紅的龍咆哮著——衝動龍。' },
+    { type:'demon',    text:'想到就做！想到就買！想到就罵！停下來？我才不要！' },
+    { type:'narrator', text:'他從不思考後果。一句話不爽就動手，一個念頭就行動。' },
+    { type:'demon',    text:'停 5 秒？哈哈哈！我等不及！' },
+    { type:'narrator', text:'如果你照他這樣做——你會被記過、被叫家長、失去朋友。怎麼破？' }
+  ],
+  provoker: [
+    { type:'narrator', text:'你進入鋒利的尖刺峽谷，紫色的挑釁龍故意往你身上撞。' },
+    { type:'demon',    text:'來啊！打我啊！老師罰你我看你還敢嗎！' },
+    { type:'narrator', text:'他笑著，他在等你動手。打了你就輸；不打他就笑你慫。' },
+    { type:'demon',    text:'哈哈哈！我就是要看你失控！' },
+    { type:'narrator', text:'這是一個陷阱。勇者，要怎麼讓陷阱反過來咬他？' }
+  ],
+  hooked: [
+    { type:'narrator', text:'你進入纏滿鎖鏈的迷霧沼澤，看見一條無精打采的綠龍——習慣龍。' },
+    { type:'demon',    text:'我就是要滑手機！我就是要咬指甲！你管不著！' },
+    { type:'narrator', text:'他被自己的習慣綁住，越掙扎越緊。鎖鏈不是別人鎖的，是他自己選的。' },
+    { type:'demon',    text:'再玩 5 分鐘啦…再 5 分鐘就好…' },
+    { type:'narrator', text:'5 分鐘變成 2 小時。你要怎麼幫他拆掉鎖鏈？' }
+  ],
+  mirror: [
+    { type:'narrator', text:'你走到山的最頂端，那裡只有一面古老的鏡子。' },
+    { type:'narrator', text:'鏡子裡，一條龍緩緩抬起頭——他長得，和你一模一樣。' },
+    { type:'demon',    text:'你...打敗了五個...但你看清楚！我是誰？' },
+    { type:'demon',    text:'我是...你啊！你逃得掉嗎？' },
+    { type:'narrator', text:'周處除三害——虎、龍，第三害...是他自己。' },
+    { type:'narrator', text:'勇者，最後一場戰鬥，是和你心裡那個不肯認錯的自己。' }
+  ]
+};
 
 // ========= 心法裝備系統 =========
 // 每打敗一隻心魔，獲得對應裝備（屬於那個 demon 的「方法」）
@@ -3062,7 +3222,7 @@ const DEMON_SVG = {
       <!-- 眉（皺起） -->
       <path d="M80,68 Q88,64 95,68" stroke="#5d4037" stroke-width="2.5" fill="none" stroke-linecap="round"/>
       <path d="M120,68 Q112,64 105,68" stroke="#5d4037" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <!-- 眼緊閉（自閉）+ 微淚痕 -->
+      <!-- 眼緊閉（孤獨）+ 微淚痕 -->
       <path d="M82,80 Q88,84 94,80" stroke="#5d4037" stroke-width="3" stroke-linecap="round" fill="none"/>
       <path d="M106,80 Q112,84 118,80" stroke="#5d4037" stroke-width="3" stroke-linecap="round" fill="none"/>
       <circle cx="88" cy="86" r="1.2" fill="#42a5f5" opacity="0.6"/>
@@ -3699,22 +3859,63 @@ if ("speechSynthesis" in window) {
   loadVoices();
   speechSynthesis.onvoiceschanged = loadVoices;
 }
-function speak(text, rate=0.9) {
+// 全域語速倍率（0.9=慢 / 1.0=中 / 1.25=快 / 1.5=超快）
+let ttsRateMultiplier = parseFloat(localStorage.getItem("moodTtsRate") || "1.15");
+function setTtsRate(mult) {
+  ttsRateMultiplier = mult;
+  localStorage.setItem("moodTtsRate", String(mult));
+  // 重繪速度按鈕
+  document.querySelectorAll(".tts-speed-btn").forEach(b => {
+    b.classList.toggle("active", parseFloat(b.dataset.rate) === mult);
+  });
+}
+function speak(text, rate=1.0, opts={}) {
   if (!("speechSynthesis" in window)) return;
   try {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = "zh-TW";
-    u.rate = rate;
-    u.pitch = 1.0;
+    u.rate = Math.max(0.5, Math.min(2.5, rate * ttsRateMultiplier));
+    u.pitch = opts.pitch != null ? opts.pitch : 1.0;
     const voice = cachedVoice || pickTaiwanVoice();
     if (voice) { u.voice = voice; u.lang = voice.lang; cachedVoice = voice; }
+    if (opts.onend) u.onend = opts.onend;
     lastSpokenText = text;
     speechSynthesis.speak(u);
   } catch(e) {}
 }
+// 鏈式對白：依序念多句話，每句念完再下一句
+function speakQueue(items, doneCb) {
+  speechSynthesis.cancel();
+  let i = 0;
+  function next() {
+    if (i >= items.length) { if (doneCb) doneCb(); return; }
+    const it = items[i++];
+    const text = typeof it === "string" ? it : it.text;
+    const rate = (it && it.rate) || 1.0;
+    const pitch = (it && it.pitch) || 1.0;
+    if (it && it.before) try { it.before(); } catch(e) {}
+    speak(text, rate, { pitch, onend: () => {
+      if (it && it.after) try { it.after(); } catch(e) {}
+      setTimeout(next, (it && it.pause) || 220);
+    }});
+  }
+  next();
+  return { cancel: () => { i = items.length; speechSynthesis.cancel(); } };
+}
 function repeatCurrentSpeech() {
   if (lastSpokenText) speak(lastSpokenText);
+}
+
+// 全螢幕閃光過場（勝利/關鍵時刻）
+function flashScene() {
+  const old = document.getElementById("scene-flash");
+  if (old) old.remove();
+  const el = document.createElement("div");
+  el.className = "scene-flash";
+  el.id = "scene-flash";
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 700);
 }
 
 // ========= SEED 角色：六島各別主題 SVG（純原創） =========
@@ -4347,6 +4548,55 @@ function sfxVictory() {
     o.connect(g); g.connect(ctx.destination);
     o.start(t); o.stop(t + 0.4);
   });
+}
+
+// 完整勝利凱旋曲（約 3.5 秒，主旋律+和聲+定音和弦）
+function playVictoryMusic() {
+  if (!state.musicOn) return;
+  const ctx = getAudio(); if (!ctx) return;
+  const t0 = ctx.currentTime;
+
+  function tone(freq, start, dur, gain=0.18, type="triangle") {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, start);
+    g.gain.setValueAtTime(0.001, start);
+    g.gain.linearRampToValueAtTime(gain, start + 0.02);
+    g.gain.linearRampToValueAtTime(gain * 0.7, start + dur * 0.5);
+    g.gain.exponentialRampToValueAtTime(0.001, start + dur);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(start); o.stop(start + dur + 0.05);
+  }
+  function chord(freqs, start, dur, gain=0.12) {
+    freqs.forEach(f => tone(f, start, dur, gain, "sine"));
+  }
+
+  // 凱旋主旋律：C - E - G - C - E - C - G - C（豐富版）
+  const beat = 0.18;
+  const C5 = 523.25, E5 = 659.25, G5 = 783.99, C6 = 1046.50, A5 = 880.00;
+  // 上行
+  tone(C5, t0 + 0*beat, beat*0.9, 0.2);
+  tone(E5, t0 + 1*beat, beat*0.9, 0.2);
+  tone(G5, t0 + 2*beat, beat*0.9, 0.2);
+  tone(C6, t0 + 3*beat, beat*1.8, 0.22);
+  // 旋律展開
+  tone(A5, t0 + 5*beat, beat*0.9, 0.2);
+  tone(G5, t0 + 6*beat, beat*0.9, 0.2);
+  tone(C6, t0 + 7*beat, beat*1.8, 0.22);
+  // 終曲大和弦（C major triad sustain）
+  chord([C5, E5, G5, C6], t0 + 9*beat, 1.2, 0.13);
+  // 高音裝飾
+  tone(1318.51 /*E6*/, t0 + 9*beat, 0.25, 0.16);
+  tone(1567.98 /*G6*/, t0 + 9.3*beat, 0.5, 0.14);
+  // 低音支撐（bass C3）
+  tone(130.81, t0 + 9*beat, 1.4, 0.12, "sine");
+
+  // 鈴聲 sparkle
+  setTimeout(() => {
+    const t1 = ctx.currentTime;
+    tone(2093.00 /*C7*/, t1, 0.12, 0.08, "triangle");
+    tone(2637.02 /*E7*/, t1 + 0.08, 0.12, 0.07, "triangle");
+  }, 2200);
 }
 
 function toggleMusic() {
@@ -5043,6 +5293,7 @@ function enterDemon(key) {
 
 function confirmLeaveBattle() {
   speechSynthesis.cancel();
+  if (_introQueueCancel) _introQueueCancel.cancel();
   stopBattleMusic();
   if (confirm("勇者，戰場中撤退這次戰績不會儲存喔！確定撤退？")) {
     hideMusicToggle();
@@ -5126,25 +5377,72 @@ function proceedToBattle() {
   startDemonBattle();
 }
 
+let _introQueueCancel = null;
+function _renderSceneLines(scenes) {
+  return scenes.map((s, i) => {
+    const cls = s.type === "narrator" ? "narration-line" : "demon-line";
+    const prefix = s.type === "narrator" ? "🎙️ 旁白" : "🐉 心魔";
+    return `<div class="${cls}" id="scene-line-${i}" style="animation-delay:${i*0.18}s">
+      <strong style="opacity:0.7; font-size:13px;">${prefix}</strong><br>${s.text}
+    </div>`;
+  }).join("");
+}
 function _introHTML(d) {
+  const scenes = DEMON_SCENES[currentDemon] || [
+    { type:'narrator', text: d.scenario },
+    { type:'demon', text: d.introVoice }
+  ];
   return `
     <div class="demon-stage">
       ${DEMON_SVG[currentDemon]}
       <h2 style="color:#e94560; margin:8px 0;">${d.name} 現身！</h2>
       <div style="color:#ffd700; font-size:15px;">${d.trait}</div>
     </div>
-    <div class="demon-bubble">「${d.introVoice}」</div>
-    <button class="speaker-btn" onclick="speak('${d.name}說：${d.introVoice}', 0.92)">🔊 聽${d.name}嗆聲</button>
-    <div class="battle-scenario" id="scenario-text">${d.scenario}</div>
-    <button class="speaker-btn" onclick="speak(document.getElementById('scenario-text').innerText, 0.92)">🔊 念場景</button>
+    <div class="scene-area" id="scene-area">
+      ${_renderSceneLines(scenes)}
+    </div>
+    <div style="text-align:center; margin:8px 0;">
+      <button class="speaker-btn" onclick="playIntroScene()">▶️ 重播劇情</button>
+      <button class="speaker-btn secondary" onclick="skipIntroScene()">⏭️ 跳過</button>
+    </div>
     ${renderEquipmentPicker(() => startDemonBattle())}
   `;
+}
+function playIntroScene() {
+  const scenes = DEMON_SCENES[currentDemon];
+  if (!scenes) return;
+  if (_introQueueCancel) _introQueueCancel.cancel();
+  // 高亮+念出
+  const items = scenes.map((s, i) => ({
+    text: s.text,
+    rate: s.type === "narrator" ? 1.0 : 1.05,
+    pitch: s.type === "narrator" ? 1.0 : 0.85,
+    pause: s.type === "narrator" ? 280 : 380,
+    before: () => {
+      document.querySelectorAll("#scene-area .narration-line, #scene-area .demon-line")
+        .forEach(el => el.classList.remove("scene-line-speaking","scene-line-demon-speaking"));
+      const el = document.getElementById("scene-line-" + i);
+      if (el) {
+        el.classList.add(s.type === "narrator" ? "scene-line-speaking" : "scene-line-demon-speaking");
+        el.scrollIntoView({ block: "center", behavior: "smooth" });
+      }
+    }
+  }));
+  _introQueueCancel = speakQueue(items, () => {
+    document.querySelectorAll("#scene-area .scene-line-speaking, #scene-area .scene-line-demon-speaking")
+      .forEach(el => el.classList.remove("scene-line-speaking","scene-line-demon-speaking"));
+  });
+}
+function skipIntroScene() {
+  if (_introQueueCancel) _introQueueCancel.cancel();
+  speechSynthesis.cancel();
+  document.querySelectorAll("#scene-area .scene-line-speaking, #scene-area .scene-line-demon-speaking")
+    .forEach(el => el.classList.remove("scene-line-speaking","scene-line-demon-speaking"));
 }
 function renderDemonIntro() {
   const d = DEMONS[currentDemon];
   document.getElementById("battle-content").innerHTML = _introHTML(d);
-  setTimeout(() => speak(d.name + "嗆聲：" + d.introVoice, 0.92), 400);
-  setTimeout(() => speak(d.scenario, 0.92), 4500);
+  setTimeout(() => playIntroScene(), 500);
   // 沒裝備可選時直接顯示開戰按鈕
   const owned = Object.keys(state.demonsDone).filter(k => state.demonsDone[k]);
   if (owned.length === 0) {
@@ -5251,6 +5549,9 @@ function chooseBattleOption(idx, btnEl) {
   const opt = q.options[idx];
   const bonus = getEquipmentBonus();
   document.querySelectorAll(".battle-option").forEach(b => b.disabled = true);
+  // 過場：選答後 0.35s 震動+閃光，再顯示結果
+  btnEl.classList.add("option-flashing");
+  setTimeout(() => btnEl.classList.remove("option-flashing"), 400);
 
   if (opt.correct) {
     btnEl.classList.add("attack-correct");
@@ -5361,15 +5662,20 @@ function defeatDemon() {
     </div>
   `;
   document.getElementById("battle-content").innerHTML = html;
-  speak("戰勝了" + d.name + "！取得" + d.sutra, 0.92);
+  // 過場閃光（勝利瞬間白光）
+  flashScene();
+  // 勝利凱旋曲
+  playVictoryMusic();
+  setTimeout(() => speak("戰勝了" + d.name + "！取得" + d.sutra, 1.0), 600);
 
-  // 心經卷軸出現
+  // 心經卷軸出現（從上飛下動畫）
   setTimeout(() => {
     document.getElementById("sutra-reveal").innerHTML = `
-      <div class="sutra-scroll transform-in" style="margin:14px auto;"><span class="sutra-char">${d.sutraChar}</span></div>
-      <div style="color:#ffd700; font-size:18px; margin-top:8px;">「${d.sutra}」入手 ✨</div>
+      <div class="sutra-scroll sutra-descend" style="margin:14px auto;"><span class="sutra-char">${d.sutraChar}</span></div>
+      <div style="color:#ffd700; font-size:18px; margin-top:8px; opacity:0; animation:narrIn 0.5s 0.8s forwards;">「${d.sutra}」入手 ✨</div>
     `;
-  }, 1700);
+    setTimeout(() => speak("獲得心經：" + d.sutra, 1.0), 700);
+  }, 2200);
 
   setTimeout(() => {
     const after = document.getElementById("defeat-after");
@@ -5991,6 +6297,10 @@ window.addEventListener("load", () => {
   if ("speechSynthesis" in window) {
     setTimeout(() => speechSynthesis.getVoices(), 200);
   }
+  // 同步速度按鈕 active 狀態
+  document.querySelectorAll(".tts-speed-btn").forEach(b => {
+    b.classList.toggle("active", parseFloat(b.dataset.rate) === ttsRateMultiplier);
+  });
 });
 </script>
 </body>
