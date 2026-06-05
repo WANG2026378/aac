@@ -1213,27 +1213,31 @@
     80%     { transform: translateX(2px); }
   }
   .option-flashing { animation: optionShake 0.35s ease-in-out; box-shadow: 0 0 20px rgba(255,255,255,0.8); }
-  /* 旁白與怪獸對白 */
+  /* 旁白與怪獸對白（淺底+深字，淺色/深色背景都看得清） */
   .narration-line {
-    background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
-    border-left: 4px solid #ffd700;
-    color: #fff8e1; font-style: italic;
-    padding: 10px 14px; margin: 8px auto; max-width: 600px;
-    border-radius: 0 12px 12px 0;
+    background: linear-gradient(135deg, #fff8e1, #fffde7);
+    border-left: 5px solid #ffb300;
+    color: #3e2723; font-style: italic;
+    padding: 12px 16px; margin: 10px auto; max-width: 600px;
+    border-radius: 0 14px 14px 0;
     font-size: 17px; line-height: 1.6;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.18);
     opacity: 0; transform: translateY(8px);
     animation: narrIn 0.4s ease-out forwards;
   }
   .demon-line {
-    background: linear-gradient(135deg, rgba(233,69,96,0.18), rgba(139,0,0,0.18));
-    border-left: 4px solid #e94560;
-    color: #ffe0e0;
-    padding: 10px 14px; margin: 8px auto; max-width: 600px;
-    border-radius: 0 12px 12px 0;
+    background: linear-gradient(135deg, #ffe4e8, #ffd0d8);
+    border-left: 5px solid #e94560;
+    color: #5d1a1a;
+    padding: 12px 16px; margin: 10px auto; max-width: 600px;
+    border-radius: 0 14px 14px 0;
     font-size: 17px; line-height: 1.6;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.18);
     opacity: 0; transform: translateY(8px);
     animation: narrIn 0.4s ease-out forwards;
   }
+  .narration-line strong { color: #bf6800; }
+  .demon-line strong { color: #c62828; }
   @keyframes narrIn {
     to { opacity: 1; transform: translateY(0); }
   }
@@ -1302,7 +1306,13 @@
   .monster-card.tamed::before {
     content: "💖"; position: absolute; top: 8px; right: 10px; font-size: 22px;
   }
-  .monster-card-svg { width: 100px; height: 110px; margin: 0 auto 4px; }
+  .monster-card-svg { width: 110px; height: 120px; margin: 0 auto 4px; }
+  .monster-card-svg svg, .encounter-svg-wrap svg, .heart-burst svg, .pocket-card svg {
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25)) drop-shadow(0 0 12px rgba(255,255,255,0.15));
+    transition: transform 0.2s;
+  }
+  .monster-card:hover .monster-card-svg svg { transform: scale(1.08) rotate(-3deg); }
+  .heart-burst svg { filter: drop-shadow(0 0 20px rgba(255,107,157,0.7)) drop-shadow(0 4px 8px rgba(0,0,0,0.25)); }
   .monster-card-name { font-size: 19px; font-weight: bold; margin-top: 4px; color: #444; }
   .monster-card-mood { font-size: 13px; color: #888; margin-top: 2px; }
 
@@ -2555,6 +2565,58 @@ const MONSTERS = {
 };
 
 const MONSTER_ORDER = ["grabby", "cryyy", "pushy", "sulky", "hidey", "stompy"];
+
+// ========= 低年級搗蛋怪登場劇情（旁白 ↔ 怪獸對白）=========
+// 低年級用簡單的詞、短句、活潑的旁白
+const MONSTER_SCENES = {
+  grabby: [
+    { type:'narrator', text:'有一天，小華正在玩積木，玩得好開心。' },
+    { type:'narrator', text:'這時候，橘色的搶搶怪偷偷靠近了！' },
+    { type:'monster',  text:'嘿嘿！這個玩具我也要！搶過來！' },
+    { type:'narrator', text:'小華嚇了一跳，眼淚都流出來了。' },
+    { type:'monster',  text:'哈哈，是我的啦！' },
+    { type:'narrator', text:'搶搶怪不是壞蛋，他只是不會用嘴巴問。我們來教他一句話！' }
+  ],
+  cryyy: [
+    { type:'narrator', text:'媽媽帶哭哭怪去買菜，他看到糖糖好想吃。' },
+    { type:'monster',  text:'我要！我要！我就是要糖糖！' },
+    { type:'narrator', text:'媽媽說「等等再買」，哭哭怪就直接坐到地上大哭！' },
+    { type:'monster',  text:'嗚啊啊啊——！' },
+    { type:'narrator', text:'其實媽媽不是不買，是哭哭怪不會用嘴巴說。我們來教他！' }
+  ],
+  pushy: [
+    { type:'narrator', text:'下課時間，走廊上好多小朋友。' },
+    { type:'narrator', text:'綠色的推推怪想快點過去，他就——' },
+    { type:'monster',  text:'走開走開！我要過去！' },
+    { type:'narrator', text:'他用力推前面的同學，差點把人推倒！' },
+    { type:'monster',  text:'讓開啦！' },
+    { type:'narrator', text:'推推怪不是兇，他只是不會說「請借過」。我們來教他～' }
+  ],
+  sulky: [
+    { type:'narrator', text:'美勞課老師說：「請大家拿出剪刀。」' },
+    { type:'narrator', text:'紫色的嗚嗚怪……找不到他的剪刀。' },
+    { type:'monster',  text:'……（低頭不講話）' },
+    { type:'narrator', text:'同學說「你怎麼了？」，他還是只搖搖頭。' },
+    { type:'monster',  text:'哼……（轉過去躲起來）' },
+    { type:'narrator', text:'嗚嗚怪不是不想說，是不知道怎麼開口。我們來教他「需要幫忙」！' }
+  ],
+  hidey: [
+    { type:'narrator', text:'早上學校門口，老師笑咪咪地說：「早安！」' },
+    { type:'narrator', text:'白色的躲躲怪看到老師——' },
+    { type:'monster',  text:'……（低頭快走、裝沒看到）' },
+    { type:'narrator', text:'老師看了，有點失望的樣子。' },
+    { type:'monster',  text:'……（躲到旁邊）' },
+    { type:'narrator', text:'躲躲怪不是討厭老師，他只是不知道怎麼打招呼。我們來教他！' }
+  ],
+  stompy: [
+    { type:'narrator', text:'下課時間，盪鞦韆好多人排隊。' },
+    { type:'narrator', text:'紅色的跺跺怪只等了 5 秒就受不了——' },
+    { type:'monster',  text:'我不要等！為什麼還沒到我啦！' },
+    { type:'narrator', text:'他開始跺腳，大聲哭叫，吵到旁邊的小朋友。' },
+    { type:'monster',  text:'哼！跺跺跺！' },
+    { type:'narrator', text:'跺跺怪不是壞，他只是不會等。我們來教他「我可以等」！' }
+  ]
+};
 
 // ========= 高年級 6 隻心魔 + 終極影子龍 =========
 const DEMONS = {
@@ -3907,6 +3969,29 @@ function repeatCurrentSpeech() {
   if (lastSpokenText) speak(lastSpokenText);
 }
 
+// SVG 漸層/濾鏡 id 自動唯一化（避免多 SVG 共用 id 在 display:none 子樹失效）
+// 簡寫 helper：mSvg('grabby','villain') / dSvg('solo') / pSvg() / pmSvg() / cSvg('volcano','seed')
+function mSvg(key, form) { return uniqifySvgIds(MONSTER_SVG[key][form]); }
+function dSvg(key) { return uniqifySvgIds(DEMON_SVG[key]); }
+function pSvg() { return uniqifySvgIds(PLAYER_SVG); }
+function pmSvg() { return uniqifySvgIds(PLAYER_MINI_SVG); }
+function cSvg(island, stage) { return uniqifySvgIds(CHARACTER_SVG[island][stage]); }
+let _svgIdCounter = 0;
+function uniqifySvgIds(svgHtml) {
+  _svgIdCounter++;
+  const suffix = "u" + _svgIdCounter;
+  // 收集所有 id= 出現的字串
+  const ids = [];
+  svgHtml.replace(/id="([^"]+)"/g, (m, id) => { ids.push(id); return m; });
+  let out = svgHtml;
+  ids.forEach(id => {
+    const safeId = id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    out = out.replace(new RegExp(`id="${safeId}"`, "g"), `id="${id}-${suffix}"`);
+    out = out.replace(new RegExp(`url\\(#${safeId}\\)`, "g"), `url(#${id}-${suffix})`);
+  });
+  return out;
+}
+
 // 全螢幕閃光過場（勝利/關鍵時刻）
 function flashScene() {
   const old = document.getElementById("scene-flash");
@@ -4132,7 +4217,7 @@ const CHARACTER_SVG = {
 
 function renderCharacter(islandKey, stage, opts={}) {
   const island = ISLANDS[islandKey];
-  const svg = CHARACTER_SVG[islandKey][stage];
+  const svg = cSvg(islandKey, stage);
   const name = stage === "seed" ? island.seed.name : island.sprout.name;
   const wrapCls = opts.wiggle ? "char-wrap wiggle-char" : "char-wrap";
   const virtue = stage === "sprout" ? `<div style="text-align:center; margin-top:6px;"><span class="virtue-badge">⭐ ${island.sprout.virtue}</span></div>` : "";
@@ -4216,7 +4301,7 @@ function renderLowMap() {
     const card = document.createElement("div");
     card.className = "monster-card" + (tamed ? " tamed" : "");
     card.innerHTML = `
-      <div class="monster-card-svg">${tamed ? MONSTER_SVG[key].tamed : MONSTER_SVG[key].villain}</div>
+      <div class="monster-card-svg">${tamed ? mSvg(key,'tamed') : mSvg(key,'villain')}</div>
       <div class="monster-card-name">${tamed ? m.tamedName : m.name}</div>
       <div class="monster-card-mood">${tamed ? "已收服 💖" : m.mood}</div>
     `;
@@ -4237,11 +4322,52 @@ function enterMonster(key) {
 
 function confirmLeaveMonster() {
   speechSynthesis.cancel();
+  if (_monsterIntroCancel) _monsterIntroCancel.cancel();
   if (confirm("這次的進度不會儲存喔～確定要回小屋嗎？")) {
     showScreen("low-map");
   }
 }
 
+let _monsterIntroCancel = null;
+function _renderMonsterSceneLines(scenes) {
+  return scenes.map((s, i) => {
+    const cls = s.type === "narrator" ? "narration-line" : "demon-line";
+    const prefix = s.type === "narrator" ? "🎙️ 旁白" : "👾 搗蛋怪";
+    return `<div class="${cls}" id="mscene-line-${i}" style="animation-delay:${i*0.18}s">
+      <strong style="opacity:0.7; font-size:13px;">${prefix}</strong><br>${s.text}
+    </div>`;
+  }).join("");
+}
+function playMonsterIntroScene() {
+  const scenes = MONSTER_SCENES[currentMonster];
+  if (!scenes) return;
+  if (_monsterIntroCancel) _monsterIntroCancel.cancel();
+  const items = scenes.map((s, i) => ({
+    text: s.text,
+    rate: s.type === "narrator" ? 0.95 : 1.0,
+    pitch: s.type === "narrator" ? 1.0 : 0.9,
+    pause: 280,
+    before: () => {
+      document.querySelectorAll("#mscene-area .narration-line, #mscene-area .demon-line")
+        .forEach(el => el.classList.remove("scene-line-speaking","scene-line-demon-speaking"));
+      const el = document.getElementById("mscene-line-" + i);
+      if (el) {
+        el.classList.add(s.type === "narrator" ? "scene-line-speaking" : "scene-line-demon-speaking");
+        el.scrollIntoView({ block: "center", behavior: "smooth" });
+      }
+    }
+  }));
+  _monsterIntroCancel = speakQueue(items, () => {
+    document.querySelectorAll("#mscene-area .scene-line-speaking, #mscene-area .scene-line-demon-speaking")
+      .forEach(el => el.classList.remove("scene-line-speaking","scene-line-demon-speaking"));
+  });
+}
+function skipMonsterIntroScene() {
+  if (_monsterIntroCancel) _monsterIntroCancel.cancel();
+  speechSynthesis.cancel();
+  document.querySelectorAll("#mscene-area .scene-line-speaking, #mscene-area .scene-line-demon-speaking")
+    .forEach(el => el.classList.remove("scene-line-speaking","scene-line-demon-speaking"));
+}
 function renderMonsterStory() {
   const m = MONSTERS[currentMonster];
   const tamed = !!state.monstersDone[currentMonster];
@@ -4250,28 +4376,32 @@ function renderMonsterStory() {
     renderMonsterAlreadyTamed();
     return;
   }
+  const scenes = MONSTER_SCENES[currentMonster] || [
+    { type:'narrator', text: m.scenario.replace(/<[^>]+>/g, "") },
+    { type:'monster', text: m.villainVoice }
+  ];
   const html = `
     <div class="encounter-stage">
-      <div class="encounter-svg-wrap"><div class="villain-shake">${MONSTER_SVG[currentMonster].villain}</div></div>
+      <div class="encounter-svg-wrap"><div class="villain-shake">${mSvg(currentMonster,'villain')}</div></div>
       <h2 style="text-align:center; color:#c2185b; margin:4px 0;">${m.name} 出現了！</h2>
-      <div class="monster-bubble">「${m.villainVoice}」</div>
-      <button class="speaker-btn" onclick="speak('${m.name}說：${m.villainVoice}', 0.9)">🔊 聽${m.name}說話</button>
-      <div class="scenario-card" id="scenario-text">${m.scenario}</div>
-      <button class="speaker-btn" onclick="speak(document.getElementById('scenario-text').innerText, 0.9)">🔊 念故事</button>
+      <div class="scene-area" id="mscene-area">
+        ${_renderMonsterSceneLines(scenes)}
+      </div>
+      <div style="text-align:center; margin:8px 0;">
+        <button class="speaker-btn" onclick="playMonsterIntroScene()">▶️ 重播劇情</button>
+        <button class="speaker-btn secondary" onclick="skipMonsterIntroScene()">⏭️ 跳過</button>
+      </div>
       <div class="magic-phrase-box">
         <span class="label">教他這句魔法話 👇</span>
         「${m.magicPhrase}」
       </div>
       <div style="text-align:center; margin-top:16px;">
-        <button class="speaker-btn big secondary" onclick="startMonsterQuestions()">開始教他 →</button>
+        <button class="speaker-btn big secondary" onclick="skipMonsterIntroScene();startMonsterQuestions()">開始教他 →</button>
       </div>
     </div>
   `;
   document.getElementById("monster-content").innerHTML = html;
-  setTimeout(() => speak(m.name + "說：" + m.villainVoice, 0.9), 400);
-  setTimeout(() => {
-    speak(m.scenario.replace(/<[^>]+>/g, ""), 0.9);
-  }, 4500);
+  setTimeout(() => playMonsterIntroScene(), 500);
 }
 
 function startMonsterQuestions() {
@@ -4284,7 +4414,7 @@ function renderMonsterQuestion() {
   const q = m.questions[currentMonsterQ];
   const html = `
     <div class="encounter-stage">
-      <div style="text-align:center;"><div class="villain-jump" style="display:inline-block;">${MONSTER_SVG[currentMonster].villain}</div></div>
+      <div style="text-align:center;"><div class="villain-jump" style="display:inline-block;">${mSvg(currentMonster,'villain')}</div></div>
       <div style="text-align:center; color:#888; font-size:15px;">第 ${currentMonsterQ+1} / ${m.questions.length} 題</div>
       <div class="question-text" id="monster-q" style="margin:14px 0;">${q.q}</div>
       <button class="speaker-btn" onclick="speak(document.getElementById('monster-q').textContent, 0.9)">🔊 念題目</button>
@@ -4359,7 +4489,7 @@ function tameMonster() {
       <h2 style="color:#c2185b; font-size:30px;">收服成功！💖</h2>
       <p style="font-size:18px; color:#555;">${m.name} 變身中…</p>
       <div id="tame-svg-area" style="min-height:200px; display:flex; align-items:center; justify-content:center;">
-        ${MONSTER_SVG[currentMonster].villain}
+        ${mSvg(currentMonster,'villain')}
       </div>
       <div id="tame-bubble-area"></div>
       <div class="stamp-card" style="border-left-color:#fd79a8;">
@@ -4376,7 +4506,7 @@ function tameMonster() {
   // 變身動畫
   setTimeout(() => {
     const area = document.getElementById("tame-svg-area");
-    area.innerHTML = `<div class="heart-burst transform-in" style="display:inline-block;">${MONSTER_SVG[currentMonster].tamed}</div>`;
+    area.innerHTML = `<div class="heart-burst transform-in" style="display:inline-block;">${mSvg(currentMonster,'tamed')}</div>`;
   }, 1500);
   setTimeout(() => {
     document.getElementById("tame-bubble-area").innerHTML = `
@@ -4403,7 +4533,7 @@ function renderMonsterAlreadyTamed() {
   const html = `
     <div class="encounter-stage">
       <h2 style="text-align:center; color:#c2185b;">${m.tamedName} 找你玩！</h2>
-      <div class="encounter-svg-wrap"><div class="heart-burst" style="display:inline-block;">${MONSTER_SVG[currentMonster].tamed}</div></div>
+      <div class="encounter-svg-wrap"><div class="heart-burst" style="display:inline-block;">${mSvg(currentMonster,'tamed')}</div></div>
       <div class="monster-bubble tamed-bubble">「${m.tamedVoice}」</div>
       <button class="speaker-btn" onclick="speak('${m.tamedName}說：${m.tamedVoice}', 0.9)">🔊 聽他說話</button>
       <div class="magic-phrase-box">
@@ -4725,7 +4855,7 @@ function renderJRPGMap() {
       // 玩家在這格
       if (p.row === r && p.col === c) {
         cls += " player";
-        content = PLAYER_MINI_SVG;
+        content = pmSvg();
       }
       cells += `<div class="${cls}">${content}</div>`;
     }
@@ -4780,7 +4910,7 @@ function renderJRPGMap() {
     finalArea.innerHTML = `
       <div class="final-boss-card">
         <div class="final-boss-title">⚡ 最終心魔 解鎖 ⚡</div>
-        <div style="margin:12px auto; width:140px;">${DEMON_SVG.mirror}</div>
+        <div style="margin:12px auto; width:140px;">${dSvg('mirror')}</div>
         <p style="color:#fff; font-size:18px; line-height:1.7;">
           ${finalDefeated ? '你已戰勝最終心魔。<br><strong style="color:#ffd700;">心經守護者！</strong>' : '集齊五卷心經，最終心魔——<br><strong style="color:#e94560;">那個影子，竟然是你自己。</strong>'}
         </p>
@@ -4906,7 +5036,7 @@ function renderSmallBattle(logMsg) {
     <div class="battle-arena">
       <div class="battle-arena-fx"></div>
       <div class="arena-positions">
-        <div class="arena-player">${PLAYER_SVG}<div class="arena-name">勇者</div></div>
+        <div class="arena-player">${pSvg()}<div class="arena-name">勇者</div></div>
         <div class="arena-demon" style="display:flex; flex-direction:column; align-items:center;">
           <div style="width:120px;">${e.svg}</div>
           <div class="arena-name" style="color:#ff8a80;">${e.name}</div>
@@ -5394,7 +5524,7 @@ function _introHTML(d) {
   ];
   return `
     <div class="demon-stage">
-      ${DEMON_SVG[currentDemon]}
+      ${dSvg(currentDemon)}
       <h2 style="color:#e94560; margin:8px 0;">${d.name} 現身！</h2>
       <div style="color:#ffd700; font-size:15px;">${d.trait}</div>
     </div>
@@ -5500,12 +5630,12 @@ function renderBattle() {
       <div class="battle-arena-fx"></div>
       <div class="arena-positions">
         <div class="arena-player">
-          ${PLAYER_SVG}
+          ${pSvg()}
           <div class="arena-name">勇者</div>
           <div class="arena-label">${state.name || "你"}</div>
         </div>
         <div class="arena-demon">
-          ${DEMON_SVG[currentDemon]}
+          ${dSvg(currentDemon)}
           <div class="arena-name" style="color:#e94560;">${d.name}</div>
           <div class="arena-label">${d.trait}</div>
         </div>
@@ -5649,7 +5779,7 @@ function defeatDemon() {
     <div class="stamp-area" style="background:linear-gradient(135deg,#1a1a2e,#4a3c1a); color:#fff;">
       <h2 style="color:#ffd700; font-size:32px;">🏆 戰勝${d.name}！</h2>
       <div id="defeat-svg" style="min-height:200px; display:flex; align-items:center; justify-content:center;">
-        <div class="demon-defeated" style="display:inline-block;">${DEMON_SVG[currentDemon]}</div>
+        <div class="demon-defeated" style="display:inline-block;">${dSvg(currentDemon)}</div>
       </div>
       <div id="sutra-reveal" style="min-height:140px;"></div>
       <div class="stamp-card" style="background:rgba(0,0,0,0.5); color:#fff; border-left-color:#ffd700;">
@@ -6242,7 +6372,7 @@ function renderPassport() {
       slot.className = "pocket-slot" + (tamed ? " collected" : " empty");
       if (tamed) {
         slot.innerHTML = `
-          ${MONSTER_SVG[key].tamed}
+          ${mSvg(key,'tamed')}
           <div class="pocket-slot-name">${m.tamedName}</div>
         `;
         slot.onclick = () => speak(m.tamedName + "說：" + m.tamedVoice, 0.9);
