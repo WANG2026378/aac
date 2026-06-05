@@ -1419,14 +1419,28 @@
     font-size: 0.5em;
     color: #d84315;
     line-height: 1;
-    letter-spacing: -0.05em;
     font-weight: normal;
-    /* 直式書寫 - 落在國字右側 */
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    padding: 0 1px;
+  }
+  rt .bp {
+    /* 注音符號直書 */
     writing-mode: vertical-rl;
     text-orientation: upright;
     display: inline-block;
-    padding: 0 1px;
-    vertical-align: middle;
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+  rt .bp-tone {
+    /* 聲調右側中央 */
+    display: inline-block;
+    align-self: center;
+    margin-left: 1px;
+    line-height: 1;
+    font-weight: bold;
+    transform: scale(1.2);
   }
   .magic-phrase-box rt { color: #bf360c; font-size: 0.42em; }
   .question-text { line-height: 1.8; }
@@ -4036,11 +4050,18 @@ const ZHUYIN_DICT = {"一": "ㄧ", "丁": "ㄉㄧㄥ", "三": "ㄙㄢ", "上": "
 
 function withZhuyin(text) {
   if (!text) return '';
+  const TONES = '˙ˊˇˋ';
   let out = '';
   for (const ch of text) {
     const z = ZHUYIN_DICT[ch];
     if (z) {
-      out += `<ruby>${ch}<rt>${z}</rt></ruby>`;
+      // 拆出聲調：放右側中央
+      let main = z, tone = '';
+      if (z.length > 0 && TONES.includes(z[z.length-1])) {
+        tone = z[z.length-1];
+        main = z.slice(0, -1);
+      }
+      out += `<ruby>${ch}<rt><span class="bp">${main}</span><span class="bp-tone">${tone}</span></rt></ruby>`;
     } else {
       // 標點/英文/未收字 直接顯示
       out += ch.replace(/</g,'&lt;').replace(/>/g,'&gt;');
