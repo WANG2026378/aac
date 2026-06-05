@@ -1404,25 +1404,39 @@
   }
   .magic-phrase-box .label { font-size: 14px; color: #888; display: block; margin-bottom: 4px; font-weight: normal; }
 
-  /* 注音 ruby 樣式 */
-  ruby { ruby-align: center; }
+  /* 注音 ruby 樣式 - 台灣直式右側風格 */
+  ruby {
+    ruby-position: inter-character;
+    ruby-align: center;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.5;
+    vertical-align: middle;
+  }
   rt {
+    ruby-position: inter-character;
     font-family: "PingFang TC","Heiti TC","Microsoft JhengHei",sans-serif;
-    font-size: 0.55em;
+    font-size: 0.5em;
     color: #d84315;
     line-height: 1;
-    letter-spacing: -1px;
+    letter-spacing: -0.05em;
     font-weight: normal;
+    /* 直式書寫 - 落在國字右側 */
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    display: inline-block;
+    padding: 0 1px;
+    vertical-align: middle;
   }
-  .magic-phrase-box rt { color: #bf360c; font-size: 0.5em; }
-  .question-text { line-height: 2.4; }
-  .question-text ruby rt { color: #c2185b; font-size: 0.55em; }
-  .option-btn ruby rt { color: #1565c0; font-size: 0.52em; }
+  .magic-phrase-box rt { color: #bf360c; font-size: 0.42em; }
+  .question-text { line-height: 1.8; }
+  .question-text ruby rt { color: #c2185b; font-size: 0.5em; }
+  .option-btn ruby rt { color: #1565c0; font-size: 0.5em; }
   .option-btn.correct ruby rt, .option-btn.wrong ruby rt { color: #fff8e1; }
-  .scenario-card { line-height: 2.2; }
-  .battle-scenario { line-height: 2.2; }
-  .demon-line ruby rt, .narration-line ruby rt { font-size: 0.5em; opacity: 0.95; }
-  .battle-option ruby rt { color: #ffd700; font-size: 0.5em; }
+  .scenario-card { line-height: 1.8; }
+  .battle-scenario { line-height: 1.8; }
+  .demon-line ruby rt, .narration-line ruby rt { font-size: 0.46em; opacity: 0.95; }
+  .battle-option ruby rt { color: #ffd700; font-size: 0.46em; }
 
   /* 怪獸動畫 */
   .villain-shake { animation: villainShake 0.5s ease-in-out infinite; transform-origin: center bottom; }
