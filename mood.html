@@ -1703,6 +1703,9 @@
       <div class="sutra-title">📜 心經卷藏（高年級）📜</div>
       <div style="text-align:center; font-size:14px; color:#bdbdbd; margin-bottom:8px;">點心經卷重溫修練心法</div>
       <div class="sutra-grid" id="sutra-grid"></div>
+      <div style="text-align:center; margin-top:14px;">
+        <button class="speaker-btn big" style="background:linear-gradient(135deg,#ff5252,#c62828); color:#fff; box-shadow:0 4px 14px rgba(198,40,40,0.5);" onclick="showScreen('high-map')">⚔️ 回取經之路</button>
+      </div>
     </div>
 
     <div class="skills-collected">
@@ -3963,6 +3966,25 @@ function showScreen(id) {
   if (id === "home") document.body.style.background = 'var(--bg-sky)';
 }
 
+// ========= 鍵盤控制（大地圖↑↓←→/WASD + A 鍵互動） =========
+document.addEventListener("keydown", function(e) {
+  const active = document.querySelector(".screen.active");
+  if (!active || active.id !== "screen-high-map") return;
+  // 若在輸入框/文字區內就放行
+  const tag = (e.target.tagName || "").toUpperCase();
+  if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) return;
+  let handled = true;
+  switch (e.key) {
+    case "ArrowUp": case "w": case "W": movePlayer(-1, 0); break;
+    case "ArrowDown": case "s": case "S": movePlayer(1, 0); break;
+    case "ArrowLeft": case "a": case "A": movePlayer(0, -1); break;
+    case "ArrowRight": case "d": case "D": movePlayer(0, 1); break;
+    case "Enter": case " ": actionTile(); break;
+    default: handled = false;
+  }
+  if (handled) e.preventDefault();
+});
+
 function enterMid() {
   renderMap();
   showScreen("map");
@@ -4485,7 +4507,7 @@ function renderJRPGMap() {
       </div>
     </div>
     <div class="overworld">
-      <div class="ow-info" id="ow-info">用 ↑↓←→ 移動。走在 🌲 森林容易遇敵！</div>
+      <div class="ow-info" id="ow-info">點按鈕或鍵盤 ↑↓←→（WASD）移動・A 鍵或 Enter 互動。森林🌲容易遇敵！</div>
       <div class="ow-grid" id="ow-grid">${cells}</div>
     </div>
     <div class="dpad">
