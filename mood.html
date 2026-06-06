@@ -1421,9 +1421,22 @@
     line-height: 1;
     font-weight: normal;
     display: inline-flex;
+    flex-direction: column;
     align-items: center;
     vertical-align: middle;
     padding: 0 1px;
+  }
+  rt .bp-neutral {
+    /* 輕聲 ˙ 放在注音字最頂端（國字上方） */
+    display: block;
+    line-height: 0.6;
+    font-weight: bold;
+    transform: scale(1.5);
+    margin-bottom: 1px;
+  }
+  rt .bp-row {
+    display: inline-flex;
+    align-items: center;
   }
   rt .bp {
     /* 注音符號直書 */
@@ -1434,7 +1447,7 @@
     line-height: 1;
   }
   rt .bp-tone {
-    /* 聲調右側中間偏下（台灣課本標準位置） */
+    /* 二三四聲：右側中間偏下 */
     display: inline-block;
     align-self: center;
     margin-left: 1px;
@@ -4050,18 +4063,29 @@ const ZHUYIN_DICT = {"一": "ㄧ", "丁": "ㄉㄧㄥ", "三": "ㄙㄢ", "上": "
 
 function withZhuyin(text) {
   if (!text) return '';
-  const TONES = '˙ˊˇˋ';
+  // 注音符號位置規則：
+  //   一聲(陰平) 不標
+  //   二聲ˊ 三聲ˇ 四聲ˋ → 注音字右側中間偏下
+  //   輕聲˙ → 注音字「最上方」（國字頭頂）
+  const SIDE_TONES = 'ˊˇˋ';
+  const NEUTRAL = '˙';
   let out = '';
   for (const ch of text) {
     const z = ZHUYIN_DICT[ch];
     if (z) {
-      // 拆出聲調：放右側中央
-      let main = z, tone = '';
-      if (z.length > 0 && TONES.includes(z[z.length-1])) {
-        tone = z[z.length-1];
+      let main = z, sideTone = '', topNeutral = false;
+      const last = z[z.length-1] || '';
+      if (last === NEUTRAL) {
+        // 輕聲：放最上方
+        main = z.slice(0, -1);
+        topNeutral = true;
+      } else if (SIDE_TONES.includes(last)) {
+        // 二三四聲：放右側中間偏下
+        sideTone = last;
         main = z.slice(0, -1);
       }
-      out += `<ruby>${ch}<rt><span class="bp">${main}</span><span class="bp-tone">${tone}</span></rt></ruby>`;
+      const neutralMark = topNeutral ? `<span class="bp-neutral">˙</span>` : '';
+      out += `<ruby>${ch}<rt>${neutralMark}<span class="bp-row"><span class="bp">${main}</span><span class="bp-tone">${sideTone}</span></span></rt></ruby>`;
     } else {
       // 標點/英文/未收字 直接顯示
       out += ch.replace(/</g,'&lt;').replace(/>/g,'&gt;');
