@@ -4020,14 +4020,36 @@ function setTtsRate(mult) {
     b.classList.toggle("active", parseFloat(b.dataset.rate) === mult);
   });
 }
+// 戲劇化文本處理：加入自然停頓、強調符號讓 TTS 念起來更有感情
+function enhanceTtsText(text) {
+  if (!text) return '';
+  let t = text;
+  // 替換中文標點為較長停頓的版本
+  t = t.replace(/[「『]/g, '，"');
+  t = t.replace(/[」』]/g, '"，');
+  t = t.replace(/——/g, '...');
+  t = t.replace(/—/g, '...');
+  t = t.replace(/…+/g, '...');
+  // 連續驚嘆/問號改成自然語氣
+  t = t.replace(/！！+/g, '！');
+  t = t.replace(/？？+/g, '？');
+  // 三字以上重複詞加微停頓（如 哈哈哈 → 哈哈哈，）
+  // 移除括號（旁白用，TTS念出來怪怪）
+  t = t.replace(/[（(][^）)]*[）)]/g, '');
+  return t.trim();
+}
 function speak(text, rate=1.0, opts={}) {
   if (!("speechSynthesis" in window)) return;
   try {
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
+    const enhanced = opts.skipEnhance ? text : enhanceTtsText(text);
+    const u = new SpeechSynthesisUtterance(enhanced);
     u.lang = "zh-TW";
-    u.rate = Math.max(0.5, Math.min(2.5, rate * ttsRateMultiplier));
+    // 輕微隨機化讓配音不機械（±5% 變化）
+    const jitter = opts.jitter !== false ? (1 + (Math.random() - 0.5) * 0.1) : 1;
+    u.rate = Math.max(0.5, Math.min(2.5, rate * ttsRateMultiplier * jitter));
     u.pitch = opts.pitch != null ? opts.pitch : 1.0;
+    u.volume = opts.volume != null ? opts.volume : 1.0;
     const voice = cachedVoice || pickTaiwanVoice();
     if (voice) { u.voice = voice; u.lang = voice.lang; cachedVoice = voice; }
     if (opts.onend) u.onend = opts.onend;
@@ -4035,6 +4057,20 @@ function speak(text, rate=1.0, opts={}) {
     speechSynthesis.speak(u);
   } catch(e) {}
 }
+
+// 角色配音預設（戲劇化參數）
+const VOICE_PRESETS = {
+  narrator:    { rate: 0.92, pitch: 1.00, pause: 280 },  // 旁白：沉穩有節奏
+  monsterLow:  { rate: 1.05, pitch: 1.20, pause: 320 },  // 低年級搗蛋怪：活潑高音
+  monsterTamed:{ rate: 0.95, pitch: 1.10, pause: 320 },  // 收服後：溫暖
+  demonLow:    { rate: 1.00, pitch: 0.78, pause: 380 },  // 心魔：低沉壓迫
+  demonAngry:  { rate: 1.10, pitch: 0.72, pause: 360 },  // 心魔咆哮
+  hero:        { rate: 0.95, pitch: 1.00, pause: 300 },  // 玩家勇者
+  victory:     { rate: 0.95, pitch: 1.15, pause: 280 },  // 勝利歡呼
+  childSeed:   { rate: 1.00, pitch: 1.15, pause: 300 },  // 中年級情緒種子
+  childSprout: { rate: 0.95, pitch: 1.10, pause: 280 },  // 中年級習德苗
+};
+
 // 鏈式對白：依序念多句話，每句念完再下一句
 function speakQueue(items, doneCb) {
   speechSynthesis.cancel();
@@ -4043,12 +4079,15 @@ function speakQueue(items, doneCb) {
     if (i >= items.length) { if (doneCb) doneCb(); return; }
     const it = items[i++];
     const text = typeof it === "string" ? it : it.text;
-    const rate = (it && it.rate) || 1.0;
-    const pitch = (it && it.pitch) || 1.0;
+    // 套用 voice preset
+    const preset = (it && it.preset && VOICE_PRESETS[it.preset]) || {};
+    const rate = (it && it.rate) || preset.rate || 1.0;
+    const pitch = (it && it.pitch) || preset.pitch || 1.0;
+    const pause = (it && it.pause) || preset.pause || 240;
     if (it && it.before) try { it.before(); } catch(e) {}
     speak(text, rate, { pitch, onend: () => {
       if (it && it.after) try { it.after(); } catch(e) {}
-      setTimeout(next, (it && it.pause) || 220);
+      setTimeout(next, pause);
     }});
   }
   next();
@@ -4470,9 +4509,7 @@ function playMonsterIntroScene() {
   if (_monsterIntroCancel) _monsterIntroCancel.cancel();
   const items = scenes.map((s, i) => ({
     text: s.text,
-    rate: s.type === "narrator" ? 0.95 : 1.0,
-    pitch: s.type === "narrator" ? 1.0 : 0.9,
-    pause: 280,
+    preset: s.type === "narrator" ? "narrator" : "monsterLow",
     before: () => {
       document.querySelectorAll("#mscene-area .narration-line, #mscene-area .demon-line")
         .forEach(el => el.classList.remove("scene-line-speaking","scene-line-demon-speaking"));
@@ -5687,9 +5724,7 @@ function playIntroScene() {
   // 高亮+念出
   const items = scenes.map((s, i) => ({
     text: s.text,
-    rate: s.type === "narrator" ? 1.0 : 1.05,
-    pitch: s.type === "narrator" ? 1.0 : 0.85,
-    pause: s.type === "narrator" ? 280 : 380,
+    preset: s.type === "narrator" ? "narrator" : (currentDemon === "mirror" ? "demonAngry" : "demonLow"),
     before: () => {
       document.querySelectorAll("#scene-area .narration-line, #scene-area .demon-line")
         .forEach(el => el.classList.remove("scene-line-speaking","scene-line-demon-speaking"));
