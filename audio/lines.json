@@ -1,0 +1,4027 @@
+[
+  {
+    "hash": "881a5b3c23d2",
+    "text": "風塵僕僕地，你來到孤獨之峰。山頂坐著一條金色的龍...獨我龍。",
+    "raw": "風塵僕僕地，你來到孤獨之峰。山頂坐著一條金色的龍——獨我龍。",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.solo.narrator"
+  },
+  {
+    "hash": "4af8947089e8",
+    "text": "哼！這世界繞著我轉！別人的感覺？干我什麼事！",
+    "raw": "哼！這世界繞著我轉！別人的感覺？干我什麼事！",
+    "role": "demonLow",
+    "origin": "DEMON_SCENES.solo.demon"
+  },
+  {
+    "hash": "ccfddfd95cae",
+    "text": "他閉著眼，不看任何人。你向他提起隔壁同學的阿嬤過世了。",
+    "raw": "他閉著眼，不看任何人。你向他提起隔壁同學的阿嬤過世了。",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.solo.narrator"
+  },
+  {
+    "hash": "5751d11aca5d",
+    "text": "關我什麼事啦！我又沒認識他阿嬤！",
+    "raw": "關我什麼事啦！我又沒認識他阿嬤！",
+    "role": "demonLow",
+    "origin": "DEMON_SCENES.solo.demon"
+  },
+  {
+    "hash": "717838621cb4",
+    "text": "他真的，沒感覺，嗎？還是...他根本不會表達？勇者，你要怎麼破？",
+    "raw": "他真的「沒感覺」嗎？還是——他根本不會表達？勇者，你要怎麼破？",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.solo.narrator"
+  },
+  {
+    "hash": "dfe68265a5ed",
+    "text": "你走入霧氣繚繞的迷糊森林，飄著一隻茫然的灰白龍...白目龍。",
+    "raw": "你走入霧氣繚繞的迷糊森林，飄著一隻茫然的灰白龍——白目龍。",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.clueless.narrator"
+  },
+  {
+    "hash": "cb03ef35fbed",
+    "text": "嘿嘿！告白現場？葬禮場合？什麼氣氛我看不懂啦！",
+    "raw": "嘿嘿！告白現場？葬禮場合？什麼氣氛我看不懂啦！",
+    "role": "demonLow",
+    "origin": "DEMON_SCENES.clueless.demon"
+  },
+  {
+    "hash": "658ecc2f8a34",
+    "text": "他大聲笑著，旁邊的人正在難過。氣氛凝重，他卻聽不見。",
+    "raw": "他大聲笑著，旁邊的人正在難過。氣氛凝重，他卻聽不見。",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.clueless.narrator"
+  },
+  {
+    "hash": "f06026045aa2",
+    "text": "我想說就說啊！哪有什麼錯？",
+    "raw": "我想說就說啊！哪有什麼錯？",
+    "role": "demonLow",
+    "origin": "DEMON_SCENES.clueless.demon"
+  },
+  {
+    "hash": "fb0be5fdf825",
+    "text": "他不是壞，是真的，看不懂，場合。你要怎麼教他停下來呢？",
+    "raw": "他不是壞，是真的「看不懂」場合。你要怎麼教他停下來呢？",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.clueless.narrator"
+  },
+  {
+    "hash": "60f22c5f8ba9",
+    "text": "戰火紛飛的火山口，一條火紅的龍咆哮著...衝動龍。",
+    "raw": "戰火紛飛的火山口，一條火紅的龍咆哮著——衝動龍。",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.impulse.narrator"
+  },
+  {
+    "hash": "8be8209141b5",
+    "text": "想到就做！想到就買！想到就罵！停下來？我才不要！",
+    "raw": "想到就做！想到就買！想到就罵！停下來？我才不要！",
+    "role": "demonLow",
+    "origin": "DEMON_SCENES.impulse.demon"
+  },
+  {
+    "hash": "5f7b5463c07d",
+    "text": "他從不思考後果。一句話不爽就動手，一個念頭就行動。",
+    "raw": "他從不思考後果。一句話不爽就動手，一個念頭就行動。",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.impulse.narrator"
+  },
+  {
+    "hash": "2152178b52c2",
+    "text": "停 5 秒？哈哈哈！我等不及！",
+    "raw": "停 5 秒？哈哈哈！我等不及！",
+    "role": "demonLow",
+    "origin": "DEMON_SCENES.impulse.demon"
+  },
+  {
+    "hash": "c199cbbc38f9",
+    "text": "如果你照他這樣做...你會被記過、被叫家長、失去朋友。怎麼破？",
+    "raw": "如果你照他這樣做——你會被記過、被叫家長、失去朋友。怎麼破？",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.impulse.narrator"
+  },
+  {
+    "hash": "2937d72744e2",
+    "text": "你進入鋒利的尖刺峽谷，紫色的挑釁龍故意往你身上撞。",
+    "raw": "你進入鋒利的尖刺峽谷，紫色的挑釁龍故意往你身上撞。",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.provoker.narrator"
+  },
+  {
+    "hash": "7249251d6123",
+    "text": "來啊！打我啊！老師罰你我看你還敢嗎！",
+    "raw": "來啊！打我啊！老師罰你我看你還敢嗎！",
+    "role": "demonLow",
+    "origin": "DEMON_SCENES.provoker.demon"
+  },
+  {
+    "hash": "2257b50dc1c6",
+    "text": "他笑著，他在等你動手。打了你就輸；不打他就笑你慫。",
+    "raw": "他笑著，他在等你動手。打了你就輸；不打他就笑你慫。",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.provoker.narrator"
+  },
+  {
+    "hash": "dbd6577cef3c",
+    "text": "哈哈哈！我就是要看你失控！",
+    "raw": "哈哈哈！我就是要看你失控！",
+    "role": "demonLow",
+    "origin": "DEMON_SCENES.provoker.demon"
+  },
+  {
+    "hash": "a9e9358c67f8",
+    "text": "這是一個陷阱。勇者，要怎麼讓陷阱反過來咬他？",
+    "raw": "這是一個陷阱。勇者，要怎麼讓陷阱反過來咬他？",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.provoker.narrator"
+  },
+  {
+    "hash": "d42fa4e11440",
+    "text": "你進入纏滿鎖鏈的迷霧沼澤，看見一條無精打采的綠龍...習慣龍。",
+    "raw": "你進入纏滿鎖鏈的迷霧沼澤，看見一條無精打采的綠龍——習慣龍。",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.hooked.narrator"
+  },
+  {
+    "hash": "9af504165f1f",
+    "text": "我就是要滑手機！我就是要咬指甲！你管不著！",
+    "raw": "我就是要滑手機！我就是要咬指甲！你管不著！",
+    "role": "demonLow",
+    "origin": "DEMON_SCENES.hooked.demon"
+  },
+  {
+    "hash": "2dc150b16f5b",
+    "text": "他被自己的習慣綁住，越掙扎越緊。鎖鏈不是別人鎖的，是他自己選的。",
+    "raw": "他被自己的習慣綁住，越掙扎越緊。鎖鏈不是別人鎖的，是他自己選的。",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.hooked.narrator"
+  },
+  {
+    "hash": "ace40890858f",
+    "text": "再玩 5 分鐘啦...再 5 分鐘就好...",
+    "raw": "再玩 5 分鐘啦…再 5 分鐘就好…",
+    "role": "demonLow",
+    "origin": "DEMON_SCENES.hooked.demon"
+  },
+  {
+    "hash": "0cb6df8958eb",
+    "text": "5 分鐘變成 2 小時。你要怎麼幫他拆掉鎖鏈？",
+    "raw": "5 分鐘變成 2 小時。你要怎麼幫他拆掉鎖鏈？",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.hooked.narrator"
+  },
+  {
+    "hash": "b3229d0ec744",
+    "text": "你走到山的最頂端，那裡只有一面古老的鏡子。",
+    "raw": "你走到山的最頂端，那裡只有一面古老的鏡子。",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.mirror.narrator"
+  },
+  {
+    "hash": "adfd40b3334e",
+    "text": "鏡子裡，一條龍緩緩抬起頭...他長得，和你一模一樣。",
+    "raw": "鏡子裡，一條龍緩緩抬起頭——他長得，和你一模一樣。",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.mirror.narrator"
+  },
+  {
+    "hash": "95675713436a",
+    "text": "你...打敗了五個...但你看清楚！我是誰？",
+    "raw": "你...打敗了五個...但你看清楚！我是誰？",
+    "role": "demonAngry",
+    "origin": "DEMON_SCENES.mirror.demon"
+  },
+  {
+    "hash": "9ee8b9fb360f",
+    "text": "我是...你啊！你逃得掉嗎？",
+    "raw": "我是...你啊！你逃得掉嗎？",
+    "role": "demonAngry",
+    "origin": "DEMON_SCENES.mirror.demon"
+  },
+  {
+    "hash": "150497163ef0",
+    "text": "周處除三害...虎、龍，第三害...是他自己。",
+    "raw": "周處除三害——虎、龍，第三害...是他自己。",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.mirror.narrator"
+  },
+  {
+    "hash": "30426412321b",
+    "text": "勇者，最後一場戰鬥，是和你心裡那個不肯認錯的自己。",
+    "raw": "勇者，最後一場戰鬥，是和你心裡那個不肯認錯的自己。",
+    "role": "narrator",
+    "origin": "DEMON_SCENES.mirror.narrator"
+  },
+  {
+    "hash": "8a6ff85d3651",
+    "text": "有一天，小華正在玩積木，玩得好開心。",
+    "raw": "有一天，小華正在玩積木，玩得好開心。",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.grabby.narrator"
+  },
+  {
+    "hash": "e5f460af1def",
+    "text": "這時候，橘色的搶搶怪偷偷靠近了！",
+    "raw": "這時候，橘色的搶搶怪偷偷靠近了！",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.grabby.narrator"
+  },
+  {
+    "hash": "91eea453a95d",
+    "text": "嘿嘿！這個玩具我也要！搶過來！",
+    "raw": "嘿嘿！這個玩具我也要！搶過來！",
+    "role": "monsterLow",
+    "origin": "MONSTER_SCENES.grabby.monster"
+  },
+  {
+    "hash": "fce429302739",
+    "text": "小華嚇了一跳，眼淚都流出來了。",
+    "raw": "小華嚇了一跳，眼淚都流出來了。",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.grabby.narrator"
+  },
+  {
+    "hash": "28fd2e96656a",
+    "text": "哈哈，是我的啦！",
+    "raw": "哈哈，是我的啦！",
+    "role": "monsterLow",
+    "origin": "MONSTER_SCENES.grabby.monster"
+  },
+  {
+    "hash": "e9e5f0b0be4c",
+    "text": "搶搶怪不是壞蛋，他只是不會用嘴巴問。我們來教他一句話！",
+    "raw": "搶搶怪不是壞蛋，他只是不會用嘴巴問。我們來教他一句話！",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.grabby.narrator"
+  },
+  {
+    "hash": "8291d88b1cd6",
+    "text": "媽媽帶哭哭怪去買菜，他看到糖糖好想吃。",
+    "raw": "媽媽帶哭哭怪去買菜，他看到糖糖好想吃。",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.cryyy.narrator"
+  },
+  {
+    "hash": "c5b3e50b63f6",
+    "text": "我要！我要！我就是要糖糖！",
+    "raw": "我要！我要！我就是要糖糖！",
+    "role": "monsterLow",
+    "origin": "MONSTER_SCENES.cryyy.monster"
+  },
+  {
+    "hash": "eb3d7b8af334",
+    "text": "媽媽說，等等再買，，哭哭怪就直接坐到地上大哭！",
+    "raw": "媽媽說「等等再買」，哭哭怪就直接坐到地上大哭！",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.cryyy.narrator"
+  },
+  {
+    "hash": "397fd69a987d",
+    "text": "嗚啊啊啊...！",
+    "raw": "嗚啊啊啊——！",
+    "role": "monsterLow",
+    "origin": "MONSTER_SCENES.cryyy.monster"
+  },
+  {
+    "hash": "3df5d5682342",
+    "text": "其實媽媽不是不買，是哭哭怪不會用嘴巴說。我們來教他！",
+    "raw": "其實媽媽不是不買，是哭哭怪不會用嘴巴說。我們來教他！",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.cryyy.narrator"
+  },
+  {
+    "hash": "bb87267490c3",
+    "text": "下課時間，走廊上好多小朋友。",
+    "raw": "下課時間，走廊上好多小朋友。",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.pushy.narrator"
+  },
+  {
+    "hash": "2dd977161f27",
+    "text": "綠色的推推怪想快點過去，他就...",
+    "raw": "綠色的推推怪想快點過去，他就——",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.pushy.narrator"
+  },
+  {
+    "hash": "19427fc93f9e",
+    "text": "走開走開！我要過去！",
+    "raw": "走開走開！我要過去！",
+    "role": "monsterLow",
+    "origin": "MONSTER_SCENES.pushy.monster"
+  },
+  {
+    "hash": "46cf00b24fcc",
+    "text": "他用力推前面的同學，差點把人推倒！",
+    "raw": "他用力推前面的同學，差點把人推倒！",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.pushy.narrator"
+  },
+  {
+    "hash": "561c1718e61e",
+    "text": "讓開啦！",
+    "raw": "讓開啦！",
+    "role": "monsterLow",
+    "origin": "MONSTER_SCENES.pushy.monster"
+  },
+  {
+    "hash": "3b8656c07c47",
+    "text": "推推怪不是兇，他只是不會說，請借過，。我們來教他～",
+    "raw": "推推怪不是兇，他只是不會說「請借過」。我們來教他～",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.pushy.narrator"
+  },
+  {
+    "hash": "1260bf37b899",
+    "text": "美勞課老師說：，請大家拿出剪刀。，",
+    "raw": "美勞課老師說：「請大家拿出剪刀。」",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.sulky.narrator"
+  },
+  {
+    "hash": "1cdd8c76f5be",
+    "text": "紫色的嗚嗚怪...找不到他的剪刀。",
+    "raw": "紫色的嗚嗚怪……找不到他的剪刀。",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.sulky.narrator"
+  },
+  {
+    "hash": "24d1af4145ab",
+    "text": "...",
+    "raw": "……（低頭不講話）",
+    "role": "monsterLow",
+    "origin": "MONSTER_SCENES.sulky.monster"
+  },
+  {
+    "hash": "c408aaeb566f",
+    "text": "同學說，你怎麼了？，，他還是只搖搖頭。",
+    "raw": "同學說「你怎麼了？」，他還是只搖搖頭。",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.sulky.narrator"
+  },
+  {
+    "hash": "93974369edfc",
+    "text": "哼...",
+    "raw": "哼……（轉過去躲起來）",
+    "role": "monsterLow",
+    "origin": "MONSTER_SCENES.sulky.monster"
+  },
+  {
+    "hash": "a29d9d113646",
+    "text": "嗚嗚怪不是不想說，是不知道怎麼開口。我們來教他，需要幫忙，！",
+    "raw": "嗚嗚怪不是不想說，是不知道怎麼開口。我們來教他「需要幫忙」！",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.sulky.narrator"
+  },
+  {
+    "hash": "825acc68b67d",
+    "text": "早上學校門口，老師笑咪咪地說：，早安！，",
+    "raw": "早上學校門口，老師笑咪咪地說：「早安！」",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.hidey.narrator"
+  },
+  {
+    "hash": "51c3ae2ba252",
+    "text": "白色的躲躲怪看到老師...",
+    "raw": "白色的躲躲怪看到老師——",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.hidey.narrator"
+  },
+  {
+    "hash": "ad4fe7117d01",
+    "text": "老師看了，有點失望的樣子。",
+    "raw": "老師看了，有點失望的樣子。",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.hidey.narrator"
+  },
+  {
+    "hash": "14a893e1cabe",
+    "text": "躲躲怪不是討厭老師，他只是不知道怎麼打招呼。我們來教他！",
+    "raw": "躲躲怪不是討厭老師，他只是不知道怎麼打招呼。我們來教他！",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.hidey.narrator"
+  },
+  {
+    "hash": "98986ab8122c",
+    "text": "下課時間，盪鞦韆好多人排隊。",
+    "raw": "下課時間，盪鞦韆好多人排隊。",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.stompy.narrator"
+  },
+  {
+    "hash": "e43f24e0a8c1",
+    "text": "紅色的跺跺怪只等了 5 秒就受不了...",
+    "raw": "紅色的跺跺怪只等了 5 秒就受不了——",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.stompy.narrator"
+  },
+  {
+    "hash": "6ea84ec16453",
+    "text": "我不要等！為什麼還沒到我啦！",
+    "raw": "我不要等！為什麼還沒到我啦！",
+    "role": "monsterLow",
+    "origin": "MONSTER_SCENES.stompy.monster"
+  },
+  {
+    "hash": "07ad60c1127e",
+    "text": "他開始跺腳，大聲哭叫，吵到旁邊的小朋友。",
+    "raw": "他開始跺腳，大聲哭叫，吵到旁邊的小朋友。",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.stompy.narrator"
+  },
+  {
+    "hash": "70af965c8771",
+    "text": "哼！跺跺跺！",
+    "raw": "哼！跺跺跺！",
+    "role": "monsterLow",
+    "origin": "MONSTER_SCENES.stompy.monster"
+  },
+  {
+    "hash": "f0631013ae60",
+    "text": "跺跺怪不是壞，他只是不會等。我們來教他，我可以等，！",
+    "raw": "跺跺怪不是壞，他只是不會等。我們來教他「我可以等」！",
+    "role": "narrator",
+    "origin": "MONSTER_SCENES.stompy.narrator"
+  },
+  {
+    "hash": "cc0d59493b5b",
+    "text": "嘿嘿！這個玩具我也要！搶過來！哈哈～",
+    "raw": "嘿嘿！這個玩具我也要！搶過來！哈哈～",
+    "role": "monsterLow",
+    "origin": "MONSTERS.grabby.villainVoice"
+  },
+  {
+    "hash": "313bc834d7dc",
+    "text": "嗚啊啊啊！我要！我就是要！嗚...",
+    "raw": "嗚啊啊啊！我要！我就是要！嗚——",
+    "role": "monsterLow",
+    "origin": "MONSTERS.cryyy.villainVoice"
+  },
+  {
+    "hash": "4c1d7c6d156a",
+    "text": "走開走開！我要過去！讓開啦！",
+    "raw": "走開走開！我要過去！讓開啦！",
+    "role": "monsterLow",
+    "origin": "MONSTERS.pushy.villainVoice"
+  },
+  {
+    "hash": "1d0127dca56a",
+    "text": "我不要等！為什麼還沒到我啦！哼！",
+    "raw": "我不要等！為什麼還沒到我啦！哼！（跺跺跺）",
+    "role": "monsterLow",
+    "origin": "MONSTERS.stompy.villainVoice"
+  },
+  {
+    "hash": "502276e35fc3",
+    "text": "可以借我玩嗎？",
+    "raw": "可以借我玩嗎？",
+    "role": "hero",
+    "origin": "MONSTERS.grabby.magicPhrase"
+  },
+  {
+    "hash": "39964d4a5f39",
+    "text": "媽媽，我好想要那個，可以嗎？",
+    "raw": "媽媽，我好想要那個，可以嗎？",
+    "role": "hero",
+    "origin": "MONSTERS.cryyy.magicPhrase"
+  },
+  {
+    "hash": "514d2f282f08",
+    "text": "請讓我過去，謝謝！",
+    "raw": "請讓我過去，謝謝！",
+    "role": "hero",
+    "origin": "MONSTERS.pushy.magicPhrase"
+  },
+  {
+    "hash": "e46c53373e8d",
+    "text": "老師，我需要幫忙",
+    "raw": "老師，我需要幫忙",
+    "role": "hero",
+    "origin": "MONSTERS.sulky.magicPhrase"
+  },
+  {
+    "hash": "5fa91ecad5b5",
+    "text": "老師早安！",
+    "raw": "老師早安！",
+    "role": "hero",
+    "origin": "MONSTERS.hidey.magicPhrase"
+  },
+  {
+    "hash": "7bc1d1e5355f",
+    "text": "我可以等，等一下就到我了",
+    "raw": "我可以等，等一下就到我了",
+    "role": "hero",
+    "origin": "MONSTERS.stompy.magicPhrase"
+  },
+  {
+    "hash": "c9470601fee5",
+    "text": "嘿嘿！告白現場？葬禮場合？什麼氣氛我看不懂啦！我想說就說！",
+    "raw": "嘿嘿！告白現場？葬禮場合？什麼氣氛我看不懂啦！我想說就說！",
+    "role": "demonLow",
+    "origin": "DEMONS.clueless.introVoice"
+  },
+  {
+    "hash": "1f658eea7f6d",
+    "text": "想到就做！想到就買！想到就罵！停下來？我才不要！哈哈！",
+    "raw": "想到就做！想到就買！想到就罵！停下來？我才不要！哈哈！",
+    "role": "demonLow",
+    "origin": "DEMONS.impulse.introVoice"
+  },
+  {
+    "hash": "a274905989fb",
+    "text": "來啊！打我啊！老師罰你我看你還敢嗎！哈哈哈！我就是要看你失控！",
+    "raw": "來啊！打我啊！老師罰你我看你還敢嗎！哈哈哈！我就是要看你失控！",
+    "role": "demonLow",
+    "origin": "DEMONS.provoker.introVoice"
+  },
+  {
+    "hash": "713f5077e1a3",
+    "text": "我就是要滑手機！我就是要咬指甲！我就是不寫功課！你管不著！",
+    "raw": "我就是要滑手機！我就是要咬指甲！我就是不寫功課！你管不著！",
+    "role": "demonLow",
+    "origin": "DEMONS.hooked.introVoice"
+  },
+  {
+    "hash": "3448678e8f92",
+    "text": "你...打敗了五個...但你看清楚！我是誰？我是...你啊！你逃得掉嗎？",
+    "raw": "你...打敗了五個...但你看清楚！我是誰？我是...你啊！你逃得掉嗎？",
+    "role": "demonLow",
+    "origin": "DEMONS.mirror.introVoice"
+  },
+  {
+    "hash": "b7d8e2b1530c",
+    "text": "歡迎來到火山島！這裡有一顆，怒怒種子，，它說：，我氣到要爆炸了！，其實它不是壞種子，只是需要學會深呼吸。你願意幫它澆水嗎？澆對了水，它會長成，靜德苗，。",
+    "raw": "歡迎來到火山島！這裡有一顆「怒怒種子」，它說：「我氣到要爆炸了！」其實它不是壞種子，只是需要學會深呼吸。你願意幫它澆水嗎？澆對了水，它會長成「靜德苗」。",
+    "role": "narrator",
+    "origin": "ISLANDS.volcano.story"
+  },
+  {
+    "hash": "ea636c316325",
+    "text": "雨雲島下著大雨，，憂憂種子，蜷在地上：，我好難過，又不敢說。，其實它只是需要有人聽。你能教它說出來嗎？學會說出來，它會長成，說德苗，，雨會變成彩虹。",
+    "raw": "雨雲島下著大雨，「憂憂種子」蜷在地上：「我好難過，又不敢說。」其實它只是需要有人聽。你能教它說出來嗎？學會說出來，它會長成「說德苗」，雨會變成彩虹。",
+    "role": "narrator",
+    "origin": "ISLANDS.rain.story"
+  },
+  {
+    "hash": "83485096259c",
+    "text": "薄冰島滑滑的，，怕怕種子，抖個不停：，腳下都是冰，我好怕掉下去。，其實它需要的是把心拉回此刻。教它五感著陸，它會長成，定德苗，，心就穩了。",
+    "raw": "薄冰島滑滑的，「怕怕種子」抖個不停：「腳下都是冰，我好怕掉下去。」其實它需要的是把心拉回此刻。教它五感著陸，它會長成「定德苗」，心就穩了。",
+    "role": "narrator",
+    "origin": "ISLANDS.ice.story"
+  },
+  {
+    "hash": "0067b416212c",
+    "text": "颱風島刮著大風，，慌慌種子，轉個不停：，腦袋裡好多擔心轉來轉去！，教它把擔心寫進盒子，它就能停下來，長成，安德苗，。",
+    "raw": "颱風島刮著大風，「慌慌種子」轉個不停：「腦袋裡好多擔心轉來轉去！」教它把擔心寫進盒子，它就能停下來，長成「安德苗」。",
+    "role": "narrator",
+    "origin": "ISLANDS.typhoon.story"
+  },
+  {
+    "hash": "c5bd0a4a4fef",
+    "text": "沙漠島乾旱炎熱，，酸酸種子，躲在仙人掌下：，為什麼別人有，我都沒有？，教它看見自己的好，它就會長成，悅德苗，，沙漠裡也會冒出綠洲。",
+    "raw": "沙漠島乾旱炎熱，「酸酸種子」躲在仙人掌下：「為什麼別人有，我都沒有？」教它看見自己的好，它就會長成「悅德苗」，沙漠裡也會冒出綠洲。",
+    "role": "narrator",
+    "origin": "ISLANDS.desert.story"
+  },
+  {
+    "hash": "a8dd0f9ff8f9",
+    "text": "櫻花島開滿粉色花朵，，喜喜種子，笑咪咪：，我好開心，可是不知道怎麼分享！，教它寫下感謝，它會長成，謝德苗，，櫻花就會開滿整座島。",
+    "raw": "櫻花島開滿粉色花朵，「喜喜種子」笑咪咪：「我好開心，可是不知道怎麼分享！」教它寫下感謝，它會長成「謝德苗」，櫻花就會開滿整座島。",
+    "role": "narrator",
+    "origin": "ISLANDS.sakura.story"
+  },
+  {
+    "hash": "f1994d1705dd",
+    "text": "搶搶怪看到別人在玩玩具，他應該說什麼呢？",
+    "raw": "搶搶怪看到別人在玩玩具，他應該說什麼呢？",
+    "role": "narrator",
+    "origin": "MONSTERS.grabby.q"
+  },
+  {
+    "hash": "7be70ccb71d7",
+    "text": "我也要玩！",
+    "raw": "我也要玩！（搶過來）",
+    "role": "hero",
+    "origin": "MONSTERS.grabby.option"
+  },
+  {
+    "hash": "9e9b12a37987",
+    "text": "搶東西小華會很難過喔～",
+    "raw": "搶東西小華會很難過喔～",
+    "role": "narrator",
+    "origin": "MONSTERS.grabby.fb"
+  },
+  {
+    "hash": "59e6cfeacfb0",
+    "text": "答對了！用問的，大家都開心！",
+    "raw": "答對了！用問的，大家都開心！",
+    "role": "narrator",
+    "origin": "MONSTERS.grabby.fb"
+  },
+  {
+    "hash": "94104df43004",
+    "text": "壞蛋！",
+    "raw": "壞蛋！",
+    "role": "hero",
+    "origin": "MONSTERS.grabby.option"
+  },
+  {
+    "hash": "bebce4cca6a3",
+    "text": "罵人沒有用喔，要好好問。",
+    "raw": "罵人沒有用喔，要好好問。",
+    "role": "narrator",
+    "origin": "MONSTERS.grabby.fb"
+  },
+  {
+    "hash": "6692dda5d125",
+    "text": "不講話直接拿走",
+    "raw": "不講話直接拿走",
+    "role": "hero",
+    "origin": "MONSTERS.grabby.option"
+  },
+  {
+    "hash": "2db3cfa5195d",
+    "text": "拿走別人東西要先問喔！",
+    "raw": "拿走別人東西要先問喔！",
+    "role": "narrator",
+    "origin": "MONSTERS.grabby.fb"
+  },
+  {
+    "hash": "d93f2d0f3a03",
+    "text": "如果小華還在玩，搶搶怪可以怎麼說？",
+    "raw": "如果小華還在玩，搶搶怪可以怎麼說？",
+    "role": "narrator",
+    "origin": "MONSTERS.grabby.q"
+  },
+  {
+    "hash": "d8c95f416c96",
+    "text": "我等你玩完，可以換我嗎？",
+    "raw": "我等你玩完，可以換我嗎？",
+    "role": "hero",
+    "origin": "MONSTERS.grabby.option"
+  },
+  {
+    "hash": "9c081a072f17",
+    "text": "棒！會等就是大孩子！",
+    "raw": "棒！會等就是大孩子！",
+    "role": "narrator",
+    "origin": "MONSTERS.grabby.fb"
+  },
+  {
+    "hash": "36736c699127",
+    "text": "快點啦！換我！",
+    "raw": "快點啦！換我！",
+    "role": "hero",
+    "origin": "MONSTERS.grabby.option"
+  },
+  {
+    "hash": "521fe1c47ae5",
+    "text": "催別人讓人壓力大喔～",
+    "raw": "催別人讓人壓力大喔～",
+    "role": "narrator",
+    "origin": "MONSTERS.grabby.fb"
+  },
+  {
+    "hash": "2eafb1a30b8b",
+    "text": "我哭給你看",
+    "raw": "我哭給你看",
+    "role": "hero",
+    "origin": "MONSTERS.grabby.option"
+  },
+  {
+    "hash": "ad188f26a046",
+    "text": "用哭沒有用，會等才厲害！",
+    "raw": "用哭沒有用，會等才厲害！",
+    "role": "narrator",
+    "origin": "MONSTERS.grabby.fb"
+  },
+  {
+    "hash": "3420bf400e44",
+    "text": "把玩具丟掉",
+    "raw": "把玩具丟掉",
+    "role": "hero",
+    "origin": "MONSTERS.grabby.option"
+  },
+  {
+    "hash": "ca6b7224c0ce",
+    "text": "破壞別人東西很糟糕～",
+    "raw": "破壞別人東西很糟糕～",
+    "role": "narrator",
+    "origin": "MONSTERS.grabby.fb"
+  },
+  {
+    "hash": "81eb3e346e94",
+    "text": "拿到玩具後，搶搶怪要說什麼？",
+    "raw": "拿到玩具後，搶搶怪要說什麼？",
+    "role": "narrator",
+    "origin": "MONSTERS.grabby.q"
+  },
+  {
+    "hash": "9cecac582df2",
+    "text": "哈哈！",
+    "raw": "哈哈！",
+    "role": "hero",
+    "origin": "MONSTERS.grabby.option"
+  },
+  {
+    "hash": "88b5fee51711",
+    "text": "嗯...可以更有禮貌喔！",
+    "raw": "嗯…可以更有禮貌喔！",
+    "role": "narrator",
+    "origin": "MONSTERS.grabby.fb"
+  },
+  {
+    "hash": "894f85af1587",
+    "text": "謝謝你借我！",
+    "raw": "謝謝你借我！",
+    "role": "hero",
+    "origin": "MONSTERS.grabby.option"
+  },
+  {
+    "hash": "f84960592f4c",
+    "text": "完美！說謝謝，下次還會借你～",
+    "raw": "完美！說謝謝，下次還會借你～",
+    "role": "narrator",
+    "origin": "MONSTERS.grabby.fb"
+  },
+  {
+    "hash": "ae8bb3b93897",
+    "text": "我才不還你",
+    "raw": "我才不還你",
+    "role": "hero",
+    "origin": "MONSTERS.grabby.option"
+  },
+  {
+    "hash": "214dcc2895f8",
+    "text": "玩完要還喔，要當好朋友。",
+    "raw": "玩完要還喔，要當好朋友。",
+    "role": "narrator",
+    "origin": "MONSTERS.grabby.fb"
+  },
+  {
+    "hash": "42c8e147d804",
+    "text": "不講話",
+    "raw": "不講話",
+    "role": "hero",
+    "origin": "MONSTERS.grabby.option"
+  },
+  {
+    "hash": "8f21251f34c3",
+    "text": "說謝謝，朋友會更喜歡你！",
+    "raw": "說謝謝，朋友會更喜歡你！",
+    "role": "narrator",
+    "origin": "MONSTERS.grabby.fb"
+  },
+  {
+    "hash": "44e42c7ebf22",
+    "text": "哭哭怪好想要糖糖，可以怎麼說？",
+    "raw": "哭哭怪好想要糖糖，可以怎麼說？",
+    "role": "narrator",
+    "origin": "MONSTERS.cryyy.q"
+  },
+  {
+    "hash": "66a78da9902d",
+    "text": "坐地上大哭",
+    "raw": "坐地上大哭",
+    "role": "hero",
+    "origin": "MONSTERS.cryyy.option"
+  },
+  {
+    "hash": "d079f8e2041e",
+    "text": "哭哭媽媽聽不懂你要什麼～",
+    "raw": "哭哭媽媽聽不懂你要什麼～",
+    "role": "narrator",
+    "origin": "MONSTERS.cryyy.fb"
+  },
+  {
+    "hash": "624131d88f9c",
+    "text": "媽媽，我好想要那個糖糖",
+    "raw": "媽媽，我好想要那個糖糖",
+    "role": "hero",
+    "origin": "MONSTERS.cryyy.option"
+  },
+  {
+    "hash": "c0172d9c07d7",
+    "text": "對！說出來媽媽才知道！",
+    "raw": "對！說出來媽媽才知道！",
+    "role": "narrator",
+    "origin": "MONSTERS.cryyy.fb"
+  },
+  {
+    "hash": "28496b95bcee",
+    "text": "罵媽媽小氣",
+    "raw": "罵媽媽小氣",
+    "role": "hero",
+    "origin": "MONSTERS.cryyy.option"
+  },
+  {
+    "hash": "1e1a7cbe628b",
+    "text": "罵媽媽，糖糖會變更遠喔！",
+    "raw": "罵媽媽，糖糖會變更遠喔！",
+    "role": "narrator",
+    "origin": "MONSTERS.cryyy.fb"
+  },
+  {
+    "hash": "4999738699c8",
+    "text": "假裝不要",
+    "raw": "假裝不要",
+    "role": "hero",
+    "origin": "MONSTERS.cryyy.option"
+  },
+  {
+    "hash": "796ea2f1e6d1",
+    "text": "想要就說，媽媽不會通靈～",
+    "raw": "想要就說，媽媽不會通靈～",
+    "role": "narrator",
+    "origin": "MONSTERS.cryyy.fb"
+  },
+  {
+    "hash": "1b47a4640503",
+    "text": "如果媽媽說不行，哭哭怪可以？",
+    "raw": "如果媽媽說不行，哭哭怪可以？",
+    "role": "narrator",
+    "origin": "MONSTERS.cryyy.q"
+  },
+  {
+    "hash": "0ff4e529762a",
+    "text": "繼續哭到媽媽答應",
+    "raw": "繼續哭到媽媽答應",
+    "role": "hero",
+    "origin": "MONSTERS.cryyy.option"
+  },
+  {
+    "hash": "4989b44de56b",
+    "text": "鬧太久媽媽會更生氣喔～",
+    "raw": "鬧太久媽媽會更生氣喔～",
+    "role": "narrator",
+    "origin": "MONSTERS.cryyy.fb"
+  },
+  {
+    "hash": "0eaadd7370ad",
+    "text": "好難過喔，但我知道了",
+    "raw": "好難過喔，但我知道了",
+    "role": "hero",
+    "origin": "MONSTERS.cryyy.option"
+  },
+  {
+    "hash": "2d6473efc0f9",
+    "text": "棒！會說，難過，就是會表達！",
+    "raw": "棒！會說『難過』就是會表達！",
+    "role": "narrator",
+    "origin": "MONSTERS.cryyy.fb"
+  },
+  {
+    "hash": "142d7b923e24",
+    "text": "丟東西",
+    "raw": "丟東西",
+    "role": "hero",
+    "origin": "MONSTERS.cryyy.option"
+  },
+  {
+    "hash": "1d146b35603c",
+    "text": "丟東西很危險！",
+    "raw": "丟東西很危險！",
+    "role": "narrator",
+    "origin": "MONSTERS.cryyy.fb"
+  },
+  {
+    "hash": "507b1823424c",
+    "text": "說媽媽是壞人",
+    "raw": "說媽媽是壞人",
+    "role": "hero",
+    "origin": "MONSTERS.cryyy.option"
+  },
+  {
+    "hash": "c8c9803968af",
+    "text": "媽媽很愛你，只是這次不行～",
+    "raw": "媽媽很愛你，只是這次不行～",
+    "role": "narrator",
+    "origin": "MONSTERS.cryyy.fb"
+  },
+  {
+    "hash": "74413f3fbabb",
+    "text": "下次想要東西，哭哭怪要記得？",
+    "raw": "下次想要東西，哭哭怪要記得？",
+    "role": "narrator",
+    "origin": "MONSTERS.cryyy.q"
+  },
+  {
+    "hash": "bec5e472aeb3",
+    "text": "嘴巴說，不用哭",
+    "raw": "嘴巴說，不用哭",
+    "role": "hero",
+    "origin": "MONSTERS.cryyy.option"
+  },
+  {
+    "hash": "daaa2f74238f",
+    "text": "對！嘴巴是說話用的，眼睛才是哭的～",
+    "raw": "對！嘴巴是說話用的，眼睛才是哭的～",
+    "role": "narrator",
+    "origin": "MONSTERS.cryyy.fb"
+  },
+  {
+    "hash": "e2f5efa799d5",
+    "text": "用力哭最大聲",
+    "raw": "用力哭最大聲",
+    "role": "hero",
+    "origin": "MONSTERS.cryyy.option"
+  },
+  {
+    "hash": "9e3deb1a6d30",
+    "text": "哭沒有用，說才有用！",
+    "raw": "哭沒有用，說才有用！",
+    "role": "narrator",
+    "origin": "MONSTERS.cryyy.fb"
+  },
+  {
+    "hash": "23b2c8050712",
+    "text": "踢家具",
+    "raw": "踢家具",
+    "role": "hero",
+    "origin": "MONSTERS.cryyy.option"
+  },
+  {
+    "hash": "41b78f2e1531",
+    "text": "踢家具腳會痛喔！",
+    "raw": "踢家具腳會痛喔！",
+    "role": "narrator",
+    "origin": "MONSTERS.cryyy.fb"
+  },
+  {
+    "hash": "82cf37fa3bed",
+    "text": "都不講",
+    "raw": "都不講",
+    "role": "hero",
+    "origin": "MONSTERS.cryyy.option"
+  },
+  {
+    "hash": "9856cb111fc4",
+    "text": "都不講大家都不知道你要什麼啊！",
+    "raw": "都不講大家都不知道你要什麼啊！",
+    "role": "narrator",
+    "origin": "MONSTERS.cryyy.fb"
+  },
+  {
+    "hash": "749f78061f35",
+    "text": "推推怪急著去裝水，前面有人排隊。要怎麼做？",
+    "raw": "推推怪急著去裝水，前面有人排隊。要怎麼做？",
+    "role": "narrator",
+    "origin": "MONSTERS.pushy.q"
+  },
+  {
+    "hash": "8ca20fb09b71",
+    "text": "用力推開",
+    "raw": "用力推開",
+    "role": "hero",
+    "origin": "MONSTERS.pushy.option"
+  },
+  {
+    "hash": "2fa2291ab5a4",
+    "text": "推人會跌倒受傷喔！",
+    "raw": "推人會跌倒受傷喔！",
+    "role": "narrator",
+    "origin": "MONSTERS.pushy.fb"
+  },
+  {
+    "hash": "b7b0c3547275",
+    "text": "說：，請讓我過，",
+    "raw": "說：『請讓我過』",
+    "role": "hero",
+    "origin": "MONSTERS.pushy.option"
+  },
+  {
+    "hash": "bdbb5f0ddf71",
+    "text": "，請，字一說，路就開啦！",
+    "raw": "『請』字一說，路就開啦！",
+    "role": "narrator",
+    "origin": "MONSTERS.pushy.fb"
+  },
+  {
+    "hash": "f1a0077f7a57",
+    "text": "罵別人擋路",
+    "raw": "罵別人擋路",
+    "role": "hero",
+    "origin": "MONSTERS.pushy.option"
+  },
+  {
+    "hash": "2cf8cce49db1",
+    "text": "罵人不會讓你變快～",
+    "raw": "罵人不會讓你變快～",
+    "role": "narrator",
+    "origin": "MONSTERS.pushy.fb"
+  },
+  {
+    "hash": "25e5b5b7d234",
+    "text": "跳過去",
+    "raw": "跳過去",
+    "role": "hero",
+    "origin": "MONSTERS.pushy.option"
+  },
+  {
+    "hash": "fcd39fe4fe54",
+    "text": "跳過會撞到人，危險！",
+    "raw": "跳過會撞到人，危險！",
+    "role": "narrator",
+    "origin": "MONSTERS.pushy.fb"
+  },
+  {
+    "hash": "2faa9c1a1498",
+    "text": "如果不小心碰到同學，推推怪要說？",
+    "raw": "如果不小心碰到同學，推推怪要說？",
+    "role": "narrator",
+    "origin": "MONSTERS.pushy.q"
+  },
+  {
+    "hash": "c62251e4150d",
+    "text": "對不起，我不小心",
+    "raw": "對不起，我不小心",
+    "role": "hero",
+    "origin": "MONSTERS.pushy.option"
+  },
+  {
+    "hash": "409ac890f9f6",
+    "text": "對！，對不起，是魔法話～",
+    "raw": "對！『對不起』是魔法話～",
+    "role": "narrator",
+    "origin": "MONSTERS.pushy.fb"
+  },
+  {
+    "hash": "fc9cbe5456a6",
+    "text": "誰叫你站這裡",
+    "raw": "誰叫你站這裡",
+    "role": "hero",
+    "origin": "MONSTERS.pushy.option"
+  },
+  {
+    "hash": "7d0de5624923",
+    "text": "怪別人會吵架的！",
+    "raw": "怪別人會吵架的！",
+    "role": "narrator",
+    "origin": "MONSTERS.pushy.fb"
+  },
+  {
+    "hash": "c4e2e1ffdcea",
+    "text": "假裝沒事",
+    "raw": "假裝沒事",
+    "role": "hero",
+    "origin": "MONSTERS.pushy.option"
+  },
+  {
+    "hash": "2b1f220478ac",
+    "text": "撞到人要說對不起喔！",
+    "raw": "撞到人要說對不起喔！",
+    "role": "narrator",
+    "origin": "MONSTERS.pushy.fb"
+  },
+  {
+    "hash": "6f722c0234c6",
+    "text": "笑一笑跑掉",
+    "raw": "笑一笑跑掉",
+    "role": "hero",
+    "origin": "MONSTERS.pushy.option"
+  },
+  {
+    "hash": "86f3f9d9c240",
+    "text": "跑掉不負責任，不是好行為。",
+    "raw": "跑掉不負責任，不是好行為。",
+    "role": "narrator",
+    "origin": "MONSTERS.pushy.fb"
+  },
+  {
+    "hash": "9cdd4916be1f",
+    "text": "推推怪以後排隊要記得？",
+    "raw": "推推怪以後排隊要記得？",
+    "role": "narrator",
+    "origin": "MONSTERS.pushy.q"
+  },
+  {
+    "hash": "27466628ade3",
+    "text": "把手放好，不推人",
+    "raw": "把手放好，不推人",
+    "role": "hero",
+    "origin": "MONSTERS.pushy.option"
+  },
+  {
+    "hash": "9df165e9ed1c",
+    "text": "手放好是大孩子的樣子！",
+    "raw": "手放好是大孩子的樣子！",
+    "role": "narrator",
+    "origin": "MONSTERS.pushy.fb"
+  },
+  {
+    "hash": "31dde0d09770",
+    "text": "急就大叫",
+    "raw": "急就大叫",
+    "role": "hero",
+    "origin": "MONSTERS.pushy.option"
+  },
+  {
+    "hash": "1e3c067e7507",
+    "text": "大叫吵到大家～",
+    "raw": "大叫吵到大家～",
+    "role": "narrator",
+    "origin": "MONSTERS.pushy.fb"
+  },
+  {
+    "hash": "d5054cb20a9c",
+    "text": "推一下沒關係",
+    "raw": "推一下沒關係",
+    "role": "hero",
+    "origin": "MONSTERS.pushy.option"
+  },
+  {
+    "hash": "6c185f925042",
+    "text": "推一下也會痛的！",
+    "raw": "推一下也會痛的！",
+    "role": "narrator",
+    "origin": "MONSTERS.pushy.fb"
+  },
+  {
+    "hash": "944aafc7b99b",
+    "text": "看誰擋路就推",
+    "raw": "看誰擋路就推",
+    "role": "hero",
+    "origin": "MONSTERS.pushy.option"
+  },
+  {
+    "hash": "90d69706bc7a",
+    "text": "千萬不行！手是用來幫助人的～",
+    "raw": "千萬不行！手是用來幫助人的～",
+    "role": "narrator",
+    "origin": "MONSTERS.pushy.fb"
+  },
+  {
+    "hash": "8bb3b3249f36",
+    "text": "嗚嗚怪功課不會寫，可以怎麼辦？",
+    "raw": "嗚嗚怪功課不會寫，可以怎麼辦？",
+    "role": "narrator",
+    "origin": "MONSTERS.sulky.q"
+  },
+  {
+    "hash": "e84cfe7e32fe",
+    "text": "悶著不講，自己生氣",
+    "raw": "悶著不講，自己生氣",
+    "role": "hero",
+    "origin": "MONSTERS.sulky.option"
+  },
+  {
+    "hash": "50e0210c4ac0",
+    "text": "悶著沒人知道你要幫忙喔～",
+    "raw": "悶著沒人知道你要幫忙喔～",
+    "role": "narrator",
+    "origin": "MONSTERS.sulky.fb"
+  },
+  {
+    "hash": "2a3035633bc6",
+    "text": "舉手說：，老師，我需要幫忙，",
+    "raw": "舉手說：『老師，我需要幫忙』",
+    "role": "hero",
+    "origin": "MONSTERS.sulky.option"
+  },
+  {
+    "hash": "9140ed3f06cb",
+    "text": "對！會求助是聰明的孩子！",
+    "raw": "對！會求助是聰明的孩子！",
+    "role": "narrator",
+    "origin": "MONSTERS.sulky.fb"
+  },
+  {
+    "hash": "d9669d5f3436",
+    "text": "亂寫一通",
+    "raw": "亂寫一通",
+    "role": "hero",
+    "origin": "MONSTERS.sulky.option"
+  },
+  {
+    "hash": "cb5092f22b16",
+    "text": "亂寫等於沒寫，問問看吧！",
+    "raw": "亂寫等於沒寫，問問看吧！",
+    "role": "narrator",
+    "origin": "MONSTERS.sulky.fb"
+  },
+  {
+    "hash": "a4651136435b",
+    "text": "撕掉作業",
+    "raw": "撕掉作業",
+    "role": "hero",
+    "origin": "MONSTERS.sulky.option"
+  },
+  {
+    "hash": "3686e466a9f3",
+    "text": "撕掉還要重寫，更累！",
+    "raw": "撕掉還要重寫，更累！",
+    "role": "narrator",
+    "origin": "MONSTERS.sulky.fb"
+  },
+  {
+    "hash": "75a08381ff05",
+    "text": "肚子很痛，但又不好意思說，嗚嗚怪該？",
+    "raw": "肚子很痛，但又不好意思說，嗚嗚怪該？",
+    "role": "narrator",
+    "origin": "MONSTERS.sulky.q"
+  },
+  {
+    "hash": "b365b53a6302",
+    "text": "忍到下課",
+    "raw": "忍到下課",
+    "role": "hero",
+    "origin": "MONSTERS.sulky.option"
+  },
+  {
+    "hash": "c683a31c8836",
+    "text": "忍著會更痛！要說出來。",
+    "raw": "忍著會更痛！要說出來。",
+    "role": "narrator",
+    "origin": "MONSTERS.sulky.fb"
+  },
+  {
+    "hash": "19755af4e6ae",
+    "text": "老師，我肚子痛，可以去保健室嗎？",
+    "raw": "老師，我肚子痛，可以去保健室嗎？",
+    "role": "hero",
+    "origin": "MONSTERS.sulky.option"
+  },
+  {
+    "hash": "66117cdc9af4",
+    "text": "棒！身體不舒服一定要說！",
+    "raw": "棒！身體不舒服一定要說！",
+    "role": "narrator",
+    "origin": "MONSTERS.sulky.fb"
+  },
+  {
+    "hash": "e41ca47acf66",
+    "text": "一直摸肚子讓人發現",
+    "raw": "一直摸肚子讓人發現",
+    "role": "hero",
+    "origin": "MONSTERS.sulky.option"
+  },
+  {
+    "hash": "14c2236e7ec5",
+    "text": "用嘴巴說比較快～",
+    "raw": "用嘴巴說比較快～",
+    "role": "narrator",
+    "origin": "MONSTERS.sulky.fb"
+  },
+  {
+    "hash": "cb9603ded6da",
+    "text": "趴下不動",
+    "raw": "趴下不動",
+    "role": "hero",
+    "origin": "MONSTERS.sulky.option"
+  },
+  {
+    "hash": "50294552060b",
+    "text": "老師會擔心，講出來吧！",
+    "raw": "老師會擔心，講出來吧！",
+    "role": "narrator",
+    "origin": "MONSTERS.sulky.fb"
+  },
+  {
+    "hash": "db89ed1cbf89",
+    "text": "和同學吵架了，心裡好難過。嗚嗚怪可以？",
+    "raw": "和同學吵架了，心裡好難過。嗚嗚怪可以？",
+    "role": "narrator",
+    "origin": "MONSTERS.sulky.q"
+  },
+  {
+    "hash": "1ee1d1742a01",
+    "text": "找老師或大人說：，我心裡不舒服，",
+    "raw": "找老師或大人說：『我心裡不舒服』",
+    "role": "hero",
+    "origin": "MONSTERS.sulky.option"
+  },
+  {
+    "hash": "0f0232bfc0cf",
+    "text": "對！說出來心會輕鬆！",
+    "raw": "對！說出來心會輕鬆！",
+    "role": "narrator",
+    "origin": "MONSTERS.sulky.fb"
+  },
+  {
+    "hash": "9da1db111064",
+    "text": "一整天不講話",
+    "raw": "一整天不講話",
+    "role": "hero",
+    "origin": "MONSTERS.sulky.option"
+  },
+  {
+    "hash": "f6534bce9f65",
+    "text": "悶起來越來越難過～",
+    "raw": "悶起來越來越難過～",
+    "role": "narrator",
+    "origin": "MONSTERS.sulky.fb"
+  },
+  {
+    "hash": "ba4a37074ebc",
+    "text": "回家也不講",
+    "raw": "回家也不講",
+    "role": "hero",
+    "origin": "MONSTERS.sulky.option"
+  },
+  {
+    "hash": "7ffc710763b4",
+    "text": "找人說，難過會減一半。",
+    "raw": "找人說，難過會減一半。",
+    "role": "narrator",
+    "origin": "MONSTERS.sulky.fb"
+  },
+  {
+    "hash": "64b8b2c419ac",
+    "text": "假裝會更累，說出來吧！",
+    "raw": "假裝會更累，說出來吧！",
+    "role": "narrator",
+    "origin": "MONSTERS.sulky.fb"
+  },
+  {
+    "hash": "8a4c3015663d",
+    "text": "早上遇到老師，躲躲怪要？",
+    "raw": "早上遇到老師，躲躲怪要？",
+    "role": "narrator",
+    "origin": "MONSTERS.hidey.q"
+  },
+  {
+    "hash": "725ecd080784",
+    "text": "低頭快快走過去",
+    "raw": "低頭快快走過去",
+    "role": "hero",
+    "origin": "MONSTERS.hidey.option"
+  },
+  {
+    "hash": "882a97fca326",
+    "text": "老師會以為你不喜歡他喔～",
+    "raw": "老師會以為你不喜歡他喔～",
+    "role": "narrator",
+    "origin": "MONSTERS.hidey.fb"
+  },
+  {
+    "hash": "46236a755a57",
+    "text": "看著老師說：，老師早安，",
+    "raw": "看著老師說：『老師早安』",
+    "role": "hero",
+    "origin": "MONSTERS.hidey.option"
+  },
+  {
+    "hash": "3c24fb051be5",
+    "text": "對！說早安老師會超開心～",
+    "raw": "對！說早安老師會超開心～",
+    "role": "narrator",
+    "origin": "MONSTERS.hidey.fb"
+  },
+  {
+    "hash": "4d02dcd7a849",
+    "text": "假裝沒看見",
+    "raw": "假裝沒看見",
+    "role": "hero",
+    "origin": "MONSTERS.hidey.option"
+  },
+  {
+    "hash": "1a6404a86909",
+    "text": "假裝沒看見有點沒禮貌呢～",
+    "raw": "假裝沒看見有點沒禮貌呢～",
+    "role": "narrator",
+    "origin": "MONSTERS.hidey.fb"
+  },
+  {
+    "hash": "5d620923823b",
+    "text": "繞遠路躲開",
+    "raw": "繞遠路躲開",
+    "role": "hero",
+    "origin": "MONSTERS.hidey.option"
+  },
+  {
+    "hash": "73c552ea2006",
+    "text": "繞遠很累，打招呼很簡單！",
+    "raw": "繞遠很累，打招呼很簡單！",
+    "role": "narrator",
+    "origin": "MONSTERS.hidey.fb"
+  },
+  {
+    "hash": "bd49beaa59f8",
+    "text": "放學要回家，遇到同學要說？",
+    "raw": "放學要回家，遇到同學要說？",
+    "role": "narrator",
+    "origin": "MONSTERS.hidey.q"
+  },
+  {
+    "hash": "df9877e5be03",
+    "text": "再見！明天見！",
+    "raw": "再見！明天見！",
+    "role": "hero",
+    "origin": "MONSTERS.hidey.option"
+  },
+  {
+    "hash": "6a32c1665e38",
+    "text": "棒！說再見讓朋友記得你～",
+    "raw": "棒！說再見讓朋友記得你～",
+    "role": "narrator",
+    "origin": "MONSTERS.hidey.fb"
+  },
+  {
+    "hash": "a96030d6dbfc",
+    "text": "不講話走掉",
+    "raw": "不講話走掉",
+    "role": "hero",
+    "origin": "MONSTERS.hidey.option"
+  },
+  {
+    "hash": "39310f34dce4",
+    "text": "再見很簡單，講出來吧！",
+    "raw": "再見很簡單，講出來吧！",
+    "role": "narrator",
+    "origin": "MONSTERS.hidey.fb"
+  },
+  {
+    "hash": "6021c0b36001",
+    "text": "揮手就好不出聲",
+    "raw": "揮手就好不出聲",
+    "role": "hero",
+    "origin": "MONSTERS.hidey.option"
+  },
+  {
+    "hash": "cbc22c6ac484",
+    "text": "出聲說更熱情喔！",
+    "raw": "出聲說更熱情喔！",
+    "role": "narrator",
+    "origin": "MONSTERS.hidey.fb"
+  },
+  {
+    "hash": "1fe0bd75a070",
+    "text": "跑很快",
+    "raw": "跑很快",
+    "role": "hero",
+    "origin": "MONSTERS.hidey.option"
+  },
+  {
+    "hash": "9442826239dd",
+    "text": "跑步危險，慢慢走說再見～",
+    "raw": "跑步危險，慢慢走說再見～",
+    "role": "narrator",
+    "origin": "MONSTERS.hidey.fb"
+  },
+  {
+    "hash": "7f1d760d0491",
+    "text": "新同學第一天來，躲躲怪可以？",
+    "raw": "新同學第一天來，躲躲怪可以？",
+    "role": "narrator",
+    "origin": "MONSTERS.hidey.q"
+  },
+  {
+    "hash": "83ddf8c74154",
+    "text": "對他笑一下說：，你好，",
+    "raw": "對他笑一下說：『你好』",
+    "role": "hero",
+    "origin": "MONSTERS.hidey.option"
+  },
+  {
+    "hash": "d97b3665cab2",
+    "text": "對！一個你好就是好朋友的開始！",
+    "raw": "對！一個你好就是好朋友的開始！",
+    "role": "narrator",
+    "origin": "MONSTERS.hidey.fb"
+  },
+  {
+    "hash": "e6cf8ab765b1",
+    "text": "盯著他看不講話",
+    "raw": "盯著他看不講話",
+    "role": "hero",
+    "origin": "MONSTERS.hidey.option"
+  },
+  {
+    "hash": "8b0689eb9cf9",
+    "text": "盯著看新同學會緊張～",
+    "raw": "盯著看新同學會緊張～",
+    "role": "narrator",
+    "origin": "MONSTERS.hidey.fb"
+  },
+  {
+    "hash": "03713c9f8522",
+    "text": "躲到別的位置",
+    "raw": "躲到別的位置",
+    "role": "hero",
+    "origin": "MONSTERS.hidey.option"
+  },
+  {
+    "hash": "7e3710ef87fd",
+    "text": "新同學會很孤單喔！",
+    "raw": "新同學會很孤單喔！",
+    "role": "narrator",
+    "origin": "MONSTERS.hidey.fb"
+  },
+  {
+    "hash": "33fe505be19f",
+    "text": "在背後說他名字怪",
+    "raw": "在背後說他名字怪",
+    "role": "hero",
+    "origin": "MONSTERS.hidey.option"
+  },
+  {
+    "hash": "5dbdd3a1fc96",
+    "text": "不可以！要對新朋友好～",
+    "raw": "不可以！要對新朋友好～",
+    "role": "narrator",
+    "origin": "MONSTERS.hidey.fb"
+  },
+  {
+    "hash": "7ea26c46102f",
+    "text": "同學在哭，你的，心魔，叫你冷漠走過。勇者，怎麼破？",
+    "raw": "同學在哭，你的「心魔」叫你冷漠走過。勇者，怎麼破？",
+    "role": "narrator",
+    "origin": "DEMONS.solo.q"
+  },
+  {
+    "hash": "8665c79f5998",
+    "text": "走過去坐他旁邊，不講話也沒關係",
+    "raw": "走過去坐他旁邊，不講話也沒關係",
+    "role": "hero",
+    "origin": "DEMONS.solo.option"
+  },
+  {
+    "hash": "e7e6b49cc9d0",
+    "text": "對！陪伴本身就是同理。不用講大道理。",
+    "raw": "對！陪伴本身就是同理。不用講大道理。",
+    "role": "narrator",
+    "origin": "DEMONS.solo.fb"
+  },
+  {
+    "hash": "cd45eb57f436",
+    "text": "對啊，干我什麼事，繼續玩",
+    "raw": "對啊，干我什麼事，繼續玩",
+    "role": "hero",
+    "origin": "DEMONS.solo.option"
+  },
+  {
+    "hash": "078d3e6c1293",
+    "text": "獨我龍正在控制你！這是冷漠的陷阱。",
+    "raw": "獨我龍正在控制你！這是冷漠的陷阱。",
+    "role": "narrator",
+    "origin": "DEMONS.solo.fb"
+  },
+  {
+    "hash": "fabe70bbf503",
+    "text": "笑他，哭那麼大聲幹嘛，",
+    "raw": "笑他「哭那麼大聲幹嘛」",
+    "role": "hero",
+    "origin": "DEMONS.solo.option"
+  },
+  {
+    "hash": "ff0f4efda59b",
+    "text": "嘲笑會傷得更深，獨我龍就更壯大。",
+    "raw": "嘲笑會傷得更深，獨我龍就更壯大。",
+    "role": "narrator",
+    "origin": "DEMONS.solo.fb"
+  },
+  {
+    "hash": "92d5c2dacdf0",
+    "text": "假裝沒看到",
+    "raw": "假裝沒看到",
+    "role": "hero",
+    "origin": "DEMONS.solo.option"
+  },
+  {
+    "hash": "a94aef59b844",
+    "text": "假裝沒看到，下次他不會幫你。",
+    "raw": "假裝沒看到，下次他不會幫你。",
+    "role": "narrator",
+    "origin": "DEMONS.solo.fb"
+  },
+  {
+    "hash": "551c2b24ebed",
+    "text": "媽媽今天臉很臭。獨我龍說，不關我事，。怎麼破解？",
+    "raw": "媽媽今天臉很臭。獨我龍說「不關我事」。怎麼破解？",
+    "role": "narrator",
+    "origin": "DEMONS.solo.q"
+  },
+  {
+    "hash": "ef08f9d83efc",
+    "text": "問一句：媽媽你怎麼了？",
+    "raw": "問一句：媽媽你怎麼了？",
+    "role": "hero",
+    "origin": "DEMONS.solo.option"
+  },
+  {
+    "hash": "88620b46fa7e",
+    "text": "一句關心，是同理最簡單的開始。",
+    "raw": "一句關心，是同理最簡單的開始。",
+    "role": "narrator",
+    "origin": "DEMONS.solo.fb"
+  },
+  {
+    "hash": "167f5b1d7761",
+    "text": "覺得她無聊",
+    "raw": "覺得她無聊",
+    "role": "hero",
+    "origin": "DEMONS.solo.option"
+  },
+  {
+    "hash": "1a559797b67a",
+    "text": "她可能在強撐家庭，問一下會發現。",
+    "raw": "她可能在強撐家庭，問一下會發現。",
+    "role": "narrator",
+    "origin": "DEMONS.solo.fb"
+  },
+  {
+    "hash": "1736f5ce1bd2",
+    "text": "躲房間不想理她",
+    "raw": "躲房間不想理她",
+    "role": "hero",
+    "origin": "DEMONS.solo.option"
+  },
+  {
+    "hash": "1dcdc4998a9b",
+    "text": "親近的人最值得你一句問候。",
+    "raw": "親近的人最值得你一句問候。",
+    "role": "narrator",
+    "origin": "DEMONS.solo.fb"
+  },
+  {
+    "hash": "9bcd4b692fae",
+    "text": "罵她臉臭幹嘛",
+    "raw": "罵她臉臭幹嘛",
+    "role": "hero",
+    "origin": "DEMONS.solo.option"
+  },
+  {
+    "hash": "96723b95c812",
+    "text": "更糟！火上加油。",
+    "raw": "更糟！火上加油。",
+    "role": "narrator",
+    "origin": "DEMONS.solo.fb"
+  },
+  {
+    "hash": "299250cd067f",
+    "text": "獨我龍說，先顧好自己最重要，。這句話對嗎？",
+    "raw": "獨我龍說「先顧好自己最重要」。這句話對嗎？",
+    "role": "narrator",
+    "origin": "DEMONS.solo.q"
+  },
+  {
+    "hash": "2e4292047f5c",
+    "text": "對一半：照顧自己是基礎，但能多關心一個人就多關心",
+    "raw": "對一半：照顧自己是基礎，但能多關心一個人就多關心",
+    "role": "hero",
+    "origin": "DEMONS.solo.option"
+  },
+  {
+    "hash": "2f4430470678",
+    "text": "成熟！同理心和自我照顧不矛盾。",
+    "raw": "成熟！同理心和自我照顧不矛盾。",
+    "role": "narrator",
+    "origin": "DEMONS.solo.fb"
+  },
+  {
+    "hash": "3c467fc751db",
+    "text": "完全對，別人都不用管",
+    "raw": "完全對，別人都不用管",
+    "role": "hero",
+    "origin": "DEMONS.solo.option"
+  },
+  {
+    "hash": "a39210a34c1c",
+    "text": "這樣會變孤狼，越來越孤獨。",
+    "raw": "這樣會變孤狼，越來越孤獨。",
+    "role": "narrator",
+    "origin": "DEMONS.solo.fb"
+  },
+  {
+    "hash": "9f8c519fde70",
+    "text": "完全錯，要把自己掏空給別人",
+    "raw": "完全錯，要把自己掏空給別人",
+    "role": "hero",
+    "origin": "DEMONS.solo.option"
+  },
+  {
+    "hash": "4b6fe1820da8",
+    "text": "也不對，自己要先穩。",
+    "raw": "也不對，自己要先穩。",
+    "role": "narrator",
+    "origin": "DEMONS.solo.fb"
+  },
+  {
+    "hash": "f8b12dd1d8ff",
+    "text": "看心情決定",
+    "raw": "看心情決定",
+    "role": "hero",
+    "origin": "DEMONS.solo.option"
+  },
+  {
+    "hash": "a5bf543d6007",
+    "text": "看心情=沒原則，獨我龍會回來。",
+    "raw": "看心情=沒原則，獨我龍會回來。",
+    "role": "narrator",
+    "origin": "DEMONS.solo.fb"
+  },
+  {
+    "hash": "025b8b46cbff",
+    "text": "對方表情凝重在講難過的事。白目龍叫你繼續講笑話。怎麼破？",
+    "raw": "對方表情凝重在講難過的事。白目龍叫你繼續講笑話。怎麼破？",
+    "role": "narrator",
+    "origin": "DEMONS.clueless.q"
+  },
+  {
+    "hash": "57028e347dcd",
+    "text": "先閉嘴聽，注意他的表情、語氣、肢體",
+    "raw": "先閉嘴聽，注意他的表情、語氣、肢體",
+    "role": "hero",
+    "origin": "DEMONS.clueless.option"
+  },
+  {
+    "hash": "1562fb844c27",
+    "text": "對！察言觀色從，先停下，開始。",
+    "raw": "對！察言觀色從「先停下」開始。",
+    "role": "narrator",
+    "origin": "DEMONS.clueless.fb"
+  },
+  {
+    "hash": "cf695d76ff74",
+    "text": "繼續講想到的笑話",
+    "raw": "繼續講想到的笑話",
+    "role": "hero",
+    "origin": "DEMONS.clueless.option"
+  },
+  {
+    "hash": "b19a6482bca6",
+    "text": "白目龍贏了！對方會受傷。",
+    "raw": "白目龍贏了！對方會受傷。",
+    "role": "narrator",
+    "origin": "DEMONS.clueless.fb"
+  },
+  {
+    "hash": "b0464b55defa",
+    "text": "突然轉話題講自己的事",
+    "raw": "突然轉話題講自己的事",
+    "role": "hero",
+    "origin": "DEMONS.clueless.option"
+  },
+  {
+    "hash": "14ef28c440cb",
+    "text": "搶話題等於不重視他。",
+    "raw": "搶話題等於不重視他。",
+    "role": "narrator",
+    "origin": "DEMONS.clueless.fb"
+  },
+  {
+    "hash": "d52fdac7594d",
+    "text": "不講話直接走掉",
+    "raw": "不講話直接走掉",
+    "role": "hero",
+    "origin": "DEMONS.clueless.option"
+  },
+  {
+    "hash": "b62c04e7bbc9",
+    "text": "走掉也讓人受傷。先聽。",
+    "raw": "走掉也讓人受傷。先聽。",
+    "role": "narrator",
+    "origin": "DEMONS.clueless.fb"
+  },
+  {
+    "hash": "37ea055f16cb",
+    "text": "你不確定現在場合該不該開玩笑。怎麼判斷？",
+    "raw": "你不確定現在場合該不該開玩笑。怎麼判斷？",
+    "role": "narrator",
+    "origin": "DEMONS.clueless.q"
+  },
+  {
+    "hash": "9ae0e52f27a9",
+    "text": "看別人的表情和聲音大小，配合就對了",
+    "raw": "看別人的表情和聲音大小，配合就對了",
+    "role": "hero",
+    "origin": "DEMONS.clueless.option"
+  },
+  {
+    "hash": "09b760c3d3e4",
+    "text": "正確！場合的線索就在別人身上。",
+    "raw": "正確！場合的線索就在別人身上。",
+    "role": "narrator",
+    "origin": "DEMONS.clueless.fb"
+  },
+  {
+    "hash": "e7e99a789dc2",
+    "text": "看自己想不想笑",
+    "raw": "看自己想不想笑",
+    "role": "hero",
+    "origin": "DEMONS.clueless.option"
+  },
+  {
+    "hash": "5fe1d6db182b",
+    "text": "白目陷阱！只看自己會出包。",
+    "raw": "白目陷阱！只看自己會出包。",
+    "role": "narrator",
+    "origin": "DEMONS.clueless.fb"
+  },
+  {
+    "hash": "50e2b4ec86f6",
+    "text": "賭一下，先講再說",
+    "raw": "賭一下，先講再說",
+    "role": "hero",
+    "origin": "DEMONS.clueless.option"
+  },
+  {
+    "hash": "4943396454e6",
+    "text": "賭錯很尷尬，後果你承擔不了。",
+    "raw": "賭錯很尷尬，後果你承擔不了。",
+    "role": "narrator",
+    "origin": "DEMONS.clueless.fb"
+  },
+  {
+    "hash": "b906c0727778",
+    "text": "問：我可以講笑話嗎？",
+    "raw": "問：我可以講笑話嗎？",
+    "role": "hero",
+    "origin": "DEMONS.clueless.option"
+  },
+  {
+    "hash": "06a30cb341f6",
+    "text": "比賭好，但也太突兀。先觀察。",
+    "raw": "比賭好，但也太突兀。先觀察。",
+    "role": "narrator",
+    "origin": "DEMONS.clueless.fb"
+  },
+  {
+    "hash": "c1cc52cb9f8a",
+    "text": "說錯話傷到人了，白目龍叫你裝沒事。怎麼破？",
+    "raw": "說錯話傷到人了，白目龍叫你裝沒事。怎麼破？",
+    "role": "narrator",
+    "origin": "DEMONS.clueless.q"
+  },
+  {
+    "hash": "e9681bdf5c9d",
+    "text": "誠懇道歉：，對不起，我講錯了，沒考慮到你的感受，",
+    "raw": "誠懇道歉：「對不起，我講錯了，沒考慮到你的感受」",
+    "role": "hero",
+    "origin": "DEMONS.clueless.option"
+  },
+  {
+    "hash": "2dd5035aa537",
+    "text": "認錯比死撐有力量！",
+    "raw": "認錯比死撐有力量！",
+    "role": "narrator",
+    "origin": "DEMONS.clueless.fb"
+  },
+  {
+    "hash": "3df7481d76a8",
+    "text": "笑說，開玩笑的啦，",
+    "raw": "笑說「開玩笑的啦」",
+    "role": "hero",
+    "origin": "DEMONS.clueless.option"
+  },
+  {
+    "hash": "abaf3bdc907b",
+    "text": "笑帶過讓對方更受傷。",
+    "raw": "笑帶過讓對方更受傷。",
+    "role": "narrator",
+    "origin": "DEMONS.clueless.fb"
+  },
+  {
+    "hash": "151dd0848813",
+    "text": "怪對方太敏感",
+    "raw": "怪對方太敏感",
+    "role": "hero",
+    "origin": "DEMONS.clueless.option"
+  },
+  {
+    "hash": "5122fc8905ff",
+    "text": "怪別人=完全沒省思。",
+    "raw": "怪別人=完全沒省思。",
+    "role": "narrator",
+    "origin": "DEMONS.clueless.fb"
+  },
+  {
+    "hash": "1aed61f57970",
+    "text": "從此不和他講話",
+    "raw": "從此不和他講話",
+    "role": "hero",
+    "origin": "DEMONS.clueless.option"
+  },
+  {
+    "hash": "5011f238ec90",
+    "text": "逃避不會修復關係。",
+    "raw": "逃避不會修復關係。",
+    "role": "narrator",
+    "origin": "DEMONS.clueless.fb"
+  },
+  {
+    "hash": "e24b9bfe1fa1",
+    "text": "同學說你壞話，你超火大。衝動龍叫你，打他，。怎麼破？",
+    "raw": "同學說你壞話，你超火大。衝動龍叫你「打他」。怎麼破？",
+    "role": "narrator",
+    "origin": "DEMONS.impulse.q"
+  },
+  {
+    "hash": "a446c82beec3",
+    "text": "STOP-THINK-DO：先深呼吸 5 秒、想後果、再決定",
+    "raw": "STOP-THINK-DO：先深呼吸 5 秒、想後果、再決定",
+    "role": "hero",
+    "origin": "DEMONS.impulse.option"
+  },
+  {
+    "hash": "8532e66829da",
+    "text": "這是衝動龍最怕的招！",
+    "raw": "這是衝動龍最怕的招！",
+    "role": "narrator",
+    "origin": "DEMONS.impulse.fb"
+  },
+  {
+    "hash": "02fe635a1875",
+    "text": "立刻揍他",
+    "raw": "立刻揍他",
+    "role": "hero",
+    "origin": "DEMONS.impulse.option"
+  },
+  {
+    "hash": "e25b15628f63",
+    "text": "衝動龍贏了。後果你自己承擔。",
+    "raw": "衝動龍贏了。後果你自己承擔。",
+    "role": "narrator",
+    "origin": "DEMONS.impulse.fb"
+  },
+  {
+    "hash": "201a6977bc0d",
+    "text": "也罵回去更難聽",
+    "raw": "也罵回去更難聽",
+    "role": "hero",
+    "origin": "DEMONS.impulse.option"
+  },
+  {
+    "hash": "1a841420bad1",
+    "text": "互罵會升級成打架。",
+    "raw": "互罵會升級成打架。",
+    "role": "narrator",
+    "origin": "DEMONS.impulse.fb"
+  },
+  {
+    "hash": "202a9d5b2e7d",
+    "text": "把他東西丟掉",
+    "raw": "把他東西丟掉",
+    "role": "hero",
+    "origin": "DEMONS.impulse.option"
+  },
+  {
+    "hash": "605d085038a1",
+    "text": "破壞別人東西，你要賠+被處罰。",
+    "raw": "破壞別人東西，你要賠+被處罰。",
+    "role": "narrator",
+    "origin": "DEMONS.impulse.fb"
+  },
+  {
+    "hash": "a826b1480d59",
+    "text": "看到想要的東西在店裡，衝動龍叫你拿了就跑。怎麼破？",
+    "raw": "看到想要的東西在店裡，衝動龍叫你拿了就跑。怎麼破？",
+    "role": "narrator",
+    "origin": "DEMONS.impulse.q"
+  },
+  {
+    "hash": "13e03323982c",
+    "text": "深呼吸：我有錢嗎？我真的需要嗎？問大人",
+    "raw": "深呼吸：我有錢嗎？我真的需要嗎？問大人",
+    "role": "hero",
+    "origin": "DEMONS.impulse.option"
+  },
+  {
+    "hash": "5fdb47e4196f",
+    "text": "對！停 + 想 = 不會犯大錯。",
+    "raw": "對！停 + 想 = 不會犯大錯。",
+    "role": "narrator",
+    "origin": "DEMONS.impulse.fb"
+  },
+  {
+    "hash": "66317a19ab76",
+    "text": "拿了就跑反正沒人看到",
+    "raw": "拿了就跑反正沒人看到",
+    "role": "hero",
+    "origin": "DEMONS.impulse.option"
+  },
+  {
+    "hash": "0fbcd7b9aede",
+    "text": "店有監視器+這是偷竊+人生留紀錄。",
+    "raw": "店有監視器+這是偷竊+人生留紀錄。",
+    "role": "narrator",
+    "origin": "DEMONS.impulse.fb"
+  },
+  {
+    "hash": "5890a1b1eab7",
+    "text": "藏起來想辦法",
+    "raw": "藏起來想辦法",
+    "role": "hero",
+    "origin": "DEMONS.impulse.option"
+  },
+  {
+    "hash": "7298f52bed3e",
+    "text": "藏不住的。先問大人能不能買。",
+    "raw": "藏不住的。先問大人能不能買。",
+    "role": "narrator",
+    "origin": "DEMONS.impulse.fb"
+  },
+  {
+    "hash": "2ee0a16cc59f",
+    "text": "和店員吵說為什麼要錢",
+    "raw": "和店員吵說為什麼要錢",
+    "role": "hero",
+    "origin": "DEMONS.impulse.option"
+  },
+  {
+    "hash": "504591938cbf",
+    "text": "店員只是上班，吵架沒用。",
+    "raw": "店員只是上班，吵架沒用。",
+    "role": "narrator",
+    "origin": "DEMONS.impulse.fb"
+  },
+  {
+    "hash": "095e1439dfb2",
+    "text": "你打 LOL 想罵隊友，衝動龍叫你打字幹翻。怎麼破？",
+    "raw": "你打 LOL 想罵隊友，衝動龍叫你打字幹翻。怎麼破？",
+    "role": "narrator",
+    "origin": "DEMONS.impulse.q"
+  },
+  {
+    "hash": "dd6042a8ee9d",
+    "text": "手指離開鍵盤 5 秒，把氣吐掉，再決定",
+    "raw": "手指離開鍵盤 5 秒，把氣吐掉，再決定",
+    "role": "hero",
+    "origin": "DEMONS.impulse.option"
+  },
+  {
+    "hash": "e086386a068e",
+    "text": "停 5 秒大腦才會回來工作！",
+    "raw": "停 5 秒大腦才會回來工作！",
+    "role": "narrator",
+    "origin": "DEMONS.impulse.fb"
+  },
+  {
+    "hash": "d53fcfd6178e",
+    "text": "馬上打髒話",
+    "raw": "馬上打髒話",
+    "role": "hero",
+    "origin": "DEMONS.impulse.option"
+  },
+  {
+    "hash": "b2dedc21ff24",
+    "text": "被檢舉 + 隊友更生氣 + 你被禁言。",
+    "raw": "被檢舉 + 隊友更生氣 + 你被禁言。",
+    "role": "narrator",
+    "origin": "DEMONS.impulse.fb"
+  },
+  {
+    "hash": "2b5e75a63916",
+    "text": "故意送頭報復",
+    "raw": "故意送頭報復",
+    "role": "hero",
+    "origin": "DEMONS.impulse.option"
+  },
+  {
+    "hash": "ff8a3a16ca0a",
+    "text": "雙輸。輸的是你自己。",
+    "raw": "雙輸。輸的是你自己。",
+    "role": "narrator",
+    "origin": "DEMONS.impulse.fb"
+  },
+  {
+    "hash": "bb247f42514f",
+    "text": "退出遊戲不講",
+    "raw": "退出遊戲不講",
+    "role": "hero",
+    "origin": "DEMONS.impulse.option"
+  },
+  {
+    "hash": "55ccbdfd2c23",
+    "text": "比罵好，但壓抑也不健康。深呼吸再玩。",
+    "raw": "比罵好，但壓抑也不健康。深呼吸再玩。",
+    "role": "narrator",
+    "origin": "DEMONS.impulse.fb"
+  },
+  {
+    "hash": "0d7da3a70459",
+    "text": "他故意挑釁，怎麼讓他，失敗，？",
+    "raw": "他故意挑釁，怎麼讓他「失敗」？",
+    "role": "narrator",
+    "origin": "DEMONS.provoker.q"
+  },
+  {
+    "hash": "52f58aec97ff",
+    "text": "平靜走開找老師：，他在挑釁我，請處理，",
+    "raw": "平靜走開找老師：「他在挑釁我，請處理」",
+    "role": "hero",
+    "origin": "DEMONS.provoker.option"
+  },
+  {
+    "hash": "b786294e40d1",
+    "text": "對！讓制度處理他，你不上當。",
+    "raw": "對！讓制度處理他，你不上當。",
+    "role": "narrator",
+    "origin": "DEMONS.provoker.fb"
+  },
+  {
+    "hash": "3c81e6af75f8",
+    "text": "打回去讓他閉嘴",
+    "raw": "打回去讓他閉嘴",
+    "role": "hero",
+    "origin": "DEMONS.provoker.option"
+  },
+  {
+    "hash": "e1bfcbe10c8e",
+    "text": "你就上鉤了！被處罰的是你。",
+    "raw": "你就上鉤了！被處罰的是你。",
+    "role": "narrator",
+    "origin": "DEMONS.provoker.fb"
+  },
+  {
+    "hash": "bdf7aaa2e617",
+    "text": "他就是要你失控，這是他的勝利。",
+    "raw": "他就是要你失控，這是他的勝利。",
+    "role": "narrator",
+    "origin": "DEMONS.provoker.fb"
+  },
+  {
+    "hash": "f83b1d55f6f6",
+    "text": "一個人在那哭",
+    "raw": "一個人在那哭",
+    "role": "hero",
+    "origin": "DEMONS.provoker.option"
+  },
+  {
+    "hash": "6b9ef4262065",
+    "text": "哭不會解決，找大人。",
+    "raw": "哭不會解決，找大人。",
+    "role": "narrator",
+    "origin": "DEMONS.provoker.fb"
+  },
+  {
+    "hash": "55a6ac3a8409",
+    "text": "為什麼挑釁龍要挑釁你？他真的想打架嗎？",
+    "raw": "為什麼挑釁龍要挑釁你？他真的想打架嗎？",
+    "role": "narrator",
+    "origin": "DEMONS.provoker.q"
+  },
+  {
+    "hash": "5eeee4937680",
+    "text": "他內心其實孤單，用挑釁吸引注意，是錯誤的方法",
+    "raw": "他內心其實孤單，用挑釁吸引注意，是錯誤的方法",
+    "role": "hero",
+    "origin": "DEMONS.provoker.option"
+  },
+  {
+    "hash": "16123d76f317",
+    "text": "看穿他！挑釁者通常自己更受傷。",
+    "raw": "看穿他！挑釁者通常自己更受傷。",
+    "role": "narrator",
+    "origin": "DEMONS.provoker.fb"
+  },
+  {
+    "hash": "ed7ad3c097c6",
+    "text": "他天生就是壞人",
+    "raw": "他天生就是壞人",
+    "role": "hero",
+    "origin": "DEMONS.provoker.option"
+  },
+  {
+    "hash": "7e1aac63188b",
+    "text": "沒有人天生壞，都有原因。",
+    "raw": "沒有人天生壞，都有原因。",
+    "role": "narrator",
+    "origin": "DEMONS.provoker.fb"
+  },
+  {
+    "hash": "284352723114",
+    "text": "他想跟我做朋友所以挑釁",
+    "raw": "他想跟我做朋友所以挑釁",
+    "role": "hero",
+    "origin": "DEMONS.provoker.option"
+  },
+  {
+    "hash": "65b01ea4fffe",
+    "text": "這想法太天真，挑釁就是傷害行為。",
+    "raw": "這想法太天真，挑釁就是傷害行為。",
+    "role": "narrator",
+    "origin": "DEMONS.provoker.fb"
+  },
+  {
+    "hash": "aa5400c8501b",
+    "text": "他閒著沒事做",
+    "raw": "他閒著沒事做",
+    "role": "hero",
+    "origin": "DEMONS.provoker.option"
+  },
+  {
+    "hash": "586da058de8d",
+    "text": "通常背後有更深的原因。",
+    "raw": "通常背後有更深的原因。",
+    "role": "narrator",
+    "origin": "DEMONS.provoker.fb"
+  },
+  {
+    "hash": "554b69166071",
+    "text": "挑釁龍說，老師罰你看你還敢，。怎麼破他的陷阱？",
+    "raw": "挑釁龍說「老師罰你看你還敢」。怎麼破他的陷阱？",
+    "role": "narrator",
+    "origin": "DEMONS.provoker.q"
+  },
+  {
+    "hash": "4c4eb0c4f18e",
+    "text": "去找老師當證人，光明正大說出他的行為",
+    "raw": "去找老師當證人，光明正大說出他的行為",
+    "role": "hero",
+    "origin": "DEMONS.provoker.option"
+  },
+  {
+    "hash": "85c36b2a0e7e",
+    "text": "讓陷阱反咬挑釁者。",
+    "raw": "讓陷阱反咬挑釁者。",
+    "role": "narrator",
+    "origin": "DEMONS.provoker.fb"
+  },
+  {
+    "hash": "3f4298401ab9",
+    "text": "等他自己累再揍",
+    "raw": "等他自己累再揍",
+    "role": "hero",
+    "origin": "DEMONS.provoker.option"
+  },
+  {
+    "hash": "e4d39ad4a6ed",
+    "text": "報復不會贏，會雙敗。",
+    "raw": "報復不會贏，會雙敗。",
+    "role": "narrator",
+    "origin": "DEMONS.provoker.fb"
+  },
+  {
+    "hash": "d0475649bea3",
+    "text": "拍下他的行為當證據",
+    "raw": "拍下他的行為當證據",
+    "role": "hero",
+    "origin": "DEMONS.provoker.option"
+  },
+  {
+    "hash": "71fe4fde7454",
+    "text": "也對！證據+老師=他自食惡果。",
+    "raw": "也對！證據+老師=他自食惡果。",
+    "role": "narrator",
+    "origin": "DEMONS.provoker.fb"
+  },
+  {
+    "hash": "abdbfe472de1",
+    "text": "全班宣告他是壞人",
+    "raw": "全班宣告他是壞人",
+    "role": "hero",
+    "origin": "DEMONS.provoker.option"
+  },
+  {
+    "hash": "846fda238f3c",
+    "text": "霸凌不能反過來變霸凌他。",
+    "raw": "霸凌不能反過來變霸凌他。",
+    "role": "narrator",
+    "origin": "DEMONS.provoker.fb"
+  },
+  {
+    "hash": "0f1702b64dea",
+    "text": "壞習慣最有效的對付方式是？",
+    "raw": "壞習慣最有效的對付方式是？",
+    "role": "narrator",
+    "origin": "DEMONS.hooked.q"
+  },
+  {
+    "hash": "7724e4dc129b",
+    "text": "找一個，替代行為，取代它",
+    "raw": "找一個「替代行為」取代它（例：想滑手機→改捏壓力球）",
+    "role": "hero",
+    "origin": "DEMONS.hooked.option"
+  },
+  {
+    "hash": "0ffd85c92e48",
+    "text": "對！換新動作，不是空洞地禁止。",
+    "raw": "對！換新動作，不是空洞地禁止。",
+    "role": "narrator",
+    "origin": "DEMONS.hooked.fb"
+  },
+  {
+    "hash": "c6d9d5179a0a",
+    "text": "用意志力硬撐不要做",
+    "raw": "用意志力硬撐不要做",
+    "role": "hero",
+    "origin": "DEMONS.hooked.option"
+  },
+  {
+    "hash": "567610d55812",
+    "text": "意志力會用完。換新動作才有用。",
+    "raw": "意志力會用完。換新動作才有用。",
+    "role": "narrator",
+    "origin": "DEMONS.hooked.fb"
+  },
+  {
+    "hash": "adb97310a699",
+    "text": "假裝沒有這個習慣",
+    "raw": "假裝沒有這個習慣",
+    "role": "hero",
+    "origin": "DEMONS.hooked.option"
+  },
+  {
+    "hash": "62b10809845e",
+    "text": "假裝會更失控。",
+    "raw": "假裝會更失控。",
+    "role": "narrator",
+    "origin": "DEMONS.hooked.fb"
+  },
+  {
+    "hash": "d790b713e45c",
+    "text": "全部投降隨它去",
+    "raw": "全部投降隨它去",
+    "role": "hero",
+    "origin": "DEMONS.hooked.option"
+  },
+  {
+    "hash": "f1a35125a0fe",
+    "text": "習慣龍贏了！會更深。",
+    "raw": "習慣龍贏了！會更深。",
+    "role": "narrator",
+    "origin": "DEMONS.hooked.fb"
+  },
+  {
+    "hash": "5ec6525cae58",
+    "text": "想滑手機停不下來。怎麼用，環境設計，打敗習慣龍？",
+    "raw": "想滑手機停不下來。怎麼用「環境設計」打敗習慣龍？",
+    "role": "narrator",
+    "origin": "DEMONS.hooked.q"
+  },
+  {
+    "hash": "2f9ab48f145f",
+    "text": "手機放別的房間 + 設時段 + 替代活動",
+    "raw": "手機放別的房間 + 設時段 + 替代活動（畫畫/運動）",
+    "role": "hero",
+    "origin": "DEMONS.hooked.option"
+  },
+  {
+    "hash": "aa2abc5e1ea3",
+    "text": "環境改了，習慣就難回來。",
+    "raw": "環境改了，習慣就難回來。",
+    "role": "narrator",
+    "origin": "DEMONS.hooked.fb"
+  },
+  {
+    "hash": "749413d8bad9",
+    "text": "靠意志力放在桌上不要碰",
+    "raw": "靠意志力放在桌上不要碰",
+    "role": "hero",
+    "origin": "DEMONS.hooked.option"
+  },
+  {
+    "hash": "339ecbf804f0",
+    "text": "看得到就會碰，把它移走。",
+    "raw": "看得到就會碰，把它移走。",
+    "role": "narrator",
+    "origin": "DEMONS.hooked.fb"
+  },
+  {
+    "hash": "a428e0bfc71a",
+    "text": "刪掉所有 App 永遠不用",
+    "raw": "刪掉所有 App 永遠不用",
+    "role": "hero",
+    "origin": "DEMONS.hooked.option"
+  },
+  {
+    "hash": "73f06dfc6c3c",
+    "text": "太極端，建議，分時段使用，更實際。",
+    "raw": "太極端，建議「分時段使用」更實際。",
+    "role": "narrator",
+    "origin": "DEMONS.hooked.fb"
+  },
+  {
+    "hash": "c5fb15c1023f",
+    "text": "把手機摔壞",
+    "raw": "把手機摔壞",
+    "role": "hero",
+    "origin": "DEMONS.hooked.option"
+  },
+  {
+    "hash": "ef5797202ac4",
+    "text": "摔壞還要買新的，浪費錢。",
+    "raw": "摔壞還要買新的，浪費錢。",
+    "role": "narrator",
+    "origin": "DEMONS.hooked.fb"
+  },
+  {
+    "hash": "d6bd31165544",
+    "text": "咬指甲咬到流血，怎麼破？",
+    "raw": "咬指甲咬到流血，怎麼破？",
+    "role": "narrator",
+    "origin": "DEMONS.hooked.q"
+  },
+  {
+    "hash": "e41647c40d70",
+    "text": "壓力球 / 玩戒指 / 在指甲塗苦的東西",
+    "raw": "壓力球 / 玩戒指 / 在指甲塗苦的東西",
+    "role": "hero",
+    "origin": "DEMONS.hooked.option"
+  },
+  {
+    "hash": "7cea77d99032",
+    "text": "替代行為+提醒物=有效！",
+    "raw": "替代行為+提醒物=有效！",
+    "role": "narrator",
+    "origin": "DEMONS.hooked.fb"
+  },
+  {
+    "hash": "3bbacaff1d97",
+    "text": "罵自己沒用",
+    "raw": "罵自己沒用",
+    "role": "hero",
+    "origin": "DEMONS.hooked.option"
+  },
+  {
+    "hash": "cb8ba05f972b",
+    "text": "罵自己讓你更焦慮，更想咬。",
+    "raw": "罵自己讓你更焦慮，更想咬。",
+    "role": "narrator",
+    "origin": "DEMONS.hooked.fb"
+  },
+  {
+    "hash": "df0a83227091",
+    "text": "繼續咬不在乎",
+    "raw": "繼續咬不在乎",
+    "role": "hero",
+    "origin": "DEMONS.hooked.option"
+  },
+  {
+    "hash": "201f09ec7a91",
+    "text": "感染了會看醫生，更痛。",
+    "raw": "感染了會看醫生，更痛。",
+    "role": "narrator",
+    "origin": "DEMONS.hooked.fb"
+  },
+  {
+    "hash": "efceb7d42fbb",
+    "text": "等長大自然就好",
+    "raw": "等長大自然就好",
+    "role": "hero",
+    "origin": "DEMONS.hooked.option"
+  },
+  {
+    "hash": "f371745e32cf",
+    "text": "可能不會自然好。現在處理。",
+    "raw": "可能不會自然好。現在處理。",
+    "role": "narrator",
+    "origin": "DEMONS.hooked.fb"
+  },
+  {
+    "hash": "2dc3af5f3faa",
+    "text": "弟弟把你最愛的玩具弄壞了，你覺得火山要爆發了。你會怎麼做？",
+    "raw": "弟弟把你最愛的玩具弄壞了，你覺得火山要爆發了。你會怎麼做？",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "f6089557e42b",
+    "text": "馬上打弟弟",
+    "raw": "馬上打弟弟",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "eb157725cde9",
+    "text": "打人會被罵，玩具也不會回來。試試烏龜呼吸吧。",
+    "raw": "打人會被罵，玩具也不會回來。試試烏龜呼吸吧。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "0832970973e7",
+    "text": "做烏龜呼吸，深呼吸 3 次",
+    "raw": "做烏龜呼吸，深呼吸 3 次",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "d695c0200ad4",
+    "text": "對！先讓火山降溫，再說話才不會更糟。",
+    "raw": "對！先讓火山降溫，再說話才不會更糟。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "ab5ee1c34f03",
+    "text": "大聲尖叫亂摔東西",
+    "raw": "大聲尖叫亂摔東西",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "315b245e21ae",
+    "text": "東西摔壞了，心裡還是不舒服。深呼吸試試看。",
+    "raw": "東西摔壞了，心裡還是不舒服。深呼吸試試看。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "c3df6ea70853",
+    "text": "假裝沒事忍住氣",
+    "raw": "假裝沒事忍住氣",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "19968f540257",
+    "text": "忍下來的火山，下次會爆更大。要讓情緒流動。",
+    "raw": "忍下來的火山，下次會爆更大。要讓情緒流動。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "ad2df3c1fd11",
+    "text": "媽媽說不准你看手機，你超生氣。最好的做法是？",
+    "raw": "媽媽說不准你看手機，你超生氣。最好的做法是？",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "0d9535256132",
+    "text": "用力摔東西",
+    "raw": "用力摔東西",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "e551c6409d5a",
+    "text": "東西壞了媽媽更生氣，雙輸。",
+    "raw": "東西壞了媽媽更生氣，雙輸。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "6aeb5da7e36e",
+    "text": "數到 10 再開口",
+    "raw": "數到 10 再開口",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "f29c16debca2",
+    "text": "數數字可以讓大腦冷靜，再說話才有用。",
+    "raw": "數數字可以讓大腦冷靜，再說話才有用。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "4013788a0b7d",
+    "text": "罵媽媽好討厭",
+    "raw": "罵媽媽好討厭",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "f9032a63f7eb",
+    "text": "罵人傷感情，事情也不會改變。",
+    "raw": "罵人傷感情，事情也不會改變。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "d9704c55c5d7",
+    "text": "悶在心裡會更難受。試試說出來。",
+    "raw": "悶在心裡會更難受。試試說出來。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "a3ec9dcaed6d",
+    "text": "同學笑你寫字很醜，你火大了。怎麼辦？",
+    "raw": "同學笑你寫字很醜，你火大了。怎麼辦？",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "187c7d800e90",
+    "text": "馬上罵他更難聽的話",
+    "raw": "馬上罵他更難聽的話",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "7f14ad92c293",
+    "text": "互罵會變吵架，老師也會處罰。",
+    "raw": "互罵會變吵架，老師也會處罰。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "3ddc66dd379a",
+    "text": "深呼吸後告訴老師",
+    "raw": "深呼吸後告訴老師",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "163d47e6fde7",
+    "text": "對，找老師幫忙是聰明的選擇。",
+    "raw": "對，找老師幫忙是聰明的選擇。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "0ce2a941a997",
+    "text": "把作業撕掉",
+    "raw": "把作業撕掉",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "d684cd9f6b99",
+    "text": "撕掉作業要重寫，受傷的是自己。",
+    "raw": "撕掉作業要重寫，受傷的是自己。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "b8d3a2fb15ad",
+    "text": "哭著跑出教室",
+    "raw": "哭著跑出教室",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "ac43c7a1112d",
+    "text": "跑出去很危險，先深呼吸再找老師。",
+    "raw": "跑出去很危險，先深呼吸再找老師。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "2b65be9a0634",
+    "text": "你排隊排很久，有人插隊了！",
+    "raw": "你排隊排很久，有人插隊了！",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "326403908d42",
+    "text": "把他推出去",
+    "raw": "把他推出去",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "6ca2dca1f48b",
+    "text": "推人會打架，也會被處罰。",
+    "raw": "推人會打架，也會被處罰。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "3366d3ceeaa7",
+    "text": "平靜地說：請排隊",
+    "raw": "平靜地說：請排隊",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "b1226398c304",
+    "text": "用嘴巴解決問題，最有勇氣！",
+    "raw": "用嘴巴解決問題，最有勇氣！",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "75a39ed0734e",
+    "text": "不理他默默生悶氣",
+    "raw": "不理他默默生悶氣",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "4e132993e6b0",
+    "text": "悶氣會累積，試著說出來。",
+    "raw": "悶氣會累積，試著說出來。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "e0ecf2e2b082",
+    "text": "大聲尖叫",
+    "raw": "大聲尖叫",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "8d5303fb31b2",
+    "text": "尖叫嚇到別人，問題沒解決。",
+    "raw": "尖叫嚇到別人，問題沒解決。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "0142b7965b90",
+    "text": "老師說你作業沒寫完不能下課，你覺得超不公平：",
+    "raw": "老師說你作業沒寫完不能下課，你覺得超不公平：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "e858de06acd3",
+    "text": "對老師大吼大叫",
+    "raw": "對老師大吼大叫",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "838c0b4c27d2",
+    "text": "老師會更生氣，下課更遠。",
+    "raw": "老師會更生氣，下課更遠。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "1308c967bae5",
+    "text": "撕了還是要寫，何必呢？",
+    "raw": "撕了還是要寫，何必呢？",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "9a5857791869",
+    "text": "深呼吸後說：老師我可以下課再補嗎？",
+    "raw": "深呼吸後說：老師我可以下課再補嗎？",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "04571cf56273",
+    "text": "用嘴巴談條件，是真本事！",
+    "raw": "用嘴巴談條件，是真本事！",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "d8401e499c24",
+    "text": "趴在桌上不講話",
+    "raw": "趴在桌上不講話",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "fbbb2560426d",
+    "text": "不表達老師不知道你的想法。",
+    "raw": "不表達老師不知道你的想法。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "93277773eda3",
+    "text": "你最愛的阿嬤生病住院，你很想哭：",
+    "raw": "你最愛的阿嬤生病住院，你很想哭：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "6389aed84df7",
+    "text": "忍住絕對不能哭",
+    "raw": "忍住絕對不能哭",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "22a011ec4119",
+    "text": "忍住的眼淚會變成肚子痛。哭出來沒關係。",
+    "raw": "忍住的眼淚會變成肚子痛。哭出來沒關係。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "75b13a9d6e15",
+    "text": "哭出來，再跟媽媽說你很擔心",
+    "raw": "哭出來，再跟媽媽說你很擔心",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "89a54dcd97b7",
+    "text": "對，哭是身體在幫你釋放難過。",
+    "raw": "對，哭是身體在幫你釋放難過。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "a384952b4823",
+    "text": "一個人躲起來不講",
+    "raw": "一個人躲起來不講",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "ed3eb2b101c0",
+    "text": "躲起來會更孤單，找人陪你。",
+    "raw": "躲起來會更孤單，找人陪你。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "01c20e295ac1",
+    "text": "用力打牆壁",
+    "raw": "用力打牆壁",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "fa9a8cfd61fc",
+    "text": "打牆會受傷，難過還在。試著說出來。",
+    "raw": "打牆會受傷，難過還在。試著說出來。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "747acbd22e8a",
+    "text": "好朋友突然不跟你玩了，你好失落：",
+    "raw": "好朋友突然不跟你玩了，你好失落：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "7124285ec915",
+    "text": "自己一個人不講話到放學",
+    "raw": "自己一個人不講話到放學",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "d4cf795095df",
+    "text": "悶著會越想越難過。",
+    "raw": "悶著會越想越難過。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "6bb6eecf3671",
+    "text": "找老師或家人聊一聊",
+    "raw": "找老師或家人聊一聊",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "b008f10be6fc",
+    "text": "說出來，難過會減一半。",
+    "raw": "說出來，難過會減一半。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "85741f6a6b5a",
+    "text": "在背後罵那個朋友",
+    "raw": "在背後罵那個朋友",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "2b3c38680d35",
+    "text": "罵人不會讓你開心，也會傳到對方耳裡。",
+    "raw": "罵人不會讓你開心，也會傳到對方耳裡。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "bb751ea431d4",
+    "text": "假裝完全不在乎",
+    "raw": "假裝完全不在乎",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "c6790412263b",
+    "text": "假裝會更累。承認難過才能修復。",
+    "raw": "假裝會更累。承認難過才能修復。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "149cf0ca8c57",
+    "text": "你的小狗過世了，你心裡好痛：",
+    "raw": "你的小狗過世了，你心裡好痛：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "ea6de53d8e1d",
+    "text": "把難過寫下來、抱抱小狗的照片",
+    "raw": "把難過寫下來、抱抱小狗的照片",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "144ebf5b9721",
+    "text": "悼念是愛的延續。讓難過慢慢走。",
+    "raw": "悼念是愛的延續。讓難過慢慢走。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "a54345185a43",
+    "text": "馬上要爸媽買新的",
+    "raw": "馬上要爸媽買新的",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "f293adec37dd",
+    "text": "新的不能取代舊的。先好好說再見。",
+    "raw": "新的不能取代舊的。先好好說再見。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "c5b3ec6bb53d",
+    "text": "都是我的錯，自己懲罰自己",
+    "raw": "都是我的錯，自己懲罰自己",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "f7910cec2b9b",
+    "text": "這不是你的錯。找大人陪你度過。",
+    "raw": "這不是你的錯。找大人陪你度過。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "b6663a263b3a",
+    "text": "假裝沒這件事發生",
+    "raw": "假裝沒這件事發生",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "873cc673885b",
+    "text": "假裝會讓難過留在心裡更久。",
+    "raw": "假裝會讓難過留在心裡更久。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "e7ca24f00d8e",
+    "text": "考試考不好，覺得自己好笨：",
+    "raw": "考試考不好，覺得自己好笨：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "cf00eda27ac3",
+    "text": "哭一場，再想想下次怎麼進步",
+    "raw": "哭一場，再想想下次怎麼進步",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "e97e114a337c",
+    "text": "哭完還能想辦法，你比想像中堅強。",
+    "raw": "哭完還能想辦法，你比想像中堅強。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "d177ed031e61",
+    "text": "把考卷撕掉",
+    "raw": "把考卷撕掉",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "148a84ea3f73",
+    "text": "撕掉也不會變高分。看看哪裡可以進步。",
+    "raw": "撕掉也不會變高分。看看哪裡可以進步。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "4f7007733de4",
+    "text": "不告訴爸媽偷偷藏起來",
+    "raw": "不告訴爸媽偷偷藏起來",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "0fa132d1fda2",
+    "text": "藏起來壓力會更大。誠實才能得到幫助。",
+    "raw": "藏起來壓力會更大。誠實才能得到幫助。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "97bec52dcdbb",
+    "text": "罵自己是笨蛋",
+    "raw": "罵自己是笨蛋",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "268a85cb01bd",
+    "text": "你不笨，只是這次沒準備好。對自己好一點。",
+    "raw": "你不笨，只是這次沒準備好。對自己好一點。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "2f3d110272b4",
+    "text": "看到別人很快樂，自己卻悶悶不樂：",
+    "raw": "看到別人很快樂，自己卻悶悶不樂：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "10204f334930",
+    "text": "去找信任的人說：我心情不太好",
+    "raw": "去找信任的人說：我心情不太好",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "de690b804f15",
+    "text": "說出來不丟臉，是勇敢。",
+    "raw": "說出來不丟臉，是勇敢。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "29a57899464f",
+    "text": "強迫自己也要笑",
+    "raw": "強迫自己也要笑",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "c96fdc78a442",
+    "text": "假笑會更累。先承認自己難過。",
+    "raw": "假笑會更累。先承認自己難過。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "39e3a9ba03ec",
+    "text": "罵那個快樂的人",
+    "raw": "罵那個快樂的人",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "bc0d6a5e7b2d",
+    "text": "別人快樂不是你難過的原因。",
+    "raw": "別人快樂不是你難過的原因。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "563a00154ca4",
+    "text": "一直想著悲傷的事情",
+    "raw": "一直想著悲傷的事情",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "f0cb85ab8ecd",
+    "text": "鑽牛角尖會更深。找人陪你。",
+    "raw": "鑽牛角尖會更深。找人陪你。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "432cbab0f250",
+    "text": "晚上一個人睡覺好怕：",
+    "raw": "晚上一個人睡覺好怕：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "641edb9fe58a",
+    "text": "開小夜燈、抱抱抱枕",
+    "raw": "開小夜燈、抱抱抱枕",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "c8d33d3cfd3b",
+    "text": "光和擁抱是最好的安全感。",
+    "raw": "光和擁抱是最好的安全感。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "e3022fed5b3f",
+    "text": "矇著棉被一直亂想",
+    "raw": "矇著棉被一直亂想",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "fe9f1558f747",
+    "text": "亂想會越想越怕。試試五感法。",
+    "raw": "亂想會越想越怕。試試五感法。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "87e51213f618",
+    "text": "大哭大叫吵醒全家",
+    "raw": "大哭大叫吵醒全家",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "670ab253419b",
+    "text": "全家都累就更難過。先試試自我安撫。",
+    "raw": "全家都累就更難過。先試試自我安撫。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "b8b3f5ceb58a",
+    "text": "整夜不睡覺看天花板",
+    "raw": "整夜不睡覺看天花板",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "972d46e91188",
+    "text": "不睡明天會很累。試試開夜燈。",
+    "raw": "不睡明天會很累。試試開夜燈。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "ef955f15dc96",
+    "text": "要上台報告，你的腳一直發抖：",
+    "raw": "要上台報告，你的腳一直發抖：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "349a19a862b5",
+    "text": "假裝肚子痛逃避",
+    "raw": "假裝肚子痛逃避",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "a560f1dbc5b3",
+    "text": "逃了下次更難。試試 5-4-3-2-1。",
+    "raw": "逃了下次更難。試試 5-4-3-2-1。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "ad05d1f52701",
+    "text": "用五感法：先看 5 樣東西、聽 4 種聲音",
+    "raw": "用五感法：先看 5 樣東西、聽 4 種聲音",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "7a97ed7fac20",
+    "text": "把注意力拉回身體，緊張會慢慢退。",
+    "raw": "把注意力拉回身體，緊張會慢慢退。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "7cd6ad36a63a",
+    "text": "跑出教室",
+    "raw": "跑出教室",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "1b89f43a95fd",
+    "text": "跑出去要被找回來。先深呼吸試試。",
+    "raw": "跑出去要被找回來。先深呼吸試試。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "ce01e9fa214f",
+    "text": "一直發抖到結束",
+    "raw": "一直發抖到結束",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "4a78795e10b5",
+    "text": "讓身體動一動，會比僵在那好。",
+    "raw": "讓身體動一動，會比僵在那好。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "7f01f99e292f",
+    "text": "打雷下大雨，雷聲好可怕：",
+    "raw": "打雷下大雨，雷聲好可怕：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "33d190b22e22",
+    "text": "戴耳機聽喜歡的歌、跟家人在一起",
+    "raw": "戴耳機聽喜歡的歌、跟家人在一起",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "fe225ca3795c",
+    "text": "用聲音和陪伴蓋過害怕。",
+    "raw": "用聲音和陪伴蓋過害怕。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "8bc03a2d43d1",
+    "text": "一直盯著窗外的閃電看",
+    "raw": "一直盯著窗外的閃電看",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "74791af5309c",
+    "text": "盯著看會更怕。拉上窗簾吧。",
+    "raw": "盯著看會更怕。拉上窗簾吧。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "09fe8f353841",
+    "text": "躲在棉被裡尖叫",
+    "raw": "躲在棉被裡尖叫",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "6370b19135c5",
+    "text": "尖叫不會讓雷停。找人陪你。",
+    "raw": "尖叫不會讓雷停。找人陪你。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "f7a30b6e5c52",
+    "text": "假裝聽不到",
+    "raw": "假裝聽不到",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "c41f0522ea9e",
+    "text": "假裝沒用。承認害怕才能處理。",
+    "raw": "假裝沒用。承認害怕才能處理。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "4e27c8cb460d",
+    "text": "看醫生要打針，你超怕：",
+    "raw": "看醫生要打針，你超怕：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "68a6840848f9",
+    "text": "抓緊媽媽的手、用五感法分散注意",
+    "raw": "抓緊媽媽的手、用五感法分散注意",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "25d99d3a03e6",
+    "text": "有人陪+專注其他事=克服害怕的祕訣。",
+    "raw": "有人陪+專注其他事=克服害怕的祕訣。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "59a3918e7edf",
+    "text": "大哭大鬧死不讓打",
+    "raw": "大哭大鬧死不讓打",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "66e9fea0ec1e",
+    "text": "鬧完還是要打。試試深呼吸和媽媽抱。",
+    "raw": "鬧完還是要打。試試深呼吸和媽媽抱。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "9c5dab4fe107",
+    "text": "逃出診所",
+    "raw": "逃出診所",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "4ae718eb1308",
+    "text": "逃了病不會好。請媽媽陪你。",
+    "raw": "逃了病不會好。請媽媽陪你。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "2293e7916345",
+    "text": "假裝沒事但偷偷流淚",
+    "raw": "假裝沒事但偷偷流淚",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "7f6b7ccb823e",
+    "text": "說出害怕沒關係，大家會理解。",
+    "raw": "說出害怕沒關係，大家會理解。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "014a9b1fd3b5",
+    "text": "第一次到新教室，好怕沒朋友：",
+    "raw": "第一次到新教室，好怕沒朋友：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "90730e181c9b",
+    "text": "對旁邊同學微笑說早安",
+    "raw": "對旁邊同學微笑說早安",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "2f24809345f3",
+    "text": "一個微笑就是開始，你比想像中勇敢。",
+    "raw": "一個微笑就是開始，你比想像中勇敢。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "7a1934f22632",
+    "text": "整天低頭不講話",
+    "raw": "整天低頭不講話",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "168d763e980b",
+    "text": "不講話別人不知道你想交朋友。",
+    "raw": "不講話別人不知道你想交朋友。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "9301e5849eb9",
+    "text": "假裝肚子痛回家",
+    "raw": "假裝肚子痛回家",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "70076aa804c8",
+    "text": "今天回了明天還要再來。先試試打招呼。",
+    "raw": "今天回了明天還要再來。先試試打招呼。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "4931c27dd44a",
+    "text": "跟著別人但不出聲",
+    "raw": "跟著別人但不出聲",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "0cf32db03559",
+    "text": "至少打個招呼，會更輕鬆。",
+    "raw": "至少打個招呼，會更輕鬆。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "dcf7cff4b601",
+    "text": "明天要月考，你緊張到睡不著：",
+    "raw": "明天要月考，你緊張到睡不著：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "bc78ecb05e3c",
+    "text": "把擔心寫下來放進擔心盒，然後睡覺",
+    "raw": "把擔心寫下來放進擔心盒，然後睡覺",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "88c85aaab46f",
+    "text": "寫出來腦袋會清空，比較好睡。",
+    "raw": "寫出來腦袋會清空，比較好睡。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "6b86b4d22d4b",
+    "text": "一直滑手機到天亮",
+    "raw": "一直滑手機到天亮",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "882512a8ba24",
+    "text": "滑手機反而更難睡，明天會更慘。",
+    "raw": "滑手機反而更難睡，明天會更慘。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "c13907381203",
+    "text": "一直想，我一定會考爛，",
+    "raw": "一直想「我一定會考爛」",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "11abd9ba7c2a",
+    "text": "想很多次也不會變真。試試寫下來。",
+    "raw": "想很多次也不會變真。試試寫下來。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "8ca6f8c267ef",
+    "text": "起床再讀書到三點",
+    "raw": "起床再讀書到三點",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "95d37a1c85f7",
+    "text": "睡眠不足表現會更差。先休息。",
+    "raw": "睡眠不足表現會更差。先休息。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "13580f17c542",
+    "text": "爸媽吵架，你覺得是不是自己害的：",
+    "raw": "爸媽吵架，你覺得是不是自己害的：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "ae2aecddc920",
+    "text": "找一個信任的大人說：我覺得很不安",
+    "raw": "找一個信任的大人說：我覺得很不安",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "fe695f5bd808",
+    "text": "大人的事不是你的錯，說出來會輕鬆。",
+    "raw": "大人的事不是你的錯，說出來會輕鬆。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "7e841a489c60",
+    "text": "一直自責是我害的",
+    "raw": "一直自責是我害的",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "1fb8204184aa",
+    "text": "爸媽吵架是他們的事，不是你的錯。",
+    "raw": "爸媽吵架是他們的事，不是你的錯。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "a7794cab859b",
+    "text": "躲房間整晚哭",
+    "raw": "躲房間整晚哭",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "97b0467c3045",
+    "text": "哭完會更累，找人說會好點。",
+    "raw": "哭完會更累，找人說會好點。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "ad61a808bdf9",
+    "text": "計畫離家出走",
+    "raw": "計畫離家出走",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "03a5abdc67c0",
+    "text": "離家更危險。問題還是要解決。",
+    "raw": "離家更危險。問題還是要解決。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "a729f04b79a5",
+    "text": "要去新的安親班，緊張到肚子痛：",
+    "raw": "要去新的安親班，緊張到肚子痛：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "3a08f8f17200",
+    "text": "深呼吸+提早一天去看環境",
+    "raw": "深呼吸+提早一天去看環境",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "c536590e64fa",
+    "text": "事先準備，緊張會減一半。",
+    "raw": "事先準備，緊張會減一半。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "9b17e87ac3c8",
+    "text": "假裝生病不去",
+    "raw": "假裝生病不去",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "3ed7189b76ba",
+    "text": "今天逃明天還是要去。先去看看。",
+    "raw": "今天逃明天還是要去。先去看看。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "983a17b17f0e",
+    "text": "路上一直哭",
+    "raw": "路上一直哭",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "c43096857f7e",
+    "text": "新環境試試 5 分鐘再決定。",
+    "raw": "新環境試試 5 分鐘再決定。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "342c3fb7147b",
+    "text": "整夜想最壞的情況",
+    "raw": "整夜想最壞的情況",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "2db7af134e05",
+    "text": "最壞通常不會發生。寫下擔心放下。",
+    "raw": "最壞通常不會發生。寫下擔心放下。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "ed67330115d8",
+    "text": "朋友還沒回 LINE，你開始亂想：",
+    "raw": "朋友還沒回 LINE，你開始亂想：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "7a34e70c7c13",
+    "text": "提醒自己：他可能在忙，等等再說",
+    "raw": "提醒自己：他可能在忙，等等再說",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "ff52aad31a3e",
+    "text": "正確！別人沒回不代表討厭你。",
+    "raw": "正確！別人沒回不代表討厭你。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "cd3a2df62d64",
+    "text": "一直連續傳訊息追問",
+    "raw": "一直連續傳訊息追問",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "e11bb505bd4a",
+    "text": "追問會讓對方壓力大，反而疏遠。",
+    "raw": "追問會讓對方壓力大，反而疏遠。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "330a46e2eeb9",
+    "text": "覺得他一定討厭我",
+    "raw": "覺得他一定討厭我",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "36e6a01aaa40",
+    "text": "腦補不是事實。問問本人。",
+    "raw": "腦補不是事實。問問本人。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "f92cc762b24c",
+    "text": "直接刪除好友",
+    "raw": "直接刪除好友",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "1efe0854d5a8",
+    "text": "衝動決定常後悔。先冷靜。",
+    "raw": "衝動決定常後悔。先冷靜。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "14add55bfd99",
+    "text": "阿公生病你很擔心，無法專心上課：",
+    "raw": "阿公生病你很擔心，無法專心上課：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "d2b1cf208223",
+    "text": "跟老師說：我今天狀態不好",
+    "raw": "跟老師說：我今天狀態不好",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "4918050d95e9",
+    "text": "誠實說，老師會幫你。",
+    "raw": "誠實說，老師會幫你。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "4d5ae98449ed",
+    "text": "整節課發呆什麼都聽不進去",
+    "raw": "整節課發呆什麼都聽不進去",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "4d2ce94039e1",
+    "text": "發呆沒幫助。找老師說。",
+    "raw": "發呆沒幫助。找老師說。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "55416e651c7d",
+    "text": "強迫自己不准想阿公",
+    "raw": "強迫自己不准想阿公",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "472ae65aba3f",
+    "text": "越壓抑越想。允許自己擔心。",
+    "raw": "越壓抑越想。允許自己擔心。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "1c1844abb12f",
+    "text": "假裝沒事但下課偷哭",
+    "raw": "假裝沒事但下課偷哭",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "cd47b0bd0942",
+    "text": "找人說會減輕負擔。",
+    "raw": "找人說會減輕負擔。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "33c3159dfe0d",
+    "text": "同學考 100 分，你考 60 分，你好嫉妒：",
+    "raw": "同學考 100 分，你考 60 分，你好嫉妒：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "11d6cfde49f6",
+    "text": "猜他作弊",
+    "raw": "猜他作弊",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "fb9e4678f9bd",
+    "text": "猜測不是事實，會讓自己更糟。",
+    "raw": "猜測不是事實，會讓自己更糟。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "80fb5c5b2021",
+    "text": "寫下自己這次比上次進步的地方",
+    "raw": "寫下自己這次比上次進步的地方",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "1e775e0410d5",
+    "text": "和自己比較才有意義。你有進步！",
+    "raw": "和自己比較才有意義。你有進步！",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "47fa41aea3a6",
+    "text": "不跟他講話",
+    "raw": "不跟他講話",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "8f595ba19c3b",
+    "text": "不講話傷友誼，問題還在。",
+    "raw": "不講話傷友誼，問題還在。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "1021c1bc2ab4",
+    "text": "把自己的考卷撕掉",
+    "raw": "把自己的考卷撕掉",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "bac6def7acbd",
+    "text": "撕掉也不會變高分。下次再加油。",
+    "raw": "撕掉也不會變高分。下次再加油。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "387ef0563f1c",
+    "text": "弟弟得到新玩具，你沒有：",
+    "raw": "弟弟得到新玩具，你沒有：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "f508987d1a3f",
+    "text": "偷弟弟的玩具來玩",
+    "raw": "偷弟弟的玩具來玩",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "bd1cd260e9a2",
+    "text": "偷東西會被罵，弟弟也會難過。",
+    "raw": "偷東西會被罵，弟弟也會難過。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "c9bea4c8b435",
+    "text": "跟爸媽好好說：我也想要",
+    "raw": "跟爸媽好好說：我也想要",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "058f7fb519eb",
+    "text": "說出來，爸媽才知道你的想法。",
+    "raw": "說出來，爸媽才知道你的想法。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "89a9c7dd8c42",
+    "text": "故意弄壞弟弟的",
+    "raw": "故意弄壞弟弟的",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "6d4b851a5b8c",
+    "text": "弄壞別人東西要賠，得不償失。",
+    "raw": "弄壞別人東西要賠，得不償失。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "eb79c22caea1",
+    "text": "整天臭臉不講話",
+    "raw": "整天臭臉不講話",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "f52994fc68d1",
+    "text": "臭臉沒人懂你的需要。",
+    "raw": "臭臉沒人懂你的需要。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "e0f1d3612a54",
+    "text": "好朋友交了新朋友，冷落你：",
+    "raw": "好朋友交了新朋友，冷落你：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "4bf24eacf602",
+    "text": "跟他說：你最近少陪我，我有點失落",
+    "raw": "跟他說：你最近少陪我，我有點失落",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "344d40ade587",
+    "text": "說出感受才能修復關係。",
+    "raw": "說出感受才能修復關係。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "56cb0a92c45f",
+    "text": "在背後散播他的壞話",
+    "raw": "在背後散播他的壞話",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "f3f6f2663dd1",
+    "text": "說壞話會被傳回去，失去朋友。",
+    "raw": "說壞話會被傳回去，失去朋友。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "29d6e20f4e1c",
+    "text": "也找新朋友來報復他",
+    "raw": "也找新朋友來報復他",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "edcfff4933ff",
+    "text": "報復沒人贏，友情就斷了。",
+    "raw": "報復沒人贏，友情就斷了。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "b9dff25a265f",
+    "text": "假裝不在乎心裡很受傷",
+    "raw": "假裝不在乎心裡很受傷",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "1c11d9dd5d5f",
+    "text": "誠實說比假裝好。",
+    "raw": "誠實說比假裝好。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "02770beb43fc",
+    "text": "看到 IG 朋友出國玩，自己沒得去：",
+    "raw": "看到 IG 朋友出國玩，自己沒得去：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "970d7d83f967",
+    "text": "提醒自己：每個人有不同生活",
+    "raw": "提醒自己：每個人有不同生活",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "1b877fea6da3",
+    "text": "別人的精彩不是你的失敗。",
+    "raw": "別人的精彩不是你的失敗。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "8555f5493562",
+    "text": "留酸言酸語在他貼文下",
+    "raw": "留酸言酸語在他貼文下",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "ea2c3f4c159e",
+    "text": "留言會傷關係，也讓自己更酸。",
+    "raw": "留言會傷關係，也讓自己更酸。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "36141b6cec4d",
+    "text": "把他封鎖看不到",
+    "raw": "把他封鎖看不到",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "57f5721f4938",
+    "text": "封鎖不會讓你開心，問題在心裡。",
+    "raw": "封鎖不會讓你開心，問題在心裡。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "44a50112113a",
+    "text": "一直滑一直難過",
+    "raw": "一直滑一直難過",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "2633bc91ab3d",
+    "text": "放下手機做別的事。",
+    "raw": "放下手機做別的事。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "03b01052a2e7",
+    "text": "同學被老師稱讚，你也很想被稱讚：",
+    "raw": "同學被老師稱讚，你也很想被稱讚：",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.q"
+  },
+  {
+    "hash": "ac03218369ec",
+    "text": "想想自己的優點、找機會表現",
+    "raw": "想想自己的優點、找機會表現",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "cacd6e97e8d8",
+    "text": "每個人有不同強項，你也有！",
+    "raw": "每個人有不同強項，你也有！",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "e8c62dcc3afd",
+    "text": "對那個同學翻白眼",
+    "raw": "對那個同學翻白眼",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "0eb3472ca4a1",
+    "text": "翻白眼傷感情，自己也不快樂。",
+    "raw": "翻白眼傷感情，自己也不快樂。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "c5e7adc3ee9e",
+    "text": "故意搗蛋讓老師注意",
+    "raw": "故意搗蛋讓老師注意",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "7dd1649dc358",
+    "text": "搗蛋被罵不是稱讚。用好行為換稱讚。",
+    "raw": "搗蛋被罵不是稱讚。用好行為換稱讚。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  },
+  {
+    "hash": "cd7463e5917e",
+    "text": "整節課鬧脾氣",
+    "raw": "整節課鬧脾氣",
+    "role": "hero",
+    "origin": "ISLANDS.sprout.option"
+  },
+  {
+    "hash": "9347f897724c",
+    "text": "鬧脾氣只會被罵。",
+    "raw": "鬧脾氣只會被罵。",
+    "role": "narrator",
+    "origin": "ISLANDS.sprout.fb"
+  }
+]

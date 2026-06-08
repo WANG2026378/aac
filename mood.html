@@ -3976,6 +3976,53 @@ if ("speechSynthesis" in window) {
   loadVoices();
   speechSynthesis.onvoiceschanged = loadVoices;
 }
+// Claude 配音雛形：audio/lines.json + mp3。能對到台詞時播真音檔，沒有音檔才退回 Web Speech。
+let voiceAudioManifestPromise = null;
+let voiceAudioByText = null;
+let currentVoiceAudio = null;
+function voiceTextKey(text) {
+  return (text || "").replace(/\s+/g, "").trim();
+}
+function loadVoiceAudioManifest() {
+  if (voiceAudioByText) return Promise.resolve(voiceAudioByText);
+  if (!voiceAudioManifestPromise) {
+    voiceAudioManifestPromise = fetch("audio/lines.json", { cache: "force-cache" })
+      .then(r => r.ok ? r.json() : [])
+      .then(lines => {
+        voiceAudioByText = new Map();
+        lines.forEach(line => {
+          const src = "audio/" + line.hash + ".mp3";
+          [line.text, line.raw, enhanceTtsText(line.raw || "")].forEach(t => {
+            const key = voiceTextKey(t);
+            if (key && !voiceAudioByText.has(key)) voiceAudioByText.set(key, src);
+          });
+        });
+        document.documentElement.dataset.voiceAudioEntries = String(voiceAudioByText.size);
+        return voiceAudioByText;
+      })
+      .catch(() => {
+        voiceAudioByText = new Map();
+        document.documentElement.dataset.voiceAudioEntries = "0";
+        return voiceAudioByText;
+      });
+  }
+  return voiceAudioManifestPromise;
+}
+function stopVoicePlayback() {
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+  if (currentVoiceAudio) {
+    currentVoiceAudio.pause();
+    currentVoiceAudio.onended = null;
+    currentVoiceAudio.onerror = null;
+    currentVoiceAudio = null;
+  }
+}
+window.moodVoiceAudioStatus = async function(sampleText="這時候，橘色的搶搶怪偷偷靠近了！") {
+  await loadVoiceAudioManifest();
+  const enhanced = enhanceTtsText(sampleText);
+  const src = voiceAudioByText.get(voiceTextKey(enhanced)) || voiceAudioByText.get(voiceTextKey(sampleText));
+  return { entries: voiceAudioByText.size, sampleText, src, ready: !!src };
+};
 // 全域語速倍率（0.9=慢 / 1.0=中 / 1.25=快 / 1.5=超快）
 let ttsRateMultiplier = parseFloat(localStorage.getItem("moodTtsRate") || "1.15");
 function setTtsRate(mult) {
@@ -4004,23 +4051,47 @@ function enhanceTtsText(text) {
   t = t.replace(/[（(][^）)]*[）)]/g, '');
   return t.trim();
 }
-function speak(text, rate=1.0, opts={}) {
+function speakWithWebSpeech(text, rate=1.0, opts={}) {
   if (!("speechSynthesis" in window)) return;
+  const enhanced = opts.skipEnhance ? text : enhanceTtsText(text);
+  const u = new SpeechSynthesisUtterance(enhanced);
+  u.lang = "zh-TW";
+  // 輕微隨機化讓配音不機械（±5% 變化）
+  const jitter = opts.jitter !== false ? (1 + (Math.random() - 0.5) * 0.1) : 1;
+  u.rate = Math.max(0.5, Math.min(2.5, rate * ttsRateMultiplier * jitter));
+  u.pitch = opts.pitch != null ? opts.pitch : 1.0;
+  u.volume = opts.volume != null ? opts.volume : 1.0;
+  const voice = cachedVoice || pickTaiwanVoice();
+  if (voice) { u.voice = voice; u.lang = voice.lang; cachedVoice = voice; }
+  if (opts.onend) u.onend = opts.onend;
+  speechSynthesis.speak(u);
+}
+function speak(text, rate=1.0, opts={}) {
   try {
-    speechSynthesis.cancel();
+    stopVoicePlayback();
     const enhanced = opts.skipEnhance ? text : enhanceTtsText(text);
-    const u = new SpeechSynthesisUtterance(enhanced);
-    u.lang = "zh-TW";
-    // 輕微隨機化讓配音不機械（±5% 變化）
-    const jitter = opts.jitter !== false ? (1 + (Math.random() - 0.5) * 0.1) : 1;
-    u.rate = Math.max(0.5, Math.min(2.5, rate * ttsRateMultiplier * jitter));
-    u.pitch = opts.pitch != null ? opts.pitch : 1.0;
-    u.volume = opts.volume != null ? opts.volume : 1.0;
-    const voice = cachedVoice || pickTaiwanVoice();
-    if (voice) { u.voice = voice; u.lang = voice.lang; cachedVoice = voice; }
-    if (opts.onend) u.onend = opts.onend;
     lastSpokenText = text;
-    speechSynthesis.speak(u);
+    if (!voiceAudioByText && !opts.forceTts) {
+      loadVoiceAudioManifest().then(() => speak(text, rate, opts));
+      return;
+    }
+    const audioSrc = voiceAudioByText && !opts.forceTts
+      ? voiceAudioByText.get(voiceTextKey(enhanced)) || voiceAudioByText.get(voiceTextKey(text))
+      : null;
+    if (audioSrc) {
+      const audio = new Audio(audioSrc);
+      currentVoiceAudio = audio;
+      document.documentElement.dataset.voiceAudioMode = "mp3";
+      document.documentElement.dataset.voiceAudioCurrent = audioSrc;
+      audio.playbackRate = Math.max(0.7, Math.min(1.6, rate * ttsRateMultiplier));
+      audio.volume = opts.volume != null ? opts.volume : 1.0;
+      audio.onended = () => { currentVoiceAudio = null; if (opts.onend) opts.onend(); };
+      audio.onerror = () => { currentVoiceAudio = null; document.documentElement.dataset.voiceAudioMode = "tts"; speakWithWebSpeech(text, rate, opts); };
+      audio.play().catch(() => { currentVoiceAudio = null; document.documentElement.dataset.voiceAudioMode = "tts"; speakWithWebSpeech(text, rate, opts); });
+      return;
+    }
+    document.documentElement.dataset.voiceAudioMode = "tts";
+    speakWithWebSpeech(text, rate, opts);
   } catch(e) {}
 }
 
@@ -4039,7 +4110,7 @@ const VOICE_PRESETS = {
 
 // 鏈式對白：依序念多句話，每句念完再下一句
 function speakQueue(items, doneCb) {
-  speechSynthesis.cancel();
+  stopVoicePlayback();
   let i = 0;
   function next() {
     if (i >= items.length) { if (doneCb) doneCb(); return; }
@@ -4057,7 +4128,7 @@ function speakQueue(items, doneCb) {
     }});
   }
   next();
-  return { cancel: () => { i = items.length; speechSynthesis.cancel(); } };
+  return { cancel: () => { i = items.length; stopVoicePlayback(); } };
 }
 function repeatCurrentSpeech() {
   if (lastSpokenText) speak(lastSpokenText);
@@ -4385,7 +4456,7 @@ function renderSprout(sprout, opts={}) {
 
 // ========= NAVIGATION =========
 function showScreen(id) {
-  speechSynthesis.cancel();
+  stopVoicePlayback();
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   document.getElementById("screen-" + id).classList.add("active");
   window.scrollTo(0, 0);
@@ -4467,7 +4538,7 @@ function enterMonster(key) {
 }
 
 function confirmLeaveMonster() {
-  speechSynthesis.cancel();
+  stopVoicePlayback();
   if (_monsterIntroCancel) _monsterIntroCancel.cancel();
   if (confirm("這次的進度不會儲存喔～確定要回小屋嗎？")) {
     showScreen("low-map");
@@ -4508,7 +4579,7 @@ function playMonsterIntroScene() {
 }
 function skipMonsterIntroScene() {
   if (_monsterIntroCancel) _monsterIntroCancel.cancel();
-  speechSynthesis.cancel();
+  stopVoicePlayback();
   document.querySelectorAll("#mscene-area .scene-line-speaking, #mscene-area .scene-line-demon-speaking")
     .forEach(el => el.classList.remove("scene-line-speaking","scene-line-demon-speaking"));
 }
@@ -5588,7 +5659,7 @@ function enterDemon(key) {
 }
 
 function confirmLeaveBattle() {
-  speechSynthesis.cancel();
+  stopVoicePlayback();
   if (_introQueueCancel) _introQueueCancel.cancel();
   stopBattleMusic();
   if (confirm("勇者，戰場中撤退這次戰績不會儲存喔！確定撤退？")) {
@@ -5729,7 +5800,7 @@ function playIntroScene() {
 }
 function skipIntroScene() {
   if (_introQueueCancel) _introQueueCancel.cancel();
-  speechSynthesis.cancel();
+  stopVoicePlayback();
   document.querySelectorAll("#scene-area .scene-line-speaking, #scene-area .scene-line-demon-speaking")
     .forEach(el => el.classList.remove("scene-line-speaking","scene-line-demon-speaking"));
 }
@@ -6041,7 +6112,7 @@ function enterIsland(key) {
 }
 
 function confirmLeaveIsland() {
-  speechSynthesis.cancel();
+  stopVoicePlayback();
   if (confirm("確定要離開這座島嗎？這次的進度不會儲存喔。")) {
     document.body.style.background = "var(--bg-sky)";
     showScreen("map");
@@ -6627,6 +6698,7 @@ window.addEventListener("load", () => {
   if ("speechSynthesis" in window) {
     setTimeout(() => speechSynthesis.getVoices(), 200);
   }
+  loadVoiceAudioManifest();
   // 同步速度按鈕 active 狀態
   document.querySelectorAll(".tts-speed-btn").forEach(b => {
     b.classList.toggle("active", parseFloat(b.dataset.rate) === ttsRateMultiplier);
