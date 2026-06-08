@@ -1341,8 +1341,120 @@
     background: radial-gradient(ellipse at 50% 65%, rgba(0,0,0,0.08), transparent 60%);
     border-radius: 24px;
   }
+
+
+  /* ===== 角色圖優化：讓情緒小屋 6 隻搗蛋怪更清楚、更立體 ===== */
+  .monster-card-svg {
+    width: 128px;
+    height: 136px;
+    margin: 0 auto 8px;
+    border-radius: 22px;
+    background:
+      radial-gradient(ellipse at 50% 72%, rgba(0,0,0,0.16), transparent 48%),
+      radial-gradient(circle at 38% 26%, rgba(255,255,255,0.96), rgba(255,246,250,0.58) 44%, rgba(255,228,236,0.18) 72%, transparent 78%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+  }
+  .monster-card-svg svg, .encounter-svg-wrap svg, .heart-burst svg, .pocket-card svg {
+    overflow: visible;
+    transform-origin: center bottom;
+    filter:
+      drop-shadow(0 7px 8px rgba(0,0,0,0.28))
+      drop-shadow(0 1px 0 rgba(255,255,255,0.85))
+      saturate(1.18)
+      contrast(1.08);
+  }
+  .monster-card:hover .monster-card-svg svg {
+    transform: translateY(-4px) scale(1.1) rotate(-2deg);
+  }
+  .monster-card:not(.tamed) .monster-card-svg svg {
+    animation: monsterIdleFloat 2.4s ease-in-out infinite;
+  }
+  .monster-card.tamed .monster-card-svg {
+    background:
+      radial-gradient(ellipse at 50% 72%, rgba(255,107,157,0.20), transparent 52%),
+      radial-gradient(circle at 42% 28%, rgba(255,255,255,0.98), rgba(255,232,240,0.72) 52%, rgba(255,182,193,0.34) 78%, transparent 82%);
+  }
+  .monster-card.tamed .monster-card-svg svg {
+    filter:
+      drop-shadow(0 7px 8px rgba(0,0,0,0.22))
+      drop-shadow(0 0 14px rgba(255,107,157,0.52))
+      saturate(1.16)
+      contrast(1.06);
+  }
+  .encounter-svg-wrap {
+    background:
+      radial-gradient(ellipse at 50% 72%, rgba(0,0,0,0.12), transparent 55%),
+      linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,240,245,0.45));
+    border-radius: 26px;
+  }
+  @keyframes monsterIdleFloat {
+    0%, 100% { transform: translateY(0) scale(1.02); }
+    50% { transform: translateY(-3px) scale(1.045); }
+  }
+
+  /* Q 版動漫角色：每隻一點不同的小動作，避免角色感太單一 */
+  .monster-card:nth-child(1):not(.tamed) .monster-card-svg svg { animation: animeGrabby 1.65s ease-in-out infinite; }
+  .monster-card:nth-child(2):not(.tamed) .monster-card-svg svg { animation: animeCry 2.2s ease-in-out infinite; }
+  .monster-card:nth-child(3):not(.tamed) .monster-card-svg svg { animation: animePush 1.55s ease-in-out infinite; }
+  .monster-card:nth-child(4):not(.tamed) .monster-card-svg svg { animation: animeSulky 2.4s ease-in-out infinite; }
+  .monster-card:nth-child(5):not(.tamed) .monster-card-svg svg { animation: animeHide 2.8s ease-in-out infinite; }
+  .monster-card:nth-child(6):not(.tamed) .monster-card-svg svg { animation: animeStomp 1.45s ease-in-out infinite; }
+  .monster-card.tamed .monster-card-svg svg { animation: animeTamedGlow 2.8s ease-in-out infinite; }
+  @keyframes animeGrabby {
+    0%, 100% { transform: translateY(0) rotate(0deg) scale(1.02); }
+    35% { transform: translateY(-3px) rotate(-3deg) scale(1.06); }
+    70% { transform: translateY(1px) rotate(3deg) scale(1.03); }
+  }
+  @keyframes animeCry {
+    0%, 100% { transform: translateY(0) scale(1.02); filter: saturate(1.14); }
+    50% { transform: translateY(-5px) scale(1.045); filter: saturate(1.25); }
+  }
+  @keyframes animePush {
+    0%, 100% { transform: translateX(0) scale(1.02); }
+    35% { transform: translateX(-5px) scale(1.04); }
+    70% { transform: translateX(5px) scale(1.04); }
+  }
+  @keyframes animeSulky {
+    0%, 100% { transform: translateY(0) rotate(0deg) scale(1.02); }
+    50% { transform: translateY(-4px) rotate(2deg) scale(1.04); }
+  }
+  @keyframes animeHide {
+    0%, 100% { transform: scale(1.02); opacity: 1; }
+    45% { transform: scale(.96); opacity: .82; }
+    70% { transform: scale(1.04); opacity: 1; }
+  }
+  @keyframes animeStomp {
+    0%, 100% { transform: translateY(0) scale(1.02); }
+    42% { transform: translateY(-7px) scale(1.05); }
+    58% { transform: translateY(3px) scale(1.08, .96); }
+  }
+  @keyframes animeTamedGlow {
+    0%, 100% { transform: translateY(0) scale(1.02); }
+    50% { transform: translateY(-3px) scale(1.055); }
+  }
+
   .monster-card-name { font-size: 19px; font-weight: bold; margin-top: 4px; color: #444; }
   .monster-card-mood { font-size: 13px; color: #888; margin-top: 2px; }
+  .monster-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #fff8e1, #ffe0b2);
+    color: #8d4b00;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: inset 0 0 0 1px rgba(141,75,0,0.12);
+  }
+  .monster-card.tamed .monster-type-badge {
+    background: linear-gradient(135deg, #fff0f5, #ffd6e7);
+    color: #ad1457;
+  }
 
   .encounter-stage {
     background: #fff;
@@ -1507,6 +1619,42 @@
     text-align: center; font-size: 22px; font-weight: bold;
     color: #c2185b; margin-bottom: 12px;
   }
+  .pocket-progress {
+    max-width: 420px;
+    margin: 8px auto 14px;
+    background: rgba(255,255,255,0.75);
+    border: 2px solid rgba(255,107,157,0.35);
+    border-radius: 18px;
+    padding: 10px 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  }
+  .pocket-progress-text {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 14px; color: #ad1457; font-weight: bold;
+    margin-bottom: 6px;
+  }
+  .pocket-progress-bar {
+    height: 12px; border-radius: 999px;
+    background: #f8bbd0;
+    overflow: hidden;
+  }
+  .pocket-progress-fill {
+    height: 100%; width: 0%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #ff6b9d, #ffd54f);
+    transition: width 0.45s ease;
+  }
+  .pocket-complete-badge {
+    text-align: center;
+    margin: 10px auto 0;
+    padding: 8px 12px;
+    border-radius: 16px;
+    max-width: 360px;
+    background: linear-gradient(135deg, #fff8e1, #ffe082);
+    color: #8d4b00;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(255,193,7,0.25);
+  }
   .pocket-grid {
     display: grid; grid-template-columns: repeat(3, 1fr);
     gap: 16px; margin-top: 12px;
@@ -1516,31 +1664,72 @@
   }
   .pocket-slot {
     background: #fff; border-radius: 16px;
-    aspect-ratio: 0.9; display: flex; flex-direction: column;
+    min-height: 168px; display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     border: 3px dashed #ff6b9d;
     position: relative;
     cursor: pointer;
     transition: transform 0.2s;
+    padding: 8px;
+    overflow: hidden;
   }
   .pocket-slot:active { transform: scale(0.95); }
   .pocket-slot.empty {
-    background: repeating-linear-gradient(45deg, #fce4ec, #fce4ec 8px, #f8bbd0 8px, #f8bbd0 16px);
-    opacity: 0.55;
+    background:
+      radial-gradient(circle at 50% 42%, rgba(255,255,255,0.7), transparent 45%),
+      repeating-linear-gradient(45deg, #fce4ec, #fce4ec 8px, #f8bbd0 8px, #f8bbd0 16px);
+    opacity: 0.82;
     cursor: default;
   }
   .pocket-slot.empty::before {
-    content: "?"; position: absolute;
-    top: 50%; left: 50%; transform: translate(-50%, -50%);
-    color: #ad1457; font-size: 40px; font-weight: bold;
+    content: "？"; position: absolute;
+    top: 12px; right: 12px;
+    color: #ad1457; font-size: 28px; font-weight: bold;
+    opacity: 0.7;
   }
   .pocket-slot.collected {
-    border-style: solid; background: linear-gradient(135deg, #fff, #fff0f5);
+    border-style: solid;
+    background:
+      radial-gradient(circle at 50% 35%, rgba(255,213,79,0.25), transparent 48%),
+      linear-gradient(135deg, #fff, #fff0f5);
+    box-shadow: 0 8px 18px rgba(255,107,157,0.18);
   }
-  .pocket-slot svg { width: 70px; height: 80px; }
+  .pocket-slot.collected::after {
+    content: "已收服";
+    position: absolute; top: 8px; right: 8px;
+    background: #ff6b9d; color: #fff;
+    font-size: 11px; font-weight: bold;
+    border-radius: 999px; padding: 3px 7px;
+  }
+  .pocket-slot svg { width: 86px; height: 92px; }
+  .pocket-slot.empty svg {
+    filter: grayscale(1) brightness(0.22) opacity(0.55) drop-shadow(0 4px 5px rgba(0,0,0,0.22));
+  }
+  .pocket-index {
+    position: absolute; top: 8px; left: 8px;
+    background: rgba(255,255,255,0.86);
+    color: #ad1457;
+    border: 1px solid rgba(173,20,87,0.18);
+    border-radius: 999px;
+    font-size: 11px; font-weight: bold;
+    padding: 2px 7px;
+  }
   .pocket-slot-name {
     font-size: 14px; color: #c2185b; font-weight: bold;
     margin-top: 4px;
+  }
+  .pocket-slot-phrase {
+    font-size: 12px;
+    color: #795548;
+    margin-top: 4px;
+    line-height: 1.35;
+    text-align: center;
+  }
+  .pocket-slot-hint {
+    font-size: 12px;
+    color: #ad1457;
+    margin-top: 4px;
+    font-weight: bold;
   }
 
   /* ===== SEED 角色 SVG 包裝 + 各島動畫 ===== */
@@ -1751,6 +1940,43 @@
   .hidden { display: none !important; }
   .center { text-align: center; }
   .mt20 { margin-top: 20px; }
+  /* CG character assets */
+  .monster-cg-img {
+    width: 100%;
+    height: 100%;
+    max-width: 190px;
+    max-height: 190px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    filter: drop-shadow(0 14px 14px rgba(62, 40, 38, .22));
+    transform-origin: 50% 82%;
+    transition: transform .22s ease, filter .22s ease;
+  }
+  .monster-card-svg .monster-cg-img {
+    width: min(82%, 210px);
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+  .encounter-svg-wrap .monster-cg-img,
+  .heart-burst .monster-cg-img {
+    width: min(90%, 280px);
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+  .pocket-card .monster-cg-img {
+    width: 92px;
+    height: 92px;
+  }
+  .monster-card:hover .monster-cg-img { transform: scale(1.06) translateY(-4px); }
+  .monster-card:nth-child(1):not(.tamed) .monster-cg-img { animation: animeGrabby 1.65s ease-in-out infinite; }
+  .monster-card:nth-child(2):not(.tamed) .monster-cg-img { animation: animeCry 2.2s ease-in-out infinite; }
+  .monster-card:nth-child(3):not(.tamed) .monster-cg-img { animation: animePush 1.55s ease-in-out infinite; }
+  .monster-card:nth-child(4):not(.tamed) .monster-cg-img { animation: animeSulky 2.4s ease-in-out infinite; }
+  .monster-card:nth-child(5):not(.tamed) .monster-cg-img { animation: animeHide 2.8s ease-in-out infinite; }
+  .monster-card:nth-child(6):not(.tamed) .monster-cg-img { animation: animeStomp 1.45s ease-in-out infinite; }
+  .monster-card.tamed .monster-cg-img { animation: animeTamedGlow 2.8s ease-in-out infinite; }
+
 </style>
 </head>
 <body>
@@ -1906,7 +2132,8 @@
 
     <div class="pocket-area">
       <div class="pocket-title">🎒 我的口袋夥伴（低年級）🎒</div>
-      <div style="text-align:center; font-size:14px; color:#888; margin-bottom:8px;">點夥伴聽他說話</div>
+      <div id="pocket-progress"></div>
+      <div style="text-align:center; font-size:14px; color:#888; margin-bottom:8px;">收服後會亮起來，點夥伴聽他說話</div>
       <div class="pocket-grid" id="pocket-grid"></div>
     </div>
 
@@ -2654,6 +2881,14 @@ const MONSTERS = {
 };
 
 const MONSTER_ORDER = ["grabby", "cryyy", "pushy", "sulky", "hidey", "stompy"];
+const MONSTER_TYPES = {
+  grabby: { icon: "🦊", name: "狐獸型", trait: "手快、愛搶，需要學會輪流" },
+  cryyy: { icon: "💧", name: "水滴型", trait: "情緒像水滴，需要學會說出想法" },
+  pushy: { icon: "🛡️", name: "甲殼型", trait: "往前衝，需要學會請和等" },
+  sulky: { icon: "🦇", name: "蝙蝠型", trait: "悶在心裡，需要學會求助" },
+  hidey: { icon: "👻", name: "幽靈型", trait: "會躲起來，需要學會打招呼" },
+  stompy: { icon: "🌋", name: "火山獸型", trait: "一下爆發，需要學會等待" }
+};
 
 // ========= 低年級搗蛋怪登場劇情（旁白 ↔ 怪獸對白）=========
 // 低年級用簡單的詞、短句、活潑的旁白
@@ -3646,282 +3881,13 @@ const DEMON_SVG = {
 
 // ========= 怪獸 SVG（純原創）=========
 const MONSTER_SVG = {
-  grabby: {
-    villain: `<svg viewBox="0 0 120 130">
-      <defs><radialGradient id="m-grab-v" cx="40%" cy="35%">
-        <stop offset="0%" stop-color="#ffab91"/><stop offset="100%" stop-color="#d84315"/>
-      </radialGradient></defs>
-      <!-- 身體 -->
-      <ellipse cx="60" cy="75" rx="34" ry="38" fill="url(#m-grab-v)"/>
-      <!-- 左大手 -->
-      <ellipse cx="20" cy="70" rx="14" ry="10" fill="url(#m-grab-v)" transform="rotate(-30 20 70)"/>
-      <circle cx="14" cy="62" r="4" fill="#d84315"/>
-      <circle cx="14" cy="72" r="4" fill="#d84315"/>
-      <circle cx="14" cy="82" r="4" fill="#d84315"/>
-      <!-- 右大手 -->
-      <ellipse cx="100" cy="70" rx="14" ry="10" fill="url(#m-grab-v)" transform="rotate(30 100 70)"/>
-      <circle cx="106" cy="62" r="4" fill="#d84315"/>
-      <circle cx="106" cy="72" r="4" fill="#d84315"/>
-      <circle cx="106" cy="82" r="4" fill="#d84315"/>
-      <!-- 賊賊眉 -->
-      <path d="M44,55 L54,62" stroke="#3e2723" stroke-width="3" stroke-linecap="round"/>
-      <path d="M76,55 L66,62" stroke="#3e2723" stroke-width="3" stroke-linecap="round"/>
-      <!-- 賊眼 -->
-      <circle cx="48" cy="70" r="5" fill="#fff"/>
-      <circle cx="72" cy="70" r="5" fill="#fff"/>
-      <circle cx="50" cy="71" r="3" fill="#000"/>
-      <circle cx="74" cy="71" r="3" fill="#000"/>
-      <!-- 賊賊笑 -->
-      <path d="M46,88 Q60,98 74,88" stroke="#3e2723" stroke-width="3" fill="#fff" stroke-linecap="round"/>
-      <!-- 牙 -->
-      <polygon points="52,90 54,96 56,90" fill="#fff"/>
-      <polygon points="64,90 66,96 68,90" fill="#fff"/>
-    </svg>`,
-    tamed: `<svg viewBox="0 0 120 130">
-      <defs><radialGradient id="m-grab-t" cx="40%" cy="35%">
-        <stop offset="0%" stop-color="#ffe0b2"/><stop offset="100%" stop-color="#ff8a65"/>
-      </radialGradient></defs>
-      <ellipse cx="60" cy="75" rx="34" ry="38" fill="url(#m-grab-t)"/>
-      <!-- 握手手 -->
-      <ellipse cx="22" cy="78" rx="12" ry="9" fill="url(#m-grab-t)" transform="rotate(-15 22 78)"/>
-      <ellipse cx="98" cy="78" rx="12" ry="9" fill="url(#m-grab-t)" transform="rotate(15 98 78)"/>
-      <!-- 親切眉 -->
-      <path d="M44,58 Q49,55 54,58" stroke="#5d4037" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <path d="M76,58 Q71,55 66,58" stroke="#5d4037" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <!-- 笑眼 -->
-      <path d="M44,70 Q49,66 54,70" stroke="#5d4037" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M66,70 Q71,66 76,70" stroke="#5d4037" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <!-- 大笑 -->
-      <path d="M46,86 Q60,98 74,86" stroke="#5d4037" stroke-width="3" fill="#ff8a80" stroke-linecap="round"/>
-      <!-- 腮紅 -->
-      <circle cx="38" cy="80" r="4" fill="#ff6b6b" opacity="0.5"/>
-      <circle cx="82" cy="80" r="4" fill="#ff6b6b" opacity="0.5"/>
-    </svg>`
-  },
-
-  cryyy: {
-    villain: `<svg viewBox="0 0 120 130">
-      <defs><radialGradient id="m-cry-v" cx="40%" cy="30%">
-        <stop offset="0%" stop-color="#bbdefb"/><stop offset="100%" stop-color="#1565c0"/>
-      </radialGradient></defs>
-      <!-- 淚滴身體 -->
-      <path d="M60,15 C30,45 22,90 30,108 C30,122 90,122 90,108 C98,90 90,45 60,15 Z" fill="url(#m-cry-v)"/>
-      <!-- 大哭眉 -->
-      <path d="M40,55 Q48,62 55,55" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M80,55 Q72,62 65,55" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <!-- 緊閉哭眼 -->
-      <path d="M40,72 Q48,80 55,72" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M65,72 Q72,80 80,72" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <!-- 淚珠 -->
-      <ellipse cx="40" cy="88" rx="4" ry="8" fill="#90caf9"/>
-      <ellipse cx="80" cy="88" rx="4" ry="8" fill="#90caf9"/>
-      <ellipse cx="35" cy="105" rx="3" ry="6" fill="#90caf9"/>
-      <ellipse cx="85" cy="105" rx="3" ry="6" fill="#90caf9"/>
-      <!-- 大叫嘴 -->
-      <ellipse cx="60" cy="100" rx="10" ry="14" fill="#1565c0"/>
-      <ellipse cx="60" cy="105" rx="6" ry="8" fill="#ef5350"/>
-    </svg>`,
-    tamed: `<svg viewBox="0 0 120 130">
-      <defs><radialGradient id="m-cry-t" cx="40%" cy="30%">
-        <stop offset="0%" stop-color="#e3f2fd"/><stop offset="100%" stop-color="#64b5f6"/>
-      </radialGradient></defs>
-      <path d="M60,15 C30,45 22,90 30,108 C30,122 90,122 90,108 C98,90 90,45 60,15 Z" fill="url(#m-cry-t)"/>
-      <!-- 上揚眉 -->
-      <path d="M40,58 Q48,55 55,58" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M65,58 Q72,55 80,58" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <!-- 笑眼 -->
-      <path d="M40,75 Q48,70 55,75" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M65,75 Q72,70 80,75" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <!-- 開口笑 -->
-      <path d="M48,92 Q60,108 72,92 Q60,100 48,92 Z" fill="#fff"/>
-      <!-- 對話泡 -->
-      <ellipse cx="98" cy="50" rx="14" ry="10" fill="#fff" stroke="#1565c0" stroke-width="1.5"/>
-      <text x="92" y="54" font-size="14" fill="#1565c0">💬</text>
-      <!-- 腮紅 -->
-      <circle cx="38" cy="84" r="4" fill="#ff8a80" opacity="0.6"/>
-      <circle cx="82" cy="84" r="4" fill="#ff8a80" opacity="0.6"/>
-    </svg>`
-  },
-
-  pushy: {
-    villain: `<svg viewBox="0 0 120 130">
-      <defs><radialGradient id="m-push-v" cx="40%" cy="35%">
-        <stop offset="0%" stop-color="#a5d6a7"/><stop offset="100%" stop-color="#2e7d32"/>
-      </radialGradient></defs>
-      <!-- 矮胖身 -->
-      <ellipse cx="60" cy="80" rx="38" ry="32" fill="url(#m-push-v)"/>
-      <!-- 兩條長臂往前推 -->
-      <rect x="8" y="65" width="30" height="12" rx="6" fill="url(#m-push-v)"/>
-      <rect x="82" y="65" width="30" height="12" rx="6" fill="url(#m-push-v)"/>
-      <circle cx="8" cy="71" r="8" fill="#2e7d32"/>
-      <circle cx="112" cy="71" r="8" fill="#2e7d32"/>
-      <!-- 怒眉 -->
-      <line x1="42" y1="62" x2="54" y2="68" stroke="#1b5e20" stroke-width="3.5" stroke-linecap="round"/>
-      <line x1="78" y1="62" x2="66" y2="68" stroke="#1b5e20" stroke-width="3.5" stroke-linecap="round"/>
-      <!-- 兇眼 -->
-      <circle cx="48" cy="76" r="5" fill="#fff"/>
-      <circle cx="72" cy="76" r="5" fill="#fff"/>
-      <circle cx="50" cy="77" r="3" fill="#000"/>
-      <circle cx="74" cy="77" r="3" fill="#000"/>
-      <!-- 喊叫嘴 -->
-      <ellipse cx="60" cy="94" rx="8" ry="6" fill="#1b5e20"/>
-    </svg>`,
-    tamed: `<svg viewBox="0 0 120 130">
-      <defs><radialGradient id="m-push-t" cx="40%" cy="35%">
-        <stop offset="0%" stop-color="#c8e6c9"/><stop offset="100%" stop-color="#81c784"/>
-      </radialGradient></defs>
-      <ellipse cx="60" cy="80" rx="38" ry="32" fill="url(#m-push-t)"/>
-      <!-- 鞠躬手（合十） -->
-      <ellipse cx="60" cy="105" rx="14" ry="8" fill="url(#m-push-t)"/>
-      <line x1="50" y1="100" x2="60" y2="115" stroke="#33691e" stroke-width="2"/>
-      <line x1="70" y1="100" x2="60" y2="115" stroke="#33691e" stroke-width="2"/>
-      <!-- 親切眉 -->
-      <path d="M44,62 Q49,59 54,62" stroke="#33691e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <path d="M76,62 Q71,59 66,62" stroke="#33691e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <!-- 笑眼 -->
-      <path d="M44,76 Q49,72 54,76" stroke="#33691e" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M66,76 Q71,72 76,76" stroke="#33691e" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <!-- 溫和微笑 -->
-      <path d="M46,90 Q60,98 74,90" stroke="#33691e" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <!-- 腮紅 -->
-      <circle cx="38" cy="84" r="4" fill="#ff8a80" opacity="0.6"/>
-      <circle cx="82" cy="84" r="4" fill="#ff8a80" opacity="0.6"/>
-    </svg>`
-  },
-
-  sulky: {
-    villain: `<svg viewBox="0 0 120 130">
-      <defs><radialGradient id="m-sulk-v" cx="40%" cy="35%">
-        <stop offset="0%" stop-color="#e1bee7"/><stop offset="100%" stop-color="#6a1b9a"/>
-      </radialGradient></defs>
-      <!-- 橢圓身 -->
-      <ellipse cx="60" cy="75" rx="35" ry="42" fill="url(#m-sulk-v)"/>
-      <!-- 嘟嘴眉皺 -->
-      <path d="M40,55 Q46,50 52,55" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M80,55 Q74,50 68,55" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <!-- 翻白眼 -->
-      <circle cx="46" cy="70" r="6" fill="#fff"/>
-      <circle cx="74" cy="70" r="6" fill="#fff"/>
-      <circle cx="46" cy="66" r="3" fill="#4a148c"/>
-      <circle cx="74" cy="66" r="3" fill="#4a148c"/>
-      <!-- 嘟嘴 -->
-      <ellipse cx="60" cy="92" rx="6" ry="8" fill="#4a148c"/>
-      <ellipse cx="60" cy="92" rx="3" ry="5" fill="#ef5350"/>
-      <!-- 烏雲 -->
-      <ellipse cx="30" cy="35" rx="14" ry="8" fill="#9575cd" opacity="0.6"/>
-      <ellipse cx="90" cy="32" rx="12" ry="7" fill="#9575cd" opacity="0.6"/>
-    </svg>`,
-    tamed: `<svg viewBox="0 0 120 130">
-      <defs><radialGradient id="m-sulk-t" cx="40%" cy="35%">
-        <stop offset="0%" stop-color="#f3e5f5"/><stop offset="100%" stop-color="#ba68c8"/>
-      </radialGradient></defs>
-      <ellipse cx="60" cy="75" rx="35" ry="42" fill="url(#m-sulk-t)"/>
-      <!-- 舉手求助 -->
-      <rect x="55" y="20" width="10" height="22" rx="5" fill="url(#m-sulk-t)"/>
-      <circle cx="60" cy="18" r="9" fill="url(#m-sulk-t)"/>
-      <!-- 親切眉 -->
-      <path d="M42,62 Q48,59 54,62" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <path d="M78,62 Q72,59 66,62" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <!-- 笑眼 -->
-      <path d="M44,74 Q49,70 54,74" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M66,74 Q71,70 76,74" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <!-- 微笑 -->
-      <path d="M48,90 Q60,98 72,90" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <!-- 腮紅 -->
-      <circle cx="38" cy="84" r="4" fill="#ff8a80" opacity="0.6"/>
-      <circle cx="82" cy="84" r="4" fill="#ff8a80" opacity="0.6"/>
-      <!-- HELP 字 -->
-      <text x="44" y="20" font-size="13" fill="#fff" font-weight="bold">HELP!</text>
-    </svg>`
-  },
-
-  hidey: {
-    villain: `<svg viewBox="0 0 120 130">
-      <defs><radialGradient id="m-hide-v" cx="40%" cy="35%">
-        <stop offset="0%" stop-color="#e0e0e0"/><stop offset="100%" stop-color="#757575"/>
-      </radialGradient></defs>
-      <!-- 幽靈狀身體（底波浪） -->
-      <path d="M30,40 Q30,15 60,15 Q90,15 90,40 L90,100 Q85,95 80,100 Q75,95 70,100 Q65,95 60,100 Q55,95 50,100 Q45,95 40,100 Q35,95 30,100 Z" fill="url(#m-hide-v)" opacity="0.85"/>
-      <!-- 低頭眼睛閉著 -->
-      <path d="M44,60 L52,60" stroke="#424242" stroke-width="3" stroke-linecap="round"/>
-      <path d="M68,60 L76,60" stroke="#424242" stroke-width="3" stroke-linecap="round"/>
-      <!-- 害羞嘴 -->
-      <ellipse cx="60" cy="78" rx="3" ry="2" fill="#424242"/>
-      <!-- 隱身效果線 -->
-      <line x1="10" y1="50" x2="22" y2="50" stroke="#9e9e9e" stroke-width="2" opacity="0.6"/>
-      <line x1="98" y1="55" x2="110" y2="55" stroke="#9e9e9e" stroke-width="2" opacity="0.6"/>
-    </svg>`,
-    tamed: `<svg viewBox="0 0 120 130">
-      <defs><radialGradient id="m-hide-t" cx="40%" cy="35%">
-        <stop offset="0%" stop-color="#b2dfdb"/><stop offset="100%" stop-color="#26a69a"/>
-      </radialGradient></defs>
-      <path d="M30,40 Q30,15 60,15 Q90,15 90,40 L90,100 Q85,95 80,100 Q75,95 70,100 Q65,95 60,100 Q55,95 50,100 Q45,95 40,100 Q35,95 30,100 Z" fill="url(#m-hide-t)"/>
-      <!-- 揮手 -->
-      <rect x="8" y="40" width="22" height="10" rx="5" fill="url(#m-hide-t)" transform="rotate(-30 19 45)"/>
-      <circle cx="10" cy="32" r="8" fill="url(#m-hide-t)"/>
-      <!-- 上揚眉 -->
-      <path d="M40,52 Q46,49 52,52" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <path d="M76,52 Q70,49 64,52" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <!-- 大眼睛 -->
-      <circle cx="46" cy="65" r="6" fill="#fff"/>
-      <circle cx="70" cy="65" r="6" fill="#fff"/>
-      <circle cx="46" cy="66" r="3" fill="#004d40"/>
-      <circle cx="70" cy="66" r="3" fill="#004d40"/>
-      <!-- 大笑 -->
-      <path d="M46,82 Q58,92 70,82" stroke="#fff" stroke-width="3" fill="#fff" stroke-linecap="round"/>
-      <!-- HI 字 -->
-      <text x="86" y="38" font-size="16" fill="#fff" font-weight="bold">HI!</text>
-    </svg>`
-  },
-
-  stompy: {
-    villain: `<svg viewBox="0 0 120 130">
-      <defs><radialGradient id="m-stomp-v" cx="40%" cy="30%">
-        <stop offset="0%" stop-color="#ffab91"/><stop offset="100%" stop-color="#bf360c"/>
-      </radialGradient></defs>
-      <!-- 蛋形身 -->
-      <ellipse cx="60" cy="60" rx="34" ry="40" fill="url(#m-stomp-v)"/>
-      <!-- 大腳左右 -->
-      <ellipse cx="40" cy="110" rx="18" ry="8" fill="#bf360c"/>
-      <ellipse cx="80" cy="110" rx="18" ry="8" fill="#bf360c"/>
-      <!-- 怒眉 -->
-      <line x1="42" y1="48" x2="54" y2="55" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
-      <line x1="78" y1="48" x2="66" y2="55" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
-      <!-- 火眼 -->
-      <circle cx="48" cy="62" r="5" fill="#ffeb3b"/>
-      <circle cx="72" cy="62" r="5" fill="#ffeb3b"/>
-      <circle cx="48" cy="63" r="3" fill="#000"/>
-      <circle cx="72" cy="63" r="3" fill="#000"/>
-      <!-- 大叫嘴 -->
-      <ellipse cx="60" cy="80" rx="10" ry="8" fill="#5d1a1a"/>
-      <!-- 怒氣 -->
-      <text x="20" y="35" font-size="20" fill="#ff5252">💢</text>
-      <text x="90" y="35" font-size="20" fill="#ff5252">💢</text>
-    </svg>`,
-    tamed: `<svg viewBox="0 0 120 130">
-      <defs><radialGradient id="m-stomp-t" cx="40%" cy="30%">
-        <stop offset="0%" stop-color="#ffe0b2"/><stop offset="100%" stop-color="#ff8a65"/>
-      </radialGradient></defs>
-      <ellipse cx="60" cy="60" rx="34" ry="40" fill="url(#m-stomp-t)"/>
-      <!-- 平靜腳 -->
-      <ellipse cx="45" cy="110" rx="14" ry="6" fill="#bf360c" opacity="0.7"/>
-      <ellipse cx="75" cy="110" rx="14" ry="6" fill="#bf360c" opacity="0.7"/>
-      <!-- 雙手放胸前（沙漏狀） -->
-      <ellipse cx="60" cy="85" rx="14" ry="6" fill="url(#m-stomp-t)" stroke="#bf360c" stroke-width="1.5"/>
-      <!-- 平靜眉 -->
-      <path d="M42,52 Q48,49 54,52" stroke="#5d4037" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <path d="M78,52 Q72,49 66,52" stroke="#5d4037" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <!-- 笑眼 -->
-      <path d="M44,64 Q49,60 54,64" stroke="#5d4037" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M66,64 Q71,60 76,64" stroke="#5d4037" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <!-- 微笑 -->
-      <path d="M48,76 Q60,82 72,76" stroke="#5d4037" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <!-- 沙漏在頭頂 -->
-      <text x="50" y="22" font-size="20">⏳</text>
-    </svg>`
-  }
+  grabby: { villain: "<svg viewBox=\"0 0 160 160\" role=\"img\" aria-label=\"搶搶怪動漫狐獸\">\n  <defs><radialGradient id=\"fbody\" cx=\"35%\" cy=\"25%\"><stop offset=\"0%\" stop-color=\"#ffe2c8\"/><stop offset=\"55%\" stop-color=\"#ff8a50\"/><stop offset=\"100%\" stop-color=\"#c94722\"/></radialGradient><filter id=\"fs\"><feDropShadow dx=\"0\" dy=\"6\" stdDeviation=\"4\" flood-opacity=\".28\"/></filter></defs>\n  <ellipse cx=\"80\" cy=\"145\" rx=\"42\" ry=\"7\" fill=\"#000\" opacity=\".13\"/>\n  <g filter=\"url(#fs)\">\n    <path d=\"M38 88 Q22 82 19 65 Q37 67 49 80\" fill=\"url(#fbody)\" stroke=\"#7a2d1b\" stroke-width=\"2.5\"/>\n    <path d=\"M122 88 Q138 82 141 65 Q123 67 111 80\" fill=\"url(#fbody)\" stroke=\"#7a2d1b\" stroke-width=\"2.5\"/>\n    <path d=\"M43 58 Q49 24 80 20 Q111 24 117 58 Q132 83 116 112 Q101 136 80 136 Q59 136 44 112 Q28 83 43 58Z\" fill=\"url(#fbody)\" stroke=\"#7a2d1b\" stroke-width=\"2.4\"/>\n    <path d=\"M48 56 L31 26 L64 41Z\" fill=\"#ff9f74\" stroke=\"#7a2d1b\" stroke-width=\"2.5\"/><path d=\"M112 56 L129 26 L96 41Z\" fill=\"#ff9f74\" stroke=\"#7a2d1b\" stroke-width=\"2.5\"/>\n    <path d=\"M59 42 Q80 25 102 42 Q91 51 80 52 Q69 51 59 42Z\" fill=\"#7a2d1b\" opacity=\".9\"/>\n    <ellipse cx=\"66\" cy=\"83\" rx=\"10\" ry=\"13\" fill=\"#fff\"/><ellipse cx=\"94\" cy=\"83\" rx=\"10\" ry=\"13\" fill=\"#fff\"/>\n    <circle cx=\"69\" cy=\"86\" r=\"5.5\" fill=\"#2b1710\"/><circle cx=\"91\" cy=\"86\" r=\"5.5\" fill=\"#2b1710\"/><circle cx=\"71\" cy=\"80\" r=\"2\" fill=\"#fff\"/><circle cx=\"93\" cy=\"80\" r=\"2\" fill=\"#fff\"/>\n    <path d=\"M55 69 L69 76 M105 69 L91 76\" stroke=\"#32160e\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M62 106 Q80 118 98 106\" fill=\"#fff\" stroke=\"#32160e\" stroke-width=\"3.2\"/>\n    <path d=\"M54 48 Q72 35 96 40\" stroke=\"#fff4df\" stroke-width=\"4\" opacity=\".48\" fill=\"none\" stroke-linecap=\"round\"/>\n    <path d=\"M44 113 Q28 130 18 116 Q32 111 45 101\" fill=\"#c94722\" opacity=\".9\"/>\n  </g>\n</svg>", tamed: "<svg viewBox=\"0 0 160 160\" role=\"img\" aria-label=\"分分小精靈動漫狐獸\">\n  <defs><radialGradient id=\"fbody\" cx=\"35%\" cy=\"25%\"><stop offset=\"0%\" stop-color=\"#fff0d8\"/><stop offset=\"55%\" stop-color=\"#ffb184\"/><stop offset=\"100%\" stop-color=\"#f47c50\"/></radialGradient><filter id=\"fs\"><feDropShadow dx=\"0\" dy=\"6\" stdDeviation=\"4\" flood-opacity=\".28\"/></filter></defs>\n  <ellipse cx=\"80\" cy=\"145\" rx=\"42\" ry=\"7\" fill=\"#000\" opacity=\".13\"/>\n  <g filter=\"url(#fs)\">\n    <path d=\"M38 88 Q22 82 19 65 Q37 67 49 80\" fill=\"url(#fbody)\" stroke=\"#7a2d1b\" stroke-width=\"2.5\"/>\n    <path d=\"M122 88 Q138 82 141 65 Q123 67 111 80\" fill=\"url(#fbody)\" stroke=\"#7a2d1b\" stroke-width=\"2.5\"/>\n    <path d=\"M43 58 Q49 24 80 20 Q111 24 117 58 Q132 83 116 112 Q101 136 80 136 Q59 136 44 112 Q28 83 43 58Z\" fill=\"url(#fbody)\" stroke=\"#7a2d1b\" stroke-width=\"2.4\"/>\n    <path d=\"M48 56 L31 26 L64 41Z\" fill=\"#ff9f74\" stroke=\"#7a2d1b\" stroke-width=\"2.5\"/><path d=\"M112 56 L129 26 L96 41Z\" fill=\"#ff9f74\" stroke=\"#7a2d1b\" stroke-width=\"2.5\"/>\n    <path d=\"M59 42 Q80 25 102 42 Q91 51 80 52 Q69 51 59 42Z\" fill=\"#7a2d1b\" opacity=\".9\"/>\n    <ellipse cx=\"66\" cy=\"83\" rx=\"10\" ry=\"13\" fill=\"#fff\"/><ellipse cx=\"94\" cy=\"83\" rx=\"10\" ry=\"13\" fill=\"#fff\"/>\n    <circle cx=\"69\" cy=\"86\" r=\"5.5\" fill=\"#2b1710\"/><circle cx=\"91\" cy=\"86\" r=\"5.5\" fill=\"#2b1710\"/><circle cx=\"71\" cy=\"80\" r=\"2\" fill=\"#fff\"/><circle cx=\"93\" cy=\"80\" r=\"2\" fill=\"#fff\"/>\n    <path d=\"M62 104 Q80 119 98 104\" stroke=\"#5d4037\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"58\" cy=\"97\" r=\"5\" fill=\"#ff88a7\" opacity=\".45\"/><circle cx=\"102\" cy=\"97\" r=\"5\" fill=\"#ff88a7\" opacity=\".45\"/><circle cx=\"80\" cy=\"116\" r=\"9\" fill=\"#ffd54f\" stroke=\"#bf7b00\" stroke-width=\"1.5\"/><text x=\"80\" y=\"120\" font-size=\"10\" text-anchor=\"middle\" fill=\"#8a4b00\" font-weight=\"bold\">分</text>\n    <path d=\"M54 48 Q72 35 96 40\" stroke=\"#fff4df\" stroke-width=\"4\" opacity=\".48\" fill=\"none\" stroke-linecap=\"round\"/>\n    <path d=\"M44 113 Q28 130 18 116 Q32 111 45 101\" fill=\"#c94722\" opacity=\".9\"/>\n  </g>\n</svg>" },
+  cryyy: { villain: "<svg viewBox=\"0 0 160 160\" role=\"img\" aria-label=\"哭哭怪動漫水滴\">\n  <defs><radialGradient id=\"wbody\" cx=\"34%\" cy=\"18%\"><stop offset=\"0%\" stop-color=\"#ffffff\"/><stop offset=\"55%\" stop-color=\"#72d7ff\"/><stop offset=\"100%\" stop-color=\"#1976d2\"/></radialGradient><filter id=\"ws\"><feDropShadow dx=\"0\" dy=\"6\" stdDeviation=\"4\" flood-opacity=\".25\"/></filter></defs>\n  <ellipse cx=\"80\" cy=\"145\" rx=\"38\" ry=\"7\" fill=\"#000\" opacity=\".12\"/>\n  <g filter=\"url(#ws)\">\n    <path d=\"M80 14 C46 45 33 78 37 108 C42 139 118 139 123 108 C127 78 114 45 80 14Z\" fill=\"url(#wbody)\" stroke=\"#1565c0\" stroke-width=\"2.2\"/>\n    <path d=\"M46 99 Q32 103 28 119\" stroke=\"#77d8ff\" stroke-width=\"10\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M114 99 Q128 103 132 119\" stroke=\"#77d8ff\" stroke-width=\"10\" fill=\"none\" stroke-linecap=\"round\"/>\n    <path d=\"M54 73 Q65 84 76 73 M84 73 Q95 84 106 73\" stroke=\"#fff\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/><ellipse cx=\"59\" cy=\"98\" rx=\"5\" ry=\"13\" fill=\"#d8f4ff\"/><ellipse cx=\"101\" cy=\"98\" rx=\"5\" ry=\"13\" fill=\"#d8f4ff\"/><path d=\"M67 111 Q80 100 93 111 Q80 124 67 111Z\" fill=\"#0d47a1\"/><circle cx=\"117\" cy=\"49\" r=\"14\" fill=\"#fff\"/><circle cx=\"111\" cy=\"49\" r=\"2.5\" fill=\"#64b5f6\"/><circle cx=\"118\" cy=\"49\" r=\"2.5\" fill=\"#64b5f6\"/><circle cx=\"125\" cy=\"49\" r=\"2.5\" fill=\"#64b5f6\"/>\n    <path d=\"M49 45 Q64 31 80 36 Q96 31 111 45\" stroke=\"#e1f5fe\" stroke-width=\"5\" fill=\"none\" stroke-linecap=\"round\"/>\n  </g>\n</svg>", tamed: "<svg viewBox=\"0 0 160 160\" role=\"img\" aria-label=\"說說小精靈動漫水滴\">\n  <defs><radialGradient id=\"wbody\" cx=\"34%\" cy=\"18%\"><stop offset=\"0%\" stop-color=\"#ffffff\"/><stop offset=\"55%\" stop-color=\"#a8e7ff\"/><stop offset=\"100%\" stop-color=\"#42a5f5\"/></radialGradient><filter id=\"ws\"><feDropShadow dx=\"0\" dy=\"6\" stdDeviation=\"4\" flood-opacity=\".25\"/></filter></defs>\n  <ellipse cx=\"80\" cy=\"145\" rx=\"38\" ry=\"7\" fill=\"#000\" opacity=\".12\"/>\n  <g filter=\"url(#ws)\">\n    <path d=\"M80 14 C46 45 33 78 37 108 C42 139 118 139 123 108 C127 78 114 45 80 14Z\" fill=\"url(#wbody)\" stroke=\"#1565c0\" stroke-width=\"2.2\"/>\n    <path d=\"M46 99 Q32 103 28 119\" stroke=\"#77d8ff\" stroke-width=\"10\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M114 99 Q128 103 132 119\" stroke=\"#77d8ff\" stroke-width=\"10\" fill=\"none\" stroke-linecap=\"round\"/>\n    <path d=\"M61 88 Q70 82 78 88 M82 88 Q90 82 99 88\" stroke=\"#fff\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M61 108 Q80 121 99 108\" stroke=\"#fff\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"117\" cy=\"49\" r=\"14\" fill=\"#fff\"/><path d=\"M109 49 Q116 57 127 43\" stroke=\"#42a5f5\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"80\" cy=\"118\" r=\"9\" fill=\"#fff\" opacity=\".78\"/><text x=\"80\" y=\"122\" font-size=\"10\" text-anchor=\"middle\" fill=\"#1976d2\" font-weight=\"bold\">說</text>\n    <path d=\"M49 45 Q64 31 80 36 Q96 31 111 45\" stroke=\"#e1f5fe\" stroke-width=\"5\" fill=\"none\" stroke-linecap=\"round\"/>\n  </g>\n</svg>" },
+  pushy: { villain: "<svg viewBox=\"0 0 160 160\" role=\"img\" aria-label=\"推推怪動漫甲殼獸\">\n  <defs><radialGradient id=\"pbody\" cx=\"35%\" cy=\"25%\"><stop offset=\"0%\" stop-color=\"#eaffea\"/><stop offset=\"55%\" stop-color=\"#67c96f\"/><stop offset=\"100%\" stop-color=\"#1b5e20\"/></radialGradient><filter id=\"ps\"><feDropShadow dx=\"0\" dy=\"6\" stdDeviation=\"4\" flood-opacity=\".27\"/></filter></defs>\n  <ellipse cx=\"80\" cy=\"145\" rx=\"44\" ry=\"7\" fill=\"#000\" opacity=\".13\"/>\n  <g filter=\"url(#ps)\">\n    <path d=\"M34 86 Q38 43 80 39 Q122 43 126 86 Q123 126 80 138 Q37 126 34 86Z\" fill=\"url(#pbody)\" stroke=\"#1b5e20\" stroke-width=\"2.4\"/>\n    <path d=\"M49 53 L38 32 L63 45Z M111 53 L122 32 L97 45Z\" fill=\"#a5d6a7\" stroke=\"#1b5e20\" stroke-width=\"2\"/>\n    <path d=\"M39 63 H121\" stroke=\"#1b5e20\" stroke-width=\"15\" stroke-linecap=\"round\" opacity=\".9\"/>\n    <path d=\"M31 92 H14 M129 92 H146\" stroke=\"#e8f5e9\" stroke-width=\"11\" stroke-linecap=\"round\"/>\n    <path d=\"M55 75 L69 82 M105 75 L91 82\" stroke=\"#102a13\" stroke-width=\"4\" stroke-linecap=\"round\"/><ellipse cx=\"66\" cy=\"94\" rx=\"9\" ry=\"11\" fill=\"#fff\"/><ellipse cx=\"94\" cy=\"94\" rx=\"9\" ry=\"11\" fill=\"#fff\"/><circle cx=\"69\" cy=\"96\" r=\"5\" fill=\"#102a13\"/><circle cx=\"91\" cy=\"96\" r=\"5\" fill=\"#102a13\"/><ellipse cx=\"80\" cy=\"116\" rx=\"8\" ry=\"7\" fill=\"#12431b\"/>\n    <path d=\"M52 54 Q72 43 98 50\" stroke=\"#e8f5e9\" stroke-width=\"4\" opacity=\".48\" fill=\"none\" stroke-linecap=\"round\"/>\n  </g>\n</svg>", tamed: "<svg viewBox=\"0 0 160 160\" role=\"img\" aria-label=\"請請小精靈動漫甲殼獸\">\n  <defs><radialGradient id=\"pbody\" cx=\"35%\" cy=\"25%\"><stop offset=\"0%\" stop-color=\"#eaffea\"/><stop offset=\"55%\" stop-color=\"#8bde91\"/><stop offset=\"100%\" stop-color=\"#43a047\"/></radialGradient><filter id=\"ps\"><feDropShadow dx=\"0\" dy=\"6\" stdDeviation=\"4\" flood-opacity=\".27\"/></filter></defs>\n  <ellipse cx=\"80\" cy=\"145\" rx=\"44\" ry=\"7\" fill=\"#000\" opacity=\".13\"/>\n  <g filter=\"url(#ps)\">\n    <path d=\"M34 86 Q38 43 80 39 Q122 43 126 86 Q123 126 80 138 Q37 126 34 86Z\" fill=\"url(#pbody)\" stroke=\"#1b5e20\" stroke-width=\"2.4\"/>\n    <path d=\"M49 53 L38 32 L63 45Z M111 53 L122 32 L97 45Z\" fill=\"#a5d6a7\" stroke=\"#1b5e20\" stroke-width=\"2\"/>\n    <path d=\"M39 63 H121\" stroke=\"#1b5e20\" stroke-width=\"15\" stroke-linecap=\"round\" opacity=\".9\"/>\n    <path d=\"M31 92 H14 M129 92 H146\" stroke=\"#e8f5e9\" stroke-width=\"11\" stroke-linecap=\"round\"/>\n    <path d=\"M61 92 Q70 86 79 92 M81 92 Q90 86 99 92\" stroke=\"#1b5e20\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M62 111 Q80 124 98 111\" stroke=\"#1b5e20\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"80\" cy=\"119\" r=\"9\" fill=\"#fff59d\" stroke=\"#558b2f\" stroke-width=\"1.5\"/><text x=\"80\" y=\"123\" font-size=\"10\" text-anchor=\"middle\" fill=\"#33691e\" font-weight=\"bold\">請</text>\n    <path d=\"M52 54 Q72 43 98 50\" stroke=\"#e8f5e9\" stroke-width=\"4\" opacity=\".48\" fill=\"none\" stroke-linecap=\"round\"/>\n  </g>\n</svg>" },
+  sulky: { villain: "<svg viewBox=\"0 0 160 160\" role=\"img\" aria-label=\"嗚嗚怪動漫蝙蝠獸\">\n  <defs><radialGradient id=\"bbody\" cx=\"35%\" cy=\"22%\"><stop offset=\"0%\" stop-color=\"#f2e5ff\"/><stop offset=\"56%\" stop-color=\"#9c6be8\"/><stop offset=\"100%\" stop-color=\"#4a148c\"/></radialGradient><filter id=\"bs\"><feDropShadow dx=\"0\" dy=\"6\" stdDeviation=\"4\" flood-opacity=\".28\"/></filter></defs>\n  <ellipse cx=\"80\" cy=\"145\" rx=\"39\" ry=\"7\" fill=\"#000\" opacity=\".12\"/>\n  <g filter=\"url(#bs)\">\n    <path d=\"M46 84 Q25 67 18 96 Q38 87 53 99\" fill=\"#7e57c2\" opacity=\".88\"/><path d=\"M114 84 Q135 67 142 96 Q122 87 107 99\" fill=\"#7e57c2\" opacity=\".88\"/>\n    <path d=\"M40 72 Q45 32 80 29 Q115 32 120 72 Q124 108 100 130 Q89 139 80 139 Q71 139 60 130 Q36 108 40 72Z\" fill=\"url(#bbody)\" stroke=\"#4a148c\" stroke-width=\"2.3\"/>\n    <ellipse cx=\"47\" cy=\"38\" rx=\"15\" ry=\"11\" fill=\"#6a4aa6\"/><ellipse cx=\"113\" cy=\"38\" rx=\"15\" ry=\"11\" fill=\"#6a4aa6\"/><circle cx=\"47\" cy=\"38\" r=\"6\" fill=\"#d1b3ff\"/><circle cx=\"113\" cy=\"38\" r=\"6\" fill=\"#d1b3ff\"/>\n    <ellipse cx=\"68\" cy=\"87\" rx=\"9\" ry=\"11\" fill=\"#fff\"/><ellipse cx=\"92\" cy=\"87\" rx=\"9\" ry=\"11\" fill=\"#fff\"/><circle cx=\"68\" cy=\"89\" r=\"5\" fill=\"#311b92\"/><circle cx=\"92\" cy=\"89\" r=\"5\" fill=\"#311b92\"/><ellipse cx=\"80\" cy=\"111\" rx=\"8\" ry=\"12\" fill=\"#ff8a65\" stroke=\"#512da8\" stroke-width=\"3\"/>\n    <path d=\"M55 53 Q72 40 98 47\" stroke=\"#ede7f6\" stroke-width=\"4\" opacity=\".45\" fill=\"none\" stroke-linecap=\"round\"/>\n  </g>\n</svg>", tamed: "<svg viewBox=\"0 0 160 160\" role=\"img\" aria-label=\"嗚嗚小精靈動漫蝙蝠獸\">\n  <defs><radialGradient id=\"bbody\" cx=\"35%\" cy=\"22%\"><stop offset=\"0%\" stop-color=\"#f2e5ff\"/><stop offset=\"56%\" stop-color=\"#b68cff\"/><stop offset=\"100%\" stop-color=\"#6a1b9a\"/></radialGradient><filter id=\"bs\"><feDropShadow dx=\"0\" dy=\"6\" stdDeviation=\"4\" flood-opacity=\".28\"/></filter></defs>\n  <ellipse cx=\"80\" cy=\"145\" rx=\"39\" ry=\"7\" fill=\"#000\" opacity=\".12\"/>\n  <g filter=\"url(#bs)\">\n    <path d=\"M46 84 Q25 67 18 96 Q38 87 53 99\" fill=\"#7e57c2\" opacity=\".88\"/><path d=\"M114 84 Q135 67 142 96 Q122 87 107 99\" fill=\"#7e57c2\" opacity=\".88\"/>\n    <path d=\"M40 72 Q45 32 80 29 Q115 32 120 72 Q124 108 100 130 Q89 139 80 139 Q71 139 60 130 Q36 108 40 72Z\" fill=\"url(#bbody)\" stroke=\"#4a148c\" stroke-width=\"2.3\"/>\n    <ellipse cx=\"47\" cy=\"38\" rx=\"15\" ry=\"11\" fill=\"#6a4aa6\"/><ellipse cx=\"113\" cy=\"38\" rx=\"15\" ry=\"11\" fill=\"#6a4aa6\"/><circle cx=\"47\" cy=\"38\" r=\"6\" fill=\"#d1b3ff\"/><circle cx=\"113\" cy=\"38\" r=\"6\" fill=\"#d1b3ff\"/>\n    <path d=\"M62 91 Q71 85 79 91 M81 91 Q89 85 98 91\" stroke=\"#fff\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M62 111 Q80 124 98 111\" stroke=\"#fff\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/>\n    <path d=\"M55 53 Q72 40 98 47\" stroke=\"#ede7f6\" stroke-width=\"4\" opacity=\".45\" fill=\"none\" stroke-linecap=\"round\"/>\n  </g>\n</svg>" },
+  hidey: { villain: "<svg viewBox=\"0 0 160 160\" role=\"img\" aria-label=\"躲躲怪動漫幽靈\">\n  <defs><radialGradient id=\"gbody\" cx=\"38%\" cy=\"22%\"><stop offset=\"0%\" stop-color=\"#fff\"/><stop offset=\"55%\" stop-color=\"#b0bec5\"/><stop offset=\"100%\" stop-color=\"#455a64\"/></radialGradient><filter id=\"gs\"><feDropShadow dx=\"0\" dy=\"6\" stdDeviation=\"4\" flood-opacity=\".25\"/></filter></defs>\n  <ellipse cx=\"80\" cy=\"145\" rx=\"38\" ry=\"7\" fill=\"#000\" opacity=\".12\"/>\n  <g filter=\"url(#gs)\">\n    <path d=\"M39 132 L39 67 Q45 31 80 31 Q115 31 121 67 L121 132 Q110 125 101 132 Q92 125 83 132 Q74 125 65 132 Q56 125 47 132 Q43 127 39 132Z\" fill=\"url(#gbody)\" stroke=\"#455a64\" stroke-width=\"2\"/>\n    <path d=\"M52 49 Q80 27 108 49\" stroke=\"#fff\" stroke-width=\"5\" opacity=\".85\" fill=\"none\" stroke-linecap=\"round\"/>\n    <path d=\"M54 84 H70 M90 84 H106\" stroke=\"#37474f\" stroke-width=\"4\" stroke-linecap=\"round\"/><ellipse cx=\"80\" cy=\"104\" rx=\"5\" ry=\"4\" fill=\"#37474f\"/><path d=\"M32 86 H18 M128 86 H142\" stroke=\"#78909c\" stroke-width=\"4\" opacity=\".7\" stroke-linecap=\"round\"/>\n  </g>\n</svg>", tamed: "<svg viewBox=\"0 0 160 160\" role=\"img\" aria-label=\"躲躲小精靈動漫幽靈\">\n  <defs><radialGradient id=\"gbody\" cx=\"38%\" cy=\"22%\"><stop offset=\"0%\" stop-color=\"#fff\"/><stop offset=\"55%\" stop-color=\"#dce5ea\"/><stop offset=\"100%\" stop-color=\"#90a4ae\"/></radialGradient><filter id=\"gs\"><feDropShadow dx=\"0\" dy=\"6\" stdDeviation=\"4\" flood-opacity=\".25\"/></filter></defs>\n  <ellipse cx=\"80\" cy=\"145\" rx=\"38\" ry=\"7\" fill=\"#000\" opacity=\".12\"/>\n  <g filter=\"url(#gs)\">\n    <path d=\"M39 132 L39 67 Q45 31 80 31 Q115 31 121 67 L121 132 Q110 125 101 132 Q92 125 83 132 Q74 125 65 132 Q56 125 47 132 Q43 127 39 132Z\" fill=\"url(#gbody)\" stroke=\"#455a64\" stroke-width=\"2\"/>\n    <path d=\"M52 49 Q80 27 108 49\" stroke=\"#fff\" stroke-width=\"5\" opacity=\".85\" fill=\"none\" stroke-linecap=\"round\"/>\n    <path d=\"M61 91 Q70 85 79 91 M81 91 Q90 85 99 91\" stroke=\"#455a64\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M62 111 Q80 124 98 111\" stroke=\"#455a64\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/>\n  </g>\n</svg>" },
+  stompy: { villain: "<svg viewBox=\"0 0 160 160\" role=\"img\" aria-label=\"跺跺怪動漫火山獸\">\n  <defs><radialGradient id=\"lbody\" cx=\"35%\" cy=\"24%\"><stop offset=\"0%\" stop-color=\"#ffe8dc\"/><stop offset=\"55%\" stop-color=\"#e85d3c\"/><stop offset=\"100%\" stop-color=\"#8e2f16\"/></radialGradient><filter id=\"ls\"><feDropShadow dx=\"0\" dy=\"6\" stdDeviation=\"4\" flood-opacity=\".28\"/></filter></defs>\n  <ellipse cx=\"80\" cy=\"145\" rx=\"42\" ry=\"7\" fill=\"#000\" opacity=\".14\"/>\n  <g filter=\"url(#ls)\">\n    <path d=\"M41 68 Q45 28 80 25 Q115 28 119 68 Q124 110 99 130 Q89 139 80 139 Q71 139 61 130 Q36 110 41 68Z\" fill=\"url(#lbody)\" stroke=\"#8e2f16\" stroke-width=\"2.4\"/>\n    <path d=\"M53 49 L39 27 L66 41Z M107 49 L121 27 L94 41Z\" fill=\"#ffb199\" stroke=\"#8e2f16\" stroke-width=\"2\"/>\n    <path d=\"M39 43 L26 29 M55 36 L53 18 M121 43 L134 29\" stroke=\"#c62828\" stroke-width=\"5\" stroke-linecap=\"round\"/>\n    <path d=\"M55 73 L69 81 M105 73 L91 81\" stroke=\"#3a1c12\" stroke-width=\"4\" stroke-linecap=\"round\"/><ellipse cx=\"67\" cy=\"94\" rx=\"9\" ry=\"11\" fill=\"#fff59d\"/><ellipse cx=\"93\" cy=\"94\" rx=\"9\" ry=\"11\" fill=\"#fff59d\"/><circle cx=\"70\" cy=\"96\" r=\"5\" fill=\"#111\"/><circle cx=\"90\" cy=\"96\" r=\"5\" fill=\"#111\"/><ellipse cx=\"80\" cy=\"116\" rx=\"10\" ry=\"13\" fill=\"#5d1b12\"/>\n    <ellipse cx=\"59\" cy=\"136\" rx=\"16\" ry=\"8\" fill=\"#7f1d12\"/><ellipse cx=\"101\" cy=\"136\" rx=\"16\" ry=\"8\" fill=\"#7f1d12\"/>\n    <path d=\"M55 50 Q74 36 100 44\" stroke=\"#ffcc80\" stroke-width=\"4\" opacity=\".48\" fill=\"none\" stroke-linecap=\"round\"/>\n  </g>\n</svg>", tamed: "<svg viewBox=\"0 0 160 160\" role=\"img\" aria-label=\"等等小精靈動漫火山獸\">\n  <defs><radialGradient id=\"lbody\" cx=\"35%\" cy=\"24%\"><stop offset=\"0%\" stop-color=\"#ffe8dc\"/><stop offset=\"55%\" stop-color=\"#ff9a76\"/><stop offset=\"100%\" stop-color=\"#d65a31\"/></radialGradient><filter id=\"ls\"><feDropShadow dx=\"0\" dy=\"6\" stdDeviation=\"4\" flood-opacity=\".28\"/></filter></defs>\n  <ellipse cx=\"80\" cy=\"145\" rx=\"42\" ry=\"7\" fill=\"#000\" opacity=\".14\"/>\n  <g filter=\"url(#ls)\">\n    <path d=\"M41 68 Q45 28 80 25 Q115 28 119 68 Q124 110 99 130 Q89 139 80 139 Q71 139 61 130 Q36 110 41 68Z\" fill=\"url(#lbody)\" stroke=\"#8e2f16\" stroke-width=\"2.4\"/>\n    <path d=\"M53 49 L39 27 L66 41Z M107 49 L121 27 L94 41Z\" fill=\"#ffb199\" stroke=\"#8e2f16\" stroke-width=\"2\"/>\n    \n    <path d=\"M62 92 Q71 86 79 92 M81 92 Q89 86 98 92\" stroke=\"#5d2c28\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M62 111 Q80 124 98 111\" stroke=\"#5d2c28\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"80\" cy=\"119\" r=\"9\" fill=\"#fff59d\" stroke=\"#bf4b2b\" stroke-width=\"1.5\"/><text x=\"80\" y=\"123\" font-size=\"10\" text-anchor=\"middle\" fill=\"#8e2f16\" font-weight=\"bold\">等</text>\n    <ellipse cx=\"59\" cy=\"136\" rx=\"16\" ry=\"8\" fill=\"#7f1d12\"/><ellipse cx=\"101\" cy=\"136\" rx=\"16\" ry=\"8\" fill=\"#7f1d12\"/>\n    <path d=\"M55 50 Q74 36 100 44\" stroke=\"#ffcc80\" stroke-width=\"4\" opacity=\".48\" fill=\"none\" stroke-linecap=\"round\"/>\n  </g>\n</svg>" }
 };
-
 // ========= STATE =========
 let state = loadState();
 let currentIsland = null;
@@ -4136,7 +4102,20 @@ function zhuyinOff(text) { return text; }
 
 // SVG 漸層/濾鏡 id 自動唯一化（避免多 SVG 共用 id 在 display:none 子樹失效）
 // 簡寫 helper：mSvg('grabby','villain') / dSvg('solo') / pSvg() / pmSvg() / cSvg('volcano','seed')
-function mSvg(key, form) { return uniqifySvgIds(MONSTER_SVG[key][form]); }
+const MONSTER_CG = {
+  grabby: { src: "/assets/monsters-cg/grabby-cg.png", alt: "搶搶怪動畫CG狐獸" },
+  cryyy: { src: "/assets/monsters-cg/cryyy-cg.png", alt: "哭哭怪動畫CG水滴獸" },
+  pushy: { src: "/assets/monsters-cg/pushy-cg.png", alt: "推推怪動畫CG甲殼獸" },
+  sulky: { src: "/assets/monsters-cg/sulky-cg.png", alt: "嗚嗚怪動畫CG蝙蝠獸" },
+  hidey: { src: "/assets/monsters-cg/hidey-cg.png", alt: "躲躲怪動畫CG幽靈獸" },
+  stompy: { src: "/assets/monsters-cg/stompy-cg.png", alt: "跺跺怪動畫CG火山獸" }
+};
+function mSvg(key, form) {
+  const cg = MONSTER_CG[key];
+  if (!cg) return uniqifySvgIds(MONSTER_SVG[key][form]);
+  const tamedClass = form === "tamed" ? " is-tamed" : "";
+  return "<img class=\"monster-cg-img" + tamedClass + "\" src=\"" + cg.src + "\" alt=\"" + cg.alt + "\" loading=\"lazy\" decoding=\"async\">";
+}
 function dSvg(key) { return uniqifySvgIds(DEMON_SVG[key]); }
 function pSvg() { return uniqifySvgIds(PLAYER_SVG); }
 function pmSvg() { return uniqifySvgIds(PLAYER_MINI_SVG); }
@@ -4462,12 +4441,14 @@ function renderLowMap() {
   grid.innerHTML = "";
   MONSTER_ORDER.forEach(key => {
     const m = MONSTERS[key];
+    const type = MONSTER_TYPES[key];
     const tamed = !!state.monstersDone[key];
     const card = document.createElement("div");
     card.className = "monster-card" + (tamed ? " tamed" : "");
     card.innerHTML = `
       <div class="monster-card-svg">${tamed ? mSvg(key,'tamed') : mSvg(key,'villain')}</div>
       <div class="monster-card-name">${tamed ? m.tamedName : m.name}</div>
+      <div class="monster-type-badge">${type.icon} ${type.name}</div>
       <div class="monster-card-mood">${tamed ? "已收服 💖" : m.mood}</div>
     `;
     card.onclick = () => enterMonster(key);
@@ -4651,6 +4632,7 @@ function nextMonsterQuestion() {
 
 function tameMonster() {
   const m = MONSTERS[currentMonster];
+  const type = MONSTER_TYPES[currentMonster];
   // 標記收服
   if (!state.monstersDone[currentMonster]) {
     state.monstersDone[currentMonster] = true;
@@ -4690,7 +4672,9 @@ function tameMonster() {
   setTimeout(() => {
     document.getElementById("tame-bubble-area").innerHTML = `
       <h3 style="color:#c2185b; margin-top:10px;">${m.tamedName} 加入你的口袋！</h3>
+      <div class="monster-type-badge" style="margin:6px auto 8px;">${type.icon} ${type.name}</div>
       <div class="monster-bubble tamed-bubble">「${m.tamedVoice}」</div>
+      <div style="font-size:14px;color:#795548;margin:6px auto 0;max-width:360px;">${type.trait}</div>
       <button class="speaker-btn" onclick="speak('${m.tamedName}說：${m.tamedVoice}', 0.9)">🔊 聽他說話</button>
     `;
     speak(m.tamedName + "說：" + m.tamedVoice, 0.9);
@@ -4709,11 +4693,14 @@ function tameMonster() {
 
 function renderMonsterAlreadyTamed() {
   const m = MONSTERS[currentMonster];
+  const type = MONSTER_TYPES[currentMonster];
   const html = `
     <div class="encounter-stage">
       <h2 style="text-align:center; color:#c2185b;">${m.tamedName} 找你玩！</h2>
       <div class="encounter-svg-wrap"><div class="heart-burst" style="display:inline-block;">${mSvg(currentMonster,'tamed')}</div></div>
+      <div style="text-align:center;"><span class="monster-type-badge">${type.icon} ${type.name}</span></div>
       <div class="monster-bubble tamed-bubble">「${m.tamedVoice}」</div>
+      <div style="font-size:14px;color:#795548;text-align:center;margin:6px auto 10px;max-width:380px;">${type.trait}</div>
       <button class="speaker-btn" onclick="speak('${m.tamedName}說：${m.tamedVoice}', 0.9)">🔊 聽他說話</button>
       <div class="magic-phrase-box">
         <span class="label">他學會的魔法話 ✨</span>
@@ -6549,18 +6536,46 @@ function renderPassport() {
   // 口袋夥伴 (低年級)
   const pocketGrid = document.getElementById("pocket-grid");
   if (pocketGrid) {
+    const collected = MONSTER_ORDER.filter(key => !!state.monstersDone[key]).length;
+    const progress = document.getElementById("pocket-progress");
+    if (progress) {
+      const pct = Math.round((collected / MONSTER_ORDER.length) * 100);
+      progress.innerHTML = `
+        <div class="pocket-progress">
+          <div class="pocket-progress-text">
+            <span>收藏進度</span>
+            <span>${collected} / ${MONSTER_ORDER.length}</span>
+          </div>
+          <div class="pocket-progress-bar"><div class="pocket-progress-fill" style="width:${pct}%"></div></div>
+          ${collected === MONSTER_ORDER.length ? '<div class="pocket-complete-badge">🏆 六隻口袋夥伴集滿了！</div>' : ''}
+        </div>
+      `;
+    }
     pocketGrid.innerHTML = "";
-    MONSTER_ORDER.forEach(key => {
+    MONSTER_ORDER.forEach((key, idx) => {
       const m = MONSTERS[key];
+      const type = MONSTER_TYPES[key];
       const tamed = !!state.monstersDone[key];
       const slot = document.createElement("div");
       slot.className = "pocket-slot" + (tamed ? " collected" : " empty");
+      const index = String(idx + 1).padStart(2, "0");
       if (tamed) {
         slot.innerHTML = `
+          <div class="pocket-index">No.${index}</div>
           ${mSvg(key,'tamed')}
           <div class="pocket-slot-name">${m.tamedName}</div>
+          <div class="monster-type-badge">${type.icon} ${type.name}</div>
+          <div class="pocket-slot-phrase">「${m.magicPhrase}」</div>
         `;
         slot.onclick = () => speak(m.tamedName + "說：" + m.tamedVoice, 0.9);
+      } else {
+        slot.innerHTML = `
+          <div class="pocket-index">No.${index}</div>
+          ${mSvg(key,'villain')}
+          <div class="pocket-slot-name">還沒收服</div>
+          <div class="monster-type-badge">${type.icon} ${type.name}</div>
+          <div class="pocket-slot-hint">${m.name} 躲在情緒小屋</div>
+        `;
       }
       pocketGrid.appendChild(slot);
     });
