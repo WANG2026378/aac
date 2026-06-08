@@ -4103,12 +4103,12 @@ function zhuyinOff(text) { return text; }
 // SVG 漸層/濾鏡 id 自動唯一化（避免多 SVG 共用 id 在 display:none 子樹失效）
 // 簡寫 helper：mSvg('grabby','villain') / dSvg('solo') / pSvg() / pmSvg() / cSvg('volcano','seed')
 const MONSTER_CG = {
-  grabby: { src: "/assets/monsters-cg/grabby-cg.png", alt: "搶搶怪動畫CG狐獸" },
-  cryyy: { src: "/assets/monsters-cg/cryyy-cg.png", alt: "哭哭怪動畫CG水滴獸" },
-  pushy: { src: "/assets/monsters-cg/pushy-cg.png", alt: "推推怪動畫CG甲殼獸" },
-  sulky: { src: "/assets/monsters-cg/sulky-cg.png", alt: "嗚嗚怪動畫CG蝙蝠獸" },
-  hidey: { src: "/assets/monsters-cg/hidey-cg.png", alt: "躲躲怪動畫CG幽靈獸" },
-  stompy: { src: "/assets/monsters-cg/stompy-cg.png", alt: "跺跺怪動畫CG火山獸" }
+  grabby: { src: "assets/monsters-cg/grabby-cg.png", alt: "搶搶怪動畫CG狐獸" },
+  cryyy: { src: "assets/monsters-cg/cryyy-cg.png", alt: "哭哭怪動畫CG水滴獸" },
+  pushy: { src: "assets/monsters-cg/pushy-cg.png", alt: "推推怪動畫CG甲殼獸" },
+  sulky: { src: "assets/monsters-cg/sulky-cg.png", alt: "嗚嗚怪動畫CG蝙蝠獸" },
+  hidey: { src: "assets/monsters-cg/hidey-cg.png", alt: "躲躲怪動畫CG幽靈獸" },
+  stompy: { src: "assets/monsters-cg/stompy-cg.png", alt: "跺跺怪動畫CG火山獸" }
 };
 function mSvg(key, form) {
   const cg = MONSTER_CG[key];
