@@ -80,6 +80,7 @@
   .stage-desc { font-size: 15px; color: #666; line-height: 1.5; }
   .stage-tag { display:inline-block; background:#6bcf7f; color:#fff; padding:4px 12px; border-radius:12px; font-size:13px; margin-top:8px; }
   .stage-tag.coming { background:#bbb; }
+  .stage-tag.preschool { background:#ff8fab; }
 
   .home-bottom { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:30px; }
   .btn-mini {
@@ -138,6 +139,139 @@
   .island-emoji { font-size: 70px; line-height: 1; }
   .island-name { font-size: 22px; font-weight: bold; margin-top: 8px; color: #333; }
   .island-emotion { font-size: 14px; color: #888; margin-top: 4px; }
+
+  /* ===== 學前 情緒小精靈 ===== */
+  :root {
+    --bg-pre: linear-gradient(180deg, #fff0f6 0%, #e0f7ff 52%, #fff8d8 100%);
+  }
+  .pre-banner {
+    background: rgba(255,255,255,0.84);
+    border-radius: 20px;
+    padding: 18px 20px;
+    text-align: center;
+    max-width: 720px;
+    margin: 10px auto 18px;
+    box-shadow: var(--shadow);
+    font-size: 18px;
+    line-height: 1.7;
+  }
+  .pre-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 16px;
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  .pre-card {
+    background: rgba(255,255,255,0.94);
+    border-radius: 18px;
+    padding: 18px 14px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-big);
+    border: 4px solid transparent;
+    transition: transform 0.18s, box-shadow 0.18s;
+  }
+  .pre-card:active { transform: scale(0.96); }
+  .pre-card.done { border-color: #ffcf56; background: linear-gradient(180deg,#fff,#fff8d9); }
+  .pre-card-name { font-size: 23px; font-weight: 900; color: #39424e; margin-top: 8px; }
+  .pre-card-word { color: #777; font-size: 15px; margin-top: 4px; }
+  .pre-done { display:inline-block; margin-top:8px; color:#b56b00; font-weight:800; }
+  .fairy-avatar {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    position: relative;
+    display: grid;
+    place-items: center;
+    animation: fairyFloat 2.8s ease-in-out infinite;
+  }
+  .fairy-cg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 12px rgba(0,0,0,0.16));
+    position: relative;
+    z-index: 2;
+  }
+  .fairy-wing {
+    position: absolute;
+    width: 42px;
+    height: 58px;
+    top: 33px;
+    border-radius: 50% 50% 45% 45%;
+    background: rgba(255,255,255,0.78);
+    border: 2px solid rgba(255,255,255,0.95);
+    box-shadow: inset 0 0 16px rgba(255,255,255,0.8);
+  }
+  .fairy-wing.left { left: 10px; transform: rotate(-24deg); }
+  .fairy-wing.right { right: 10px; transform: rotate(24deg); }
+  .fairy-face {
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 44px;
+    box-shadow: 0 9px 18px rgba(0,0,0,0.18), inset 0 5px 12px rgba(255,255,255,0.55);
+    position: relative;
+    z-index: 1;
+  }
+  .fairy-star {
+    position: absolute;
+    right: 8px;
+    top: 12px;
+    font-size: 24px;
+    transform: rotate(12deg);
+  }
+  @keyframes fairyFloat {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-7px); }
+  }
+  .pre-stage {
+    background: rgba(255,255,255,0.92);
+    border-radius: 22px;
+    padding: 22px;
+    max-width: 760px;
+    margin: 12px auto;
+    box-shadow: var(--shadow-big);
+  }
+  .pre-title {
+    text-align: center;
+    font-size: 30px;
+    font-weight: 900;
+    color: #39424e;
+    margin: 4px 0 10px;
+  }
+  .pre-say-box {
+    background: #fff7e8;
+    border: 3px solid #ffd17d;
+    border-radius: 18px;
+    padding: 16px;
+    text-align: center;
+    margin: 14px 0;
+    font-size: 22px;
+    font-weight: 900;
+    color: #b85c00;
+  }
+  .pre-choice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .pre-choice {
+    border: 3px solid #d9ecff;
+    background: #fff;
+    border-radius: 16px;
+    padding: 14px 8px;
+    font-size: 20px;
+    font-weight: 900;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .pre-choice.correct { background:#dff7de; border-color:#68c96c; }
+  .pre-choice.wrong { background:#ffe1e1; border-color:#ff8a8a; }
 
   /* ==== ISLAND ==== */
   #screen-island { padding: 16px; min-height: 100vh; }
@@ -1990,11 +2124,11 @@
   </div>
 
   <div class="stage-grid">
-    <div class="stage-card locked" data-stage="preschool">
+    <div class="stage-card unlocked" data-stage="preschool" onclick="enterPre()">
       <div class="stage-emoji">🧚</div>
       <div class="stage-name">學前</div>
       <div class="stage-desc">認識五位<br>情緒小精靈</div>
-      <div class="stage-tag coming">即將推出</div>
+      <div class="stage-tag preschool">新上線</div>
     </div>
     <div class="stage-card unlocked" data-stage="low" onclick="enterLow()">
       <div class="stage-emoji">🏠</div>
@@ -2021,6 +2155,29 @@
     <button class="btn-mini" onclick="showAbout()">ℹ️ 關於課程</button>
   </div>
   <div class="credit">王川銘老師｜永芳國小集中式特教班｜v1.0</div>
+</div>
+
+<!-- ==================== PRESCHOOL: 情緒小精靈 ==================== -->
+<div id="screen-pre-map" class="screen">
+  <div class="top-bar">
+    <button class="btn-back" onclick="document.body.style.background='var(--bg-sky)';showScreen('home')">← 回主畫面</button>
+    <div class="map-title">🧚 情緒小精靈</div>
+    <div class="passport-mini" onclick="showPassport()">⭐ 星星</div>
+  </div>
+  <div class="pre-banner">
+    歡迎來到情緒花園！<br>
+    跟五位小精靈一起看臉、聽故事、說一句話。<br>
+    認識一種心情，就收集一顆星星。
+  </div>
+  <div class="pre-grid" id="pre-grid"></div>
+</div>
+
+<div id="screen-pre-emotion" class="screen">
+  <div class="top-bar">
+    <button class="btn-back" onclick="confirmLeavePreschool()">← 回花園</button>
+    <button class="speaker-btn" onclick="repeatCurrentSpeech()">🔊 再念</button>
+  </div>
+  <div id="pre-content"></div>
 </div>
 
 <!-- ==================== MAP SCREEN ==================== -->
@@ -2124,6 +2281,13 @@
       <div class="guardian-text" id="guardian-text">種出六顆習德苗，解鎖六德守護者</div>
     </div>
 
+    <div class="pocket-area">
+      <div class="pocket-title">⭐ 我的情緒星星（學前）⭐</div>
+      <div id="pre-progress"></div>
+      <div style="text-align:center; font-size:14px; color:#888; margin-bottom:8px;">認識後會亮起來，點小精靈聽他說話</div>
+      <div class="pocket-grid" id="pre-pocket-grid"></div>
+    </div>
+
     <div class="garden-area">
       <div class="garden-title">🌿 我的習德花園（中年級）🌿</div>
       <div style="text-align:center; font-size:14px; color:#558; margin-bottom:8px;">點花苗聽他說話</div>
@@ -2185,6 +2349,18 @@
       <li>🌸 喜喜種子 → 🌸 <strong>謝德苗</strong>（感恩：感謝分享）</li>
     </ul>
 
+    <h3 style="color:#ff6f91;">學前｜五位情緒小精靈</h3>
+    <p style="font-size:16px; line-height:1.8; background:#fff0f6; padding:14px; border-radius:12px;">
+      學前版先練習「看臉、聽故事、說一句話」。孩子認識開心、難過、生氣、害怕、平靜五種基本心情後，會收集一顆<strong>情緒星星</strong>。
+    </p>
+    <ul style="font-size:16px; line-height:1.9;">
+      <li>😊 笑笑精靈 → <strong>開心</strong>（我很開心！）</li>
+      <li>😢 淚淚精靈 → <strong>難過</strong>（我很難過。）</li>
+      <li>😠 火火精靈 → <strong>生氣</strong>（我生氣了。）</li>
+      <li>😟 抖抖精靈 → <strong>害怕</strong>（我有一點怕。）</li>
+      <li>😌 柔柔精靈 → <strong>平靜</strong>（我慢慢呼吸。）</li>
+    </ul>
+
     <h3 style="color:#c2185b;">低年級｜情緒小屋 6 隻搗蛋怪</h3>
     <p style="font-size:16px; line-height:1.8; background:#fff0f5; padding:14px; border-radius:12px;">
       搶搶 / 哭哭 / 推推 / 嗚嗚 / 躲躲 / 跺跺 6 隻搗蛋怪——他們不是壞蛋，只是「不會用嘴巴說」。教一句魔法話，就會變成<strong>口袋夥伴</strong>跟著你！
@@ -2230,6 +2406,51 @@
 </div>
 
 <script>
+// ========= DATA: 學前 五位情緒小精靈 =========
+const PRE_EMOTIONS = {
+  happy: {
+    emoji: "😊", name: "笑笑精靈", word: "開心", color: "linear-gradient(135deg,#ffe27a,#ff9f43)",
+    image: "assets/preschool-fairies/happy-fairy.png",
+    story: "笑笑精靈說：我看到喜歡的玩具，心裡亮亮的，嘴巴想笑。",
+    phrase: "我很開心！",
+    line: "哇！我想跳一下，跟朋友說我好開心！",
+    question: "看到喜歡的玩具，心裡亮亮的，這是什麼心情？"
+  },
+  sad: {
+    emoji: "😢", name: "淚淚精靈", word: "難過", color: "linear-gradient(135deg,#9be7ff,#5c9ded)",
+    image: "assets/preschool-fairies/sad-fairy.png",
+    story: "淚淚精靈說：玩具壞掉了，心裡酸酸的，眼睛想哭。",
+    phrase: "我很難過。",
+    line: "我想抱一下，也想跟大人說。",
+    question: "玩具壞掉了，心裡酸酸的，這是什麼心情？"
+  },
+  angry: {
+    emoji: "😠", name: "火火精靈", word: "生氣", color: "linear-gradient(135deg,#ff9a76,#ff4d4d)",
+    image: "assets/preschool-fairies/angry-fairy.png",
+    story: "火火精靈說：別人搶我的東西，心裡熱熱的，眉毛皺起來。",
+    phrase: "我生氣了。",
+    line: "我先停一下，用嘴巴說，不用手推。",
+    question: "別人搶我的東西，心裡熱熱的，這是什麼心情？"
+  },
+  scared: {
+    emoji: "😟", name: "抖抖精靈", word: "害怕", color: "linear-gradient(135deg,#d7b8ff,#8d7bff)",
+    image: "assets/preschool-fairies/scared-fairy.png",
+    story: "抖抖精靈說：聽到好大的聲音，身體縮小小，想找大人。",
+    phrase: "我有一點怕。",
+    line: "我可以靠近老師，說我需要幫忙。",
+    question: "聽到好大的聲音，身體縮小小，這是什麼心情？"
+  },
+  calm: {
+    emoji: "😌", name: "柔柔精靈", word: "平靜", color: "linear-gradient(135deg,#b4f8c8,#5ed7c7)",
+    image: "assets/preschool-fairies/calm-fairy.png",
+    story: "柔柔精靈說：我慢慢吸氣，慢慢吐氣，心裡安安的。",
+    phrase: "我慢慢呼吸。",
+    line: "吸氣，吐氣，我的心慢慢安靜了。",
+    question: "慢慢吸氣、慢慢吐氣，心裡安安的，這是什麼心情？"
+  }
+};
+const PRE_ORDER = ["happy", "sad", "angry", "scared", "calm"];
+
 // ========= DATA: 六座島 =========
 const ISLANDS = {
   volcano: {
@@ -3900,6 +4121,8 @@ function loadState() {
     if (raw) {
       const s = JSON.parse(raw);
       // 向後相容：補欄位
+      if (!s.preschoolDone) s.preschoolDone = {};
+      if (!s.preschoolStars) s.preschoolStars = [];
       if (!s.monstersDone) s.monstersDone = {};
       if (!s.pocketBuddies) s.pocketBuddies = [];
       if (!s.demonsDone) s.demonsDone = {};
@@ -3917,6 +4140,8 @@ function loadState() {
   } catch(e) {}
   return {
     name: "",
+    preschoolDone: {},
+    preschoolStars: [],
     islandsDone: {},
     skills: [],
     monstersDone: {},
@@ -4462,6 +4687,7 @@ function showScreen(id) {
   window.scrollTo(0, 0);
   if (id === "passport") renderPassport();
   if (id === "map") renderMap();
+  if (id === "pre-map") { document.body.style.background = 'var(--bg-pre)'; renderPreMap(); }
   if (id === "low-map") { document.body.style.background = 'var(--bg-low)'; renderLowMap(); }
   if (id === "high-map") { document.body.style.background = 'var(--bg-rpg)'; renderHighMap(); }
   if (id === "home") document.body.style.background = 'var(--bg-sky)';
@@ -4491,6 +4717,12 @@ function enterMid() {
   showScreen("map");
 }
 
+function enterPre() {
+  document.body.style.background = 'var(--bg-pre)';
+  renderPreMap();
+  showScreen("pre-map");
+}
+
 function enterLow() {
   document.body.style.background = 'var(--bg-low)';
   renderLowMap();
@@ -4505,6 +4737,149 @@ function enterHigh() {
 
 function showPassport() { showScreen("passport"); }
 function showAbout() { showScreen("about"); }
+
+// ========= 學前：情緒小精靈 =========
+let currentPreEmotion = null;
+
+function preFairyHTML(key) {
+  const p = PRE_EMOTIONS[key];
+  if (p.image) {
+    return `
+      <div class="fairy-avatar" aria-label="${p.name}">
+        <img class="fairy-cg-img" src="${p.image}" alt="${p.name}" onerror="this.style.display='none';this.parentElement.querySelector('.fairy-face').style.display='grid';">
+        <span class="fairy-face" style="background:${p.color}; display:none;">${p.emoji}</span>
+        <span class="fairy-star">✦</span>
+      </div>
+    `;
+  }
+  return `
+    <div class="fairy-avatar" aria-label="${p.name}">
+      <span class="fairy-wing left"></span>
+      <span class="fairy-wing right"></span>
+      <span class="fairy-face" style="background:${p.color};">${p.emoji}</span>
+      <span class="fairy-star">✦</span>
+    </div>
+  `;
+}
+
+function renderPreMap() {
+  const grid = document.getElementById("pre-grid");
+  if (!grid) return;
+  grid.innerHTML = "";
+  PRE_ORDER.forEach(key => {
+    const p = PRE_EMOTIONS[key];
+    const done = !!state.preschoolDone[key];
+    const card = document.createElement("div");
+    card.className = "pre-card" + (done ? " done" : "");
+    card.innerHTML = `
+      ${preFairyHTML(key)}
+      <div class="pre-card-name">${p.name}</div>
+      <div class="pre-card-word">${p.word}</div>
+      <div class="pre-done">${done ? "已認識 ⭐" : "點我認識"}</div>
+    `;
+    card.onclick = () => enterPreEmotion(key);
+    grid.appendChild(card);
+  });
+}
+
+function enterPreEmotion(key) {
+  currentPreEmotion = key;
+  showScreen("pre-emotion");
+  renderPreEmotion();
+}
+
+function confirmLeavePreschool() {
+  stopVoicePlayback();
+  showScreen("pre-map");
+}
+
+function renderPreEmotion() {
+  const p = PRE_EMOTIONS[currentPreEmotion];
+  const choices = PRE_ORDER.map(key => ({ key, word: PRE_EMOTIONS[key].word, emoji: PRE_EMOTIONS[key].emoji }));
+  document.getElementById("pre-content").innerHTML = `
+    <div class="pre-stage">
+      <div style="text-align:center;">${preFairyHTML(currentPreEmotion)}</div>
+      <div class="pre-title">${p.name}</div>
+      <div class="monster-bubble tamed-bubble" style="font-size:19px;">「${withZhuyin(p.line)}」</div>
+      <div style="text-align:center; margin:8px 0 12px;">
+        <button class="speaker-btn" onclick="speak('${p.name}說：${p.line}', 0.88)">🔊 聽小精靈說話</button>
+      </div>
+      <div class="story-text" id="pre-story" data-raw="${p.story.replace(/"/g,'&quot;')}">${withZhuyin(p.story)}</div>
+      <div style="text-align:center; margin-top:10px;">
+        <button class="speaker-btn" onclick="speak(document.getElementById('pre-story').dataset.raw, 0.92)">🔊 聽故事</button>
+      </div>
+      <div class="pre-say-box">
+        跟我說：<br>「${withZhuyin(p.phrase)}」
+        <div style="margin-top:10px;">
+          <button class="speaker-btn secondary" onclick="speak('${p.phrase}', 0.86)">跟著說</button>
+        </div>
+      </div>
+      <div class="question-text" style="font-size:22px; text-align:center;">${withZhuyin(p.question)}</div>
+      <div class="pre-choice-grid" id="pre-choices"></div>
+      <div class="feedback" id="pre-feedback"></div>
+      <div class="next-btn-wrap" id="pre-next"></div>
+    </div>
+  `;
+  const grid = document.getElementById("pre-choices");
+  choices.forEach(choice => {
+    const btn = document.createElement("button");
+    btn.className = "pre-choice";
+    btn.innerHTML = `${choice.emoji}<br>${withZhuyin(choice.word)}`;
+    btn.onclick = () => choosePreEmotion(choice.key, btn);
+    grid.appendChild(btn);
+  });
+  setTimeout(() => speak(p.name + "說：" + p.line + " " + p.story + " " + p.question, 0.92), 350);
+}
+
+function choosePreEmotion(key, btnEl) {
+  const p = PRE_EMOTIONS[currentPreEmotion];
+  document.querySelectorAll(".pre-choice").forEach(b => b.disabled = true);
+  const fb = document.getElementById("pre-feedback");
+  if (key === currentPreEmotion) {
+    btnEl.classList.add("correct");
+    fb.textContent = "答對了！這是「" + p.word + "」。";
+    fb.className = "feedback show right";
+    speak("答對了！這是" + p.word + "。跟我說：" + p.phrase, 0.9);
+    document.getElementById("pre-next").innerHTML = `<button class="speaker-btn big" onclick="completePreEmotion()">收集星星 ⭐</button>`;
+  } else {
+    btnEl.classList.add("wrong");
+    fb.textContent = "再看看小精靈的臉，想一想是哪一種心情。";
+    fb.className = "feedback show wrong";
+    speak("再看看小精靈的臉，想一想。", 0.9);
+    setTimeout(() => {
+      document.querySelectorAll(".pre-choice").forEach(b => {
+        if (!b.classList.contains("wrong")) b.disabled = false;
+      });
+      fb.classList.remove("show");
+    }, 1800);
+  }
+}
+
+function completePreEmotion() {
+  const p = PRE_EMOTIONS[currentPreEmotion];
+  if (!state.preschoolDone[currentPreEmotion]) {
+    state.preschoolDone[currentPreEmotion] = true;
+    if (!state.preschoolStars.includes(currentPreEmotion)) state.preschoolStars.push(currentPreEmotion);
+    if (!state.skills.includes("認識" + p.word)) state.skills.push("認識" + p.word);
+    saveState();
+  }
+  document.getElementById("pre-content").innerHTML = `
+    <div class="stamp-area">
+      <h2 style="color:#ff6f91; font-size:30px;">收集成功！⭐</h2>
+      <div style="text-align:center;">${preFairyHTML(currentPreEmotion)}</div>
+      <div class="stamp-card" style="border-left-color:#ffcf56;">
+        <h3 style="color:#b56b00;">${p.name} 的星星</h3>
+        <p style="font-size:20px; font-weight:bold;">${p.word}：${p.phrase}</p>
+        <p>「${p.line}」</p>
+        <p>你認識這個心情了！下次心裡有這種感覺，可以說出來。</p>
+      </div>
+      <button class="speaker-btn big" onclick="showScreen('pre-map')">回花園找下一位 →</button>
+      <button class="speaker-btn secondary" onclick="showPassport()">看我的星星</button>
+    </div>
+  `;
+  const allDone = PRE_ORDER.every(key => state.preschoolDone[key]);
+  speak("太棒了！你收集到" + p.name + "的星星。" + (allDone ? "五顆情緒星星都收集完成了！" : ""), 0.9);
+}
 
 // ========= 低年級：情緒小屋地圖 =========
 function renderLowMap() {
@@ -6585,6 +6960,54 @@ function renderPassport() {
     badge.textContent = "🛡️";
     text.textContent = `已通關 ${doneCount} / 6 座島，加油！`;
   }
+
+  // 情緒星星 (學前)
+  const prePocketGrid = document.getElementById("pre-pocket-grid");
+  if (prePocketGrid) {
+    const collected = PRE_ORDER.filter(key => !!state.preschoolDone[key]).length;
+    const progress = document.getElementById("pre-progress");
+    if (progress) {
+      const pct = Math.round((collected / PRE_ORDER.length) * 100);
+      progress.innerHTML = `
+        <div class="pocket-progress">
+          <div class="pocket-progress-text">
+            <span>星星進度</span>
+            <span>${collected} / ${PRE_ORDER.length}</span>
+          </div>
+          <div class="pocket-progress-bar"><div class="pocket-progress-fill" style="width:${pct}%"></div></div>
+          ${collected === PRE_ORDER.length ? '<div class="pocket-complete-badge">⭐ 五顆情緒星星集滿了！</div>' : ''}
+        </div>
+      `;
+    }
+    prePocketGrid.innerHTML = "";
+    PRE_ORDER.forEach((key, idx) => {
+      const p = PRE_EMOTIONS[key];
+      const done = !!state.preschoolDone[key];
+      const slot = document.createElement("div");
+      slot.className = "pocket-slot" + (done ? " collected" : " empty");
+      const index = String(idx + 1).padStart(2, "0");
+      if (done) {
+        slot.innerHTML = `
+          <div class="pocket-index">No.${index}</div>
+          ${preFairyHTML(key)}
+          <div class="pocket-slot-name">${p.name}</div>
+          <div class="monster-type-badge">⭐ ${p.word}</div>
+          <div class="pocket-slot-phrase">「${p.phrase}」</div>
+        `;
+        slot.onclick = () => speak(p.name + "說：" + p.line, 0.88);
+      } else {
+        slot.innerHTML = `
+          <div class="pocket-index">No.${index}</div>
+          <div style="font-size:54px; opacity:.35; padding:28px 0;">⭐</div>
+          <div class="pocket-slot-name">還沒認識</div>
+          <div class="monster-type-badge">情緒星星</div>
+          <div class="pocket-slot-hint">在情緒花園等你</div>
+        `;
+      }
+      prePocketGrid.appendChild(slot);
+    });
+  }
+
   const grid = document.getElementById("garden-grid");
   grid.innerHTML = "";
   ISLAND_ORDER.forEach(key => {
@@ -6686,7 +7109,7 @@ function saveName() {
 }
 function resetProgress() {
   if (!confirm("確定要清除所有進度？習德花園、口袋夥伴、心經卷藏全部會清空，無法復原！")) return;
-  state = { name: "", islandsDone: {}, skills: [], monstersDone: {}, pocketBuddies: [], demonsDone: {}, heartSutras: [], finalBossDone: false };
+  state = { name: "", preschoolDone: {}, preschoolStars: [], islandsDone: {}, skills: [], monstersDone: {}, pocketBuddies: [], demonsDone: {}, heartSutras: [], finalBossDone: false };
   saveState();
   renderPassport();
   alert("進度已清除。");
