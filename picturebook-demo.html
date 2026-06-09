@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="googlebot" content="noindex,nofollow,noarchive">
+<title>恐龍情緒繪本｜完整教學版</title>
+<style>
+* { box-sizing: border-box; }
+:root {
+  --ink: #24313f;
+  --muted: #667085;
+  --line: rgba(36,49,63,.14);
+  --paper: rgba(255,255,255,.94);
+  --mint: #d9f99d;
+  --sky: #bae6fd;
+  --sun: #fde68a;
+  --rose: #fecdd3;
+  --leaf: #16a34a;
+  --blue: #2563eb;
+  --violet: #7c3aed;
+  --orange: #ea580c;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(190,242,100,.62), transparent 28%),
+    radial-gradient(circle at 88% 14%, rgba(125,211,252,.52), transparent 26%),
+    linear-gradient(180deg, #f7fee7 0%, #ecfeff 46%, #fff7ed 100%);
+}
+body.browse-mode .layout {
+  grid-template-columns: 1fr;
+}
+body.browse-mode .viewer {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+body.browse-mode .book-wrap {
+  min-height: 620px;
+}
+body.browse-mode .book-wrap img {
+  width: auto;
+  max-width: 100%;
+  max-height: 78vh;
+}
+body.browse-mode .panel {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+button {
+  border: 0;
+  border-radius: 14px;
+  padding: 12px 16px;
+  min-height: 48px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  color: var(--ink);
+  box-shadow: 0 4px 0 rgba(36,49,63,.18);
+}
+button:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(36,49,63,.18); }
+button:disabled { cursor: default; opacity: .72; transform: none; }
+.app {
+  width: min(1280px, 100%);
+  margin: 0 auto;
+  padding: 16px;
+}
+.top {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+h1 {
+  margin: 0;
+  font-size: clamp(24px, 3.4vw, 40px);
+  color: #14532d;
+}
+.subtitle {
+  margin-top: 5px;
+  color: var(--muted);
+  font-weight: 800;
+  line-height: 1.5;
+}
+.progress-card {
+  min-width: 230px;
+  padding: 12px;
+  border: 2px solid rgba(20,83,45,.12);
+  border-radius: 16px;
+  background: rgba(255,255,255,.72);
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 900;
+  color: #14532d;
+}
+.bar {
+  height: 12px;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: rgba(20,83,45,.12);
+  overflow: hidden;
+}
+.bar span {
+  display: block;
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #22c55e, #0ea5e9);
+  transition: width .25s ease;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(520px, 1.2fr) minmax(360px, .8fr);
+  gap: 16px;
+  align-items: start;
+}
+.viewer, .panel {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 16px 38px rgba(36,49,63,.14);
+  overflow: hidden;
+}
+.viewer-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(236,253,245,.8);
+  border-bottom: 1px solid var(--line);
+}
+.page-title {
+  font-size: 20px;
+  font-weight: 950;
+  color: #166534;
+}
+.page-chip {
+  border-radius: 999px;
+  padding: 7px 12px;
+  background: #fff;
+  color: #0369a1;
+  font-weight: 950;
+}
+.book-wrap {
+  display: grid;
+  place-items: center;
+  min-height: 520px;
+  padding: 18px;
+  background:
+    linear-gradient(90deg, rgba(20,83,45,.05), transparent 14%, transparent 86%, rgba(20,83,45,.05)),
+    #fff;
+}
+.book-wrap img {
+  display: block;
+  width: 100%;
+  max-height: 72vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 12px 24px rgba(36,49,63,.16);
+}
+.nav {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border-top: 1px solid var(--line);
+}
+.nav button { background: #eef2ff; color: #3730a3; }
+.thumbs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 2px;
+}
+.dot {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #475569;
+  box-shadow: inset 0 0 0 2px rgba(71,85,105,.15);
+}
+.dot.active { background: #22c55e; color: #fff; box-shadow: inset 0 0 0 2px #16a34a; }
+.dot.done { background: #d9f99d; color: #166534; }
+.panel { padding: 14px; }
+.companion {
+  display: grid;
+  grid-template-columns: 112px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 2px solid var(--sky);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ecfeff, #fff7ed);
+}
+.companion img {
+  width: 108px;
+  height: 108px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 12px rgba(36,49,63,.18));
+  animation: float 2.8s ease-in-out infinite;
+}
+@keyframes float { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-7px) rotate(1deg); } }
+.companion-name {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 950;
+  color: #0f766e;
+}
+.companion-line {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.65;
+  font-weight: 850;
+  color: #344054;
+}
+.section-title {
+  margin: 16px 0 8px;
+  font-size: 18px;
+  color: #14532d;
+  font-weight: 950;
+}
+.story {
+  padding: 14px;
+  border: 2px solid #fde68a;
+  border-radius: 16px;
+  background: #fffbea;
+  font-size: 22px;
+  line-height: 1.9;
+  font-weight: 950;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0;
+}
+.primary { background: linear-gradient(180deg, #38bdf8, #2563eb); color: #fff; }
+.slow { background: linear-gradient(180deg, #a78bfa, #7c3aed); color: #fff; }
+.guide { background: linear-gradient(180deg, #86efac, #16a34a); color: #fff; }
+.quiet { background: #f1f5f9; }
+.question-card {
+  padding: 14px;
+  border: 2px dashed rgba(37,99,235,.25);
+  border-radius: 16px;
+  background: #f8fafc;
+}
+.q-text {
+  font-size: 21px;
+  line-height: 1.6;
+  color: #1d4ed8;
+  font-weight: 950;
+}
+.choices {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+.choice {
+  min-height: 100px;
+  padding: 10px;
+  background: #fff;
+  border: 3px solid #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.choice .icon { font-size: 34px; line-height: 1; }
+.choice.correct { background: #dcfce7; border-color: #22c55e; }
+.choice.wrong { background: #fee2e2; border-color: #ef4444; }
+.feedback {
+  min-height: 28px;
+  margin-top: 10px;
+  color: #047857;
+  font-weight: 950;
+  line-height: 1.6;
+}
+.voice-status {
+  margin-top: 8px;
+  padding: 9px 10px;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 800;
+}
+.mission-list {
+  display: grid;
+  gap: 8px;
+}
+.mission {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  font-weight: 900;
+  color: #475569;
+}
+.mission.done { color: #166534; background: #f0fdf4; }
+.finish {
+  display: none;
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #dcfce7, #e0f2fe);
+  border: 2px solid rgba(34,197,94,.35);
+  font-weight: 950;
+  line-height: 1.7;
+}
+.finish.show { display: block; }
+@media (max-width: 920px) {
+  .top, .layout { grid-template-columns: 1fr; }
+  .progress-card { min-width: 0; }
+  .book-wrap { min-height: 340px; }
+}
+@media (max-width: 560px) {
+  .app { padding: 10px; }
+  .viewer, .panel { border-radius: 14px; }
+  .companion { grid-template-columns: 86px 1fr; }
+  .companion img { width: 82px; height: 82px; }
+  .story { font-size: 19px; }
+  .choices { grid-template-columns: 1fr; }
+  .nav { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div>
+      <h1>恐龍情緒繪本｜完整教學版</h1>
+      <div class="subtitle">20 頁閱讀關卡，搭配精靈陪讀、慢速朗讀、理解題與情緒表達練習。</div>
+    </div>
+    <div class="progress-card">
+      <div class="progress-label"><span id="progress-text">完成 0 / 20</span><span id="score-text">0 題</span></div>
+      <div class="bar"><span id="progress-bar"></span></div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="viewer" aria-label="繪本頁面">
+      <div class="viewer-head">
+        <div class="page-title" id="page-title">第 1 頁</div>
+        <div class="page-chip" id="page-chip">1 / 20</div>
+      </div>
+      <div class="book-wrap">
+        <img id="book-image" src="" alt="繪本頁面">
+      </div>
+      <div class="nav">
+        <button id="prev-btn" aria-label="上一頁" onclick="goPage(pageIndex - 1)">上一頁</button>
+        <div class="thumbs" id="thumbs" aria-label="頁面選單"></div>
+        <button id="next-btn" aria-label="下一頁" onclick="goPage(pageIndex + 1)">下一頁</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="教學互動">
+      <div class="companion">
+        <img id="companion-img" src="" alt="陪讀精靈">
+        <div>
+          <h2 class="companion-name" id="companion-name">柔柔精靈</h2>
+          <p class="companion-line" id="companion-line"></p>
+        </div>
+      </div>
+
+      <div class="section-title">我們一起讀</div>
+      <div class="story" id="story"></div>
+      <div class="controls">
+        <button class="primary" aria-label="聽這一頁" onclick="readPage(false)">聽這一頁</button>
+        <button class="slow" aria-label="慢慢念" onclick="readPage(true)">慢慢念</button>
+        <button class="guide" aria-label="聽精靈提醒" onclick="speak(currentPage().companionLine, 'guide')">聽精靈</button>
+        <button class="quiet" aria-label="停止聲音" onclick="stopVoice()">停止</button>
+        <button class="quiet" id="browse-btn" aria-label="切換大圖模式" onclick="toggleBrowseMode()">大圖模式</button>
+        <button class="quiet" aria-label="重來" onclick="resetLesson()">重來</button>
+      </div>
+      <div class="voice-status" id="voice-status">配音系統準備中...</div>
+
+      <div class="section-title">本頁任務</div>
+      <div class="question-card" id="question-card"></div>
+
+      <div class="section-title">閱讀任務</div>
+      <div class="mission-list">
+        <div class="mission" id="mission-read"><span>聽完這一頁</span><span>□</span></div>
+        <div class="mission" id="mission-question"><span>答對本頁題目</span><span>□</span></div>
+        <div class="mission" id="mission-turn"><span>完成後翻到下一頁</span><span>□</span></div>
+      </div>
+      <div class="finish" id="finish-box">
+        太棒了，這本情緒小書已經完成！你學會了看見生氣、停一下、慢慢呼吸，還可以用一句話說出自己的需要。
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+const ASSET_ROOT = 'assets/picturebook-dino-emotion/';
+const FAIRIES = {
+  calm: { name: '柔柔精靈', img: 'assets/preschool-fairies/calm-fairy.png' },
+  angry: { name: '火火精靈', img: 'assets/preschool-fairies/angry-fairy.png' },
+  happy: { name: '笑笑精靈', img: 'assets/preschool-fairies/happy-fairy.png' },
+  sad: { name: '淚淚精靈', img: 'assets/preschool-fairies/sad-fairy.png' },
+  scared: { name: '抖抖精靈', img: 'assets/preschool-fairies/scared-fairy.png' }
+};
+const LESSON = [
+  page('page-01.jpg', '故事開始', '小恐龍今天遇到一件不順心的事，心裡有一團熱熱的火。', 'angry', '先看看牠的臉和身體，猜猜牠現在怎麼了。', q('看圖想一想，小恐龍現在比較像哪一種心情？', [['生氣', '😡', true], ['開心', '😊'], ['想睡', '😴']], '對，眉毛、嘴巴和動作都在告訴我們牠生氣了。')),
+  page('page-02.jpg', '火氣跑出來', '生氣來得很快，小恐龍還不知道要怎麼把話說出來。', 'angry', '火火精靈提醒：先停一下，身體才不會先衝出去。', q('生氣很快跑出來時，第一步可以做什麼？', [['先停一下', '✋', true], ['馬上推人', '🖐️'], ['亂丟東西', '🧱']], '很好，先停一下，才有時間想下一步。')),
+  page('page-03.jpg', '朋友在旁邊', '旁邊的朋友看見牠很激動，大家都需要一個安全的距離。', 'scared', '抖抖精靈說：如果有人很生氣，我們可以站遠一點，也可以找大人。', q('朋友看到牠很生氣，可以怎麼做比較安全？', [['退一步', '👣', true], ['靠很近', '👀'], ['一起大叫', '📢']], '對，先退一步，大家都比較安全。')),
+  page('page-04.jpg', '話說不清楚', '小恐龍想要表達，可是生氣讓牠說不清楚。', 'sad', '淚淚精靈說：說不清楚時，可以先說「我現在很生氣」。', q('說不清楚時，可以先說哪一句？', [['我現在很生氣', '💬', true], ['都是你害的', '⚡'], ['我不要你', '🙅']], '很棒，先說自己的感覺，比責怪別人更清楚。')),
+  page('page-05.jpg', '身體很緊', '牠的手、腳和臉都變得緊緊的，身體正在告訴牠需要休息。', 'angry', '火火精靈說：注意身體的訊號，就是照顧自己的開始。', q('哪一個可能是生氣的身體訊號？', [['拳頭緊緊', '✊', true], ['眼睛閉著睡覺', '💤'], ['肚子吃飽', '🍚']], '對，身體緊緊的時候，可能代表情緒很強。')),
+  page('page-06.jpg', '想要躲開', '小恐龍離開吵鬧的地方，讓自己先有一點空間。', 'calm', '柔柔精靈說：離開不是輸，是讓心有地方休息。', q('如果快要爆炸了，可以先怎麼做？', [['到安全角落休息', '🏡', true], ['追著朋友跑', '🏃'], ['一直吵下去', '📢']], '對，到安全的地方休息，是很好的方法。')),
+  page('page-07.jpg', '慢慢吸氣', '牠試著慢慢吸氣，讓胸口不要那麼緊。', 'calm', '柔柔精靈陪你：吸氣，停一下，吐氣。', q('這一頁練習的是什麼？', [['慢慢呼吸', '😌', true], ['跳很高', '🦘'], ['吃點心', '🍪']], '對，慢慢呼吸可以幫助身體放鬆。')),
+  page('page-08.jpg', '想想原因', '牠開始想：我為什麼這麼生氣？我真正想要的是什麼？', 'calm', '柔柔精靈說：找到原因，話就比較容易說出口。', q('想清楚原因後，比較容易做什麼？', [['把需要說出來', '💬', true], ['忘記所有事', '🌫️'], ['更用力生氣', '🔥']], '很好，知道原因後，就能說出自己的需要。')),
+  page('page-09.jpg', '朋友來幫忙', '朋友沒有笑牠，而是陪牠一起想辦法。', 'happy', '笑笑精靈說：有人陪伴時，勇氣會慢慢回來。', q('朋友可以怎麼幫忙？', [['陪牠想辦法', '🤝', true], ['嘲笑牠', '😆'], ['搶牠東西', '🧸']], '對，陪伴和幫忙會讓人比較安心。')),
+  page('page-10.jpg', '學一個新方法', '小恐龍學到：情緒很大時，可以用一個小方法照顧自己。', 'happy', '笑笑精靈說：學會一個方法，就是得到一個新能力。', q('學會情緒方法像得到什麼？', [['新能力', '⭐', true], ['新麻煩', '💢'], ['新作業', '📄']], '答對了，情緒方法是可以每天使用的新能力。')),
+  page('page-11.jpg', '不再只用力氣', '牠發現，用力氣不能解決所有事情，用話說比較清楚。', 'calm', '柔柔精靈說：手停下來，嘴巴可以慢慢說。', q('想解決問題時，比較好的方法是什麼？', [['用話說清楚', '💬', true], ['用力推', '🖐️'], ['把東西藏起來', '🧺']], '對，用話說清楚，別人才知道怎麼幫忙。')),
+  page('page-12.jpg', '練習說一句話', '牠練習說：我需要休息一下，等我好了再說。', 'calm', '柔柔精靈說：這句話很有用，可以保護自己，也保護朋友。', q('生氣時可以先說哪一句？', [['我需要休息一下', '💬', true], ['我都不要聽', '🙉'], ['都是你的錯', '⚡']], '很棒，這句話清楚又安全。')),
+  page('page-13.jpg', '看見朋友感受', '小恐龍也看見朋友可能被嚇到了，牠開始在乎別人的感覺。', 'sad', '淚淚精靈說：看見別人的感受，是修復關係的第一步。', q('朋友被嚇到時，小恐龍可以怎麼做？', [['說對不起', '🙏', true], ['再嚇一次', '😈'], ['假裝沒看見', '🙈']], '對，說對不起可以開始修復關係。')),
+  page('page-14.jpg', '重新靠近', '大家慢慢靠近，準備重新把話說清楚。', 'happy', '笑笑精靈說：修復關係可以慢慢來，不用一次做到完美。', q('重新靠近朋友時，可以怎麼做？', [['慢慢說', '🐢', true], ['立刻大吼', '📢'], ['轉身就跑', '🏃']], '對，慢慢說，朋友比較聽得懂。')),
+  page('page-15.jpg', '換一個角度', '牠試著從朋友的角度想一想，心裡的火變小一點。', 'calm', '柔柔精靈說：換角度看，情緒會有新的出口。', q('從朋友角度想，可能會幫助什麼？', [['火氣變小', '🌬️', true], ['越想越亂', '🌀'], ['一定要贏', '🏆']], '很好，換角度可以讓火氣慢慢變小。')),
+  page('page-16.jpg', '找回平靜', '小恐龍開始找回平靜，身體也變得比較柔軟。', 'calm', '柔柔精靈說：心安靜一點，身體也會一起放鬆。', q('心情平靜時，身體可能會怎樣？', [['比較放鬆', '😌', true], ['更緊繃', '✊'], ['停不下來', '⚡']], '對，心情平靜後，身體也比較舒服。')),
+  page('page-17.jpg', '準備道歉', '牠知道剛才的行為讓朋友不舒服，準備好好道歉。', 'sad', '淚淚精靈說：道歉不是丟臉，是讓關係重新開始。', q('道歉可以幫助什麼？', [['修復關係', '🧩', true], ['讓人更生氣', '🔥'], ['不用再說話', '🤐']], '答對了，道歉可以幫助大家重新開始。')),
+  page('page-18.jpg', '朋友還在', '朋友願意聽牠說，兩個人的距離慢慢變近。', 'happy', '笑笑精靈說：願意聽，也是一種溫柔。', q('朋友願意聽時，小恐龍可以怎麼做？', [['好好說明', '💬', true], ['再推一次', '🖐️'], ['搶著說完', '⏩']], '對，好好說明，朋友才更容易了解。')),
+  page('page-19.jpg', '花香和朋友', '小恐龍聞一聞花香，想一想朋友，煩躁的心情慢慢平靜下來。', 'calm', '柔柔精靈說：吸氣，吐氣，想一個讓你安心的人。', q('小恐龍讓心情平靜的方法是什麼？', [['聞花香想朋友', '🌸', true], ['大叫', '📢'], ['跑走不回來', '🏃']], '對，牠用花香和朋友的回憶幫自己平靜。')),
+  page('page-20.jpg', '小結任務', '這個故事提醒我們：生氣不是壞事，重要的是學會安全地說出來。', 'happy', '笑笑精靈說：你完成了閱讀任務，現在把方法帶到生活裡。', q('這本書最想教我們什麼？', [['安全說出生氣', '💬', true], ['不能有情緒', '🚫'], ['一定要忍住', '🤐']], '太棒了，情緒可以被看見，也可以安全說出來。'))
+];
+
+function page(image, title, text, fairy, companionLine, question) {
+  return { image: ASSET_ROOT + image, title, text, fairy, companionLine, question };
+}
+function q(prompt, choices, feedback) {
+  return {
+    prompt,
+    choices: choices.map(item => ({ label: item[0], icon: item[1], correct: !!item[2] })),
+    feedback
+  };
+}
+
+let pageIndex = Number(localStorage.getItem('dinoEmotionPage') || 0);
+let readDone = new Set(JSON.parse(localStorage.getItem('dinoEmotionReadDone') || '[]'));
+let questionDone = new Set(JSON.parse(localStorage.getItem('dinoEmotionQuestionDone') || '[]'));
+let cachedVoice = null;
+
+function currentPage() { return LESSON[pageIndex]; }
+function saveProgress() {
+  localStorage.setItem('dinoEmotionPage', String(pageIndex));
+  localStorage.setItem('dinoEmotionReadDone', JSON.stringify([...readDone]));
+  localStorage.setItem('dinoEmotionQuestionDone', JSON.stringify([...questionDone]));
+}
+function render() {
+  const item = currentPage();
+  const fairy = FAIRIES[item.fairy] || FAIRIES.calm;
+  document.getElementById('page-title').textContent = item.title;
+  document.getElementById('page-chip').textContent = `${pageIndex + 1} / ${LESSON.length}`;
+  const image = document.getElementById('book-image');
+  image.src = item.image;
+  image.alt = `第 ${pageIndex + 1} 頁：${item.title}`;
+  document.getElementById('companion-img').src = fairy.img;
+  document.getElementById('companion-img').alt = fairy.name;
+  document.getElementById('companion-name').textContent = fairy.name;
+  document.getElementById('companion-line').textContent = `「${item.companionLine}」`;
+  document.getElementById('story').textContent = item.text;
+  document.getElementById('prev-btn').disabled = pageIndex === 0;
+  document.getElementById('next-btn').disabled = pageIndex === LESSON.length - 1;
+  renderThumbs();
+  renderQuestion();
+  renderProgress();
+}
+function renderThumbs() {
+  const box = document.getElementById('thumbs');
+  box.innerHTML = '';
+  LESSON.forEach((_, index) => {
+    const btn = document.createElement('button');
+    btn.className = 'dot' + (index === pageIndex ? ' active' : '') + (questionDone.has(index) ? ' done' : '');
+    btn.textContent = index + 1;
+    btn.setAttribute('aria-label', `第 ${index + 1} 頁`);
+    btn.onclick = () => goPage(index);
+    box.appendChild(btn);
+  });
+}
+function renderQuestion() {
+  const item = currentPage();
+  const card = document.getElementById('question-card');
+  card.innerHTML = '';
+  const prompt = document.createElement('div');
+  prompt.className = 'q-text';
+  prompt.textContent = item.question.prompt;
+  const choices = document.createElement('div');
+  choices.className = 'choices';
+  item.question.choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.setAttribute('aria-label', choice.label);
+    btn.innerHTML = `<span class="icon">${choice.icon}</span><span>${choice.label}</span>`;
+    btn.onclick = () => answer(btn, choice);
+    if (questionDone.has(pageIndex)) btn.disabled = true;
+    choices.appendChild(btn);
+  });
+  const feedback = document.createElement('div');
+  feedback.className = 'feedback';
+  feedback.id = 'feedback';
+  if (questionDone.has(pageIndex)) feedback.textContent = item.question.feedback;
+  card.append(prompt, choices, feedback);
+}
+function renderProgress() {
+  const completedPages = new Set([...readDone, ...questionDone]);
+  const percent = Math.round((questionDone.size / LESSON.length) * 100);
+  document.getElementById('progress-text').textContent = `完成 ${questionDone.size} / ${LESSON.length}`;
+  document.getElementById('score-text').textContent = `${questionDone.size} 題`;
+  document.getElementById('progress-bar').style.width = `${percent}%`;
+  setMission('mission-read', readDone.has(pageIndex));
+  setMission('mission-question', questionDone.has(pageIndex));
+  setMission('mission-turn', pageIndex < LESSON.length - 1 && questionDone.has(pageIndex));
+  document.getElementById('finish-box').classList.toggle('show', questionDone.size === LESSON.length);
+  if (completedPages.size === LESSON.length) document.documentElement.dataset.lessonComplete = 'true';
+}
+function setMission(id, done) {
+  const node = document.getElementById(id);
+  node.classList.toggle('done', done);
+  node.querySelector('span:last-child').textContent = done ? '✓' : '□';
+}
+function goPage(index) {
+  if (index < 0 || index >= LESSON.length) return;
+  stopVoice();
+  pageIndex = index;
+  saveProgress();
+  render();
+}
+function resetLesson() {
+  stopVoice();
+  readDone = new Set();
+  questionDone = new Set();
+  pageIndex = 0;
+  saveProgress();
+  render();
+  speak('任務重來。我們從第一頁開始。', 'guide');
+}
+function toggleBrowseMode(force) {
+  const next = typeof force === 'boolean' ? force : !document.body.classList.contains('browse-mode');
+  document.body.classList.toggle('browse-mode', next);
+  localStorage.setItem('dinoEmotionBrowseMode', next ? '1' : '0');
+  document.getElementById('browse-btn').textContent = next ? '一般模式' : '大圖模式';
+}
+
+function findVoice() {
+  if (!('speechSynthesis' in window)) return null;
+  const voices = speechSynthesis.getVoices();
+  const preferred = ['美佳', 'Mei-Jia', '雅婷', 'Yating', 'Hanhan', 'Microsoft HsiaoYu', 'Microsoft HsiaoChen'];
+  for (const name of preferred) {
+    const voice = voices.find(v => v.name.includes(name) && v.lang && v.lang.toLowerCase().startsWith('zh'));
+    if (voice) return voice;
+  }
+  return voices.find(v => v.lang === 'zh-TW') || voices.find(v => v.lang && v.lang.toLowerCase().startsWith('zh')) || null;
+}
+function speak(text, role = 'narrator', done) {
+  if (!('speechSynthesis' in window)) { if (done) done(); return; }
+  speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'zh-TW';
+  const settings = {
+    narrator: { rate: .82, pitch: 1.14 },
+    slow: { rate: .58, pitch: 1.2 },
+    guide: { rate: .76, pitch: 1.3 },
+    question: { rate: .8, pitch: 1.18 },
+    praise: { rate: .88, pitch: 1.45 }
+  }[role] || { rate: .82, pitch: 1.14 };
+  utterance.rate = settings.rate;
+  utterance.pitch = settings.pitch;
+  const voice = cachedVoice || findVoice();
+  if (voice) { utterance.voice = voice; cachedVoice = voice; }
+  utterance.onend = () => { if (done) done(); };
+  document.documentElement.dataset.voiceMode = 'tts';
+  document.getElementById('voice-status').textContent = '配音模式：教學 TTS' + (voice ? '｜聲音：' + voice.name : '');
+  speechSynthesis.speak(utterance);
+}
+function stopVoice() {
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+}
+function readPage(slow) {
+  const item = currentPage();
+  speak(`${FAIRIES[item.fairy].name}說：${item.companionLine}`, 'guide', () => {
+    speak(item.text, slow ? 'slow' : 'narrator', () => {
+      readDone.add(pageIndex);
+      saveProgress();
+      renderProgress();
+    });
+  });
+}
+function answer(btn, choice) {
+  const card = document.getElementById('question-card');
+  card.querySelectorAll('.choice').forEach(node => node.disabled = true);
+  const feedback = document.getElementById('feedback');
+  if (choice.correct) {
+    btn.classList.add('correct');
+    questionDone.add(pageIndex);
+    feedback.textContent = currentPage().question.feedback;
+    saveProgress();
+    renderProgress();
+    speak(`答對了！${currentPage().question.feedback}`, 'praise');
+  } else {
+    btn.classList.add('wrong');
+    feedback.textContent = '再想想看。先聽一次精靈提醒，再選一次。';
+    speak(`再想想看。${currentPage().companionLine}`, 'guide');
+    setTimeout(() => {
+      card.querySelectorAll('.choice').forEach(node => {
+        if (!node.classList.contains('wrong')) node.disabled = false;
+      });
+    }, 1300);
+  }
+}
+
+if ('speechSynthesis' in window) {
+  speechSynthesis.onvoiceschanged = () => { cachedVoice = findVoice(); };
+  speechSynthesis.getVoices();
+}
+window.picturebookLessonStatus = () => ({
+  pages: LESSON.length,
+  pageIndex,
+  imageLoaded: document.getElementById('book-image').naturalWidth > 0,
+  companionLoaded: document.getElementById('companion-img').naturalWidth > 0,
+  readDone: readDone.size,
+  questionDone: questionDone.size,
+  voiceMode: document.documentElement.dataset.voiceMode || 'ready'
+});
+render();
+toggleBrowseMode(localStorage.getItem('dinoEmotionBrowseMode') !== '0');
+</script>
+</body>
+</html>
