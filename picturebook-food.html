@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="googlebot" content="noindex,nofollow,noarchive">
+<title>歐露露不挑食｜隱藏教學版</title>
+<style>
+* { box-sizing: border-box; }
+:root {
+  --ink: #263238;
+  --muted: #667085;
+  --line: rgba(38,50,56,.14);
+  --paper: rgba(255,255,255,.94);
+  --leaf: #16a34a;
+  --blue: #2563eb;
+  --orange: #ea580c;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 10% 8%, rgba(253,230,138,.62), transparent 26%),
+    radial-gradient(circle at 88% 12%, rgba(187,247,208,.56), transparent 28%),
+    linear-gradient(180deg, #fff7ed 0%, #f0fdf4 48%, #eff6ff 100%);
+}
+body.browse-mode .layout { grid-template-columns: 1fr; }
+body.browse-mode .viewer,
+body.browse-mode .panel { max-width: 1120px; margin: 0 auto; }
+body.browse-mode .book-wrap { min-height: 640px; }
+body.browse-mode .book-wrap img { width: auto; max-width: 100%; max-height: 78vh; }
+button {
+  border: 0;
+  border-radius: 14px;
+  min-height: 48px;
+  padding: 12px 16px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  color: var(--ink);
+  box-shadow: 0 4px 0 rgba(38,50,56,.18);
+}
+button:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(38,50,56,.18); }
+button:disabled { cursor: default; opacity: .72; transform: none; }
+.app { width: min(1280px, 100%); margin: 0 auto; padding: 16px; }
+.top {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+h1 { margin: 0; font-size: clamp(24px, 3.4vw, 40px); color: #9a3412; }
+.subtitle { margin-top: 5px; color: var(--muted); font-weight: 850; line-height: 1.5; }
+.progress-card {
+  min-width: 230px;
+  padding: 12px;
+  border: 2px solid rgba(154,52,18,.12);
+  border-radius: 16px;
+  background: rgba(255,255,255,.76);
+}
+.progress-label { display: flex; justify-content: space-between; font-weight: 950; color: #9a3412; }
+.bar { height: 12px; margin-top: 8px; border-radius: 999px; background: rgba(154,52,18,.12); overflow: hidden; }
+.bar span { display: block; width: 0%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #f97316, #22c55e); transition: width .25s ease; }
+.layout {
+  display: grid;
+  grid-template-columns: minmax(520px, 1.2fr) minmax(360px, .8fr);
+  gap: 16px;
+  align-items: start;
+}
+.viewer, .panel {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 16px 38px rgba(38,50,56,.14);
+  overflow: hidden;
+}
+.viewer-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  background: rgba(255,247,237,.86);
+  border-bottom: 1px solid var(--line);
+}
+.page-title { font-size: 20px; font-weight: 950; color: #9a3412; }
+.page-chip { border-radius: 999px; padding: 7px 12px; background: #fff; color: #047857; font-weight: 950; }
+.book-wrap {
+  display: grid;
+  place-items: center;
+  min-height: 520px;
+  padding: 18px;
+  background: #fff;
+}
+.book-wrap img {
+  display: block;
+  width: 100%;
+  max-height: 72vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 12px 24px rgba(38,50,56,.16);
+}
+.nav {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border-top: 1px solid var(--line);
+}
+.nav button { background: #ecfdf5; color: #166534; }
+.thumbs { display: flex; gap: 6px; overflow-x: auto; padding: 2px; }
+.dot {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #475569;
+  box-shadow: inset 0 0 0 2px rgba(71,85,105,.15);
+}
+.dot.active { background: #f97316; color: #fff; box-shadow: inset 0 0 0 2px #ea580c; }
+.dot.done { background: #dcfce7; color: #166534; }
+.panel { padding: 14px; }
+.companion {
+  display: grid;
+  grid-template-columns: 112px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 2px solid rgba(251,146,60,.38);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fff7ed, #ecfdf5);
+}
+.companion img {
+  width: 108px;
+  height: 108px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 12px rgba(38,50,56,.18));
+  animation: float 2.8s ease-in-out infinite;
+}
+@keyframes float { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-7px) rotate(1deg); } }
+.companion-name { margin: 0 0 4px; font-size: 22px; font-weight: 950; color: #047857; }
+.companion-line { margin: 0; font-size: 17px; line-height: 1.65; font-weight: 850; color: #344054; }
+.section-title { margin: 16px 0 8px; font-size: 18px; color: #9a3412; font-weight: 950; }
+.story {
+  padding: 14px;
+  border: 2px solid #fed7aa;
+  border-radius: 16px;
+  background: #fff7ed;
+  font-size: 22px;
+  line-height: 1.9;
+  font-weight: 950;
+}
+.controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+.primary { background: linear-gradient(180deg, #fb923c, #ea580c); color: #fff; }
+.slow { background: linear-gradient(180deg, #38bdf8, #2563eb); color: #fff; }
+.guide { background: linear-gradient(180deg, #86efac, #16a34a); color: #fff; }
+.quiet { background: #f1f5f9; }
+.question-card {
+  padding: 14px;
+  border: 2px dashed rgba(234,88,12,.28);
+  border-radius: 16px;
+  background: #f8fafc;
+}
+.q-text { font-size: 21px; line-height: 1.6; color: #c2410c; font-weight: 950; }
+.choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+.choice {
+  min-height: 100px;
+  padding: 10px;
+  background: #fff;
+  border: 3px solid #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.choice .icon { font-size: 34px; line-height: 1; }
+.choice.correct { background: #dcfce7; border-color: #22c55e; }
+.choice.wrong { background: #fee2e2; border-color: #ef4444; }
+.feedback { min-height: 28px; margin-top: 10px; color: #047857; font-weight: 950; line-height: 1.6; }
+.voice-status { margin-top: 8px; padding: 9px 10px; border-radius: 12px; background: #f8fafc; color: #475569; font-size: 13px; font-weight: 800; }
+.finish {
+  display: none;
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ffedd5, #dcfce7);
+  border: 2px solid rgba(249,115,22,.3);
+  font-weight: 950;
+  line-height: 1.7;
+}
+.finish.show { display: block; }
+@media (max-width: 920px) {
+  .top, .layout { grid-template-columns: 1fr; }
+  .progress-card { min-width: 0; }
+  .book-wrap { min-height: 340px; }
+}
+@media (max-width: 560px) {
+  .app { padding: 10px; }
+  .viewer, .panel { border-radius: 14px; }
+  .companion { grid-template-columns: 86px 1fr; }
+  .companion img { width: 82px; height: 82px; }
+  .story { font-size: 19px; }
+  .choices { grid-template-columns: 1fr; }
+  .nav { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div>
+      <h1>歐露露不挑食｜隱藏教學版</h1>
+      <div class="subtitle">教師用隱藏頁：32 頁食物探索關卡，練習看圖、朗讀、味道詞與願意嘗試。</div>
+    </div>
+    <div class="progress-card">
+      <div class="progress-label"><span id="progress-text">完成 0 / 32</span><span id="score-text">0 題</span></div>
+      <div class="bar"><span id="progress-bar"></span></div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="viewer" aria-label="繪本頁面">
+      <div class="viewer-head">
+        <div class="page-title" id="page-title">第 1 頁</div>
+        <div class="page-chip" id="page-chip">1 / 32</div>
+      </div>
+      <div class="book-wrap"><img id="book-image" src="" alt="繪本頁面"></div>
+      <div class="nav">
+        <button id="prev-btn" aria-label="上一頁" onclick="goPage(pageIndex - 1)">上一頁</button>
+        <div class="thumbs" id="thumbs" aria-label="頁面選單"></div>
+        <button id="next-btn" aria-label="下一頁" onclick="goPage(pageIndex + 1)">下一頁</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="教學互動">
+      <div class="companion">
+        <img id="companion-img" src="" alt="陪讀精靈">
+        <div>
+          <h2 class="companion-name" id="companion-name">笑笑精靈</h2>
+          <p class="companion-line" id="companion-line"></p>
+        </div>
+      </div>
+      <div class="section-title">我們一起讀</div>
+      <div class="story" id="story"></div>
+      <div class="controls">
+        <button class="primary" aria-label="聽這一頁" onclick="readPage(false)">聽這一頁</button>
+        <button class="slow" aria-label="慢慢念" onclick="readPage(true)">慢慢念</button>
+        <button class="guide" aria-label="聽精靈提醒" onclick="speak(currentPage().companionLine, 'guide')">聽精靈</button>
+        <button class="quiet" aria-label="停止聲音" onclick="stopVoice()">停止</button>
+        <button class="quiet" id="browse-btn" aria-label="切換大圖模式" onclick="toggleBrowseMode()">大圖模式</button>
+        <button class="quiet" aria-label="重來" onclick="resetLesson()">重來</button>
+      </div>
+      <div class="voice-status" id="voice-status">配音系統準備中...</div>
+      <div class="section-title">本頁任務</div>
+      <div class="question-card" id="question-card"></div>
+      <div class="finish" id="finish-box">完成了！你陪歐露露一起練習看見食物、說出味道、願意小小嘗試。挑食可以慢慢來，勇敢嘗一口就是進步。</div>
+    </section>
+  </div>
+</main>
+
+<script>
+const ASSET_ROOT = 'assets/picturebook-food-adventure/';
+const FAIRIES = {
+  happy: { name: '笑笑精靈', img: 'assets/preschool-fairies/happy-fairy.png' },
+  calm: { name: '柔柔精靈', img: 'assets/preschool-fairies/calm-fairy.png' },
+  sad: { name: '淚淚精靈', img: 'assets/preschool-fairies/sad-fairy.png' }
+};
+const TOPICS = [
+  ['封面', '歐露露和朋友坐在餐桌旁，故事要帶我們認識不同的食物。', 'happy'],
+  ['故事任務', '歐露露只愛吃魚，今天她發現味道好像不見了。', 'sad'],
+  ['發現不一樣', '她開始想：是誰把好滋味藏起來了呢？', 'sad'],
+  ['先看一看', '朋友提醒她，先用眼睛看看食物的顏色和樣子。', 'calm'],
+  ['聞一聞', '香香的味道跑出來，有些食物聞起來很特別。', 'calm'],
+  ['魚料理', '桌上有好多魚，有酸酸、甜甜、香香的味道。', 'happy'],
+  ['願意嘗試', '歐露露鼓起勇氣，準備從小小一口開始。', 'happy'],
+  ['味道詞', '她學會說：酸、甜、鹹、香，味道可以用話說出來。', 'calm'],
+  ['朋友陪伴', '朋友沒有逼她，只是陪她慢慢觀察。', 'happy'],
+  ['食物市場', '大家在市場和菜園裡，看見好多新鮮食物。', 'happy'],
+  ['找線索', '歐露露找一找，看看哪一種食物藏著她喜歡的味道。', 'calm'],
+  ['蔬菜出現', '綠色蔬菜看起來脆脆的，也有自己的香味。', 'calm'],
+  ['水果味道', '水果有甜甜和酸酸的味道，顏色也很漂亮。', 'happy'],
+  ['小小一口', '嘗試不需要很大口，先吃一點點也可以。', 'calm'],
+  ['不喜歡也能說', '如果不喜歡，可以用禮貌的話說出來。', 'calm'],
+  ['再試一次', '有些味道第一次陌生，第二次可能就比較熟悉。', 'happy'],
+  ['餐桌分享', '大家把自己喜歡的食物分享給朋友。', 'happy'],
+  ['食物從哪裡來', '農場、菜園和市場，讓餐桌變得豐富。', 'calm'],
+  ['忙碌菜園', '大家一起採菜、送食物，準備好吃的一餐。', 'happy'],
+  ['感謝食物', '每一份食物，都有很多人的照顧和努力。', 'calm'],
+  ['味道回來了', '歐露露慢慢發現，原來好多食物都有好味道。', 'happy'],
+  ['新的發現', '她發現自己不是只能吃一種食物。', 'happy'],
+  ['選擇練習', '她可以選一樣想試的食物，先從安全的一口開始。', 'calm'],
+  ['餐桌禮貌', '朋友給食物時，可以說謝謝，也可以說我想先吃一點。', 'calm'],
+  ['身體需要', '不同食物會給身體不同的力量。', 'happy'],
+  ['說出感覺', '吃到新味道時，可以說出自己的感覺。', 'calm'],
+  ['越來越勇敢', '歐露露越來越願意試試看，心裡也更有勇氣。', 'happy'],
+  ['朋友鼓勵', '朋友的鼓勵讓她覺得嘗試新食物沒那麼可怕。', 'happy'],
+  ['找到好滋味', '她終於找回食物原來的好滋味。', 'happy'],
+  ['整理方法', '先看、聞一聞、嘗一小口，再說出感覺。', 'calm'],
+  ['故事回顧', '這趟旅程讓歐露露知道，挑食可以慢慢練習。', 'happy'],
+  ['封底', '故事結束了，下一餐也可以試一個小小的新味道。', 'happy']
+];
+const QUESTIONS = [
+  ['歐露露原本最喜歡吃什麼？', [['魚', '🐟', true], ['石頭', '🪨'], ['鞋子', '👟']], '對，歐露露原本最喜歡吃魚。'],
+  ['嘗試新食物可以先怎麼做？', [['小小一口', '🥄', true], ['全部吞下', '😵'], ['直接丟掉', '🗑️']], '很好，小小一口就很勇敢。'],
+  ['哪一句話比較有禮貌？', [['我想先吃一點', '💬', true], ['我才不要', '🙅'], ['好難吃', '📢']], '對，說出需要，也保留禮貌。'],
+  ['吃之前可以先用哪個方法觀察？', [['看一看聞一聞', '👀', true], ['閉眼亂猜', '🙈'], ['大聲尖叫', '📢']], '很好，先觀察會比較安心。'],
+  ['食物有很多什麼？', [['不同味道', '✨', true], ['同一種顏色', '⬜'], ['都不能吃', '🚫']], '對，食物有不同味道。'],
+  ['朋友陪伴時，可以讓人覺得怎樣？', [['比較安心', '😊', true], ['更害怕', '😨'], ['更生氣', '😡']], '對，有人陪會比較安心。']
+];
+const LESSON = TOPICS.map((topic, index) => {
+  const q = QUESTIONS[index % QUESTIONS.length];
+  return {
+    image: ASSET_ROOT + `page-${String(index + 1).padStart(2, '0')}.jpg`,
+    title: topic[0],
+    text: topic[1],
+    fairy: topic[2],
+    companionLine: index === 0 ? '我們先看圖片，不急著回答。' : '慢慢看、慢慢說，願意試一點點就是進步。',
+    question: {
+      prompt: q[0],
+      choices: q[1].map(item => ({ label: item[0], icon: item[1], correct: !!item[2] })),
+      feedback: q[3]
+    }
+  };
+});
+let pageIndex = Number(localStorage.getItem('foodAdventurePage') || 0);
+let readDone = new Set(JSON.parse(localStorage.getItem('foodAdventureReadDone') || '[]'));
+let questionDone = new Set(JSON.parse(localStorage.getItem('foodAdventureQuestionDone') || '[]'));
+let cachedVoice = null;
+function currentPage() { return LESSON[pageIndex]; }
+function saveProgress() {
+  localStorage.setItem('foodAdventurePage', String(pageIndex));
+  localStorage.setItem('foodAdventureReadDone', JSON.stringify([...readDone]));
+  localStorage.setItem('foodAdventureQuestionDone', JSON.stringify([...questionDone]));
+}
+function render() {
+  const item = currentPage();
+  const fairy = FAIRIES[item.fairy] || FAIRIES.happy;
+  document.getElementById('page-title').textContent = item.title;
+  document.getElementById('page-chip').textContent = `${pageIndex + 1} / ${LESSON.length}`;
+  const image = document.getElementById('book-image');
+  image.src = item.image;
+  image.alt = `第 ${pageIndex + 1} 頁：${item.title}`;
+  document.getElementById('companion-img').src = fairy.img;
+  document.getElementById('companion-img').alt = fairy.name;
+  document.getElementById('companion-name').textContent = fairy.name;
+  document.getElementById('companion-line').textContent = `「${item.companionLine}」`;
+  document.getElementById('story').textContent = item.text;
+  document.getElementById('prev-btn').disabled = pageIndex === 0;
+  document.getElementById('next-btn').disabled = pageIndex === LESSON.length - 1;
+  renderThumbs();
+  renderQuestion();
+  renderProgress();
+}
+function renderThumbs() {
+  const box = document.getElementById('thumbs');
+  box.innerHTML = '';
+  LESSON.forEach((_, index) => {
+    const btn = document.createElement('button');
+    btn.className = 'dot' + (index === pageIndex ? ' active' : '') + (questionDone.has(index) ? ' done' : '');
+    btn.textContent = index + 1;
+    btn.setAttribute('aria-label', `第 ${index + 1} 頁`);
+    btn.onclick = () => goPage(index);
+    box.appendChild(btn);
+  });
+}
+function renderQuestion() {
+  const item = currentPage();
+  const card = document.getElementById('question-card');
+  card.innerHTML = '';
+  const prompt = document.createElement('div');
+  prompt.className = 'q-text';
+  prompt.textContent = item.question.prompt;
+  const choices = document.createElement('div');
+  choices.className = 'choices';
+  item.question.choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.setAttribute('aria-label', choice.label);
+    btn.innerHTML = `<span class="icon">${choice.icon}</span><span>${choice.label}</span>`;
+    btn.onclick = () => answer(btn, choice);
+    if (questionDone.has(pageIndex)) btn.disabled = true;
+    choices.appendChild(btn);
+  });
+  const feedback = document.createElement('div');
+  feedback.className = 'feedback';
+  feedback.id = 'feedback';
+  if (questionDone.has(pageIndex)) feedback.textContent = item.question.feedback;
+  card.append(prompt, choices, feedback);
+}
+function renderProgress() {
+  const percent = Math.round((questionDone.size / LESSON.length) * 100);
+  document.getElementById('progress-text').textContent = `完成 ${questionDone.size} / ${LESSON.length}`;
+  document.getElementById('score-text').textContent = `${questionDone.size} 題`;
+  document.getElementById('progress-bar').style.width = `${percent}%`;
+  document.getElementById('finish-box').classList.toggle('show', questionDone.size === LESSON.length);
+}
+function goPage(index) {
+  if (index < 0 || index >= LESSON.length) return;
+  stopVoice();
+  pageIndex = index;
+  saveProgress();
+  render();
+}
+function findVoice() {
+  if (!('speechSynthesis' in window)) return null;
+  const voices = speechSynthesis.getVoices();
+  const preferred = ['美佳', 'Mei-Jia', '雅婷', 'Yating', 'Hanhan', 'Microsoft HsiaoYu', 'Microsoft HsiaoChen'];
+  for (const name of preferred) {
+    const voice = voices.find(v => v.name.includes(name) && v.lang && v.lang.toLowerCase().startsWith('zh'));
+    if (voice) return voice;
+  }
+  return voices.find(v => v.lang === 'zh-TW') || voices.find(v => v.lang && v.lang.toLowerCase().startsWith('zh')) || null;
+}
+function speak(text, role = 'narrator', done) {
+  if (!('speechSynthesis' in window)) { if (done) done(); return; }
+  speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'zh-TW';
+  const settings = {
+    narrator: { rate: .82, pitch: 1.14 },
+    slow: { rate: .58, pitch: 1.2 },
+    guide: { rate: .76, pitch: 1.3 },
+    praise: { rate: .88, pitch: 1.45 }
+  }[role] || { rate: .82, pitch: 1.14 };
+  utterance.rate = settings.rate;
+  utterance.pitch = settings.pitch;
+  const voice = cachedVoice || findVoice();
+  if (voice) { utterance.voice = voice; cachedVoice = voice; }
+  utterance.onend = () => { if (done) done(); };
+  document.documentElement.dataset.voiceMode = 'tts';
+  document.getElementById('voice-status').textContent = '配音模式：教學 TTS' + (voice ? '｜聲音：' + voice.name : '');
+  speechSynthesis.speak(utterance);
+}
+function stopVoice() { if ('speechSynthesis' in window) speechSynthesis.cancel(); }
+function readPage(slow) {
+  const item = currentPage();
+  speak(`${FAIRIES[item.fairy].name}說：${item.companionLine}`, 'guide', () => {
+    speak(item.text, slow ? 'slow' : 'narrator', () => {
+      readDone.add(pageIndex);
+      saveProgress();
+      renderProgress();
+    });
+  });
+}
+function answer(btn, choice) {
+  const card = document.getElementById('question-card');
+  card.querySelectorAll('.choice').forEach(node => node.disabled = true);
+  const feedback = document.getElementById('feedback');
+  if (choice.correct) {
+    btn.classList.add('correct');
+    questionDone.add(pageIndex);
+    feedback.textContent = currentPage().question.feedback;
+    saveProgress();
+    renderProgress();
+    speak(`答對了！${currentPage().question.feedback}`, 'praise');
+  } else {
+    btn.classList.add('wrong');
+    feedback.textContent = '再想想看。先看圖片，再試一次。';
+    speak('再想想看。先看圖片，再試一次。', 'guide');
+    setTimeout(() => {
+      card.querySelectorAll('.choice').forEach(node => {
+        if (!node.classList.contains('wrong')) node.disabled = false;
+      });
+    }, 1300);
+  }
+}
+function resetLesson() {
+  stopVoice();
+  readDone = new Set();
+  questionDone = new Set();
+  pageIndex = 0;
+  saveProgress();
+  render();
+  speak('任務重來。我們從第一頁開始。', 'guide');
+}
+function toggleBrowseMode(force) {
+  const next = typeof force === 'boolean' ? force : !document.body.classList.contains('browse-mode');
+  document.body.classList.toggle('browse-mode', next);
+  localStorage.setItem('foodAdventureBrowseMode', next ? '1' : '0');
+  document.getElementById('browse-btn').textContent = next ? '一般模式' : '大圖模式';
+}
+if ('speechSynthesis' in window) {
+  speechSynthesis.onvoiceschanged = () => { cachedVoice = findVoice(); };
+  speechSynthesis.getVoices();
+}
+window.foodPicturebookStatus = () => ({
+  pages: LESSON.length,
+  pageIndex,
+  imageLoaded: document.getElementById('book-image').naturalWidth > 0,
+  companionLoaded: document.getElementById('companion-img').naturalWidth > 0,
+  questionDone: questionDone.size,
+  voiceMode: document.documentElement.dataset.voiceMode || 'ready'
+});
+render();
+toggleBrowseMode(localStorage.getItem('foodAdventureBrowseMode') !== '0');
+</script>
+</body>
+</html>
