@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="googlebot" content="noindex,nofollow,noarchive">
+<title>繪本教學頁</title>
+<style>
+* { box-sizing: border-box; }
+:root {
+  --ink: #263238;
+  --muted: #667085;
+  --line: rgba(38,50,56,.14);
+  --paper: rgba(255,255,255,.95);
+  --green: #16a34a;
+  --blue: #2563eb;
+  --orange: #ea580c;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 10% 8%, rgba(254,240,138,.6), transparent 25%),
+    radial-gradient(circle at 88% 12%, rgba(186,230,253,.56), transparent 28%),
+    linear-gradient(180deg, #fff7ed 0%, #f0fdf4 48%, #eff6ff 100%);
+}
+body.browse-mode .layout { grid-template-columns: 1fr; }
+body.browse-mode .viewer,
+body.browse-mode .panel { max-width: 1120px; margin: 0 auto; }
+body.browse-mode .book-wrap { min-height: 640px; }
+body.browse-mode .book-wrap img { width: auto; max-width: 100%; max-height: 78vh; }
+button {
+  border: 0;
+  border-radius: 14px;
+  min-height: 48px;
+  padding: 12px 16px;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  color: var(--ink);
+  box-shadow: 0 4px 0 rgba(38,50,56,.18);
+}
+button:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(38,50,56,.18); }
+button:disabled { cursor: default; opacity: .72; transform: none; }
+.app { width: min(1280px, 100%); margin: 0 auto; padding: 16px; }
+.top {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+h1 { margin: 0; font-size: clamp(24px, 3.4vw, 40px); color: #9a3412; }
+.subtitle { margin-top: 5px; color: var(--muted); font-weight: 850; line-height: 1.5; }
+.progress-card {
+  min-width: 230px;
+  padding: 12px;
+  border: 2px solid rgba(154,52,18,.12);
+  border-radius: 16px;
+  background: rgba(255,255,255,.76);
+}
+.progress-label { display: flex; justify-content: space-between; font-weight: 950; color: #9a3412; }
+.bar { height: 12px; margin-top: 8px; border-radius: 999px; background: rgba(154,52,18,.12); overflow: hidden; }
+.bar span { display: block; width: 0%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #f97316, #22c55e); transition: width .25s ease; }
+.layout {
+  display: grid;
+  grid-template-columns: minmax(520px, 1.2fr) minmax(360px, .8fr);
+  gap: 16px;
+  align-items: start;
+}
+.viewer, .panel {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 16px 38px rgba(38,50,56,.14);
+  overflow: hidden;
+}
+.viewer-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  background: rgba(255,247,237,.88);
+  border-bottom: 1px solid var(--line);
+}
+.page-title { font-size: 20px; font-weight: 950; color: #9a3412; }
+.page-chip { border-radius: 999px; padding: 7px 12px; background: #fff; color: #047857; font-weight: 950; }
+.book-wrap {
+  display: grid;
+  place-items: center;
+  min-height: 520px;
+  padding: 18px;
+  background: #fff;
+}
+.book-wrap img {
+  display: block;
+  width: 100%;
+  max-height: 72vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 12px 24px rgba(38,50,56,.16);
+}
+.nav {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border-top: 1px solid var(--line);
+}
+.nav button { background: #ecfdf5; color: #166534; }
+.thumbs { display: flex; gap: 6px; overflow-x: auto; padding: 2px; }
+.dot {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #475569;
+  box-shadow: inset 0 0 0 2px rgba(71,85,105,.15);
+}
+.dot.active { background: #f97316; color: #fff; box-shadow: inset 0 0 0 2px #ea580c; }
+.dot.done { background: #dcfce7; color: #166534; }
+.panel { padding: 14px; }
+.companion {
+  display: grid;
+  grid-template-columns: 112px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 2px solid rgba(251,146,60,.38);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fff7ed, #ecfdf5);
+}
+.companion img {
+  width: 108px;
+  height: 108px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 12px rgba(38,50,56,.18));
+  animation: float 2.8s ease-in-out infinite;
+}
+@keyframes float { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-7px) rotate(1deg); } }
+.companion-name { margin: 0 0 4px; font-size: 22px; font-weight: 950; color: #047857; }
+.companion-line { margin: 0; font-size: 17px; line-height: 1.65; font-weight: 850; color: #344054; }
+.section-title { margin: 16px 0 8px; font-size: 18px; color: #9a3412; font-weight: 950; }
+.story {
+  padding: 14px;
+  border: 2px solid #fed7aa;
+  border-radius: 16px;
+  background: #fff7ed;
+  font-size: 22px;
+  line-height: 1.9;
+  font-weight: 950;
+}
+.controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+.primary { background: linear-gradient(180deg, #fb923c, #ea580c); color: #fff; }
+.slow { background: linear-gradient(180deg, #38bdf8, #2563eb); color: #fff; }
+.guide { background: linear-gradient(180deg, #86efac, #16a34a); color: #fff; }
+.quiet { background: #f1f5f9; }
+.question-card {
+  padding: 14px;
+  border: 2px dashed rgba(234,88,12,.28);
+  border-radius: 16px;
+  background: #f8fafc;
+}
+.q-text { font-size: 21px; line-height: 1.6; color: #c2410c; font-weight: 950; }
+.q-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.q-actions button { min-height: 42px; padding: 9px 12px; font-size: 15px; }
+.choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+.choice {
+  min-height: 100px;
+  padding: 10px;
+  background: #fff;
+  border: 3px solid #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.choice .icon { font-size: 34px; line-height: 1; }
+.choice.correct { background: #dcfce7; border-color: #22c55e; }
+.choice.wrong { background: #fee2e2; border-color: #ef4444; }
+.feedback { min-height: 28px; margin-top: 10px; color: #047857; font-weight: 950; line-height: 1.6; }
+.voice-status, .load-status { margin-top: 8px; padding: 9px 10px; border-radius: 12px; background: #f8fafc; color: #475569; font-size: 13px; font-weight: 800; }
+.finish {
+  display: none;
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ffedd5, #dcfce7);
+  border: 2px solid rgba(249,115,22,.3);
+  font-weight: 950;
+  line-height: 1.7;
+}
+.finish.show { display: block; }
+.hidden { display: none !important; }
+@media (max-width: 920px) {
+  .top, .layout { grid-template-columns: 1fr; }
+  .progress-card { min-width: 0; }
+  .book-wrap { min-height: 340px; }
+}
+@media (max-width: 560px) {
+  .app { padding: 10px; }
+  .viewer, .panel { border-radius: 14px; }
+  .companion { grid-template-columns: 86px 1fr; }
+  .companion img { width: 82px; height: 82px; }
+  .story { font-size: 19px; }
+  .choices { grid-template-columns: 1fr; }
+  .nav { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div>
+      <h1 id="lesson-title">繪本教學頁</h1>
+      <div class="subtitle" id="lesson-subtitle">正在載入繪本資料...</div>
+    </div>
+    <div class="progress-card">
+      <div class="progress-label"><span id="progress-text">完成 0 / 0</span><span id="score-text">0 題</span></div>
+      <div class="bar"><span id="progress-bar"></span></div>
+    </div>
+  </header>
+
+  <div class="load-status" id="load-status">正在讀取 lesson...</div>
+
+  <div class="layout hidden" id="lesson-layout">
+    <section class="viewer" aria-label="繪本頁面">
+      <div class="viewer-head">
+        <div class="page-title" id="page-title">第 1 頁</div>
+        <div class="page-chip" id="page-chip">1 / 1</div>
+      </div>
+      <div class="book-wrap"><img id="book-image" src="" alt="繪本頁面"></div>
+      <div class="nav">
+        <button id="prev-btn" aria-label="上一頁" onclick="goPage(pageIndex - 1)">上一頁</button>
+        <div class="thumbs" id="thumbs" aria-label="頁面選單"></div>
+        <button id="next-btn" aria-label="下一頁" onclick="goPage(pageIndex + 1)">下一頁</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="教學互動">
+      <div class="companion">
+        <img id="companion-img" src="" alt="陪讀精靈">
+        <div>
+          <h2 class="companion-name" id="companion-name">柔柔精靈</h2>
+          <p class="companion-line" id="companion-line"></p>
+        </div>
+      </div>
+      <div class="section-title">我們一起讀</div>
+      <div class="story" id="story"></div>
+      <div class="controls">
+        <button class="primary" aria-label="聽這一頁" onclick="readPage(false)">聽這一頁</button>
+        <button class="slow" aria-label="慢慢念" onclick="readPage(true)">慢慢念</button>
+        <button class="guide" id="guide-btn" aria-label="聽精靈提醒" onclick="speakGuideOnce()">聽精靈</button>
+        <button class="quiet" aria-label="停止聲音" onclick="stopVoice()">停止</button>
+        <button class="quiet" id="browse-btn" aria-label="切換大圖模式" onclick="toggleBrowseMode()">大圖模式</button>
+        <button class="quiet" aria-label="重來" onclick="resetLesson()">重來</button>
+      </div>
+      <div class="voice-status" id="voice-status">配音系統準備中...</div>
+      <div class="section-title">本頁任務</div>
+      <div class="question-card" id="question-card"></div>
+      <div class="finish" id="finish-box"></div>
+    </section>
+  </div>
+</main>
+
+<script>
+const FAIRIES = {
+  happy: { name: '笑笑精靈', img: 'assets/preschool-fairies/happy-fairy.png' },
+  calm: { name: '柔柔精靈', img: 'assets/preschool-fairies/calm-fairy.png' },
+  angry: { name: '火火精靈', img: 'assets/preschool-fairies/angry-fairy.png' },
+  sad: { name: '淚淚精靈', img: 'assets/preschool-fairies/sad-fairy.png' },
+  scared: { name: '抖抖精靈', img: 'assets/preschool-fairies/scared-fairy.png' }
+};
+let config = null;
+let pageIndex = 0;
+let readDone = new Set();
+let questionDone = new Set();
+let guideDone = new Set();
+let cachedVoice = null;
+
+function loadLesson() {
+  const params = new URLSearchParams(location.search);
+  const lesson = params.get('lesson');
+  const status = document.getElementById('load-status');
+  if (!lesson || !/^[a-z0-9-]+$/.test(lesson)) {
+    status.textContent = '請在網址加上 ?lesson=繪本代號，例如 picturebook-imported.html?lesson=my-book';
+    return;
+  }
+  const script = document.createElement('script');
+  script.src = `assets/picturebooks/${lesson}/lesson.js?v=${Date.now()}`;
+  script.onload = initLesson;
+  script.onerror = () => {
+    status.textContent = `找不到 assets/picturebooks/${lesson}/lesson.js，請先執行匯入工具。`;
+  };
+  document.head.appendChild(script);
+}
+
+function initLesson() {
+  config = window.PICTUREBOOK_LESSON_CONFIG;
+  if (!config || !Array.isArray(config.pages) || !config.pages.length) {
+    document.getElementById('load-status').textContent = 'lesson.js 格式不完整，至少需要 pages。';
+    return;
+  }
+  document.title = config.title || '繪本教學頁';
+  document.getElementById('lesson-title').textContent = config.title || '繪本教學頁';
+  document.getElementById('lesson-subtitle').textContent = config.subtitle || '';
+  document.getElementById('finish-box').textContent = config.finishText || '完成了！';
+  document.getElementById('load-status').classList.add('hidden');
+  document.getElementById('lesson-layout').classList.remove('hidden');
+  pageIndex = Number(localStorage.getItem(key('page')) || 0);
+  if (pageIndex < 0 || pageIndex >= config.pages.length) pageIndex = 0;
+  readDone = new Set(JSON.parse(localStorage.getItem(key('readDone')) || '[]'));
+  questionDone = new Set(JSON.parse(localStorage.getItem(key('questionDone')) || '[]'));
+  guideDone = new Set(JSON.parse(localStorage.getItem(key('guideDone')) || '[]'));
+  render();
+  toggleBrowseMode(localStorage.getItem(key('browseMode')) !== '0');
+}
+
+function key(name) {
+  return `${config.storageKey || config.id || 'picturebook'}:${name}`;
+}
+
+function currentPage() { return config.pages[pageIndex]; }
+function imagePath(item) {
+  if (/^(https?:)?\/\//.test(item.image) || item.image.startsWith('assets/')) return item.image;
+  return `${config.imageRoot || ''}${item.image}`;
+}
+function saveProgress() {
+  localStorage.setItem(key('page'), String(pageIndex));
+  localStorage.setItem(key('readDone'), JSON.stringify([...readDone]));
+  localStorage.setItem(key('questionDone'), JSON.stringify([...questionDone]));
+  localStorage.setItem(key('guideDone'), JSON.stringify([...guideDone]));
+}
+function render() {
+  const item = currentPage();
+  const fairy = FAIRIES[item.fairy] || FAIRIES.calm;
+  document.getElementById('page-title').textContent = item.title || `第 ${pageIndex + 1} 頁`;
+  document.getElementById('page-chip').textContent = `${pageIndex + 1} / ${config.pages.length}`;
+  const image = document.getElementById('book-image');
+  image.src = imagePath(item);
+  image.alt = `第 ${pageIndex + 1} 頁：${item.title || ''}`;
+  document.getElementById('companion-img').src = fairy.img;
+  document.getElementById('companion-img').alt = fairy.name;
+  document.getElementById('companion-name').textContent = fairy.name;
+  document.getElementById('companion-line').textContent = `「${item.companionLine || ''}」`;
+  document.getElementById('story').textContent = item.text || '';
+  document.getElementById('prev-btn').disabled = pageIndex === 0;
+  document.getElementById('next-btn').disabled = pageIndex === config.pages.length - 1;
+  const guideBtn = document.getElementById('guide-btn');
+  guideBtn.disabled = guideDone.has(pageIndex);
+  guideBtn.textContent = guideDone.has(pageIndex) ? '精靈已說' : '聽精靈';
+  renderThumbs();
+  renderQuestion();
+  renderProgress();
+}
+function renderThumbs() {
+  const box = document.getElementById('thumbs');
+  box.innerHTML = '';
+  config.pages.forEach((_, index) => {
+    const btn = document.createElement('button');
+    btn.className = 'dot' + (index === pageIndex ? ' active' : '') + (questionDone.has(index) ? ' done' : '');
+    btn.textContent = index + 1;
+    btn.setAttribute('aria-label', `第 ${index + 1} 頁`);
+    btn.onclick = () => goPage(index);
+    box.appendChild(btn);
+  });
+}
+function renderQuestion() {
+  const item = currentPage();
+  const question = item.question || fallbackQuestion();
+  const card = document.getElementById('question-card');
+  card.innerHTML = '';
+  const prompt = document.createElement('div');
+  prompt.className = 'q-text';
+  prompt.textContent = question.prompt;
+  const actions = document.createElement('div');
+  actions.className = 'q-actions';
+  const replay = document.createElement('button');
+  replay.className = 'quiet';
+  replay.type = 'button';
+  replay.textContent = '覆述題目';
+  replay.setAttribute('aria-label', '覆述題目');
+  replay.onclick = () => repeatQuestion(question);
+  actions.appendChild(replay);
+  const choices = document.createElement('div');
+  choices.className = 'choices';
+  question.choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.setAttribute('aria-label', choice.label);
+    btn.innerHTML = `<span class="icon">${choice.icon || '•'}</span><span>${choice.label}</span>`;
+    btn.onclick = () => answer(btn, choice, question);
+    if (questionDone.has(pageIndex)) btn.disabled = true;
+    choices.appendChild(btn);
+  });
+  const feedback = document.createElement('div');
+  feedback.className = 'feedback';
+  feedback.id = 'feedback';
+  if (questionDone.has(pageIndex)) feedback.textContent = question.feedback || '答對了。';
+  card.append(prompt, actions, choices, feedback);
+}
+function fallbackQuestion() {
+  return {
+    prompt: '這一頁可以先做什麼？',
+    choices: [
+      { label: '看圖片', icon: '👀', correct: true },
+      { label: '亂按', icon: '🌀' },
+      { label: '跑走', icon: '🏃' }
+    ],
+    feedback: '對，先看圖片，再慢慢讀。'
+  };
+}
+function renderProgress() {
+  const percent = Math.round((questionDone.size / config.pages.length) * 100);
+  document.getElementById('progress-text').textContent = `完成 ${questionDone.size} / ${config.pages.length}`;
+  document.getElementById('score-text').textContent = `${questionDone.size} 題`;
+  document.getElementById('progress-bar').style.width = `${percent}%`;
+  document.getElementById('finish-box').classList.toggle('show', questionDone.size === config.pages.length);
+}
+function goPage(index) {
+  if (index < 0 || index >= config.pages.length) return;
+  stopVoice();
+  pageIndex = index;
+  saveProgress();
+  render();
+}
+function findVoice() {
+  if (!('speechSynthesis' in window)) return null;
+  const voices = speechSynthesis.getVoices();
+  const preferred = ['美佳', 'Mei-Jia', '雅婷', 'Yating', 'Hanhan', 'Microsoft HsiaoYu', 'Microsoft HsiaoChen'];
+  for (const name of preferred) {
+    const voice = voices.find(v => v.name.includes(name) && v.lang && v.lang.toLowerCase().startsWith('zh'));
+    if (voice) return voice;
+  }
+  return voices.find(v => v.lang === 'zh-TW') || voices.find(v => v.lang && v.lang.toLowerCase().startsWith('zh')) || null;
+}
+function speak(text, role = 'narrator', done) {
+  if (!text) { if (done) done(); return; }
+  if (!('speechSynthesis' in window)) { if (done) done(); return; }
+  speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'zh-TW';
+  const settings = {
+    narrator: { rate: .82, pitch: 1.14 },
+    slow: { rate: .58, pitch: 1.2 },
+    guide: { rate: .76, pitch: 1.3 },
+    praise: { rate: .88, pitch: 1.45 }
+  }[role] || { rate: .82, pitch: 1.14 };
+  utterance.rate = settings.rate;
+  utterance.pitch = settings.pitch;
+  const voice = cachedVoice || findVoice();
+  if (voice) { utterance.voice = voice; cachedVoice = voice; }
+  utterance.onend = () => { if (done) done(); };
+  document.documentElement.dataset.voiceMode = 'tts';
+  document.getElementById('voice-status').textContent = '配音模式：教學 TTS' + (voice ? '｜聲音：' + voice.name : '');
+  speechSynthesis.speak(utterance);
+}
+function stopVoice() { if ('speechSynthesis' in window) speechSynthesis.cancel(); }
+function speakGuideOnce() {
+  if (guideDone.has(pageIndex)) return;
+  const item = currentPage();
+  const fairy = FAIRIES[item.fairy] || FAIRIES.calm;
+  guideDone.add(pageIndex);
+  saveProgress();
+  render();
+  speak(`${fairy.name}說：${item.companionLine || ''}`, 'guide');
+}
+function repeatQuestion(question) {
+  speak(question.prompt || '', 'narrator');
+}
+function readPage(slow) {
+  const item = currentPage();
+  speak(item.text || '', slow ? 'slow' : 'narrator', () => {
+    readDone.add(pageIndex);
+    saveProgress();
+    renderProgress();
+  });
+}
+function answer(btn, choice, question) {
+  const card = document.getElementById('question-card');
+  card.querySelectorAll('.choice').forEach(node => node.disabled = true);
+  const feedback = document.getElementById('feedback');
+  if (choice.correct) {
+    const answeredPage = pageIndex;
+    btn.classList.add('correct');
+    questionDone.add(pageIndex);
+    feedback.textContent = question.feedback || '答對了。';
+    saveProgress();
+    renderProgress();
+    if (answeredPage < config.pages.length - 1) {
+      setTimeout(() => {
+        if (pageIndex === answeredPage) goPage(answeredPage + 1);
+      }, 900);
+    }
+  } else {
+    btn.classList.add('wrong');
+    feedback.textContent = '再想想看。先看圖片，再試一次。';
+    setTimeout(() => {
+      card.querySelectorAll('.choice').forEach(node => {
+        if (!node.classList.contains('wrong')) node.disabled = false;
+      });
+    }, 1300);
+  }
+}
+function resetLesson() {
+  stopVoice();
+  readDone = new Set();
+  questionDone = new Set();
+  guideDone = new Set();
+  pageIndex = 0;
+  saveProgress();
+  render();
+  speak('任務重來。我們從第一頁開始。', 'guide');
+}
+function toggleBrowseMode(force) {
+  const next = typeof force === 'boolean' ? force : !document.body.classList.contains('browse-mode');
+  document.body.classList.toggle('browse-mode', next);
+  localStorage.setItem(key('browseMode'), next ? '1' : '0');
+  document.getElementById('browse-btn').textContent = next ? '一般模式' : '大圖模式';
+}
+if ('speechSynthesis' in window) {
+  speechSynthesis.onvoiceschanged = () => { cachedVoice = findVoice(); };
+  speechSynthesis.getVoices();
+}
+window.importedPicturebookStatus = () => ({
+  id: config && config.id,
+  pages: config ? config.pages.length : 0,
+  pageIndex,
+  imageLoaded: document.getElementById('book-image').naturalWidth > 0,
+  companionLoaded: document.getElementById('companion-img').naturalWidth > 0,
+  questionDone: questionDone.size,
+  voiceMode: document.documentElement.dataset.voiceMode || 'ready'
+});
+loadLesson();
+</script>
+</body>
+</html>
