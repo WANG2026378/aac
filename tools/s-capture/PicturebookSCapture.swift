@@ -54,10 +54,11 @@ final class SelectionView: NSView {
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem!
-    private var panel: NSPanel?
-    private var statusLabel: NSTextField?
     private var eventMonitor: Any?
     private var localMonitor: Any?
+    private var autoTimer: Timer?
+    private var isAutoRunning = false
+    private var autoRemaining = 0
     private var prefix = "picturebook"
     private var page = 1
     private var captureRect: CGRect?
@@ -69,7 +70,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.setActivationPolicy(.accessory)
         try? FileManager.default.createDirectory(at: outputDir, withIntermediateDirectories: true)
         setupStatusItem()
-        setupPanel()
         requestPermissions()
         promptPrefix()
         beginSelection()
@@ -80,71 +80,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         statusItem.button?.title = "繪本 0"
         let menu = NSMenu()
-        menu.addItem(NSMenuItem(title: "按 S 擷取目前頁", action: nil, keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "上方工具已啟動：按 S 拍照", action: nil, keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: "顯示浮動面板", action: #selector(showPanel), keyEquivalent: "p"))
         menu.addItem(NSMenuItem(title: "重新框選範圍", action: #selector(reselectRegion), keyEquivalent: "r"))
-        menu.addItem(NSMenuItem(title: "測試拍一張", action: #selector(captureNow), keyEquivalent: "s"))
+        menu.addItem(NSMenuItem(title: "拍一張", action: #selector(captureNow), keyEquivalent: "s"))
+        menu.addItem(NSMenuItem(title: "開始自動翻頁拍照", action: #selector(startAutoCapture), keyEquivalent: "a"))
+        menu.addItem(NSMenuItem(title: "停止自動拍照", action: #selector(stopAutoCapture), keyEquivalent: "."))
         menu.addItem(NSMenuItem(title: "開啟儲存資料夾", action: #selector(openFolder), keyEquivalent: "o"))
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "結束", action: #selector(quit), keyEquivalent: "q"))
         statusItem.menu = menu
-    }
-
-    private func setupPanel() {
-        let panel = NSPanel(
-            contentRect: NSRect(x: 120, y: 120, width: 340, height: 168),
-            styleMask: [.titled, .closable, .utilityWindow],
-            backing: .buffered,
-            defer: false
-        )
-        panel.title = "繪本S鍵截圖"
-        panel.level = .floating
-        panel.hidesOnDeactivate = false
-        panel.isReleasedWhenClosed = false
-        panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
-
-        let root = NSView(frame: NSRect(x: 0, y: 0, width: 340, height: 168))
-
-        let title = NSTextField(labelWithString: "翻頁後按 S，或按「拍一張」")
-        title.font = .boldSystemFont(ofSize: 17)
-        title.frame = NSRect(x: 18, y: 122, width: 304, height: 26)
-        root.addSubview(title)
-
-        let status = NSTextField(labelWithString: "尚未框選範圍")
-        status.textColor = .secondaryLabelColor
-        status.frame = NSRect(x: 18, y: 94, width: 304, height: 22)
-        root.addSubview(status)
-        statusLabel = status
-
-        let capture = NSButton(title: "拍一張", target: self, action: #selector(captureNow))
-        capture.bezelStyle = .rounded
-        capture.frame = NSRect(x: 18, y: 48, width: 94, height: 32)
-        root.addSubview(capture)
-
-        let select = NSButton(title: "重選範圍", target: self, action: #selector(reselectRegion))
-        select.bezelStyle = .rounded
-        select.frame = NSRect(x: 123, y: 48, width: 94, height: 32)
-        root.addSubview(select)
-
-        let folder = NSButton(title: "開資料夾", target: self, action: #selector(openFolder))
-        folder.bezelStyle = .rounded
-        folder.frame = NSRect(x: 228, y: 48, width: 94, height: 32)
-        root.addSubview(folder)
-
-        let quitButton = NSButton(title: "結束", target: self, action: #selector(quit))
-        quitButton.bezelStyle = .rounded
-        quitButton.frame = NSRect(x: 228, y: 12, width: 94, height: 28)
-        root.addSubview(quitButton)
-
-        panel.contentView = root
-        panel.makeKeyAndOrderFront(nil)
-        self.panel = panel
-    }
-
-    @objc private func showPanel() {
-        panel?.makeKeyAndOrderFront(nil)
-        panel?.orderFrontRegardless()
     }
 
     private func requestPermissions() {
@@ -160,8 +105,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func promptPrefix() {
         NSApp.activate(ignoringOtherApps: true)
         let alert = NSAlert()
-        alert.messageText = "繪本S鍵截圖"
-        alert.informativeText = "請輸入這本書的檔名前綴。"
+        alert.messageText = "繪本上方截圖"
+        alert.informativeText = "請輸入這本書的檔名前綴。啟動後工具會掛在上方選單列。"
         alert.addButton(withTitle: "開始")
         alert.addButton(withTitle: "取消")
         let field = NSTextField(frame: NSRect(x: 0, y: 0, width: 260, height: 28))
@@ -211,8 +156,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func showReadyAlert() {
-        updateStatus("範圍已設定。回電子書翻頁後按 S。")
-        showPanel()
+        updateStatus("範圍已設定。按 S 拍照，或從上方選單開始自動翻頁拍照。")
+        notify("範圍已設定。按 S 拍照。")
     }
 
     private func installHotKeyMonitor() {
@@ -227,14 +172,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func handle(event: NSEvent) {
         guard event.modifierFlags.intersection([.command, .control, .option]).isEmpty else { return }
-        guard event.charactersIgnoringModifiers?.lowercased() == "s" else { return }
-        captureNow()
+        switch event.charactersIgnoringModifiers?.lowercased() {
+        case "s":
+            captureNow()
+        case ".":
+            stopAutoCapture()
+        default:
+            return
+        }
     }
 
     @objc private func captureNow() {
+        _ = captureOne(showError: true)
+    }
+
+    @discardableResult
+    private func captureOne(showError: Bool) -> Bool {
         guard let rect = captureRect else {
             beginSelection()
-            return
+            return false
         }
         let pageText = String(format: "%02d", page)
         let url = outputDir.appendingPathComponent("\(prefix)-page-\(pageText).jpg")
@@ -242,13 +198,83 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if result {
             page += 1
             updateStatus("已存：\(url.lastPathComponent)")
-            showPanel()
+            notify("已存：\(url.lastPathComponent)")
             NSSound(named: "Glass")?.play()
+            return true
         } else {
             updateStatus("沒有存成功。請檢查螢幕錄製權限。")
-            showPanel()
-            NSSound.beep()
+            if showError {
+                notify("沒有存成功，請檢查螢幕錄製權限。")
+                NSSound.beep()
+            }
+            return false
         }
+    }
+
+    @objc private func startAutoCapture() {
+        guard captureRect != nil else {
+            beginSelection()
+            return
+        }
+        NSApp.activate(ignoringOtherApps: true)
+        let alert = NSAlert()
+        alert.messageText = "自動翻頁拍照"
+        alert.informativeText = "要自動拍幾頁？工具會拍一張、按右方向鍵翻頁、等待 1.2 秒，再拍下一張。"
+        alert.addButton(withTitle: "開始")
+        alert.addButton(withTitle: "取消")
+        let field = NSTextField(frame: NSRect(x: 0, y: 0, width: 220, height: 28))
+        field.stringValue = "10"
+        alert.accessoryView = field
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        autoRemaining = max(1, Int(field.stringValue) ?? 10)
+        isAutoRunning = true
+        updateStatus("自動拍照中：剩 \(autoRemaining) 頁")
+        notify("自動翻頁拍照開始。按 . 可停止。")
+        scheduleAutoCapture(delay: 0.2)
+    }
+
+    @objc private func stopAutoCapture() {
+        autoTimer?.invalidate()
+        autoTimer = nil
+        isAutoRunning = false
+        autoRemaining = 0
+        updateStatus("自動拍照已停止")
+        notify("自動拍照已停止。")
+    }
+
+    private func scheduleAutoCapture(delay: TimeInterval) {
+        autoTimer?.invalidate()
+        autoTimer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { [weak self] _ in
+            self?.autoStep()
+        }
+    }
+
+    private func autoStep() {
+        guard isAutoRunning, autoRemaining > 0 else {
+            stopAutoCapture()
+            return
+        }
+        if captureOne(showError: false) {
+            autoRemaining -= 1
+            if autoRemaining <= 0 {
+                stopAutoCapture()
+                return
+            }
+            sendRightArrow()
+            updateStatus("自動拍照中：剩 \(autoRemaining) 頁")
+            scheduleAutoCapture(delay: 1.2)
+        } else {
+            stopAutoCapture()
+            updateStatus("自動拍照失敗，已停止")
+        }
+    }
+
+    private func sendRightArrow() {
+        let source = CGEventSource(stateID: .hidSystemState)
+        let keyDown = CGEvent(keyboardEventSource: source, virtualKey: 124, keyDown: true)
+        let keyUp = CGEvent(keyboardEventSource: source, virtualKey: 124, keyDown: false)
+        keyDown?.post(tap: .cghidEventTap)
+        keyUp?.post(tap: .cghidEventTap)
     }
 
     private func runScreenCapture(rect: CGRect, output: URL) -> Bool {
@@ -270,7 +296,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func updateStatus(_ message: String) {
         statusItem.button?.title = "繪本 \(page - 1)"
-        statusLabel?.stringValue = message
+        statusItem.button?.toolTip = message
+    }
+
+    private func notify(_ message: String) {
+        let notification = NSUserNotification()
+        notification.title = "繪本上方截圖"
+        notification.informativeText = message
+        NSUserNotificationCenter.default.deliver(notification)
     }
 
     @objc private func openFolder() {
@@ -278,6 +311,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func quit() {
+        stopAutoCapture()
         NSApp.terminate(nil)
     }
 
