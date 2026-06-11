@@ -125,8 +125,8 @@ h1 {
 }
 .book-link {
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 12px;
+  grid-template-columns: 74px 1fr auto;
+  gap: 14px;
   align-items: center;
   padding: 12px;
   border-radius: 14px;
@@ -135,6 +135,15 @@ h1 {
   color: inherit;
   text-decoration: none;
   font-weight: 950;
+}
+.book-cover {
+  width: 74px;
+  aspect-ratio: 3 / 4;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #eff6ff;
+  border: 1px solid rgba(31,41,55,.12);
+  box-shadow: 0 8px 18px rgba(31,41,55,.14);
 }
 .book-link small {
   display: block;
@@ -228,6 +237,8 @@ h1 {
 @media (max-width: 820px) {
   .hero, .setup { grid-template-columns: 1fr; }
   .art { min-height: 260px; }
+  .book-link { grid-template-columns: 64px 1fr auto; }
+  .book-cover { width: 64px; }
 }
 </style>
 </head>
@@ -243,27 +254,27 @@ h1 {
       <p class="sub">已整理好的繪本先用本站看圖版閱讀，速度較順；需要借書或換書時，再開官方書庫。</p>
       <div class="local-books">
         <a class="book-link" href="picturebook-imported.html?lesson=good-talking">
-          <span>💬</span>
+          <img class="book-cover" src="assets/picturebooks/good-talking/page-01.jpg" alt="我學會好好說話封面">
           <span>我學會好好說話<small>17 頁看圖版 · 題目覆述 · 答對自動下一頁</small></span>
           <span>→</span>
         </a>
         <a class="book-link" href="picturebook-imported.html?lesson=carrot-friend">
-          <span>🥕</span>
+          <img class="book-cover" src="assets/picturebooks/carrot-friend/page-01.jpg" alt="我種出了一個好朋友封面">
           <span>我種出了一個好朋友<small>25 頁看圖版 · 友誼與尊重 · 答對自動下一頁</small></span>
           <span>→</span>
         </a>
         <a class="book-link" href="picturebook-imported.html?lesson=practice-again">
-          <span>🦉</span>
+          <img class="book-cover" src="assets/picturebooks/practice-again/page-01.jpg" alt="多練習幾次，我也做得到！封面">
           <span>多練習幾次，我也做得到！<small>16 頁看圖版 · 練習與挫折復原 · 答對自動下一頁</small></span>
           <span>→</span>
         </a>
         <a class="book-link" href="picturebook-demo.html">
-          <span>🦕</span>
+          <img class="book-cover" src="assets/picturebook-dino-emotion/page-01.jpg" alt="恐龍情緒繪本封面">
           <span>恐龍情緒繪本<small>20 頁完整教學版 · 情緒辨識 · 看圖回答</small></span>
           <span>→</span>
         </a>
         <a class="book-link" href="picturebook-food.html">
-          <span>🍽️</span>
+          <img class="book-cover" src="assets/picturebook-food-adventure/page-01.jpg" alt="歐露露不挑食封面">
           <span>歐露露不挑食<small>32 頁隱藏教學版 · 嘗試新食物 · 看圖回答</small></span>
           <span>→</span>
         </a>
