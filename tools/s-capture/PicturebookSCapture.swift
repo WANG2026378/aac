@@ -54,6 +54,8 @@ final class SelectionView: NSView {
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem!
+    private var panel: NSPanel?
+    private var statusLabel: NSTextField?
     private var eventMonitor: Any?
     private var localMonitor: Any?
     private var prefix = "picturebook"
@@ -67,6 +69,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.setActivationPolicy(.accessory)
         try? FileManager.default.createDirectory(at: outputDir, withIntermediateDirectories: true)
         setupStatusItem()
+        setupPanel()
         requestPermissions()
         promptPrefix()
         beginSelection()
@@ -79,12 +82,69 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let menu = NSMenu()
         menu.addItem(NSMenuItem(title: "按 S 擷取目前頁", action: nil, keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
+        menu.addItem(NSMenuItem(title: "顯示浮動面板", action: #selector(showPanel), keyEquivalent: "p"))
         menu.addItem(NSMenuItem(title: "重新框選範圍", action: #selector(reselectRegion), keyEquivalent: "r"))
         menu.addItem(NSMenuItem(title: "測試拍一張", action: #selector(captureNow), keyEquivalent: "s"))
         menu.addItem(NSMenuItem(title: "開啟儲存資料夾", action: #selector(openFolder), keyEquivalent: "o"))
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "結束", action: #selector(quit), keyEquivalent: "q"))
         statusItem.menu = menu
+    }
+
+    private func setupPanel() {
+        let panel = NSPanel(
+            contentRect: NSRect(x: 120, y: 120, width: 340, height: 168),
+            styleMask: [.titled, .closable, .utilityWindow],
+            backing: .buffered,
+            defer: false
+        )
+        panel.title = "繪本S鍵截圖"
+        panel.level = .floating
+        panel.hidesOnDeactivate = false
+        panel.isReleasedWhenClosed = false
+        panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+
+        let root = NSView(frame: NSRect(x: 0, y: 0, width: 340, height: 168))
+
+        let title = NSTextField(labelWithString: "翻頁後按 S，或按「拍一張」")
+        title.font = .boldSystemFont(ofSize: 17)
+        title.frame = NSRect(x: 18, y: 122, width: 304, height: 26)
+        root.addSubview(title)
+
+        let status = NSTextField(labelWithString: "尚未框選範圍")
+        status.textColor = .secondaryLabelColor
+        status.frame = NSRect(x: 18, y: 94, width: 304, height: 22)
+        root.addSubview(status)
+        statusLabel = status
+
+        let capture = NSButton(title: "拍一張", target: self, action: #selector(captureNow))
+        capture.bezelStyle = .rounded
+        capture.frame = NSRect(x: 18, y: 48, width: 94, height: 32)
+        root.addSubview(capture)
+
+        let select = NSButton(title: "重選範圍", target: self, action: #selector(reselectRegion))
+        select.bezelStyle = .rounded
+        select.frame = NSRect(x: 123, y: 48, width: 94, height: 32)
+        root.addSubview(select)
+
+        let folder = NSButton(title: "開資料夾", target: self, action: #selector(openFolder))
+        folder.bezelStyle = .rounded
+        folder.frame = NSRect(x: 228, y: 48, width: 94, height: 32)
+        root.addSubview(folder)
+
+        let quitButton = NSButton(title: "結束", target: self, action: #selector(quit))
+        quitButton.bezelStyle = .rounded
+        quitButton.frame = NSRect(x: 228, y: 12, width: 94, height: 28)
+        root.addSubview(quitButton)
+
+        panel.contentView = root
+        panel.makeKeyAndOrderFront(nil)
+        self.panel = panel
+    }
+
+    @objc private func showPanel() {
+        panel?.makeKeyAndOrderFront(nil)
+        panel?.orderFrontRegardless()
     }
 
     private func requestPermissions() {
@@ -151,12 +211,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func showReadyAlert() {
-        statusItem.button?.title = "繪本 \(page - 1)"
-        let alert = NSAlert()
-        alert.messageText = "設定完成"
-        alert.informativeText = "回到電子書翻頁。每翻一頁按 S，就會自動存成下一張。"
-        alert.addButton(withTitle: "知道了")
-        alert.runModal()
+        updateStatus("範圍已設定。回電子書翻頁後按 S。")
+        showPanel()
     }
 
     private func installHotKeyMonitor() {
@@ -180,25 +236,41 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             beginSelection()
             return
         }
-        guard let image = CGWindowListCreateImage(rect, .optionOnScreenOnly, kCGNullWindowID, [.bestResolution]) else {
-            NSSound.beep()
-            return
-        }
         let pageText = String(format: "%02d", page)
         let url = outputDir.appendingPathComponent("\(prefix)-page-\(pageText).jpg")
-        let rep = NSBitmapImageRep(cgImage: image)
-        guard let data = rep.representation(using: .jpeg, properties: [.compressionFactor: 0.92]) else {
-            NSSound.beep()
-            return
-        }
-        do {
-            try data.write(to: url)
+        let result = runScreenCapture(rect: rect, output: url)
+        if result {
             page += 1
-            statusItem.button?.title = "繪本 \(page - 1)"
+            updateStatus("已存：\(url.lastPathComponent)")
+            showPanel()
             NSSound(named: "Glass")?.play()
-        } catch {
+        } else {
+            updateStatus("沒有存成功。請檢查螢幕錄製權限。")
+            showPanel()
             NSSound.beep()
         }
+    }
+
+    private func runScreenCapture(rect: CGRect, output: URL) -> Bool {
+        let rectangle = "\(Int(rect.origin.x)),\(Int(rect.origin.y)),\(Int(rect.width)),\(Int(rect.height))"
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/sbin/screencapture")
+        process.arguments = ["-x", "-t", "jpg", "-R", rectangle, output.path]
+        do {
+            try? FileManager.default.removeItem(at: output)
+            try process.run()
+            process.waitUntilExit()
+            guard process.terminationStatus == 0 else { return false }
+            let values = try output.resourceValues(forKeys: [.fileSizeKey])
+            return (values.fileSize ?? 0) > 0
+        } catch {
+            return false
+        }
+    }
+
+    private func updateStatus(_ message: String) {
+        statusItem.button?.title = "繪本 \(page - 1)"
+        statusLabel?.stringValue = message
     }
 
     @objc private func openFolder() {
