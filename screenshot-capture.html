@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>螢幕擷取工具</title>
+<style>
+* { box-sizing: border-box; }
+:root {
+  --ink: #1f2937;
+  --muted: #64748b;
+  --line: rgba(31,41,55,.14);
+  --paper: rgba(255,255,255,.94);
+  --blue: #2563eb;
+  --green: #16a34a;
+  --orange: #ea580c;
+  --red: #dc2626;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  color: var(--ink);
+  background:
+    linear-gradient(180deg, #eef6ff 0%, #f7fee7 48%, #fff7ed 100%);
+}
+button, input, select {
+  font: inherit;
+}
+.wrap {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: 20px;
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.back {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.78);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 950;
+}
+.titlebar {
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--paper);
+  margin-bottom: 16px;
+  box-shadow: 0 14px 34px rgba(31,41,55,.1);
+}
+h1 {
+  margin: 0 0 6px;
+  font-size: clamp(30px, 5vw, 48px);
+  line-height: 1.08;
+  color: #1e3a8a;
+}
+.sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 17px;
+  font-weight: 850;
+  line-height: 1.6;
+}
+.app {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--paper);
+  box-shadow: 0 14px 34px rgba(31,41,55,.1);
+}
+.controls {
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+}
+.field {
+  display: grid;
+  gap: 7px;
+}
+.label {
+  font-weight: 950;
+  color: #334155;
+}
+.text-input, .select {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 850;
+}
+.crop-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.range-row {
+  display: grid;
+  gap: 6px;
+}
+.range-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 900;
+}
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--blue);
+}
+.btn-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.btn {
+  min-height: 48px;
+  border: 0;
+  border-radius: 13px;
+  color: #fff;
+  background: var(--blue);
+  box-shadow: 0 4px 0 rgba(30,64,175,.25);
+  font-weight: 950;
+  cursor: pointer;
+}
+.btn.green { background: var(--green); box-shadow: 0 4px 0 rgba(21,128,61,.25); }
+.btn.orange { background: var(--orange); box-shadow: 0 4px 0 rgba(154,52,18,.25); }
+.btn.red { background: var(--red); box-shadow: 0 4px 0 rgba(153,27,27,.22); }
+.btn.light {
+  color: #1e3a8a;
+  background: #dbeafe;
+  box-shadow: none;
+}
+.btn:disabled {
+  opacity: .48;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.hint {
+  padding: 12px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: #475569;
+  font-weight: 850;
+  line-height: 1.55;
+}
+.stage {
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+.preview-shell {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #0f172a;
+  border: 1px solid rgba(15,23,42,.26);
+  min-height: 430px;
+  display: grid;
+  place-items: center;
+}
+video {
+  width: 100%;
+  max-height: 70vh;
+  display: block;
+  background: #0f172a;
+}
+.empty {
+  padding: 32px;
+  color: #e2e8f0;
+  text-align: center;
+  font-weight: 900;
+  line-height: 1.7;
+}
+.crop-box {
+  position: absolute;
+  border: 3px solid #facc15;
+  box-shadow: 0 0 0 9999px rgba(15,23,42,.46);
+  pointer-events: none;
+  display: none;
+}
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  color: #475569;
+  font-weight: 900;
+  flex-wrap: wrap;
+}
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 10px;
+}
+.shot {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+.shot img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  display: block;
+  background: #eff6ff;
+}
+.shot-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  font-size: 13px;
+  font-weight: 950;
+}
+.mini {
+  border: 0;
+  border-radius: 9px;
+  background: #e0f2fe;
+  color: #075985;
+  font-weight: 950;
+  padding: 7px 8px;
+  cursor: pointer;
+}
+canvas { display: none; }
+@media (max-width: 880px) {
+  .app { grid-template-columns: 1fr; }
+  .preview-shell { min-height: 280px; }
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="top">
+    <a class="back" href="bookcase.html">← 回書櫃</a>
+  </div>
+
+  <section class="titlebar">
+    <h1>螢幕擷取工具</h1>
+    <p class="sub">選擇要分享的瀏覽器視窗，調整裁切範圍，逐頁擷取並下載成圖片。</p>
+  </section>
+
+  <section class="app">
+    <aside class="panel controls">
+      <div class="field">
+        <label class="label" for="book-name">檔名前綴</label>
+        <input id="book-name" class="text-input" value="picturebook" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label class="label" for="crop-preset">裁切模式</label>
+        <select id="crop-preset" class="select">
+          <option value="full">整個分享畫面</option>
+          <option value="book">去掉瀏覽器上方列</option>
+          <option value="portrait">直式書頁中央</option>
+          <option value="spread">橫式跨頁中央</option>
+          <option value="custom">自訂裁切</option>
+        </select>
+      </div>
+
+      <div class="crop-grid">
+        <div class="range-row">
+          <div class="range-head"><span>上</span><output id="top-out">0%</output></div>
+          <input id="crop-top" type="range" min="0" max="40" value="0">
+        </div>
+        <div class="range-row">
+          <div class="range-head"><span>下</span><output id="bottom-out">0%</output></div>
+          <input id="crop-bottom" type="range" min="0" max="40" value="0">
+        </div>
+        <div class="range-row">
+          <div class="range-head"><span>左</span><output id="left-out">0%</output></div>
+          <input id="crop-left" type="range" min="0" max="40" value="0">
+        </div>
+        <div class="range-row">
+          <div class="range-head"><span>右</span><output id="right-out">0%</output></div>
+          <input id="crop-right" type="range" min="0" max="40" value="0">
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button id="start-btn" class="btn">開始擷取</button>
+        <button id="stop-btn" class="btn light" disabled>停止</button>
+      </div>
+      <button id="capture-btn" class="btn green" disabled>擷取此頁</button>
+      <div class="btn-row">
+        <button id="undo-btn" class="btn orange" disabled>復原上一張</button>
+        <button id="download-all-btn" class="btn light" disabled>下載全部</button>
+      </div>
+      <button id="clear-btn" class="btn red" disabled>清空縮圖</button>
+
+      <div class="hint">
+        建議流程：官方書庫翻到一頁，回到這裡按「擷取此頁」，再回官方書庫翻下一頁。若要裁掉網址列，選「去掉瀏覽器上方列」或手動調整上方裁切。
+      </div>
+    </aside>
+
+    <section class="panel stage">
+      <div class="preview-shell" id="preview-shell">
+        <video id="preview" autoplay muted playsinline></video>
+        <div id="empty" class="empty">尚未開始。<br>按「開始擷取」後，選擇要擷取的視窗或螢幕。</div>
+        <div id="crop-box" class="crop-box"></div>
+      </div>
+      <div class="meta">
+        <span id="status">等待開始</span>
+        <span id="count">0 張</span>
+      </div>
+      <div id="gallery" class="gallery"></div>
+    </section>
+  </section>
+</main>
+<canvas id="canvas"></canvas>
+
+<script>
+const els = {
+  video: document.getElementById('preview'),
+  empty: document.getElementById('empty'),
+  cropBox: document.getElementById('crop-box'),
+  shell: document.getElementById('preview-shell'),
+  status: document.getElementById('status'),
+  count: document.getElementById('count'),
+  gallery: document.getElementById('gallery'),
+  canvas: document.getElementById('canvas'),
+  bookName: document.getElementById('book-name'),
+  preset: document.getElementById('crop-preset'),
+  start: document.getElementById('start-btn'),
+  stop: document.getElementById('stop-btn'),
+  capture: document.getElementById('capture-btn'),
+  undo: document.getElementById('undo-btn'),
+  downloadAll: document.getElementById('download-all-btn'),
+  clear: document.getElementById('clear-btn'),
+  top: document.getElementById('crop-top'),
+  bottom: document.getElementById('crop-bottom'),
+  left: document.getElementById('crop-left'),
+  right: document.getElementById('crop-right')
+};
+const outs = {
+  top: document.getElementById('top-out'),
+  bottom: document.getElementById('bottom-out'),
+  left: document.getElementById('left-out'),
+  right: document.getElementById('right-out')
+};
+let stream = null;
+let shots = [];
+
+const presets = {
+  full: [0, 0, 0, 0],
+  book: [12, 0, 0, 0],
+  portrait: [10, 8, 15, 15],
+  spread: [10, 7, 5, 5]
+};
+
+function setPreset(value) {
+  if (value === 'custom') return;
+  const crop = presets[value] || presets.full;
+  [els.top.value, els.bottom.value, els.left.value, els.right.value] = crop;
+  updateCropUi();
+}
+
+function updateCropUi() {
+  ['top', 'bottom', 'left', 'right'].forEach(key => {
+    outs[key].textContent = `${els[key].value}%`;
+  });
+  drawCropBox();
+}
+
+function cropValues() {
+  return {
+    top: Number(els.top.value) / 100,
+    bottom: Number(els.bottom.value) / 100,
+    left: Number(els.left.value) / 100,
+    right: Number(els.right.value) / 100
+  };
+}
+
+function drawCropBox() {
+  if (!stream || !els.video.videoWidth) {
+    els.cropBox.style.display = 'none';
+    return;
+  }
+  const crop = cropValues();
+  els.cropBox.style.display = 'block';
+  els.cropBox.style.top = `${crop.top * 100}%`;
+  els.cropBox.style.bottom = `${crop.bottom * 100}%`;
+  els.cropBox.style.left = `${crop.left * 100}%`;
+  els.cropBox.style.right = `${crop.right * 100}%`;
+}
+
+function setRunning(running) {
+  els.start.disabled = running;
+  els.stop.disabled = !running;
+  els.capture.disabled = !running;
+  els.empty.style.display = running ? 'none' : 'block';
+  drawCropBox();
+}
+
+async function startCapture() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+    els.status.textContent = '這個瀏覽器不支援螢幕擷取，請用 Safari 17、Chrome 或 Edge。';
+    return;
+  }
+  try {
+    stream = await navigator.mediaDevices.getDisplayMedia({
+      video: { displaySurface: 'browser' },
+      audio: false
+    });
+    els.video.srcObject = stream;
+    stream.getVideoTracks()[0].addEventListener('ended', stopCapture);
+    setRunning(true);
+    els.status.textContent = '已開始。翻到要擷取的頁面後按「擷取此頁」。';
+  } catch (error) {
+    els.status.textContent = '尚未取得螢幕權限。';
+  }
+}
+
+function stopCapture() {
+  if (stream) stream.getTracks().forEach(track => track.stop());
+  stream = null;
+  els.video.srcObject = null;
+  els.status.textContent = '已停止擷取';
+  setRunning(false);
+}
+
+function filename(index) {
+  const prefix = els.bookName.value.trim().replace(/[^\w\u4e00-\u9fa5-]+/g, '-') || 'picturebook';
+  return `${prefix}-page-${String(index).padStart(2, '0')}.jpg`;
+}
+
+function captureFrame() {
+  if (!stream || !els.video.videoWidth) return;
+  const crop = cropValues();
+  const width = els.video.videoWidth;
+  const height = els.video.videoHeight;
+  const sx = Math.round(width * crop.left);
+  const sy = Math.round(height * crop.top);
+  const sw = Math.max(1, Math.round(width * (1 - crop.left - crop.right)));
+  const sh = Math.max(1, Math.round(height * (1 - crop.top - crop.bottom)));
+  els.canvas.width = sw;
+  els.canvas.height = sh;
+  const ctx = els.canvas.getContext('2d', { alpha: false });
+  ctx.drawImage(els.video, sx, sy, sw, sh, 0, 0, sw, sh);
+  const dataUrl = els.canvas.toDataURL('image/jpeg', 0.9);
+  shots.push({ dataUrl, name: filename(shots.length + 1) });
+  renderGallery();
+  els.status.textContent = `已擷取 ${shots[shots.length - 1].name}`;
+}
+
+function renderGallery() {
+  els.gallery.innerHTML = '';
+  shots.forEach((shot, index) => {
+    const item = document.createElement('div');
+    item.className = 'shot';
+    item.innerHTML = `
+      <img src="${shot.dataUrl}" alt="第 ${index + 1} 張擷取圖">
+      <div class="shot-footer">
+        <span>${String(index + 1).padStart(2, '0')}</span>
+        <button class="mini" type="button">下載</button>
+      </div>
+    `;
+    item.querySelector('button').addEventListener('click', () => downloadShot(shot, index));
+    els.gallery.appendChild(item);
+  });
+  els.count.textContent = `${shots.length} 張`;
+  els.undo.disabled = shots.length === 0;
+  els.downloadAll.disabled = shots.length === 0;
+  els.clear.disabled = shots.length === 0;
+}
+
+function downloadShot(shot, index) {
+  const a = document.createElement('a');
+  a.href = shot.dataUrl;
+  a.download = shot.name || filename(index + 1);
+  a.click();
+}
+
+function downloadAll() {
+  shots.forEach((shot, index) => {
+    setTimeout(() => downloadShot(shot, index), index * 250);
+  });
+}
+
+els.start.addEventListener('click', startCapture);
+els.stop.addEventListener('click', stopCapture);
+els.capture.addEventListener('click', captureFrame);
+els.undo.addEventListener('click', () => {
+  shots.pop();
+  renderGallery();
+  els.status.textContent = shots.length ? '已移除上一張' : '縮圖已清空';
+});
+els.clear.addEventListener('click', () => {
+  shots = [];
+  renderGallery();
+  els.status.textContent = '縮圖已清空';
+});
+els.downloadAll.addEventListener('click', downloadAll);
+els.preset.addEventListener('change', event => setPreset(event.target.value));
+['top', 'bottom', 'left', 'right'].forEach(key => {
+  els[key].addEventListener('input', () => {
+    els.preset.value = 'custom';
+    updateCropUi();
+  });
+});
+els.video.addEventListener('loadedmetadata', drawCropBox);
+window.addEventListener('resize', drawCropBox);
+updateCropUi();
+</script>
+</body>
+</html>
