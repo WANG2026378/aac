@@ -67,7 +67,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         .appendingPathComponent("繪本截圖", isDirectory: true)
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        NSApp.setActivationPolicy(.accessory)
+        NSApp.setActivationPolicy(.regular)
+        NSApp.activate(ignoringOtherApps: true)
         try? FileManager.default.createDirectory(at: outputDir, withIntermediateDirectories: true)
         setupStatusItem()
         requestPermissions()
@@ -78,7 +79,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        statusItem.button?.title = "繪本 0"
+        statusItem.button?.title = "📸"
+        statusItem.button?.toolTip = "繪本上方截圖：按 S 拍照"
         let menu = NSMenu()
         menu.addItem(NSMenuItem(title: "上方工具已啟動：按 S 拍照", action: nil, keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
@@ -295,7 +297,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func updateStatus(_ message: String) {
-        statusItem.button?.title = "繪本 \(page - 1)"
+        statusItem.button?.title = "📸 \(page - 1)"
         statusItem.button?.toolTip = message
     }
 
