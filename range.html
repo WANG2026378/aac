@@ -343,6 +343,100 @@
   pickVoice();
   if(synth) synth.onvoiceschanged=pickVoice;
 
+  let voiceAudioManifestPromise=null;
+  let voiceAudioByText=new Map();
+  let currentVoiceAudio=null;
+
+  function voiceTextKey(text){
+    return String(text||"")
+      .replace(/\s+/g,"")
+      .replace(/[，。！？、：；「」『』（）()《》〈〉．·,.!?;:]/g,"")
+      .trim();
+  }
+  function loadVoiceAudioManifest(){
+    if(!voiceAudioManifestPromise){
+      voiceAudioManifestPromise=fetch("audio/lines.json",{cache:"force-cache"})
+        .then(res=>res.ok?res.json():[])
+        .then(lines=>{
+          voiceAudioByText=new Map();
+          (Array.isArray(lines)?lines:[]).forEach(line=>{
+            if(!line||!line.hash) return;
+            const src="audio/"+line.hash+".mp3";
+            [line.text,line.raw].forEach(value=>{
+              const key=voiceTextKey(value);
+              if(key) voiceAudioByText.set(key,src);
+            });
+          });
+          document.documentElement.dataset.voiceAudioEntries=String(voiceAudioByText.size);
+          return voiceAudioByText;
+        })
+        .catch(()=>{
+          voiceAudioByText=new Map();
+          document.documentElement.dataset.voiceAudioEntries="0";
+          return voiceAudioByText;
+        });
+    }
+    return voiceAudioManifestPromise;
+  }
+  function stopVoicePlayback(){
+    if(synth) synth.cancel();
+    if(currentVoiceAudio){
+      currentVoiceAudio.pause();
+      currentVoiceAudio.currentTime=0;
+      currentVoiceAudio=null;
+    }
+  }
+  function speakWithWebSpeech(text,opts={}){
+    if(!synth){
+      player.classList.remove('show');
+      alert('這個瀏覽器不支援語音朗讀，建議用 Safari 或 Chrome。');
+      return;
+    }
+    pickVoice();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='zh-TW'; if(zhVoice) u.voice=zhVoice;
+    u.rate=store.speed||0.92; u.pitch=1.08;
+    u.onend=()=>{ if(typeof opts.onend==='function') opts.onend(); };
+    document.documentElement.dataset.voiceAudioMode="tts";
+    document.documentElement.dataset.voiceAudioCurrent="";
+    synth.speak(u);
+  }
+  function speakNarration(text,opts={}){
+    stopVoicePlayback();
+    const key=voiceTextKey(text);
+    const playFallback=()=>speakWithWebSpeech(text,opts);
+    const playFromManifest=()=>{
+      const audioSrc=voiceAudioByText.get(key);
+      if(!audioSrc){ playFallback(); return; }
+      const audio=new Audio(audioSrc);
+      currentVoiceAudio=audio;
+      document.documentElement.dataset.voiceAudioMode="mp3";
+      document.documentElement.dataset.voiceAudioCurrent=audioSrc;
+      audio.playbackRate=Math.max(0.7,Math.min(1.6,store.speed||0.92));
+      audio.onended=()=>{
+        currentVoiceAudio=null;
+        if(typeof opts.onend==='function') opts.onend();
+      };
+      audio.onerror=()=>{ currentVoiceAudio=null; playFallback(); };
+      audio.play().catch(()=>{ currentVoiceAudio=null; playFallback(); });
+    };
+    if(!voiceAudioManifestPromise){ loadVoiceAudioManifest().then(playFromManifest); }
+    else { playFromManifest(); }
+  }
+  window.rangeVoiceAudioStatus=async function(sampleText){
+    await loadVoiceAudioManifest();
+    const sample=sampleText||narration(flat[0]||{title:"",take:"",points:[]});
+    const src=voiceAudioByText.get(voiceTextKey(sample))||null;
+    return {
+      entries:voiceAudioByText.size,
+      mode:document.documentElement.dataset.voiceAudioMode||"",
+      current:document.documentElement.dataset.voiceAudioCurrent||"",
+      sampleText:sample,
+      src,
+      ready:!!src
+    };
+  };
+
   function narration(c){
     let t=c.title.replace(/（[^）]*）/g,'')+'。'+c.take+'。重點：'+c.points.join('');
     if(c.eg&&c.eg.length){ t+='舉個例子：'+c.eg.map(e=>e.t).join(''); }
@@ -356,24 +450,16 @@
     nowSec.textContent=c.title.replace(/（[^）]*）/g,'');
   }
   function speak(i){
-    if(!synth){ alert('這個瀏覽器不支援語音朗讀，建議用 Safari 或 Chrome。'); return; }
     if(i<0||i>=flat.length){ stop(); return; }
-    synth.cancel();
     idx=i; highlight(idx);
-    pickVoice();
-    const u=new SpeechSynthesisUtterance(narration(flat[idx]));
-    u.lang='zh-TW'; if(zhVoice) u.voice=zhVoice;
-    u.rate=store.speed||0.92; u.pitch=1.08;
-    u.onend=()=>{ if(playing) speak(idx+1); };
-    synth.speak(u);
+    speakNarration(narration(flat[idx]),{onend:()=>{ if(playing) speak(idx+1); }});
   }
   function start(){
-    if(!synth){ alert('這個瀏覽器不支援語音朗讀，建議用 Safari 或 Chrome。'); return; }
     player.classList.add('show'); playing=true; toggleBtn.textContent='⏸'; speak(idx<0?0:idx);
   }
-  function pause(){ playing=false; toggleBtn.textContent='▶'; if(synth) synth.pause(); }
-  function resume(){ playing=true; toggleBtn.textContent='⏸'; if(synth) synth.resume(); }
-  function stop(){ playing=false; toggleBtn.textContent='⏯'; if(synth) synth.cancel();
+  function pause(){ playing=false; toggleBtn.textContent='▶'; if(synth) synth.pause(); if(currentVoiceAudio) currentVoiceAudio.pause(); }
+  function resume(){ playing=true; toggleBtn.textContent='⏸'; if(currentVoiceAudio) currentVoiceAudio.play().catch(()=>{}); else if(synth) synth.resume(); }
+  function stop(){ playing=false; toggleBtn.textContent='⏯'; stopVoicePlayback();
     document.querySelectorAll('.card').forEach(el=>el.classList.remove('playing')); }
 
   document.getElementById('playAll').onclick=()=>{ idx=-1; start(); };
@@ -393,6 +479,7 @@
   window.addEventListener('pagehide',stop);
 
   render();
+  loadVoiceAudioManifest();
 })();
 </script>
 </body>
