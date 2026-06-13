@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>養股．重點反芻</title>
+<style>
+  :root{
+    --bg:#14130e; --surface:#1d1b14; --surface-2:#241f16; --line:#34301f;
+    --text:#ece6d6; --muted:#9c9684; --accent:#5ec98a; --accent-dim:#2c6b4c;
+    --gold:#d8a94a; --warn:#d9774e;
+    --serif:"Songti TC","Noto Serif CJK TC",Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans CJK TC","Microsoft JhengHei",sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;}
+  body{
+    background:var(--bg); color:var(--text); font-family:var(--sans);
+    font-size:17px; line-height:1.75; padding:0 0 110px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:0 18px;}
+
+  /* ---- 遮罩 ---- */
+  .gate{position:fixed;inset:0;z-index:100;background:var(--bg);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center;}
+  .gate h2{font-family:var(--serif);font-size:24px;margin:0;color:var(--accent);font-weight:600;}
+  .gate p{color:var(--muted);font-size:14px;margin:0;}
+  .gate input{width:240px;max-width:80vw;padding:12px 14px;border-radius:12px;border:1px solid var(--line);
+    background:var(--surface);color:var(--text);font:inherit;text-align:center;}
+  .gate button{padding:11px 26px;border:none;border-radius:12px;background:var(--accent);color:#06291b;font:inherit;font-weight:700;cursor:pointer;}
+  .gate .err{color:var(--warn);font-size:13px;min-height:18px;}
+
+  /* ---- header ---- */
+  header{padding:34px 0 18px;border-bottom:1px solid var(--line);}
+  .eyebrow{font-size:12px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;}
+  h1{font-family:var(--serif);font-weight:600;font-size:30px;line-height:1.25;margin:0 0 8px;}
+  .byline{color:var(--muted);font-size:13.5px;margin-bottom:18px;}
+  .byline b{color:var(--text);font-weight:500;}
+  .tldr{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:12px;padding:14px 16px;font-size:15px;line-height:1.8;}
+  .tldr .lbl{font-size:11px;letter-spacing:2px;color:var(--accent);display:block;margin-bottom:6px;}
+
+  .listenbar{display:flex;gap:10px;align-items:center;margin:18px 0 6px;flex-wrap:wrap;}
+  .listen{flex:1;min-width:200px;display:flex;align-items:center;justify-content:center;gap:9px;
+    padding:14px;border:none;border-radius:14px;background:var(--accent);color:#06291b;
+    font:inherit;font-weight:700;font-size:16px;cursor:pointer;}
+  .listen:active{transform:translateY(1px);}
+  .progress-wrap{margin:16px 0 4px;}
+  .progress-top{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:6px;}
+  .progress-top b{color:var(--accent);}
+  .bar{height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden;}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent-dim),var(--accent));transition:width .4s;}
+
+  /* ---- groups & cards ---- */
+  .group-title{font-family:var(--serif);font-size:14px;letter-spacing:2px;color:var(--gold);
+    margin:30px 0 12px;padding-bottom:8px;border-bottom:1px dashed var(--line);display:flex;align-items:baseline;gap:10px;}
+  .group-title span{font-size:11px;color:var(--muted);letter-spacing:1px;font-family:var(--sans);}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden;transition:border-color .2s;}
+  .card.warn{border-left:3px solid var(--warn);}
+  .card.playing{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent-dim);}
+  .card-head{display:flex;align-items:center;gap:12px;padding:15px 16px;cursor:pointer;user-select:none;}
+  .num{font-family:var(--serif);font-size:13px;color:var(--muted);width:24px;flex-shrink:0;text-align:center;}
+  .card-title{flex:1;font-size:17px;font-weight:600;font-family:var(--serif);}
+  .chev{color:var(--muted);font-size:13px;transition:transform .25s;flex-shrink:0;}
+  .card.open .chev{transform:rotate(90deg);}
+  .dot-done{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--line);flex-shrink:0;}
+  .card.done .dot-done{background:var(--accent);border-color:var(--accent);}
+
+  .card-body{display:none;padding:0 16px 16px;}
+  .card.open .card-body{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1}}
+  .take{font-size:15.5px;color:var(--text);background:var(--surface-2);border-radius:10px;padding:11px 13px;margin-bottom:12px;line-height:1.7;}
+  .take::before{content:"重點一句話";display:block;font-size:10.5px;letter-spacing:2px;color:var(--accent);margin-bottom:4px;}
+  ul.points{margin:0 0 4px;padding:0;list-style:none;}
+  ul.points li{position:relative;padding:5px 0 5px 18px;font-size:15px;line-height:1.7;border-bottom:1px solid rgba(255,255,255,.03);}
+  ul.points li::before{content:"";position:absolute;left:2px;top:13px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .eg{margin-top:12px;background:rgba(216,169,74,.08);border:1px solid rgba(216,169,74,.25);border-radius:10px;padding:11px 13px;}
+  .eg .eglbl{font-size:10.5px;letter-spacing:2px;color:var(--gold);margin-bottom:5px;}
+  .eg .egitem{font-size:14.5px;line-height:1.7;margin:4px 0;}
+  .eg .egitem b{color:var(--gold);font-weight:600;}
+  .card.warn .eg{background:rgba(217,119,78,.08);border-color:rgba(217,119,78,.28);}
+  .card.warn .eg .eglbl,.card.warn .eg .egitem b{color:var(--warn);}
+
+  .done-btn{margin-top:14px;width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;
+    background:transparent;color:var(--muted);font:inherit;font-size:14px;cursor:pointer;}
+  .card.done .done-btn{background:rgba(94,201,138,.10);border-color:var(--accent-dim);color:var(--accent);}
+
+  footer{color:var(--muted);font-size:12px;text-align:center;margin:28px 0 0;line-height:1.8;}
+
+  /* ---- 朗讀控制列 ---- */
+  .player{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(20,19,14,.96);
+    border-top:1px solid var(--line);backdrop-filter:blur(8px);padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+    display:none;}
+  .player.show{display:block;}
+  .player-row{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:12px;}
+  .now{flex:1;min-width:0;}
+  .now .lab{font-size:10.5px;color:var(--accent);letter-spacing:1px;}
+  .now .sec{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .pbtn{width:44px;height:44px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);
+    color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .pbtn.main{background:var(--accent);color:#06291b;border-color:var(--accent);font-size:20px;}
+  .speed{font-size:13px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);
+    border-radius:10px;padding:8px 10px;cursor:pointer;flex-shrink:0;font-family:var(--sans);}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+
+<!-- 通關密語遮罩 -->
+<div class="gate" id="gate">
+  <h2>養股．重點反芻</h2>
+  <p>這是不公開的閱讀反芻區，請輸入通關密語。</p>
+  <input id="gateInput" type="password" inputmode="text" placeholder="通關密語" autocomplete="off">
+  <button id="gateBtn">進入</button>
+  <div class="err" id="gateErr"></div>
+</div>
+
+<div class="wrap" id="app" style="visibility:hidden">
+  <header>
+    <div class="eyebrow">閱讀反芻 · 投資</div>
+    <h1>養股，我提早20年財富自由</h1>
+    <div class="byline">作者 <b>黃嘉斌</b>　大是文化 · 2021　｜　以下為重點整理，非原文</div>
+    <div class="tldr">
+      <span class="lbl">30 秒懶人包</span>
+      把好股票當成「會下蛋的母雞」來養：先分清楚你買的是<b>成長股、價值股還是轉機股</b>（評價的尺不一樣），用<b>六大指標</b>選股、用<b>財報</b>掃地雷，趨勢聽專家、買賣靠紀律，最後靠分散持股、停損停利和耐心，活到複利發酵的那天。
+    </div>
+
+    <div class="listenbar">
+      <button class="listen" id="playAll">🔊 讀給我聽（車上模式）</button>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-top"><span>複習進度</span><span><b id="doneCount">0</b> / <span id="totalCount">0</span> 已複習</span></div>
+      <div class="bar"><i id="progressFill"></i></div>
+    </div>
+  </header>
+
+  <div id="content"></div>
+
+  <footer>
+    重點整理供個人複習使用，內容為改寫摘要，版權仍屬原作者與出版社。<br>
+    想完整學習請支持正版書籍。
+  </footer>
+</div>
+
+<!-- 朗讀控制列 -->
+<div class="player" id="player">
+  <div class="player-row">
+    <button class="pbtn" id="prevBtn" title="上一段">⏮</button>
+    <button class="pbtn main" id="toggleBtn" title="播放／暫停">⏯</button>
+    <button class="pbtn" id="nextBtn" title="下一段">⏭</button>
+    <div class="now"><div class="lab">正在讀</div><div class="sec" id="nowSec">—</div></div>
+    <button class="speed" id="speedBtn" title="語速">1.0×</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ======== 通關密語 ========
+     想改密語：把下面引號中的字換掉。
+     想完全關閉遮罩：把它設成空字串 ""  */
+  const PASSPHRASE = "yanggu";
+
+  /* ======== 內容（重點為改寫摘要，非書中原文） ======== */
+  const DATA = [
+    { group:"三種養股", sub:"先分清楚你買的是哪一種，評價的尺才不會用錯" ,cards:[
+      { id:"grow", title:"成長股：偷偷漲 10 倍的那種",
+        take:"連續 3 年、每年成長 3 成以上的公司，3 年大概能賺 1 到 2 倍。",
+        points:[
+          "兩種：靠自己優勢的（可以長抱，例如鴻海）、靠景氣循環的（只抱 2～3 年，例如台積電、友達）。",
+          "找法：先看「概念與創新」，再用「需要 / 想要 / 有也不錯」判斷需求有多強。",
+          "一個產品年銷量破千萬台，才從「流行」變成真正的「潮流」。",
+          "用本益比估價；但只有 13% 的公司能連續成長 10 年，挑得到很珍貴。"
+        ],
+        eg:[
+          {t:"iPhone vs Wii：iPhone 改變整個手持裝置趨勢、值得長抱；Wii 只旺 2 年就退燒。"},
+          {t:"宏達電：智慧手機一代股王，衝到 1,300 元天價，後來卻曇花一現。"}
+        ]},
+      { id:"value", title:"價值股：定期給你孝親費",
+        take:"平常賺不多，但又便宜又穩定配息，像長輩定期給你孝親費。",
+        points:[
+          "兩招：股價淨值比（PBR）低於 2、甚至 0.8 賺價值回升；高股息殖利率賺穩定股息。",
+          "殖利率最好比 10 年期公債高 1.5～2 倍、>5% 才有吸引力。",
+          "前提是獲利穩定：進入障礙高（電信、寡占）或低成長傳產。",
+          "小心「淨值造假」：看資產品質、剔除無形資產、查海外子公司。"
+        ],
+        eg:[
+          {t:"三商銀、開發金：當年的「定存概念股」，長抱十幾年算下來只有一個「慘」字——沒看出經營環境質變（電信自由化讓中華電獲利腰斬）。"}
+        ]},
+      { id:"turn", title:"轉機股：不看好卻偷偷翻身",
+        take:"大家都看衰、卻可能偷偷漲 10 倍；但它和地雷股只有一線之隔。",
+        points:[
+          "最難賺，只用「閒置資金」投資，輸得起才玩。",
+          "四個翻身徵兆：私募找富爸爸、併購借殼、換領導人、富爸爸加持。",
+          "別怕「狼來了」，但也要分辨是真改革，還是純炒作。"
+        ],
+        eg:[
+          {t:"桂盟借殼訊康，股價漲 30 倍；京鼎（沛鑫）有鴻海當靠山，1 年漲超過 10 倍。"},
+          {t:"反例：普天概念股（英格爾）靠題材炒作，飆 10 倍後打回原形。"}
+        ]}
+    ]},
+
+    { group:"六大選股指標", sub:"用數字選股，少憑感覺", cards:[
+      { id:"rev", title:"① 營收：最即時的成績單",
+        take:"每月 10 日就看得到，是基本面選股第一個追蹤的數字。",
+        points:[
+          "看三層：年增率、月增率（連續成長 6 個月最好）、還有「成長率本身在加速」＝飆股訊號。",
+          "一定要看「合併營收／海外營收」，只看國內會看走眼。",
+          "不同產業看不同：上游看毛利、下游看周轉率（1 元能做幾元生意）。"
+        ],
+        eg:[{t:"茂迪、中美晶（2007 太陽能）：營收成長加速，股價跟著噴出好幾倍。"}]},
+      { id:"eps", title:"② 每股盈餘 EPS：成長才是保證",
+        take:"「成長」是股價上漲唯一的保證，看每股盈餘最準。",
+        points:[
+          "EPS 逐季成長，股價長多；若成長還「加速」＝大黑馬。",
+          "看 EPS 不是看總獲利：同樣賺錢，每股賺得多的公司股價才會高。",
+          "增資後若 EPS 被稀釋，代表公司資金用得沒效率。"
+        ],
+        eg:[{t:"第一金 vs 茂迪（2006）：第一金總獲利是茂迪 5 倍，但茂迪每股賺的是第一金 8 倍，所以茂迪股價 400 多、第一金才 23 元。"}]},
+      { id:"per", title:"③ 本益比 PER：成長有沒有被低估",
+        take:"衡量「成長低估」的尺，公式是股價 ÷ 每股盈餘。",
+        points:[
+          "推升股價的力量是「低估」；合理本益比＝市場利率＋風險貼水回推。",
+          "一定要看「歷史本益比區間」，別追進「本夢比」。",
+          "只適合成長股；用在景氣循環股、配息股會失靈。"
+        ],
+        eg:[{t:"聯發科：從被當「山寨王」（本益比 10～15 倍），到 5G 時代超越高通，評價跳級、整個本益比區間墊高。"}]},
+      { id:"pbr", title:"④ 股價淨值比 PBR：價值有沒有被低估",
+        take:"衡量「價值低估」，特別適合景氣循環股。",
+        points:[
+          "公式：股價 ÷ 每股淨值；低於 2 偏低、低於 0.8（非地雷）是絕佳買點。",
+          "景氣循環股的陷阱：獲利最高那年用本益比看會「假便宜」，要改用 PBR。",
+          "統計個股的「歷史淨值比區間」來抓買賣點。"
+        ],
+        eg:[{t:"台積電、聯電：2000 景氣高峰每股賺最多、本益比最低，看起來最便宜，其實正是該賣的盤頭。"}]},
+      { id:"yield", title:"⑤ 股息殖利率：打敗定存的價值股",
+        take:"幫你挑「打敗定存」的股票，但要先看清質變。",
+        points:[
+          "公式：每股股息 ÷ 股價，當作「風險版的定存」。",
+          "搭配條件：股價貼近淨值、殖利率 > 公債 2～3 倍、扣抵率高。",
+          "最大風險：產業質變後，賺了股息、賠了價差。"
+        ],
+        eg:[{t:"開發金：媽媽 900 多元買進，後來只剩 70 幾元——穩定配息救不了選錯產業。"}]},
+      { id:"roe", title:"⑥ 股東權益報酬率 ROE：最重要的綜合指標",
+        take:"財務分析裡最重要的一個綜合指標。",
+        points:[
+          "可拆成三塊：純益率（獲利力）× 總資產周轉率（經營效率）× 權益乘數（財務結構）。",
+          "長期往上＝值得注意；但要查是不是靠「舉債」或「一次性業外」灌出來的。",
+          "ROE 最高不代表最該買，要對照股價（淨值比）。"
+        ],
+        eg:[{t:"案例：ROE 17% 但股價合理的公司，反而比 ROE 19% 卻太貴的公司更值得買。"}]}
+    ]},
+
+    { group:"拆地雷", sub:"避開陷阱股，比多賺一支更重要", cards:[
+      { id:"mine", title:"地雷股的徵兆：先看「人」和「股價的怪」", warn:true,
+        take:"地雷都有跡可循，先看老闆的人品，再看股價的異常。",
+        points:[
+          "老闆誠信有問題、私德也糟。",
+          "頻繁更換會計師／事務所；子公司一大堆、財報看不透。",
+          "過度膨脹產業前景；可轉債跌破票面價。",
+          "「一字型」股價卻每天爆量幾千張——最危險。"
+        ],
+        eg:[
+          {t:"東隆五金：技術一流，卻被范氏兄弟掏空 88 億去炒股。"},
+          {t:"國產車、雅新：一字型爆量，爆雷時外資傷最重。"}
+        ]},
+      { id:"report", title:"用財報掃雷：三張表分工抓真假", warn:true,
+        take:"財報數字會說話，三張表各有分工。",
+        points:[
+          "損益表＝攻擊（用來選股）；資產負債表＋現金流量表＝防御（用來查地雷）。",
+          "三大死角：應收帳款、關係人交易、存貨。",
+          "三個償債指標：流動比率、速動比率、利息保障倍數（低於 2 倍很危險）。",
+          "帳上賺錢卻一直缺現金、靠增資度日，就要特別提防。"
+        ],
+        eg:[
+          {t:"中強電子：狂賣貨給海外子公司灌營收，帳款收不回，最後變成大地雷。"},
+          {t:"博達（台版安隆）：假交易→海外存款證明→掏空，葉素菲判刑 14 年。"}
+        ]}
+    ]},
+
+    { group:"選股與買賣", sub:"趨勢聽專家、出場靠訊號", cards:[
+      { id:"pick", title:"怎麼挑：趨勢聽專家，標的靠自己",
+        take:"自己很難樣樣懂，趨勢借專家的眼睛，標的自己做功課。",
+        points:[
+          "專家管理法：彙整各家券商／外資看好的方向，挑「多數認同」的，再蒐集個股報告。",
+          "利率循環法四階段：金融行情（降息＋景氣差，小型股衝）→ 業績行情（復甦，挑盈餘成長最快）→ 反金融（升息＋過熱）→ 反業績（衰退，轉防御股）。",
+          "發現一個能延續 3 年的趨勢時，通常只剩 1 年半；蜜月期約 6 個月、報酬 3～5 成。"
+        ],
+        eg:[{t:"股市三等人：先知先覺、後知後覺、不知不覺。認清自己是第二種，就努力蒐集資料、緊跟趨勢。"}]},
+      { id:"sell", title:"什麼時候賣：別想賣在最高點",
+        take:"看到這五個訊號，就準備分批走人。",
+        points:[
+          "目標價被「不嚴謹地」一直往上調 → 進入不理性，逢高出。",
+          "一次性利多公布（賣土地、子公司上市）→ 利多實現常常就是高點。",
+          "景氣循環股進到「歷史淨值比高點」→ 盤頭，分批出。",
+          "技術性噴出（連續跳空）→ 隨時準備賣。",
+          "出現實質利空 → 先退場再評估。"
+        ],
+        eg:[{t:"口訣：「不見跳空不見頂，不見跳空不見底。」"}]}
+    ]},
+
+    { group:"風險與心法", sub:"先活下來，才有複利", cards:[
+      { id:"risk", title:"資金與部位：先求活，再求賺",
+        take:"先活下來，複利才有機會發酵。",
+        points:[
+          "融資是糖衣毒藥：雷曼時撐過一年指數又回原點，但開高槓桿的人直接畢業。",
+          "新手先用儲蓄存到 50～100 萬再進場，別借錢扛壓力。",
+          "分散 3～5 檔、最多 10 檔；單一持股不超過 3 成。"
+        ],
+        eg:[{t:"2008 雷曼：加權指數 7 個月從 9,309 跌到 3,955，一年後又回 9,220——撐得住的人沒事，高槓桿的人出局。"}]},
+      { id:"stop", title:"停損停利與危機處理：紀律比聰明值錢",
+        take:"會買是徒弟，會賣才是師父，靠的是紀律不是聰明。",
+        points:[
+          "停損 15～20%，觸及就執行；向下攤平最多 2 次、金額不超過原本。",
+          "停利分兩段：到目標價先出 3 成；從高點回檔 2～3 成立刻出。「巴菲特就是常常賣太早」。",
+          "危機處理三步驟：認知（承認做錯）→ 診斷（融資／比例／內容）→ 斷尾求生（汰弱留強、換龍頭）。"
+        ],
+        eg:[{t:"高手版「總損益浮動停損」：用上個月的獲利當這個月的虧損上限，一觸及就自我停權、退出觀望。"}]},
+      { id:"mind", title:"心法與實戰：分清潮流，耐心等待",
+        take:"先分清「潮流」還是「流行」，然後耐心等待出手點。",
+        points:[
+          "潮流會隨時間放大報酬；流行很快退燒。判斷：需求強度（Must / Need / Nice）＋ 年銷破千萬台。",
+          "「世上沒有放著當長期投資這回事」——就算不動作，也要是思考後的決定。",
+          "心要定：借《大學》的「定、靜、安、慮、得」；「思而不學則殆」。"
+        ],
+        eg:[
+          {t:"蛋塔、巨蛋麵包＝流行（半年就退燒）；珍珠奶茶＝潮流（賣到全世界）。"},
+          {t:"群聯實戰：淡季買、旺季加碼，賺一倍（400 多元）就走，沒貪到 739 元高點，卻剛好避開兩週後的泡沫破裂。「正確的等待，是一門修養」。"}
+        ]}
+    ]}
+  ];
+
+  /* ======== localStorage（版本化、不清空） ======== */
+  const KEY="yanggu_review_v1";
+  let store={done:{},speed:1};
+  try{ const raw=localStorage.getItem(KEY); if(raw) store=Object.assign(store,JSON.parse(raw)); }catch(e){}
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(store)); }catch(e){} }
+
+  /* ======== 遮罩 ======== */
+  const gate=document.getElementById('gate'), app=document.getElementById('app');
+  function enter(){ gate.style.display='none'; app.style.visibility='visible'; render(); }
+  if(!PASSPHRASE){ enter(); }
+  else{
+    const gi=document.getElementById('gateInput'), gb=document.getElementById('gateBtn'), ge=document.getElementById('gateErr');
+    const tryEnter=()=>{ if(gi.value.trim()===PASSPHRASE){ enter(); } else { ge.textContent='密語不對，再試一次'; gi.value=''; } };
+    gb.onclick=tryEnter;
+    gi.addEventListener('keydown',e=>{ if(e.key==='Enter') tryEnter(); });
+    setTimeout(()=>gi.focus(),200);
+  }
+
+  /* ======== 渲染卡片 ======== */
+  let flat=[]; // 攤平所有卡片，方便朗讀
+  function render(){
+    const wrap=document.getElementById('content');
+    let n=0; flat=[];
+    DATA.forEach(g=>{
+      const gt=document.createElement('div'); gt.className='group-title';
+      gt.innerHTML=g.group+' <span>'+g.sub+'</span>';
+      wrap.appendChild(gt);
+      g.cards.forEach(c=>{
+        n++;
+        flat.push(c);
+        const card=document.createElement('div');
+        card.className='card'+(c.warn?' warn':'')+(store.done[c.id]?' done':'');
+        card.dataset.id=c.id;
+        let egHtml='';
+        if(c.eg && c.eg.length){
+          egHtml='<div class="eg"><div class="eglbl">💡 有趣的例子</div>'+
+            c.eg.map(e=>'<div class="egitem">'+e.t.replace(/（[^）]*）/g,m=>'<b>'+m+'</b>')+'</div>').join('')+'</div>';
+        }
+        card.innerHTML=
+          '<div class="card-head"><span class="num">'+(n<10?'0'+n:n)+'</span>'+
+            '<span class="card-title">'+c.title+'</span>'+
+            '<span class="dot-done"></span><span class="chev">▶</span></div>'+
+          '<div class="card-body">'+
+            '<div class="take">'+c.take+'</div>'+
+            '<ul class="points">'+c.points.map(p=>'<li>'+p+'</li>').join('')+'</ul>'+
+            egHtml+
+            '<button class="done-btn">'+(store.done[c.id]?'✓ 已複習':'標記為已複習')+'</button>'+
+          '</div>';
+        // 展開／收合
+        card.querySelector('.card-head').onclick=()=>card.classList.toggle('open');
+        // 已複習切換
+        card.querySelector('.done-btn').onclick=(ev)=>{
+          ev.stopPropagation();
+          store.done[c.id]=!store.done[c.id]; save();
+          card.classList.toggle('done',!!store.done[c.id]);
+          card.querySelector('.done-btn').textContent=store.done[c.id]?'✓ 已複習':'標記為已複習';
+          updateProgress();
+        };
+        wrap.appendChild(card);
+      });
+    });
+    document.getElementById('totalCount').textContent=flat.length;
+    updateProgress();
+  }
+  function updateProgress(){
+    const total=flat.length, done=flat.filter(c=>store.done[c.id]).length;
+    document.getElementById('doneCount').textContent=done;
+    document.getElementById('progressFill').style.width=(total?Math.round(done/total*100):0)+'%';
+  }
+
+  /* ======== 朗讀（zh-TW 語音） ======== */
+  const synth=window.speechSynthesis;
+  const player=document.getElementById('player');
+  const nowSec=document.getElementById('nowSec');
+  const toggleBtn=document.getElementById('toggleBtn');
+  const speedBtn=document.getElementById('speedBtn');
+  let idx=-1, playing=false, zhVoice=null;
+  const SPEEDS=[0.9,1.0,1.15,1.3]; 
+
+  function pickVoice(){
+    const vs=synth.getVoices()||[];
+    zhVoice = vs.find(v=>/zh[-_]TW/i.test(v.lang)) || vs.find(v=>/zh[-_]HK/i.test(v.lang))
+           || vs.find(v=>/zh/i.test(v.lang)) || null;
+  }
+  pickVoice();
+  if(synth) synth.onvoiceschanged=pickVoice;
+
+  function narration(c){
+    let t=c.title.replace(/[①②③④⑤⑥]/g,'')+'。'+c.take+'。重點：'+c.points.join('');
+    if(c.eg&&c.eg.length){ t+='舉個例子：'+c.eg.map(e=>e.t).join(''); }
+    return t;
+  }
+  function highlight(i){
+    document.querySelectorAll('.card').forEach(el=>el.classList.remove('playing'));
+    const c=flat[i]; if(!c) return;
+    const card=document.querySelector('.card[data-id="'+c.id+'"]');
+    if(card){ card.classList.add('playing','open'); card.scrollIntoView({behavior:'smooth',block:'center'}); }
+    nowSec.textContent=c.title.replace(/[①②③④⑤⑥]\s?/g,'');
+  }
+  function speak(i){
+    if(!synth) { alert('這個瀏覽器不支援語音朗讀，建議用 Safari 或 Chrome。'); return; }
+    if(i<0||i>=flat.length){ stop(); return; }
+    synth.cancel();
+    idx=i; highlight(idx);
+    const u=new SpeechSynthesisUtterance(narration(flat[idx]));
+    u.lang='zh-TW'; if(zhVoice) u.voice=zhVoice;
+    u.rate=store.speed||1; u.pitch=1;
+    u.onend=()=>{ if(playing) speak(idx+1); };
+    synth.speak(u);
+  }
+  function start(){ player.classList.add('show'); playing=true; toggleBtn.textContent='⏸'; speak(idx<0?0:idx); }
+  function pause(){ playing=false; toggleBtn.textContent='▶'; if(synth) synth.pause(); }
+  function resume(){ playing=true; toggleBtn.textContent='⏸'; if(synth) synth.resume(); }
+  function stop(){ playing=false; toggleBtn.textContent='⏯'; if(synth) synth.cancel();
+    document.querySelectorAll('.card').forEach(el=>el.classList.remove('playing')); }
+
+  document.getElementById('playAll').onclick=()=>{ idx=-1; start(); };
+  toggleBtn.onclick=()=>{
+    if(!playing){ if(synth&&synth.paused&&idx>=0) resume(); else start(); }
+    else pause();
+  };
+  document.getElementById('nextBtn').onclick=()=>{ playing=true; toggleBtn.textContent='⏸'; speak(Math.min(idx+1,flat.length-1)); };
+  document.getElementById('prevBtn').onclick=()=>{ playing=true; toggleBtn.textContent='⏸'; speak(Math.max(idx-1,0)); };
+  speedBtn.textContent=(store.speed||1).toFixed(2).replace(/0$/,'')+'×';
+  speedBtn.onclick=()=>{
+    let cur=SPEEDS.indexOf(store.speed); cur=(cur+1)%SPEEDS.length;
+    store.speed=SPEEDS[cur]; save();
+    speedBtn.textContent=store.speed.toFixed(2).replace(/0$/,'')+'×';
+    if(playing){ speak(idx); } // 立即套用新語速
+  };
+
+  // 離開頁面停止朗讀
+  window.addEventListener('pagehide',stop);
+})();
+</script>
+</body>
+</html>
