@@ -404,7 +404,7 @@
   }
 
   /* ======== 朗讀（zh-TW 語音） ======== */
-  const synth=window.speechSynthesis;
+  const synth=window.speechSynthesis || null;
   const player=document.getElementById('player');
   const nowSec=document.getElementById('nowSec');
   const toggleBtn=document.getElementById('toggleBtn');
@@ -413,6 +413,7 @@
   const SPEEDS=[0.9,1.0,1.15,1.3]; 
 
   function pickVoice(){
+    if(!synth) return;
     const vs=synth.getVoices()||[];
     zhVoice = vs.find(v=>/zh[-_]TW/i.test(v.lang)) || vs.find(v=>/zh[-_]HK/i.test(v.lang))
            || vs.find(v=>/zh/i.test(v.lang)) || null;
@@ -433,7 +434,11 @@
     nowSec.textContent=c.title.replace(/[①②③④⑤⑥]\s?/g,'');
   }
   function speak(i){
-    if(!synth) { alert('這個瀏覽器不支援語音朗讀，建議用 Safari 或 Chrome。'); return; }
+    if(!synth) {
+      player.classList.remove('show');
+      alert('這個瀏覽器不支援語音朗讀，建議用 Safari 或 Chrome 開啟。');
+      return;
+    }
     if(i<0||i>=flat.length){ stop(); return; }
     synth.cancel();
     idx=i; highlight(idx);
@@ -443,7 +448,13 @@
     u.onend=()=>{ if(playing) speak(idx+1); };
     synth.speak(u);
   }
-  function start(){ player.classList.add('show'); playing=true; toggleBtn.textContent='⏸'; speak(idx<0?0:idx); }
+  function start(){
+    if(!synth) {
+      alert('這個瀏覽器不支援語音朗讀，建議用 Safari 或 Chrome 開啟。');
+      return;
+    }
+    player.classList.add('show'); playing=true; toggleBtn.textContent='⏸'; speak(idx<0?0:idx);
+  }
   function pause(){ playing=false; toggleBtn.textContent='▶'; if(synth) synth.pause(); }
   function resume(){ playing=true; toggleBtn.textContent='⏸'; if(synth) synth.resume(); }
   function stop(){ playing=false; toggleBtn.textContent='⏯'; if(synth) synth.cancel();
