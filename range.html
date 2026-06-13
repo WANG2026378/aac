@@ -318,11 +318,13 @@
   const speedBtn=document.getElementById('speedBtn');
   let idx=-1, playing=false, zhVoice=null;
   const SPEEDS=[0.85,0.92,1.0,1.12];
+  let voicesReadyPromise=null;
 
   function pickVoice(){
     if(!synth) return;
     const vs=synth.getVoices()||[];
-    const femaleName=/mei[-\s]?jia|ting[-\s]?ting|sin[-\s]?ji|li[-\s]?mu|yu[-\s]?shu|hsiaochen|xiaoxiao|xiaoyi|huihui|hanhan|yaoyao|female|woman|girl|女/i;
+    const femaleName=/mei[-\s]?jia|ting[-\s]?ting|sin[-\s]?ji|li[-\s]?mu|yu[-\s]?shu|hsiao[-\s]?chen|xiaoxiao|xiaoyi|huihui|hanhan|yaoyao|siri.*female|female|woman|girl|女/i;
+    const warmName=/mei[-\s]?jia|ting[-\s]?ting|hsiao[-\s]?chen|xiaoxiao|siri|premium|enhanced|neural|natural/i;
     const maleName=/yunjian|kangkang|male|man|boy|男/i;
     const scored=vs
       .filter(v=>/zh/i.test(v.lang)||/chinese|mandarin|國語|中文|普通話/i.test(v.name))
@@ -332,13 +334,35 @@
         else if(/zh[-_]HK/i.test(v.lang)) score+=65;
         else if(/zh[-_]CN/i.test(v.lang)) score+=45;
         if(femaleName.test(v.name)) score+=90;
-        if(/siri|premium|enhanced|neural|natural/i.test(v.name)) score+=20;
+        if(warmName.test(v.name)) score+=30;
+        if(v.localService) score+=10;
+        if(v.default) score+=4;
         if(maleName.test(v.name)) score-=80;
         if(/google/i.test(v.name)) score+=8;
         return {v,score};
       })
       .sort((a,b)=>b.score-a.score);
     zhVoice = scored.length ? scored[0].v : null;
+    document.documentElement.dataset.voiceSelected=zhVoice ? `${zhVoice.name} (${zhVoice.lang})` : "";
+    return zhVoice;
+  }
+  function waitForVoices(){
+    if(!synth) return Promise.resolve(null);
+    const selected=pickVoice();
+    if(selected) return Promise.resolve(selected);
+    if(!voicesReadyPromise){
+      voicesReadyPromise=new Promise(resolve=>{
+        let done=false;
+        const finish=()=>{
+          if(done) return;
+          done=true;
+          resolve(pickVoice());
+        };
+        synth.onvoiceschanged=finish;
+        setTimeout(finish,900);
+      });
+    }
+    return voicesReadyPromise;
   }
   pickVoice();
   if(synth) synth.onvoiceschanged=pickVoice;
@@ -346,6 +370,7 @@
   let voiceAudioManifestPromise=null;
   let voiceAudioByText=new Map();
   let currentVoiceAudio=null;
+  const VOICE_AUDIO_VERSION="range-meijia-20260613";
 
   function voiceTextKey(text){
     return String(text||"")
@@ -353,9 +378,23 @@
       .replace(/[，。！？、：；「」『』（）()《》〈〉．·,.!?;:]/g,"")
       .trim();
   }
+  function speechFriendly(text){
+    return String(text||"")
+      .replace(/\bvs\.?\b/gi,"和")
+      .replace(/\bRange\b/g,"跨能致勝")
+      .replace(/\bGame Boy\b/gi,"任天堂掌上遊戲機")
+      .replace(/\bNetflix\b/gi,"影音平台")
+      .replace(/\bNASA\b/g,"美國太空總署")
+      .replace(/\bAlphaZero\b/g,"阿爾法零")
+      .replace(/\bchunking\b/gi,"分組記憶")
+      .replace(/\bkind\b/gi,"和善")
+      .replace(/\bwicked\b/gi,"不善")
+      .replace(/\s+/g," ")
+      .trim();
+  }
   function loadVoiceAudioManifest(){
     if(!voiceAudioManifestPromise){
-      voiceAudioManifestPromise=fetch("audio/lines.json",{cache:"force-cache"})
+      voiceAudioManifestPromise=fetch("audio/lines.json?v="+VOICE_AUDIO_VERSION,{cache:"no-cache"})
         .then(res=>res.ok?res.json():[])
         .then(lines=>{
           voiceAudioByText=new Map();
@@ -386,16 +425,16 @@
       currentVoiceAudio=null;
     }
   }
-  function speakWithWebSpeech(text,opts={}){
+  async function speakWithWebSpeech(text,opts={}){
     if(!synth){
       player.classList.remove('show');
       alert('這個瀏覽器不支援語音朗讀，建議用 Safari 或 Chrome。');
       return;
     }
-    pickVoice();
+    await waitForVoices();
     const u=new SpeechSynthesisUtterance(text);
     u.lang='zh-TW'; if(zhVoice) u.voice=zhVoice;
-    u.rate=store.speed||0.92; u.pitch=1.08;
+    u.rate=store.speed||0.92; u.pitch=1.12;
     u.onend=()=>{ if(typeof opts.onend==='function') opts.onend(); };
     document.documentElement.dataset.voiceAudioMode="tts";
     document.documentElement.dataset.voiceAudioCurrent="";
@@ -438,8 +477,9 @@
   };
 
   function narration(c){
-    let t=c.title.replace(/（[^）]*）/g,'')+'。'+c.take+'。重點：'+c.points.join('');
-    if(c.eg&&c.eg.length){ t+='舉個例子：'+c.eg.map(e=>e.t).join(''); }
+    const title=speechFriendly(c.title.replace(/（[^）]*）/g,''));
+    let t=title+'。'+speechFriendly(c.take)+'。重點：'+c.points.map(speechFriendly).join('。');
+    if(c.eg&&c.eg.length){ t+='。舉個例子：'+c.eg.map(e=>speechFriendly(e.t)).join('。'); }
     return t;
   }
   function highlight(i){
