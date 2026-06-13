@@ -145,6 +145,25 @@ h1 {
   border: 1px solid rgba(31,41,55,.12);
   box-shadow: 0 8px 18px rgba(31,41,55,.14);
 }
+.note-cover {
+  width: 74px;
+  aspect-ratio: 3 / 4;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  padding: 8px;
+  background: linear-gradient(160deg, #1f2937, #15803d);
+  color: #fff;
+  border: 1px solid rgba(31,41,55,.12);
+  box-shadow: 0 8px 18px rgba(31,41,55,.14);
+  font-size: 13px;
+  font-weight: 950;
+  line-height: 1.25;
+  text-align: center;
+}
+.note-cover.range {
+  background: linear-gradient(160deg, #172554, #0f766e);
+}
 .book-link small {
   display: block;
   color: var(--muted);
@@ -276,6 +295,16 @@ h1 {
         <a class="book-link" href="picturebook-food.html">
           <img class="book-cover" src="assets/picturebook-food-adventure/page-01.jpg" alt="歐露露不挑食封面">
           <span>歐露露不挑食<small>32 頁隱藏教學版 · 嘗試新食物 · 看圖回答</small></span>
+          <span>→</span>
+        </a>
+        <a class="book-link" href="yanggu.html">
+          <span class="note-cover">養股<br>筆記</span>
+          <span>養股，我提早20年財富自由<small>16 張讀書筆記卡 · 投資指標 · 女聲朗讀</small></span>
+          <span>→</span>
+        </a>
+        <a class="book-link" href="range.html">
+          <span class="note-cover range">跨能<br>致勝</span>
+          <span>跨能致勝<small>11 張讀書筆記卡 · Meijia 女聲配音 · 車上模式</small></span>
           <span>→</span>
         </a>
       </div>
