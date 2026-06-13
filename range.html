@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>跨能致勝．重點反芻</title>
+<style>
+  :root{
+    --bg:#13141c; --surface:#1c1e29; --surface-2:#232636; --line:#34384a;
+    --text:#e9e7e0; --muted:#999bb0; --accent:#e0954a; --accent-dim:#7a4f24;
+    --teal:#5fb9c4; --warn:#d96a4e;
+    --serif:"Songti TC","Noto Serif CJK TC",Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans CJK TC","Microsoft JhengHei",sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:17px;line-height:1.75;padding:0 0 110px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:720px;margin:0 auto;padding:0 18px;}
+
+  header{padding:34px 0 18px;border-bottom:1px solid var(--line);}
+  .eyebrow{font-size:12px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:10px;}
+  h1{font-family:var(--serif);font-weight:600;font-size:30px;line-height:1.25;margin:0 0 8px;}
+  .byline{color:var(--muted);font-size:13.5px;margin-bottom:18px;}
+  .byline b{color:var(--text);font-weight:500;}
+  .tldr{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;padding:14px 16px;font-size:15px;line-height:1.8;}
+  .tldr .lbl{font-size:11px;letter-spacing:2px;color:var(--accent);display:block;margin-bottom:6px;}
+  .tldr b{color:var(--text);}
+
+  .listenbar{display:flex;gap:10px;align-items:center;margin:18px 0 6px;flex-wrap:wrap;}
+  .listen{flex:1;min-width:200px;display:flex;align-items:center;justify-content:center;gap:9px;padding:14px;border:none;border-radius:14px;background:var(--accent);color:#241405;font:inherit;font-weight:700;font-size:16px;cursor:pointer;}
+  .listen:active{transform:translateY(1px);}
+  .progress-wrap{margin:16px 0 4px;}
+  .progress-top{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:6px;}
+  .progress-top b{color:var(--accent);}
+  .bar{height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden;}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent-dim),var(--accent));transition:width .4s;}
+
+  .group-title{font-family:var(--serif);font-size:14px;letter-spacing:2px;color:var(--teal);margin:30px 0 12px;padding-bottom:8px;border-bottom:1px dashed var(--line);display:flex;align-items:baseline;gap:10px;}
+  .group-title span{font-size:11px;color:var(--muted);letter-spacing:1px;font-family:var(--sans);}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden;transition:border-color .2s;}
+  .card.warn{border-left:3px solid var(--warn);}
+  .card.playing{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent-dim);}
+  .card-head{display:flex;align-items:center;gap:12px;padding:15px 16px;cursor:pointer;user-select:none;}
+  .num{font-family:var(--serif);font-size:13px;color:var(--muted);width:24px;flex-shrink:0;text-align:center;}
+  .card-title{flex:1;font-size:17px;font-weight:600;font-family:var(--serif);}
+  .chev{color:var(--muted);font-size:13px;transition:transform .25s;flex-shrink:0;}
+  .card.open .chev{transform:rotate(90deg);}
+  .dot-done{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--line);flex-shrink:0;}
+  .card.done .dot-done{background:var(--accent);border-color:var(--accent);}
+
+  .card-body{display:none;padding:0 16px 16px;}
+  .card.open .card-body{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1}}
+  .take{font-size:15.5px;color:var(--text);background:var(--surface-2);border-radius:10px;padding:11px 13px;margin-bottom:12px;line-height:1.7;}
+  .take::before{content:"重點一句話";display:block;font-size:10.5px;letter-spacing:2px;color:var(--accent);margin-bottom:4px;}
+  ul.points{margin:0 0 4px;padding:0;list-style:none;}
+  ul.points li{position:relative;padding:5px 0 5px 18px;font-size:15px;line-height:1.7;border-bottom:1px solid rgba(255,255,255,.03);}
+  ul.points li::before{content:"";position:absolute;left:2px;top:13px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .eg{margin-top:12px;background:rgba(95,185,196,.09);border:1px solid rgba(95,185,196,.25);border-radius:10px;padding:11px 13px;}
+  .eg .eglbl{font-size:10.5px;letter-spacing:2px;color:var(--teal);margin-bottom:5px;}
+  .eg .egitem{font-size:14.5px;line-height:1.7;margin:4px 0;}
+  .eg .egitem b{color:var(--teal);font-weight:600;}
+  .card.warn .eg{background:rgba(217,106,78,.09);border-color:rgba(217,106,78,.28);}
+  .card.warn .eg .eglbl,.card.warn .eg .egitem b{color:var(--warn);}
+
+  .done-btn{margin-top:14px;width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--muted);font:inherit;font-size:14px;cursor:pointer;}
+  .card.done .done-btn{background:rgba(224,149,74,.10);border-color:var(--accent-dim);color:var(--accent);}
+
+  footer{color:var(--muted);font-size:12px;text-align:center;margin:28px 0 0;line-height:1.8;}
+
+  .player{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(19,20,28,.96);border-top:1px solid var(--line);backdrop-filter:blur(8px);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:none;}
+  .player.show{display:block;}
+  .player-row{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:12px;}
+  .now{flex:1;min-width:0;}
+  .now .lab{font-size:10.5px;color:var(--accent);letter-spacing:1px;}
+  .now .sec{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .pbtn{width:44px;height:44px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .pbtn.main{background:var(--accent);color:#241405;border-color:var(--accent);font-size:20px;}
+  .speed{font-size:13px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;flex-shrink:0;font-family:var(--sans);}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app">
+  <header>
+    <div class="eyebrow">讀書筆記 · 成功學</div>
+    <h1>跨能致勝</h1>
+    <div class="byline">作者 <b>David Epstein（大衛·艾波斯坦）</b>　原書 Range　｜　以下為重點整理，非原文</div>
+    <div class="tldr">
+      <span class="lbl">30 秒懶人包</span>
+      規則固定、回饋即時的事（西洋棋、高爾夫）<b>及早苦練有用</b>；但人生大多是規則模糊、會變的「<b>不善世界</b>」。在這裡，<b>廣度、晚一點專精、跨界類推、像狐狸一樣博學</b>的通才，往往勝過鑽一門的超級專才。別怕繞路、別怕晚、別怕雜。
+    </div>
+    <div class="listenbar">
+      <button class="listen" id="playAll">🔊 讀給我聽（車上模式）</button>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-top"><span>複習進度</span><span><b id="doneCount">0</b> / <span id="totalCount">0</span> 已複習</span></div>
+      <div class="bar"><i id="progressFill"></i></div>
+    </div>
+  </header>
+
+  <div id="content"></div>
+
+  <footer>
+    讀書筆記供個人複習使用，內容為改寫摘要，版權仍屬原作者與出版社。<br>
+    想完整學習請支持正版書籍。
+  </footer>
+</div>
+
+<div class="player" id="player">
+  <div class="player-row">
+    <button class="pbtn" id="prevBtn" title="上一段">⏮</button>
+    <button class="pbtn main" id="toggleBtn" title="播放／暫停">⏯</button>
+    <button class="pbtn" id="nextBtn" title="下一段">⏭</button>
+    <div class="now"><div class="lab">正在讀</div><div class="sec" id="nowSec">—</div></div>
+    <button class="speed" id="speedBtn" title="語速">1.0×</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* 內容為改寫摘要，非書中原文 */
+  const DATA = [
+    { group:"起跑點的迷思", sub:"早專精不是唯一的路", cards:[
+      { id:"tiger", title:"老虎 vs 費德勒：及早專精的迷思",
+        take:"「贏在起跑點」不是唯一的路；晚一點、繞遠路，常常跑更遠。",
+        points:[
+          "老虎伍茲很小就鎖定高爾夫；費德勒小時候玩很多種運動，晚才專攻網球——兩種都成功。",
+          "波爾加三姊妹被父親從小訓練成西洋棋天才，常被當成「及早專精」的鐵證。",
+          "但西洋棋、高爾夫是規則固定、回饋即時的「和善環境」，代表不了人生大多數的事。"
+        ],
+        eg:[
+          {t:"西洋棋大師的「神技」其實是把棋子分組（chunking）的熟悉模式記憶；棋子隨機亂擺時，他們就跟一般人一樣記不住。"},
+          {t:"深藍、AlphaZero 證明：規則固定、可重複的本事，最容易被電腦取代。"}
+        ]},
+      { id:"wicked", title:"和善世界 vs 不善世界",
+        take:"規則固定的事及早苦練有用；但人生大多是規則模糊、會變的「不善世界」。",
+        points:[
+          "和善（kind）：模式重複、回饋即時，熟能生巧——西洋棋、高爾夫、古典樂。",
+          "不善（wicked）：問題定義不清、回饋慢甚至誤導——急診室、商業、政治。",
+          "在不善世界硬套熟悉經驗反而會出錯（消防員遇陌生建築、顧問的「玻璃心」單環學習）。"
+        ],
+        eg:[
+          {t:"康納曼發現：很多受過高度訓練的專家，經驗帶來的不是能力，而是過度自信。"},
+          {t:"諾貝爾獎得主比一般科學家更可能也搞藝術、音樂、寫作——賈伯斯的書法課、夏農的哲學課，都成了日後的關鍵。"}
+        ]}
+    ]},
+
+    { group:"學習要慢、要雜", sub:"快不等於學得好", cards:[
+      { id:"music", title:"少了刻意練習的音樂家",
+        take:"很多頂尖樂手不是從小照譜苦練，而是先玩很多種樂器、靠耳朵摸索。",
+        points:[
+          "研究：最成功的音樂學生，是「找到心儀樂器之後」才大量練習，而且多半練過 3 種以上樂器。",
+          "爵士即興大師（艾靈頓、布魯貝克、強哥）很多看不懂譜、自學摸索；即興時大腦的「自我審查」區還會關閉。",
+          "蔡美兒的女兒露露被逼練小提琴，13 歲後幾乎不再碰——「這是妳選的，不是我選的」。"
+        ],
+        eg:[
+          {t:"強尼·史密斯什麼樂器都玩，臨危受命 4 天練成一首 25 年沒人演奏的無調吉他曲，還被觀眾叫安可重彈。"}
+        ]},
+      { id:"hard", title:"快不等於學得好（有益的考驗）",
+        take:"學得「又快又順」常是假象；讓自己吃力一點，才記得久、用得活。",
+        points:[
+          "有益的考驗（desirable difficulties）：間隔、自我測驗、先自己想答案——短期慢，長期強。",
+          "交叉練習（不同題型混著練）比封閉練習（一直練同一種）更能舉一反三。",
+          "老師給太多提示，學生當場會答、長期卻學不扎實。"
+        ],
+        eg:[
+          {t:"實驗：被數學題干擾、得吃力回想單字的人，當下最差，臨時測驗卻最好——吃力讓短期記憶變成長期記憶。"},
+          {t:"80% 的學生覺得封閉練習學得比較好，實測卻是交叉練習贏。"}
+        ]}
+    ]},
+
+    { group:"跨界思考的力量", sub:"把不相干的東西連起來想", cards:[
+      { id:"analogy", title:"跳脫經驗的類推思考",
+        take:"解陌生難題的利器，是把「表面不相干、深層相通」的東西連起來想。",
+        points:[
+          "克卜勒靠一連串天馬行空的類推（光、磁鐵、船），想出「看不見的引力」，替科學革命開路。",
+          "只用「表面很像」的單一類推，是和善世界的偷懶想法；要多用幾個、要用深層結構的類推。",
+          "「局外觀點」：跳出眼前細節，拿一整組類似案例來比，預測更準。"
+        ],
+        eg:[
+          {t:"用一整組舊片跟新片比，影迷的票房預測比複雜數學模型還準；Netflix 也是用「你像哪種人」而不是「你像哪部片」。"},
+          {t:"大型工程預算嚴重低估；改找外部顧問拿別的案子來比，才看出真實成本。"}
+        ]},
+      { id:"diverse", title:"背景越雜，越有新見解",
+        take:"一群「背景多元」的人，比一群同質專家更會解難題。",
+        points:[
+          "丹巴觀察實驗室：成員背景越雜，遇到怪結果時提出的類推越多，越快想出解法。",
+          "「問題分好類，已解決一半」——高手解題從『分類』開始，而非一頭栽進細節。",
+          "修跨領域整合學程的學生，最會看出不同學科共通的深層結構。"
+        ]}
+    ]},
+
+    { group:"別太早、別太死", sub:"先試出適配，再深入", cards:[
+      { id:"match", title:"抓進度可能贏起點、輸將來",
+        take:"太早把一條路鎖死不一定好；先試、找到「適配」更重要。",
+        points:[
+          "適配品質（match quality）：人和工作合不合拍，比早起步更影響長期表現。",
+          "晚轉跑道、繞路的人，常因先試過多種選項，後來反而跑得更好。",
+          "別把「沉沒成本」當理由硬撐；換一條更適合的路，不是失敗。"
+        ],
+        eg:[
+          {t:"梵谷做過畫商、老師、傳教士樣樣不順，很晚才開始畫畫，卻在短短幾年內成為大師。"}
+        ]},
+      { id:"tools", title:"拋開熟悉的工具（別被專業綁死）", warn:true,
+        take:"在陌生危機裡，死守熟悉的工具與規矩，會釀成大錯。",
+        points:[
+          "魏克：野火消防員寧可背著工具被火追上也不肯丟——「放下工具」等於放下身分認同，做不到。",
+          "NASA 挑戰者號不是「沒做量化分析」，而是「太迷信量化」：工程師的低溫疑慮因為『無法量化』被當成情緒化而忽略。",
+          "「做得到」的服從文化，在不尋常危機裡要換成「設法應付」、抓住「輕撫過的預感」。"
+        ],
+        eg:[
+          {t:"哈佛卡特賽車隊個案：多數學生選擇出賽，卻沒人去要那張『氣溫 vs 故障』的關鍵圖——跟 NASA 一樣，只看支持自己立場的資料。"}
+        ]}
+    ]},
+
+    { group:"狐狸的勝利", sub:"博學者的優勢", cards:[
+      { id:"fox", title:"騙倒專家的執著（狐狸 vs 刺蝟）",
+        take:"預測未來，博學的「狐狸」遠勝鑽一門的「刺蝟」。",
+        points:[
+          "泰特洛克 20 年研究：刺蝟（只信一個大理論）在自己領域越有名氣，長期預測反而越差。",
+          "狐狸博採眾長、能容忍矛盾、願意更新信念——預測準得多，組成團隊更強。",
+          "關鍵心態「積極開放的心智」：主動找證據證明自己可能是錯的，而不是只找支持自己的。"
+        ],
+        eg:[
+          {t:"埃利希 vs 賽門的世界末日賭注：兩個聰明專才各用單一視角，都對也都錯，還都宣稱自己贏。"},
+          {t:"越學越自以為是：政治議題上越有學問的人，反而越會挑對自己有利的證據。"}
+        ]},
+      { id:"amateur", title:"刻意當個業餘者（廣度的科學）",
+        take:"保持「業餘者」的好奇與廣度，常常做出最大的突破。",
+        points:[
+          "局外人優勢：跨界的人常能解開本領域專家卡住的難題——把一處的知識搬到另一處。",
+          "保持好奇、左右開弓，比一輩子只鑽一個窄領域更容易帶來創新。",
+          "廣度不是浪費火力，而是「集中火力」——卡哈的名言。"
+        ],
+        eg:[
+          {t:"任天堂橫井軍平的「枯萎科技的橫向思考」：用便宜、成熟、耐用的舊技術做出 Game Boy 等招牌商品，而非硬拚最新規格。"}
+        ]}
+    ]},
+
+    { group:"結語", sub:"拓展你的守備範圍", cards:[
+      { id:"end", title:"別怕繞路、別怕晚、別怕雜",
+        take:"廣度是這個時代的超能力——先廣泛抽樣找到適配，再深入。",
+        points:[
+          "廣度與深度可以兼得（T 型人）：先抽樣探索，找到對的方向再扎根。",
+          "多用類推、多元背景、保持好奇、願意更新想法——這些都能練。",
+          "跟別人比進度沒意義，你是在跑『自己的實驗』。"
+        ],
+        eg:[
+          {t:"一句話收尾：面對不善的世界，別急著縮小自己；拉寬守備範圍，反而走得更遠。"}
+        ]}
+    ]}
+  ];
+
+  /* localStorage：獨立版本化 key，不清空、不與其他專案衝突 */
+  const KEY="range_review_v1";
+  let store={done:{},speed:0.92};
+  try{ const raw=localStorage.getItem(KEY); if(raw) store=Object.assign(store,JSON.parse(raw)); }catch(e){}
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(store)); }catch(e){} }
+
+  let flat=[];
+  function render(){
+    const wrap=document.getElementById('content');
+    let n=0; flat=[];
+    DATA.forEach(g=>{
+      const gt=document.createElement('div'); gt.className='group-title';
+      gt.innerHTML=g.group+' <span>'+g.sub+'</span>';
+      wrap.appendChild(gt);
+      g.cards.forEach(c=>{
+        n++; flat.push(c);
+        const card=document.createElement('div');
+        card.className='card'+(c.warn?' warn':'')+(store.done[c.id]?' done':'');
+        card.dataset.id=c.id;
+        let egHtml='';
+        if(c.eg && c.eg.length){
+          egHtml='<div class="eg"><div class="eglbl">💡 有趣的例子</div>'+
+            c.eg.map(e=>'<div class="egitem">'+e.t.replace(/（[^）]*）/g,m=>'<b>'+m+'</b>')+'</div>').join('')+'</div>';
+        }
+        card.innerHTML=
+          '<div class="card-head"><span class="num">'+(n<10?'0'+n:n)+'</span>'+
+            '<span class="card-title">'+c.title+'</span>'+
+            '<span class="dot-done"></span><span class="chev">▶</span></div>'+
+          '<div class="card-body">'+
+            '<div class="take">'+c.take+'</div>'+
+            '<ul class="points">'+c.points.map(p=>'<li>'+p+'</li>').join('')+'</ul>'+
+            egHtml+
+            '<button class="done-btn">'+(store.done[c.id]?'✓ 已複習':'標記為已複習')+'</button>'+
+          '</div>';
+        card.querySelector('.card-head').onclick=()=>card.classList.toggle('open');
+        card.querySelector('.done-btn').onclick=(ev)=>{
+          ev.stopPropagation();
+          store.done[c.id]=!store.done[c.id]; save();
+          card.classList.toggle('done',!!store.done[c.id]);
+          card.querySelector('.done-btn').textContent=store.done[c.id]?'✓ 已複習':'標記為已複習';
+          updateProgress();
+        };
+        wrap.appendChild(card);
+      });
+    });
+    document.getElementById('totalCount').textContent=flat.length;
+    updateProgress();
+  }
+  function updateProgress(){
+    const total=flat.length, done=flat.filter(c=>store.done[c.id]).length;
+    document.getElementById('doneCount').textContent=done;
+    document.getElementById('progressFill').style.width=(total?Math.round(done/total*100):0)+'%';
+  }
+
+  /* 朗讀（zh-TW 語音） */
+  const synth=window.speechSynthesis || null;
+  const player=document.getElementById('player');
+  const nowSec=document.getElementById('nowSec');
+  const toggleBtn=document.getElementById('toggleBtn');
+  const speedBtn=document.getElementById('speedBtn');
+  let idx=-1, playing=false, zhVoice=null;
+  const SPEEDS=[0.85,0.92,1.0,1.12];
+
+  function pickVoice(){
+    if(!synth) return;
+    const vs=synth.getVoices()||[];
+    const femaleName=/mei[-\s]?jia|ting[-\s]?ting|sin[-\s]?ji|li[-\s]?mu|yu[-\s]?shu|hsiaochen|xiaoxiao|xiaoyi|huihui|hanhan|yaoyao|female|woman|girl|女/i;
+    const maleName=/yunjian|kangkang|male|man|boy|男/i;
+    const scored=vs
+      .filter(v=>/zh/i.test(v.lang)||/chinese|mandarin|國語|中文|普通話/i.test(v.name))
+      .map(v=>{
+        let score=0;
+        if(/zh[-_]TW/i.test(v.lang)) score+=80;
+        else if(/zh[-_]HK/i.test(v.lang)) score+=65;
+        else if(/zh[-_]CN/i.test(v.lang)) score+=45;
+        if(femaleName.test(v.name)) score+=90;
+        if(/siri|premium|enhanced|neural|natural/i.test(v.name)) score+=20;
+        if(maleName.test(v.name)) score-=80;
+        if(/google/i.test(v.name)) score+=8;
+        return {v,score};
+      })
+      .sort((a,b)=>b.score-a.score);
+    zhVoice = scored.length ? scored[0].v : null;
+  }
+  pickVoice();
+  if(synth) synth.onvoiceschanged=pickVoice;
+
+  function narration(c){
+    let t=c.title.replace(/（[^）]*）/g,'')+'。'+c.take+'。重點：'+c.points.join('');
+    if(c.eg&&c.eg.length){ t+='舉個例子：'+c.eg.map(e=>e.t).join(''); }
+    return t;
+  }
+  function highlight(i){
+    document.querySelectorAll('.card').forEach(el=>el.classList.remove('playing'));
+    const c=flat[i]; if(!c) return;
+    const card=document.querySelector('.card[data-id="'+c.id+'"]');
+    if(card){ card.classList.add('playing','open'); card.scrollIntoView({behavior:'smooth',block:'center'}); }
+    nowSec.textContent=c.title.replace(/（[^）]*）/g,'');
+  }
+  function speak(i){
+    if(!synth){ alert('這個瀏覽器不支援語音朗讀，建議用 Safari 或 Chrome。'); return; }
+    if(i<0||i>=flat.length){ stop(); return; }
+    synth.cancel();
+    idx=i; highlight(idx);
+    pickVoice();
+    const u=new SpeechSynthesisUtterance(narration(flat[idx]));
+    u.lang='zh-TW'; if(zhVoice) u.voice=zhVoice;
+    u.rate=store.speed||0.92; u.pitch=1.08;
+    u.onend=()=>{ if(playing) speak(idx+1); };
+    synth.speak(u);
+  }
+  function start(){
+    if(!synth){ alert('這個瀏覽器不支援語音朗讀，建議用 Safari 或 Chrome。'); return; }
+    player.classList.add('show'); playing=true; toggleBtn.textContent='⏸'; speak(idx<0?0:idx);
+  }
+  function pause(){ playing=false; toggleBtn.textContent='▶'; if(synth) synth.pause(); }
+  function resume(){ playing=true; toggleBtn.textContent='⏸'; if(synth) synth.resume(); }
+  function stop(){ playing=false; toggleBtn.textContent='⏯'; if(synth) synth.cancel();
+    document.querySelectorAll('.card').forEach(el=>el.classList.remove('playing')); }
+
+  document.getElementById('playAll').onclick=()=>{ idx=-1; start(); };
+  toggleBtn.onclick=()=>{
+    if(!playing){ if(synth&&synth.paused&&idx>=0) resume(); else start(); }
+    else pause();
+  };
+  document.getElementById('nextBtn').onclick=()=>{ playing=true; toggleBtn.textContent='⏸'; speak(Math.min(idx+1,flat.length-1)); };
+  document.getElementById('prevBtn').onclick=()=>{ playing=true; toggleBtn.textContent='⏸'; speak(Math.max(idx-1,0)); };
+  speedBtn.textContent=(store.speed||1).toFixed(2).replace(/0$/,'')+'×';
+  speedBtn.onclick=()=>{
+    let cur=SPEEDS.indexOf(store.speed); cur=(cur+1)%SPEEDS.length;
+    store.speed=SPEEDS[cur]; save();
+    speedBtn.textContent=store.speed.toFixed(2).replace(/0$/,'')+'×';
+    if(playing){ speak(idx); }
+  };
+  window.addEventListener('pagehide',stop);
+
+  render();
+})();
+</script>
+</body>
+</html>
