@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>翰林一下 · 識字闖關（私用）</title>
+<!--
+  私用課堂版：翰林國語一下 本冊生字，一課一關。
+  聽聲音選對的字 → 答錯走教學模式（第1次提示+重播，第2次標正解+聽3次才放行）
+  → 過關收種子養大樹。zh-TW 語音。⚙️ 老師可編輯/補字、匯出匯入。
+  存檔 key：hanlin1b_words_v1 / hanlin1b_progress_v1（獨立、不做 clear/removeItem）。
+  ※ 第八課首字、第十一課待補（用 ⚙️ 補）。生字由截圖辨識，請核對。
+-->
+<style>
+  :root{
+    --bg:#FFF7E6; --card:#fff; --line:#F0D9A8; --ink:#7C4A14; --ink2:#A86A2C;
+    --amber:#F59E0B; --amber-d:#B45309; --green:#10B981; --green-d:#047857;
+    --red:#EF4444; --blue:#3B82F6;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; height:100%; }
+  body{ font-family:"PingFang TC","Microsoft JhengHei",sans-serif; color:var(--ink);
+    background:linear-gradient(180deg,#FDE9C8,#FFF7E6 40%); min-height:100vh; }
+  button{ font-family:inherit; cursor:pointer; border:0; }
+  .hidden{ display:none !important; }
+
+  /* 共用按鈕 */
+  .btn{ background:linear-gradient(180deg,var(--amber),var(--amber-d)); color:#fff; font-weight:800;
+    font-size:18px; padding:12px 22px; border-radius:16px; box-shadow:0 4px 0 #92400e; }
+  .btn:active{ transform:translateY(3px); box-shadow:0 1px 0 #92400e; }
+  .btn.green{ background:linear-gradient(180deg,#34D399,var(--green-d)); box-shadow:0 4px 0 #065f46; }
+  .btn.ghost{ background:#fff; color:var(--ink); box-shadow:0 3px 0 var(--line); border:2px solid var(--line); }
+
+  /* 開始畫面 */
+  #intro{ max-width:560px; margin:0 auto; padding:36px 20px; text-align:center; }
+  #intro h1{ font-size:30px; margin:6px 0; }
+  #intro .badge{ display:inline-block; background:#fff; border:2px solid var(--line); border-radius:20px;
+    padding:4px 16px; font-weight:800; color:var(--amber-d); letter-spacing:2px; margin-bottom:10px; }
+  #intro p{ color:var(--ink2); }
+  .name-row{ margin:18px 0; }
+  .name-row input{ font-size:20px; padding:10px 14px; border:2px solid var(--line); border-radius:12px;
+    text-align:center; width:200px; font-family:inherit; }
+  .plant-row{ font-size:40px; letter-spacing:8px; margin:14px 0; }
+
+  /* 主畫面 */
+  header{ display:flex; align-items:center; gap:10px; padding:10px 14px; background:#fff;
+    border-bottom:3px solid var(--line); position:sticky; top:0; z-index:5; flex-wrap:wrap; }
+  header h2{ font-size:18px; margin:0; }
+  header .who{ color:var(--ink2); font-size:13px; }
+  header .grow{ flex:1; }
+  .plant-mini{ font-size:22px; }
+  .plant-mini b{ font-size:14px; color:var(--green-d); }
+  .icon-btn{ background:#fff; border:2px solid var(--line); border-radius:12px; padding:6px 10px; font-size:16px; }
+
+  .wrap{ max-width:920px; margin:0 auto; padding:16px; }
+  .lesson-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px; }
+  .lesson-card{ background:var(--card); border:3px solid var(--line); border-radius:18px; padding:16px;
+    text-align:center; cursor:pointer; box-shadow:0 4px 0 var(--line); transition:transform .1s; }
+  .lesson-card:active{ transform:translateY(3px); box-shadow:0 1px 0 var(--line); }
+  .lesson-card.done{ border-color:var(--green); box-shadow:0 4px 0 #6ee7b7; }
+  .lesson-card .no{ font-size:22px; font-weight:900; }
+  .lesson-card .cnt{ color:var(--ink2); font-size:13px; margin-top:4px; }
+  .lesson-card .bar{ height:8px; background:#F3E8D0; border-radius:6px; margin-top:10px; overflow:hidden; }
+  .lesson-card .bar > i{ display:block; height:100%; background:var(--green); width:0; }
+  .lesson-card .check{ color:var(--green-d); font-weight:800; font-size:13px; }
+
+  /* 答題 */
+  .quiz{ max-width:640px; margin:0 auto; text-align:center; }
+  .quiz .lv{ display:inline-block; background:var(--amber); color:#fff; font-weight:800; padding:5px 16px;
+    border-radius:20px; margin-bottom:6px; }
+  .speak-btn{ background:linear-gradient(180deg,#FBBF24,#D97706); color:#fff; font-size:26px; font-weight:800;
+    padding:18px 30px; border-radius:22px; box-shadow:0 5px 0 #92400e; margin:14px 0; }
+  .speak-btn:active{ transform:translateY(3px); box-shadow:0 2px 0 #92400e; }
+  .opts{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0; }
+  .opt{ background:#fff; border:3px solid var(--line); border-radius:20px; font-size:64px; font-weight:800;
+    color:var(--ink); padding:18px 0; box-shadow:0 5px 0 var(--line); }
+  .opt:active{ transform:translateY(3px); box-shadow:0 2px 0 var(--line); }
+  .opt.correct{ background:#D1FAE5; border-color:var(--green); color:var(--green-d); }
+  .opt.wrong{ background:#FEE2E2; border-color:var(--red); color:var(--red); }
+  .opt:disabled{ opacity:.55; }
+  .teach{ background:#FFFBEB; border:2px dashed var(--amber); border-radius:16px; padding:14px; margin:12px 0; }
+  .teach .big{ font-size:60px; font-weight:900; color:var(--amber-d); line-height:1; }
+  .teach .zh{ font-size:24px; color:var(--green-d); font-weight:800; letter-spacing:2px; margin:6px 0; }
+  .msg{ min-height:26px; font-weight:800; margin:8px 0; }
+  .msg.ok{ color:var(--green-d); } .msg.no{ color:var(--red); }
+  .listen-track{ font-weight:800; color:var(--amber-d); }
+
+  /* 彈窗 */
+  .modal-bg{ position:fixed; inset:0; background:rgba(60,40,10,.45); display:flex; align-items:center;
+    justify-content:center; padding:16px; z-index:20; }
+  .modal{ background:#fff; border-radius:22px; padding:20px; max-width:560px; width:100%;
+    max-height:88vh; overflow:auto; box-shadow:0 20px 60px rgba(0,0,0,.3); }
+  .modal h3{ margin:0 0 10px; }
+  .row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .we{ display:grid; grid-template-columns:1fr 1fr auto; gap:6px; margin-bottom:6px; }
+  .we input{ padding:7px 9px; border:1px solid var(--line); border-radius:8px; font-family:inherit; font-size:15px; }
+  .we .del{ background:#FEE2E2; color:var(--red); border-radius:8px; padding:0 10px; font-weight:800; }
+  select,textarea,.field{ font-family:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:10px; font-size:15px; }
+  textarea{ width:100%; min-height:90px; }
+  .end{ text-align:center; }
+  .end .big{ font-size:54px; }
+</style>
+</head>
+<body>
+
+<!-- 開始 -->
+<div id="intro">
+  <div class="badge">翰林 · 國語一下 · 私用課堂版</div>
+  <h1>🌱 識字闖關</h1>
+  <p>聽聲音 → 選對的字 · 一課一關 · 過關收種子養大樹</p>
+  <div class="plant-row">🌰 🌱 🌿 🌷 🌻 🌳 🍎</div>
+  <div class="name-row">隊長的名字：<br><input id="playerName" maxlength="8" placeholder="梅梅"></div>
+  <button class="btn" onclick="startGame()">開始闖關！</button>
+</div>
+
+<!-- 主畫面 -->
+<div id="main" class="hidden">
+  <header>
+    <h2>🌱 識字闖關</h2>
+    <span class="who" id="whoLabel"></span>
+    <div class="grow"></div>
+    <span class="plant-mini" id="plantMini">🌰 <b>0</b></span>
+    <button class="icon-btn" onclick="openSettings()">⚙️</button>
+    <button class="icon-btn" onclick="backToList()" id="homeBtn" title="回課程">🏠</button>
+  </header>
+
+  <div class="wrap">
+    <!-- 課程選單 -->
+    <div id="lessonView">
+      <div class="lesson-grid" id="lessonGrid"></div>
+    </div>
+
+    <!-- 答題 -->
+    <div id="quizView" class="quiz hidden">
+      <div class="lv" id="quizLv">第一課</div>
+      <div style="color:var(--ink2);font-weight:700" id="quizProg"></div>
+      <button class="speak-btn" id="speakBtn" onclick="speakTarget()">🔊 點我聽</button>
+      <div class="msg" id="quizMsg"></div>
+      <div class="opts" id="opts"></div>
+      <div class="teach hidden" id="teachBox">
+        <div>📖 我們一起學這個字</div>
+        <div class="big" id="teachWord">字</div>
+        <div class="zh" id="teachZh">ㄗˋ</div>
+        <div class="listen-track">聽 <span id="listenCnt">0</span>/3 次</div>
+        <div class="row" style="justify-content:center;margin-top:10px">
+          <button class="btn" onclick="teachListen()">🔊 再聽一次</button>
+          <button class="btn green hidden" id="teachNext" onclick="afterTeach()">學會了，下一個 ➡</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 結算 -->
+<div id="endModal" class="modal-bg hidden">
+  <div class="modal end">
+    <div class="big">🎉</div>
+    <h3 id="endTitle">這一課過關！</h3>
+    <p id="endText"></p>
+    <button class="btn green" onclick="closeEnd()">回課程地圖</button>
+  </div>
+</div>
+
+<!-- 設定 -->
+<div id="settingsModal" class="modal-bg hidden">
+  <div class="modal">
+    <h3>⚙️ 老師字詞設定</h3>
+    <div class="row" style="margin-bottom:10px">
+      <span>選課：</span>
+      <select id="setLesson" class="field" onchange="renderEditor()"></select>
+      <button class="btn ghost" style="font-size:14px;padding:6px 12px" onclick="addCharRow()">＋ 加字</button>
+    </div>
+    <div id="editor"></div>
+    <div class="row" style="margin:12px 0">
+      <span>試聽：</span><input id="voiceTest" class="field" placeholder="輸入字看效果" style="flex:1">
+      <button class="btn ghost" style="font-size:14px;padding:6px 12px" onclick="testVoice()">🔊</button>
+    </div>
+    <details style="margin-top:8px">
+      <summary style="cursor:pointer;font-weight:700">匯出 / 匯入 JSON（備份用）</summary>
+      <textarea id="jsonArea" placeholder="按「匯出」會把字詞放這裡；貼入後按「匯入」"></textarea>
+      <div class="row" style="margin-top:6px">
+        <button class="btn ghost" style="font-size:14px;padding:6px 12px" onclick="exportJSON()">匯出</button>
+        <button class="btn ghost" style="font-size:14px;padding:6px 12px" onclick="importJSON()">匯入</button>
+      </div>
+    </details>
+    <div class="row" style="margin-top:14px;justify-content:space-between">
+      <button class="btn ghost" style="font-size:14px;padding:6px 12px;color:var(--red)" onclick="resetWords()">🔄 還原預設</button>
+      <button class="btn green" onclick="closeSettings()">完成</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+var WORDS_KEY='hanlin1b_words_v1', PROG_KEY='hanlin1b_progress_v1';
+
+// ====== 預設生字（翰林一下，截圖辨識，請核對）======
+var DEFAULT_LESSONS = [
+  {id:'L1', name:'第一課', chars:[['春','ㄔㄨㄣ'],['裡','ㄌㄧˇ'],['綠','ㄌㄩˋ'],['美','ㄇㄟˇ'],['呀','˙ㄚ'],['媽','ㄇㄚ'],['弟','ㄉㄧˋ'],['坐','ㄗㄨㄛˋ'],['還','ㄏㄞˊ'],['路','ㄌㄨˋ'],['著','˙ㄓㄜ'],['氣','ㄑㄧˋ'],['暖','ㄋㄨㄢˇ'],['就','ㄐㄧㄡˋ']]},
+  {id:'L2', name:'第二課', chars:[['雨','ㄩˇ'],['唱','ㄔㄤˋ'],['歌','ㄍㄜ'],['過','ㄍㄨㄛˋ'],['河','ㄏㄜˊ'],['輕','ㄑㄧㄥ'],['快','ㄎㄨㄞˋ'],['樂','ㄌㄜˋ'],['街','ㄐㄧㄝ'],['興','ㄒㄧㄥ']]},
+  {id:'L3', name:'第三課', chars:[['涼','ㄌㄧㄤˊ'],['地','ㄉㄧˋ'],['真','ㄓㄣ'],['朵','ㄉㄨㄛˇ'],['拍','ㄆㄞ'],['照','ㄓㄠˋ'],['粉','ㄈㄣˇ'],['紅','ㄏㄨㄥˊ'],['色','ㄙㄜˋ'],['衣','ㄧ'],['服','ㄈㄨˊ'],['妹','ㄇㄟˋ'],['像','ㄒㄧㄤˋ'],['會','ㄏㄨㄟˋ'],['動','ㄉㄨㄥˋ'],['帶','ㄉㄞˋ'],['給','ㄍㄟˇ']]},
+  {id:'L4', name:'第四課', chars:[['送','ㄙㄨㄥˋ'],['什','ㄕㄜˊ'],['呢','˙ㄋㄜ'],['生','ㄕㄥ'],['日','ㄖˋ'],['要','ㄧㄠˋ'],['爸','ㄅㄚˋ'],['姐','ㄐㄧㄝˇ'],['束','ㄕㄨˋ'],['做','ㄗㄨㄛˋ'],['張','ㄓㄤ'],['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ'],['畫','ㄏㄨㄚˋ'],['寫','ㄒㄧㄝˇ'],['話','ㄏㄨㄚˋ']]},
+  {id:'L5', name:'第五課', chars:[['窗','ㄔㄨㄤ'],['外','ㄨㄞˋ'],['麻','ㄇㄚˊ'],['雀','ㄑㄩㄝˋ'],['找','ㄓㄠˇ'],['字','ㄗˋ'],['但','ㄉㄢˋ'],['課','ㄎㄜˋ'],['才','ㄘㄞˊ'],['可','ㄎㄜˇ'],['以','ㄧˇ'],['急','ㄐㄧˊ'],['跳','ㄊㄧㄠˋ'],['先','ㄒㄧㄢ'],['再','ㄗㄞˋ']]},
+  {id:'L6', name:'第六課', chars:[['面','ㄇㄧㄢˋ'],['葉','ㄧㄝˋ'],['船','ㄔㄨㄢˊ'],['拉','ㄌㄚ'],['推','ㄊㄨㄟ'],['毛','ㄇㄠˊ'],['陽','ㄧㄤˊ'],['光','ㄍㄨㄤ'],['兒','ㄦˊ'],['站','ㄓㄢˋ'],['中','ㄓㄨㄥ'],['游','ㄧㄡˊ'],['青','ㄑㄧㄥ'],['幫','ㄅㄤ'],['忙','ㄇㄤˊ']]},
+  {id:'L7', name:'第七課', chars:[['借','ㄐㄧㄝˋ'],['筆','ㄅㄧˇ'],['跟','ㄍㄣ'],['她','ㄊㄚ'],['把','ㄅㄚˇ'],['拿','ㄋㄚˊ'],['很','ㄏㄣˇ'],['都','ㄉㄡ'],['每','ㄇㄟˇ'],['家','ㄐㄧㄚ'],['今','ㄐㄧㄣ'],['自','ㄗˋ'],['己','ㄐㄧˇ'],['背','ㄅㄟˋ'],['書','ㄕㄨ'],['包','ㄅㄠ']]},
+  {id:'L8', name:'第八課', chars:[['教','ㄐㄧㄠˋ'],['室','ㄕˋ'],['見','ㄐㄧㄢˋ'],['桌','ㄓㄨㄛ'],['等','ㄉㄥˇ'],['意','ㄧˋ'],['思','ㄙ'],['忍','ㄖㄣˇ'],['住','ㄓㄨˋ'],['忽','ㄏㄨ'],['然','ㄖㄢˊ'],['啊','˙ㄚ'],['忘','ㄨㄤˋ'],['用','ㄩㄥˋ'],['吧','˙ㄅㄚ']]},
+  {id:'L9', name:'第九課', chars:[['情','ㄑㄧㄥˊ'],['杖','ㄓㄤˋ'],['時','ㄕˊ'],['受','ㄕㄡˋ'],['傷','ㄕㄤ'],['疼','ㄊㄥˊ'],['直','ㄓˊ'],['步','ㄅㄨˋ'],['健','ㄐㄧㄢˋ'],['康','ㄎㄤ'],['覺','ㄐㄩㄝˊ'],['得','ㄉㄜˊ'],['溫','ㄨㄣ'],['雙','ㄕㄨㄤ']]},
+  {id:'L10', name:'第十課', chars:[['棵','ㄎㄜ'],['樹','ㄕㄨˋ'],['打','ㄉㄚˇ'],['雷','ㄌㄟˊ'],['土','ㄊㄨˇ'],['抖','ㄉㄡˇ'],['害','ㄏㄞˋ'],['怕','ㄆㄚˋ'],['長','ㄓㄤˇ'],['咬','ㄧㄠˇ'],['羊','ㄧㄤˊ'],['吃','ㄔ'],['勇','ㄩㄥˇ'],['敢','ㄍㄢˇ'],['這','ㄓㄜˋ']]},
+  {id:'L11', name:'第十一課（待補）', chars:[]},
+  {id:'L12', name:'第十二課', chars:[['鉛','ㄑㄧㄢ'],['皮','ㄆㄧˊ'],['常','ㄔㄤˊ'],['錯','ㄘㄨㄛˋ'],['久','ㄐㄧㄡˇ'],['哭','ㄎㄨ'],['加','ㄐㄧㄚ'],['油','ㄧㄡˊ'],['試','ㄕˋ'],['後','ㄏㄡˋ'],['正','ㄓㄥˋ'],['漂','ㄆㄧㄠˋ'],['亮','ㄌㄧㄤˋ'],['進','ㄐㄧㄣˋ'],['需','ㄒㄩ'],['學','ㄒㄩㄝˊ']]},
+  {id:'L13', name:'第十三課', chars:[['狼','ㄌㄤˊ'],['間','ㄐㄧㄢ'],['完','ㄨㄢˊ'],['段','ㄉㄨㄢˋ'],['物','ㄨˋ'],['同','ㄊㄨㄥˊ'],['故','ㄍㄨˋ'],['事','ㄕˋ'],['期','ㄑㄧˊ'],['全','ㄑㄩㄢˊ'],['班','ㄅㄢ'],['記','ㄐㄧˋ'],['麼','˙ㄇㄜ'],['能','ㄋㄥˊ'],['決','ㄐㄩㄝˊ'],['定','ㄉㄧㄥˋ']]}
+];
+function toObjs(lessons){
+  return lessons.map(function(l){ return {id:l.id, name:l.name, chars:(l.chars||[]).map(function(c){ return {w:c[0]||c.w, z:c[1]||c.z||''}; })}; });
+}
+
+// ====== 狀態 ======
+var lessons = loadWords();
+var prog = loadProg();
+var PLANTS=['🌰','🌱','🌿','🌷','🌻','🌳','🍎'];
+var PLANT_STEP=8; // 每收 8 顆種子升一階
+
+function loadWords(){
+  try{ var s=localStorage.getItem(WORDS_KEY); if(s){ return JSON.parse(s); } }catch(e){}
+  return toObjs(DEFAULT_LESSONS);
+}
+function saveWords(){ try{ localStorage.setItem(WORDS_KEY, JSON.stringify(lessons)); }catch(e){} }
+function loadProg(){
+  try{ var s=localStorage.getItem(PROG_KEY); if(s){ return JSON.parse(s); } }catch(e){}
+  return { name:'', cleared:{}, seeds:0 };
+}
+function saveProg(){ try{ localStorage.setItem(PROG_KEY, JSON.stringify(prog)); }catch(e){} }
+
+function $(id){ return document.getElementById(id); }
+function plantStage(){ return Math.min(PLANTS.length-1, Math.floor(prog.seeds/PLANT_STEP)); }
+function updatePlantMini(){ $('plantMini').innerHTML = PLANTS[plantStage()]+' <b>'+prog.seeds+'</b>'; }
+function allChars(){ var a=[]; lessons.forEach(function(l){ l.chars.forEach(function(c){ a.push(c.w); }); }); return a; }
+function ck(lid,w){ return lid+':'+w; }
+
+// ====== 語音 ======
+var voices=[];
+function loadVoices(){ voices=speechSynthesis.getVoices()||[]; }
+loadVoices(); if(speechSynthesis.onvoiceschanged!==undefined){ speechSynthesis.onvoiceschanged=loadVoices; }
+function zhVoice(){
+  return voices.find(function(v){ return /zh(-|_)?(TW|Hant)/i.test(v.lang); })
+      || voices.find(function(v){ return /^zh/i.test(v.lang); }) || null;
+}
+function speak(text){
+  try{ speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(text);
+    u.lang='zh-TW'; var v=zhVoice(); if(v) u.voice=v; u.rate=0.85; speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+// ====== 開始 ======
+function startGame(){
+  var n=$('playerName').value.trim(); if(n) prog.name=n; else if(!prog.name) prog.name='小朋友';
+  saveProg();
+  $('intro').classList.add('hidden'); $('main').classList.remove('hidden');
+  $('whoLabel').textContent='隊長：'+prog.name;
+  updatePlantMini(); backToList();
+}
+
+// ====== 課程選單 ======
+function backToList(){
+  $('quizView').classList.add('hidden'); $('lessonView').classList.remove('hidden');
+  renderLessons();
+}
+function lessonCleared(l){ return l.chars.length>0 && l.chars.every(function(c){ return prog.cleared[ck(l.id,c.w)]; }); }
+function lessonDoneCount(l){ var n=0; l.chars.forEach(function(c){ if(prog.cleared[ck(l.id,c.w)]) n++; }); return n; }
+function renderLessons(){
+  var g=$('lessonGrid'); g.innerHTML='';
+  lessons.forEach(function(l){
+    var total=l.chars.length, done=lessonDoneCount(l), pct= total? Math.round(done/total*100):0;
+    var card=document.createElement('div');
+    card.className='lesson-card'+(total>0&&done===total?' done':'');
+    card.innerHTML='<div class="no">'+l.name+'</div>'+
+      '<div class="cnt">'+(total? done+' / '+total+' 字':'尚未加字')+'</div>'+
+      '<div class="bar"><i style="width:'+pct+'%"></i></div>'+
+      (total>0&&done===total?'<div class="check">✓ 全部學會</div>':'');
+    card.onclick=function(){ if(total===0){ alert(l.name+'還沒有字，請用右上角 ⚙️ 加字。'); return; } enterLesson(l.id); };
+    g.appendChild(card);
+  });
+}
+
+// ====== 答題 ======
+var cur={ lesson:null, queue:[], idx:0, target:null, wrong:0, listens:0 };
+function enterLesson(lid){
+  var l=lessons.find(function(x){ return x.id===lid; }); if(!l) return;
+  cur.lesson=l;
+  // 還沒學會的字優先；全學會就整課重練
+  var todo=l.chars.filter(function(c){ return !prog.cleared[ck(l.id,c.w)]; });
+  cur.queue = (todo.length? todo : l.chars.slice());
+  shuffle(cur.queue); cur.idx=0;
+  $('lessonView').classList.add('hidden'); $('quizView').classList.remove('hidden');
+  $('quizLv').textContent=l.name;
+  nextQuestion();
+}
+function nextQuestion(){
+  if(cur.idx>=cur.queue.length){ finishLesson(); return; }
+  cur.target=cur.queue[cur.idx]; cur.wrong=0; cur.listens=0;
+  $('teachBox').classList.add('hidden'); $('teachNext').classList.add('hidden');
+  $('quizMsg').textContent=''; $('quizMsg').className='msg';
+  $('quizProg').textContent='第 '+(cur.idx+1)+' / '+cur.queue.length+' 字';
+  renderOptions();
+  setTimeout(function(){ speakTarget(); }, 250);
+}
+function renderOptions(){
+  var pool=allChars().filter(function(w){ return w!==cur.target.w; });
+  shuffle(pool);
+  var opts=[cur.target.w]; for(var i=0;i<pool.length && opts.length<4;i++){ if(opts.indexOf(pool[i])<0) opts.push(pool[i]); }
+  shuffle(opts);
+  var box=$('opts'); box.innerHTML='';
+  opts.forEach(function(w){
+    var b=document.createElement('button'); b.className='opt'; b.textContent=w;
+    b.onclick=function(){ choose(w,b); };
+    box.appendChild(b);
+  });
+}
+function speakTarget(){ if(cur.target) speak(cur.target.w); }
+function choose(w, btn){
+  if(w===cur.target.w){
+    btn.classList.add('correct');
+    [].forEach.call($('opts').children,function(b){ b.disabled=true; });
+    $('quizMsg').textContent='✓ 答對了！'; $('quizMsg').className='msg ok';
+    var key=ck(cur.lesson.id,cur.target.w);
+    if(!prog.cleared[key]){ prog.cleared[key]=true; prog.seeds++; saveProg(); updatePlantMini(); }
+    speak(cur.target.w);
+    setTimeout(function(){ cur.idx++; nextQuestion(); }, 900);
+  } else {
+    cur.wrong++;
+    btn.classList.add('wrong'); btn.disabled=true;
+    if(cur.wrong===1){
+      $('quizMsg').textContent='再聽一次，慢慢選～'; $('quizMsg').className='msg no';
+      showTeachHint(false);
+      speak(cur.target.w);
+    } else {
+      // 第二次錯 → 鎖定、標正解、聽3次才放行
+      [].forEach.call($('opts').children,function(b){ b.disabled=true; if(b.textContent===cur.target.w) b.classList.add('correct'); });
+      $('quizMsg').textContent='我們一起學這個字！'; $('quizMsg').className='msg no';
+      showTeachHint(true);
+    }
+  }
+}
+function showTeachHint(full){
+  $('teachBox').classList.remove('hidden');
+  $('teachWord').textContent=cur.target.w;
+  $('teachZh').textContent=cur.target.z||'';
+  cur.listens=0; $('listenCnt').textContent='0';
+  $('teachNext').classList.toggle('hidden', !full); // 只有第二次錯才要聽滿3次
+  if(full){ $('teachNext').classList.add('hidden'); }
+}
+function teachListen(){
+  speak(cur.target.w);
+  cur.listens++; $('listenCnt').textContent=Math.min(cur.listens,3);
+  if(cur.listens>=3){ $('teachNext').classList.remove('hidden'); }
+}
+function afterTeach(){
+  // 教學完成視為學會
+  var key=ck(cur.lesson.id,cur.target.w);
+  if(!prog.cleared[key]){ prog.cleared[key]=true; prog.seeds++; saveProg(); updatePlantMini(); }
+  cur.idx++; nextQuestion();
+}
+function finishLesson(){
+  renderLessons();
+  $('endTitle').textContent=cur.lesson.name+' 過關！🎉';
+  $('endText').textContent='你又學會好多字，種子 '+prog.seeds+' 顆，'+PLANTS[plantStage()]+' 長大了！';
+  $('endModal').classList.remove('hidden');
+}
+function closeEnd(){ $('endModal').classList.add('hidden'); backToList(); }
+
+function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+
+// ====== 設定面板 ======
+function openSettings(){
+  var sel=$('setLesson'); sel.innerHTML='';
+  lessons.forEach(function(l){ var o=document.createElement('option'); o.value=l.id; o.textContent=l.name+'（'+l.chars.length+'字）'; sel.appendChild(o); });
+  renderEditor();
+  $('settingsModal').classList.remove('hidden');
+}
+function closeSettings(){ $('settingsModal').classList.add('hidden'); renderLessons(); updatePlantMini(); }
+function curEditLesson(){ var id=$('setLesson').value; return lessons.find(function(l){ return l.id===id; }); }
+function renderEditor(){
+  var l=curEditLesson(); var box=$('editor'); box.innerHTML='';
+  if(!l) return;
+  l.chars.forEach(function(c,i){
+    var row=document.createElement('div'); row.className='we';
+    row.innerHTML='<input value="'+(c.w||'')+'" maxlength="2" data-i="'+i+'" data-f="w">'+
+                  '<input value="'+(c.z||'')+'" data-i="'+i+'" data-f="z" placeholder="注音">'+
+                  '<button class="del" data-i="'+i+'">✕</button>';
+    box.appendChild(row);
+  });
+  box.querySelectorAll('input').forEach(function(inp){
+    inp.onchange=function(){ var i=+inp.dataset.i, f=inp.dataset.f; l.chars[i][f]=inp.value.trim(); saveWords(); };
+  });
+  box.querySelectorAll('.del').forEach(function(btn){
+    btn.onclick=function(){ var i=+btn.dataset.i; l.chars.splice(i,1); saveWords(); renderEditor(); openSettingsRefreshCount(); };
+  });
+}
+function addCharRow(){ var l=curEditLesson(); if(!l) return; l.chars.push({w:'',z:''}); saveWords(); renderEditor(); }
+function openSettingsRefreshCount(){ var sel=$('setLesson'); var l=curEditLesson(); if(l){ sel.options[sel.selectedIndex].textContent=l.name+'（'+l.chars.length+'字）'; } }
+function testVoice(){ var t=$('voiceTest').value.trim(); if(t) speak(t); }
+function resetWords(){
+  if(!confirm('還原成預設生字？（你自己加/改的字會被覆蓋，進度保留）')) return;
+  lessons=toObjs(DEFAULT_LESSONS); saveWords(); openSettings();
+}
+function exportJSON(){ $('jsonArea').value=JSON.stringify(lessons,null,2); }
+function importJSON(){
+  try{ var d=JSON.parse($('jsonArea').value); if(Array.isArray(d)){ lessons=d; saveWords(); openSettings(); alert('匯入成功！'); } else alert('格式不對'); }
+  catch(e){ alert('JSON 解析失敗：'+e.message); }
+}
+
+// 還原隊長名
+if(prog.name){ /* 可直接開始 */ }
+</script>
+</body>
+</html>

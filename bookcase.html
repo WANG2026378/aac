@@ -123,6 +123,19 @@ h1 {
   gap: 10px;
   margin-top: 18px;
 }
+.shelf-title {
+  margin: 12px 0 0;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(219,234,254,.72);
+  color: #1e3a8a;
+  font-size: 15px;
+  font-weight: 950;
+}
+.shelf-title.uncategorized {
+  background: rgba(254,243,199,.86);
+  color: #92400e;
+}
 .book-link {
   display: grid;
   grid-template-columns: 74px 1fr auto;
@@ -163,6 +176,9 @@ h1 {
 }
 .note-cover.range {
   background: linear-gradient(160deg, #172554, #0f766e);
+}
+.note-cover.seed-class {
+  background: linear-gradient(160deg, #92400e, #16a34a);
 }
 .book-link small {
   display: block;
@@ -272,6 +288,13 @@ h1 {
       <h1>我的雲端書櫃</h1>
       <p class="sub">已整理好的繪本先用本站看圖版閱讀，速度較順；需要借書或換書時，再開官方書庫。</p>
       <div class="local-books">
+        <div class="shelf-title uncategorized">未歸類區</div>
+        <a class="book-link" href="seed_class.html">
+          <span class="note-cover seed-class">識字<br>種子</span>
+          <span>翰林一下識字闖關<small>課堂生字練習 · 聽聲音選字 · 種子養大樹</small></span>
+          <span>→</span>
+        </a>
+        <div class="shelf-title">教學繪本</div>
         <a class="book-link" href="picturebook-imported.html?lesson=good-talking">
           <img class="book-cover" src="assets/picturebooks/good-talking/page-01.jpg" alt="我學會好好說話封面">
           <span>我學會好好說話<small>17 頁看圖版 · 題目覆述 · 答對自動下一頁</small></span>
@@ -297,6 +320,7 @@ h1 {
           <span>歐露露不挑食<small>32 頁隱藏教學版 · 嘗試新食物 · 看圖回答</small></span>
           <span>→</span>
         </a>
+        <div class="shelf-title">讀書筆記</div>
         <a class="book-link" href="yanggu.html">
           <span class="note-cover">養股<br>筆記</span>
           <span>養股，我提早20年財富自由<small>16 張讀書筆記卡 · 投資指標 · 女聲朗讀</small></span>
