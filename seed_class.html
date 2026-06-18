@@ -41,6 +41,23 @@
   .name-row input{ font-size:20px; padding:10px 14px; border:2px solid var(--line); border-radius:12px;
     text-align:center; width:200px; font-family:inherit; }
   .plant-row{ font-size:40px; letter-spacing:8px; margin:14px 0; }
+  .mascot-card{ display:grid; grid-template-columns:86px 1fr; gap:14px; align-items:center; background:#fff;
+    border:3px solid #B7E4C7; border-radius:18px; padding:12px; box-shadow:0 5px 0 #86efac; text-align:left; }
+  .intro-mascot{ margin:18px auto; max-width:430px; }
+  .sprout-buddy{ position:relative; width:78px; height:92px; display:grid; place-items:end center; }
+  .sprout-buddy::before{ content:""; position:absolute; top:0; left:38px; width:4px; height:24px;
+    background:#047857; border-radius:999px; transform:rotate(-8deg); transform-origin:bottom center; }
+  .sprout-buddy::after{ content:""; position:absolute; top:2px; left:41px; width:27px; height:20px;
+    background:#bbf7d0; border:3px solid #047857; border-radius:20% 70% 20% 70%; transform:rotate(18deg); }
+  .buddy-face{ position:relative; width:62px; height:66px; display:grid; place-items:center; border:3px solid #047857;
+    border-radius:20px; background:linear-gradient(180deg,#E0F2FE,#FDE68A); color:#075985;
+    box-shadow:inset 0 -8px rgba(4,120,87,.12), 0 8px 0 rgba(4,120,87,.14); font-size:23px; font-weight:900; }
+  .buddy-face::before,.buddy-face::after{ content:""; position:absolute; top:21px; width:8px; height:8px; border-radius:50%; background:#075985; }
+  .buddy-face::before{ left:16px; }
+  .buddy-face::after{ right:16px; }
+  .buddy-mouth{ position:absolute; left:20px; right:20px; bottom:17px; height:7px; border-bottom:3px solid #075985; border-radius:0 0 999px 999px; }
+  .buddy-name{ color:#047857; font-size:14px; font-weight:900; margin-bottom:3px; }
+  .buddy-speech{ color:#5f3b0d; font-size:16px; line-height:1.55; font-weight:800; }
 
   /* 主畫面 */
   header{ display:flex; align-items:center; gap:10px; padding:10px 14px; background:#fff;
@@ -65,28 +82,78 @@
   .lesson-card .check{ color:var(--green-d); font-weight:800; font-size:13px; }
 
   /* 答題 */
-  .quiz{ max-width:640px; margin:0 auto; text-align:center; }
+  .quiz{ max-width:880px; margin:0 auto; text-align:center; }
   .quiz .lv{ display:inline-block; background:var(--amber); color:#fff; font-weight:800; padding:5px 16px;
     border-radius:20px; margin-bottom:6px; }
+  .quiz-stage{ display:grid; grid-template-columns:minmax(150px,190px) minmax(0,640px); gap:16px;
+    align-items:start; justify-content:center; margin-top:12px; }
+  .quiz-work{ min-width:0; }
+  .side-cheer{ position:sticky; top:76px; display:grid; gap:10px; justify-items:center; background:#fff;
+    border:3px solid #B7E4C7; border-radius:20px; padding:12px; box-shadow:0 5px 0 #86efac; text-align:center; }
+  .side-cheer.ok{ border-color:#34D399; background:#ECFDF5; }
+  .side-cheer.no{ border-color:#FBBF24; background:#FFFBEB; }
+  .cheer-badge{ display:inline-block; background:#FEF3C7; color:#92400e; border-radius:999px; padding:4px 10px;
+    font-size:13px; font-weight:900; }
+  .cheer-text{ color:#5f3b0d; font-size:15px; line-height:1.5; font-weight:850; }
+  .cheer-meter{ width:100%; height:10px; border-radius:999px; background:#E7F8DD; overflow:hidden; border:1px solid #B7E4C7; }
+  .cheer-meter i{ display:block; width:20%; height:100%; background:linear-gradient(90deg,#34D399,#FBBF24); border-radius:999px; transition:width .25s; }
   .speak-btn{ background:linear-gradient(180deg,#FBBF24,#D97706); color:#fff; font-size:26px; font-weight:800;
     padding:18px 30px; border-radius:22px; box-shadow:0 5px 0 #92400e; margin:14px 0; }
   .speak-btn:active{ transform:translateY(3px); box-shadow:0 2px 0 #92400e; }
+  .coach-panel{ display:grid; grid-template-columns:76px 1fr; gap:12px; align-items:center; margin:0 auto 12px;
+    max-width:560px; padding:12px; border:3px solid #B7E4C7; border-radius:18px; background:#F0FDF4;
+    box-shadow:0 4px 0 #bbf7d0; text-align:left; }
+  .coach-panel.ok{ border-color:#34D399; background:#ECFDF5; }
+  .coach-panel.no{ border-color:#FBBF24; background:#FFFBEB; }
+  .coach-panel .sprout-buddy{ width:68px; height:72px; transform:scale(.78); transform-origin:left center; }
+  .coach-text{ color:#5f3b0d; font-size:16px; line-height:1.55; font-weight:850; }
   .opts{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0; }
+  .opts.high{ grid-template-columns:repeat(3,1fr); }
+  .opts.high .opt .oe,.opts.high .opt .op{ display:none; }
+  .opts.mid .opt .op{ display:none; }
   .opt{ background:#fff; border:3px solid var(--line); border-radius:20px; font-weight:800;
-    color:var(--ink); padding:14px 0; box-shadow:0 5px 0 var(--line);
-    display:flex; flex-direction:column; align-items:center; gap:2px; }
+    color:var(--ink); padding:14px 8px; box-shadow:0 5px 0 var(--line); min-height:142px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; }
   .opt .oc{ font-size:60px; line-height:1; }
-  .opt .oe{ font-size:30px; line-height:1; }
+  .opt .oe{ width:54px; height:54px; display:grid; place-items:center; margin-top:4px; border-radius:16px;
+    background:#F0FDF4; border:2px solid #B7E4C7; font-size:31px; line-height:1; }
+  .opt .op{ min-height:22px; color:#6B4A12; font-size:14px; line-height:1.35; margin-top:4px; }
   .opt:active{ transform:translateY(3px); box-shadow:0 2px 0 var(--line); }
   .opt.correct{ background:#D1FAE5; border-color:var(--green); color:var(--green-d); }
   .opt.wrong{ background:#FEE2E2; border-color:var(--red); color:var(--red); }
   .opt:disabled{ opacity:.55; }
-  .teach{ background:#FFFBEB; border:2px dashed var(--amber); border-radius:16px; padding:14px; margin:12px 0; }
-  .teach .big{ font-size:60px; font-weight:900; color:var(--amber-d); line-height:1; }
-  .teach .zh{ font-size:24px; color:var(--green-d); font-weight:800; letter-spacing:2px; margin:6px 0; }
+  .teach{ background:#FFFBEB; border:3px dashed var(--amber); border-radius:18px; padding:14px; margin:12px 0; }
+  .teach-title{ color:#92400e; font-weight:900; margin-bottom:10px; }
+  .meaning-card{ display:grid; grid-template-columns:150px 1fr; gap:14px; align-items:center; background:#fff;
+    border:2px solid #F0D9A8; border-radius:18px; padding:12px; box-shadow:0 4px 0 #F3E8D0; text-align:left; }
+  .meaning-art{ min-height:142px; display:grid; place-items:center; border-radius:16px; background:linear-gradient(180deg,#ECFDF5,#FFF7ED);
+    border:2px solid #B7E4C7; position:relative; overflow:hidden; }
+  .meaning-art::before{ content:""; position:absolute; bottom:12px; width:82%; height:18px; border-radius:999px; background:#D9F99D; }
+  .meaning-emoji{ position:relative; display:grid; place-items:center; width:92px; height:92px; border-radius:24px;
+    background:#fff; border:3px solid #86efac; box-shadow:0 8px 0 rgba(4,120,87,.16); font-size:50px; }
+  .meaning-word{ font-size:64px; font-weight:950; color:#92400e; line-height:1; }
+  .meaning-zh{ color:#047857; font-size:25px; font-weight:900; letter-spacing:2px; margin-top:6px; }
+  .meaning-label{ display:inline-flex; align-items:center; min-height:28px; padding:4px 10px; border-radius:999px;
+    background:#FEF3C7; color:#92400e; font-size:14px; font-weight:900; margin-top:10px; }
+  .meaning-phrase{ color:#4b2d08; font-size:22px; font-weight:900; margin-top:6px; line-height:1.35; }
+  .meaning-clue{ color:#047857; font-size:17px; font-weight:850; margin-top:6px; line-height:1.45; }
   .msg{ min-height:26px; font-weight:800; margin:8px 0; }
   .msg.ok{ color:var(--green-d); } .msg.no{ color:var(--red); }
   .listen-track{ font-weight:800; color:var(--amber-d); }
+  @media (max-width:760px){
+    .quiz-stage{ grid-template-columns:1fr; }
+    .side-cheer{ position:static; max-width:560px; margin:0 auto; grid-template-columns:70px 1fr; text-align:left;
+      justify-items:start; align-items:center; }
+    .side-cheer .sprout-buddy{ transform:scale(.82); transform-origin:left center; }
+    .cheer-meter{ max-width:260px; }
+  }
+  @media (max-width:560px){
+    .mascot-card,.coach-panel{ grid-template-columns:64px 1fr; }
+    .meaning-card{ grid-template-columns:1fr; text-align:center; }
+    .meaning-art{ min-height:118px; }
+    .meaning-info{ text-align:center; }
+    .opts.high{ grid-template-columns:1fr 1fr; }
+  }
 
   /* 彈窗 */
   .modal-bg{ position:fixed; inset:0; background:rgba(60,40,10,.45); display:flex; align-items:center;
@@ -104,11 +171,14 @@
   .end .big{ font-size:54px; }
 
   /* 闖關方式 + 寫字 */
+  .lesson-controls{ display:grid; gap:8px; margin-bottom:16px; }
   .mode-bar{ display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:14px;
     font-weight:800; color:var(--ink2); flex-wrap:wrap; }
   .seg{ display:inline-flex; border:2px solid var(--line); border-radius:14px; overflow:hidden; background:#fff; }
   .seg button{ padding:8px 16px; background:#fff; color:var(--ink); font-weight:800; font-size:15px; }
   .seg button.on{ background:var(--amber); color:#fff; }
+  .diff-note{ justify-self:center; max-width:560px; background:#fff; border:2px solid #B7E4C7; border-radius:14px;
+    padding:8px 12px; color:#047857; font-size:14px; font-weight:850; line-height:1.45; }
   .write-head{ font-size:20px; font-weight:800; margin:6px 0 10px; }
   .write-head .wzh{ color:var(--green-d); letter-spacing:2px; }
   .canvas-wrap{ display:flex; justify-content:center; }
@@ -126,6 +196,13 @@
   <h1>🌱 識字闖關</h1>
   <p>聽聲音 → 選對的字 · 一課一關 · 過關收種子養大樹</p>
   <div class="plant-row">🌰 🌱 🌿 🌷 🌻 🌳 🍎</div>
+  <div class="mascot-card intro-mascot">
+    <div class="sprout-buddy"><div class="buddy-face"><span class="buddy-mouth"></span></div></div>
+    <div>
+      <div class="buddy-name">小芽助教機器人</div>
+      <div class="buddy-speech">我會在旁邊加油，也會在卡住時給你剛剛好的線索。</div>
+    </div>
+  </div>
   <div class="name-row">隊長的名字：<br><input id="playerName" maxlength="8" placeholder="梅梅"></div>
   <button class="btn" onclick="startGame()">開始闖關！</button>
 </div>
@@ -144,13 +221,24 @@
   <div class="wrap">
     <!-- 課程選單 -->
     <div id="lessonView">
-      <div class="mode-bar">
-        <span>闖關方式：</span>
-        <div class="seg" id="modeSeg">
-          <button data-m="recognize">🔊 唸讀</button>
-          <button data-m="write">✏️ 寫字</button>
-          <button data-m="both" class="on">🔊+✏️ 唸+寫</button>
+      <div class="lesson-controls">
+        <div class="mode-bar">
+          <span>闖關方式：</span>
+          <div class="seg" id="modeSeg">
+            <button data-m="recognize">🔊 唸讀</button>
+            <button data-m="write">✏️ 寫字</button>
+            <button data-m="both" class="on">🔊+✏️ 唸+寫</button>
+          </div>
         </div>
+        <div class="mode-bar">
+          <span>學習分組：</span>
+          <div class="seg" id="diffSeg">
+            <button data-d="low">基礎組</button>
+            <button data-d="mid" class="on">穩定組</button>
+            <button data-d="high">挑戰組</button>
+          </div>
+        </div>
+        <div class="diff-note" id="diffInfo">穩定組：4 選 1，有圖像提示，答錯後打開字義圖形卡。</div>
       </div>
       <div class="lesson-grid" id="lessonGrid"></div>
     </div>
@@ -160,19 +248,46 @@
       <div class="lv" id="quizLv">第一課</div>
       <div style="color:var(--ink2);font-weight:700" id="quizProg"></div>
       <div id="recognizeView">
-      <button class="speak-btn" id="speakBtn" onclick="speakTarget()">🔊 點我聽</button>
-      <div class="msg" id="quizMsg"></div>
-      <div class="opts" id="opts"></div>
-      <div class="teach hidden" id="teachBox">
-        <div>📖 我們一起學這個字</div>
-        <div class="big" id="teachWord">字</div>
-        <div class="zh" id="teachZh">ㄗˋ</div>
-        <div class="listen-track">聽 <span id="listenCnt">0</span>/3 次</div>
-        <div class="row" style="justify-content:center;margin-top:10px">
-          <button class="btn" onclick="teachListen()">🔊 再聽一次</button>
-          <button class="btn green hidden" id="teachNext" onclick="afterTeach()">學會了，下一個 ➡</button>
+        <div class="quiz-stage">
+          <aside class="side-cheer" id="sideCheer">
+            <div class="sprout-buddy"><div class="buddy-face"><span class="buddy-mouth"></span></div></div>
+            <div>
+              <div class="cheer-badge" id="cheerBadge">助教機器人</div>
+              <div class="cheer-text" id="cheerText">我在旁邊陪你闖關，先聽，再選。</div>
+              <div class="cheer-meter"><i id="cheerMeter"></i></div>
+            </div>
+          </aside>
+          <div class="quiz-work">
+            <div class="coach-panel" id="coachPanel">
+              <div class="sprout-buddy"><div class="buddy-face"><span class="buddy-mouth"></span></div></div>
+              <div>
+                <div class="buddy-name">小芽助教機器人</div>
+                <div class="coach-text" id="coachText">先聽聲音，再看圖形線索。</div>
+              </div>
+            </div>
+            <button class="speak-btn" id="speakBtn" onclick="speakTarget()">🔊 點我聽</button>
+            <div class="msg" id="quizMsg"></div>
+            <div class="opts" id="opts"></div>
+            <div class="teach hidden" id="teachBox">
+              <div class="teach-title">📖 小芽字義圖形卡</div>
+              <div class="meaning-card">
+                <div class="meaning-art"><div class="meaning-emoji" id="teachEmoji">🌱</div></div>
+                <div class="meaning-info">
+                  <div class="meaning-word" id="teachWord">字</div>
+                  <div class="meaning-zh" id="teachZh">ㄗˋ</div>
+                  <div class="meaning-label">字義線索</div>
+                  <div class="meaning-phrase" id="teachPhrase">寫字的字</div>
+                  <div class="meaning-clue" id="teachClue">看圖想意思，再聽一次。</div>
+                </div>
+              </div>
+              <div class="listen-track">聽 <span id="listenCnt">0</span>/3 次</div>
+              <div class="row" style="justify-content:center;margin-top:10px">
+                <button class="btn" onclick="teachListen()">🔊 再聽一次</button>
+                <button class="btn green hidden" id="teachNext" onclick="afterTeach()">學會了，下一個 ➡</button>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
       </div><!-- /recognizeView -->
 
       <div id="writeView" class="hidden">
@@ -255,6 +370,30 @@ function toObjs(lessons){
 var lessons = loadWords();
 var prog = loadProg();
 if(!prog.mode) prog.mode='both';
+if(!prog.diff) prog.diff='mid';
+var DIFFS={
+  low:{
+    label:'基礎組',
+    options:2,
+    info:'基礎組：2 選 1，直接提供圖像與詞語線索，答錯時立刻打開字義圖形卡。',
+    coach:'基礎組先看圖、聽詞，再選字。你只要先抓住一個線索就很好。',
+    cheer:'我在旁邊幫你把線索亮起來，慢慢選也沒關係。'
+  },
+  mid:{
+    label:'穩定組',
+    options:4,
+    info:'穩定組：4 選 1，有圖像提示，答錯後打開字義圖形卡。',
+    coach:'穩定組先聽聲音，再用圖像確認。準備好就選一個最像的字。',
+    cheer:'先聽，再看，再選。你的判斷力正在長大。'
+  },
+  high:{
+    label:'挑戰組',
+    options:6,
+    info:'挑戰組：6 選 1，先收起圖像提示，主要靠聽音與辨字；需要時再開線索。',
+    coach:'挑戰組先不看圖，試著只靠聲音和字形判斷。想一下再出手。',
+    cheer:'我先不把答案說太滿，讓你保留挑戰的成就感。'
+  }
+};
 var PLANTS=['🌰','🌱','🌿','🌷','🌻','🌳','🍎'];
 var PLANT_STEP=8; // 每收 8 顆種子升一階
 
@@ -274,6 +413,42 @@ function plantStage(){ return Math.min(PLANTS.length-1, Math.floor(prog.seeds/PL
 function updatePlantMini(){ $('plantMini').innerHTML = PLANTS[plantStage()]+' <b>'+prog.seeds+'</b>'; }
 function allChars(){ var a=[]; lessons.forEach(function(l){ l.chars.forEach(function(c){ a.push(c.w); }); }); return a; }
 function ck(lid,w){ return lid+':'+w; }
+function diffKey(){ return DIFFS[prog.diff] ? prog.diff : 'mid'; }
+function diffConfig(){ return DIFFS[diffKey()]; }
+function wordMeta(w){
+  for(var i=0;i<lessons.length;i++){
+    var cs=lessons[i].chars;
+    for(var j=0;j<cs.length;j++){ if(cs[j].w===w) return cs[j]; }
+  }
+  return {w:w,z:'',e:'',p:w};
+}
+function emojiOf(w){ var c=wordMeta(w); return c.e||'🌱'; }
+function phraseOf(c){ return (c&&c.p)||((c&&c.w)||'')+'這個字'; }
+function meaningClue(c){
+  var p=phraseOf(c), at=p.lastIndexOf('的');
+  if(at>0){ return '可以想：「'+p.slice(0,at)+'」這個意思，再連到「'+c.w+'」。'; }
+  return '看圖想意思，再把聲音和字形連起來。';
+}
+function updateDiffInfo(){
+  var info=$('diffInfo'); if(info) info.textContent=diffConfig().info;
+}
+function updateCheer(state, text){
+  var side=$('sideCheer'), cheer=$('cheerText'), badge=$('cheerBadge'), meter=$('cheerMeter');
+  if(side){ side.className='side-cheer'+(state?' '+state:''); }
+  if(cheer){ cheer.textContent=text||diffConfig().cheer; }
+  if(badge){ badge.textContent='小芽助教機器人 · '+diffConfig().label; }
+  if(meter){
+    var total=cur.queue&&cur.queue.length ? cur.queue.length : 1;
+    var pct=Math.max(12, Math.min(100, Math.round((cur.idx+1)/total*100)));
+    meter.style.width=pct+'%';
+  }
+}
+function setCoach(state, text, cheerText){
+  var panel=$('coachPanel'), coach=$('coachText');
+  if(panel){ panel.className='coach-panel'+(state?' '+state:''); }
+  if(coach){ coach.textContent=text; }
+  updateCheer(state, cheerText||text);
+}
 
 // ====== 語音 ======
 var voices=[];
@@ -295,12 +470,13 @@ function startGame(){
   saveProg();
   $('intro').classList.add('hidden'); $('main').classList.remove('hidden');
   $('whoLabel').textContent='隊長：'+prog.name;
-  updatePlantMini(); backToList(); setupModeSeg();
+  updatePlantMini(); setupModeSeg(); setupDiffSeg(); backToList();
 }
 
 // ====== 課程選單 ======
 function backToList(){
   $('quizView').classList.add('hidden'); $('lessonView').classList.remove('hidden');
+  updateDiffInfo();
   renderLessons();
 }
 function lessonCleared(l){ return l.chars.length>0 && l.chars.every(function(c){ return prog.cleared[ck(l.id,c.w)]; }); }
@@ -345,22 +521,28 @@ function nextQuestion(){
 function showRecognize(){
   $('writeView').classList.add('hidden');
   $('recognizeView').classList.remove('hidden');
+  setCoach('', diffConfig().coach, diffConfig().cheer);
   renderOptions();
   setTimeout(function(){ speakTarget(); }, 250);
 }
-function emojiOf(w){
-  for(var i=0;i<lessons.length;i++){ var cs=lessons[i].chars; for(var j=0;j<cs.length;j++){ if(cs[j].w===w) return cs[j].e||''; } }
-  return '';
-}
 function renderOptions(){
+  var d=diffConfig();
   var pool=allChars().filter(function(w){ return w!==cur.target.w; });
   shuffle(pool);
-  var opts=[cur.target.w]; for(var i=0;i<pool.length && opts.length<4;i++){ if(opts.indexOf(pool[i])<0) opts.push(pool[i]); }
+  var targetCount=Math.min(d.options, pool.length+1);
+  var opts=[cur.target.w];
+  for(var i=0;i<pool.length && opts.length<targetCount;i++){ if(opts.indexOf(pool[i])<0) opts.push(pool[i]); }
   shuffle(opts);
-  var box=$('opts'); box.innerHTML='';
+  var box=$('opts'); box.innerHTML=''; box.className='opts '+diffKey();
   opts.forEach(function(w){
-    var b=document.createElement('button'); b.className='opt'; b.dataset.w=w;
-    b.innerHTML='<span class="oc">'+w+'</span><span class="oe">'+emojiOf(w)+'</span>';
+    var c=wordMeta(w), b=document.createElement('button'); b.className='opt'; b.dataset.w=w;
+    var oc=document.createElement('span'); oc.className='oc'; oc.textContent=w; b.appendChild(oc);
+    if(diffKey()!=='high'){
+      var oe=document.createElement('span'); oe.className='oe'; oe.textContent=c.e||'🌱'; b.appendChild(oe);
+    }
+    if(diffKey()==='low'){
+      var op=document.createElement('span'); op.className='op'; op.textContent=phraseOf(c); b.appendChild(op);
+    }
     b.onclick=function(){ choose(w,b); };
     box.appendChild(b);
   });
@@ -372,27 +554,42 @@ function choose(w, btn){
     btn.classList.add('correct');
     [].forEach.call($('opts').children,function(b){ b.disabled=true; });
     $('quizMsg').textContent='✓ 答對了！'; $('quizMsg').className='msg ok';
+    setCoach('ok','答對了！你把聲音、字形和意思連起來了。','太棒了，這一題的種子準備收下。');
     sayTarget();
     setTimeout(function(){ passRecognize(); }, 800);
   } else {
     cur.wrong++;
     btn.classList.add('wrong'); btn.disabled=true;
     if(cur.wrong===1){
-      $('quizMsg').textContent='再聽一次，慢慢選～'; $('quizMsg').className='msg no';
-      showTeachHint(false);
+      if(diffKey()==='high'){
+        $('quizMsg').textContent='先再聽一次，挑戰組試著從聲音判斷。'; $('quizMsg').className='msg no';
+        setCoach('no','先別急著看提示，我幫你重播一次。再從聲音和字形找答案。','很好，挑戰題本來就需要多想一下。');
+      } else if(diffKey()==='mid'){
+        $('quizMsg').textContent='再聽一次，我打開字義線索給你看。'; $('quizMsg').className='msg no';
+        setCoach('no','看一下圖像和詞語，再聽一次，答案會更清楚。','卡住時會用線索，這就是會學習。');
+        showTeachHint(false);
+      } else {
+        $('quizMsg').textContent='沒關係，小芽把線索放大給你。'; $('quizMsg').className='msg no';
+        setCoach('no','先看圖，再看詞語，慢慢把字找出來。','你正在練習用線索解題，加油。');
+        showTeachHint(false);
+      }
       sayTarget();
     } else {
       // 第二次錯 → 鎖定、標正解、聽3次才放行
       [].forEach.call($('opts').children,function(b){ b.disabled=true; if(b.dataset.w===cur.target.w) b.classList.add('correct'); });
       $('quizMsg').textContent='我們一起學這個字！'; $('quizMsg').className='msg no';
+      setCoach('no','我幫你標出正確字。現在聽三次，把字音、字形、字義放在一起。','這不是失敗，是進入教學模式。');
       showTeachHint(true);
     }
   }
 }
 function showTeachHint(full){
   $('teachBox').classList.remove('hidden');
-  $('teachWord').innerHTML=cur.target.w+(cur.target.e?' <span style="font-size:.6em">'+cur.target.e+'</span>':'');
+  $('teachEmoji').textContent=cur.target.e||'🌱';
+  $('teachWord').textContent=cur.target.w;
   $('teachZh').textContent=cur.target.z||'';
+  $('teachPhrase').textContent=phraseOf(cur.target);
+  $('teachClue').textContent=meaningClue(cur.target);
   cur.listens=0; $('listenCnt').textContent='0';
   $('teachNext').classList.toggle('hidden', !full); // 只有第二次錯才要聽滿3次
   if(full){ $('teachNext').classList.add('hidden'); }
@@ -400,7 +597,12 @@ function showTeachHint(full){
 function teachListen(){
   sayTarget();
   cur.listens++; $('listenCnt').textContent=Math.min(cur.listens,3);
-  if(cur.listens>=3){ $('teachNext').classList.remove('hidden'); }
+  if(cur.listens>=3){
+    $('teachNext').classList.remove('hidden');
+    setCoach('ok','聽滿三次了！你可以帶著新線索繼續往下一題。','很好，現在這個字比較熟了。');
+  } else {
+    setCoach('no','很好，再聽 '+(3-cur.listens)+' 次，把字音記起來。','我陪你重複練，重複就是記住的路。');
+  }
 }
 function afterTeach(){ passRecognize(); }
 
@@ -471,6 +673,17 @@ function setupModeSeg(){
   seg.onclick=function(e){ var b=e.target.closest('button'); if(!b) return;
     prog.mode=b.dataset.m; saveProg();
     [].forEach.call(seg.children,function(x){ x.classList.toggle('on', x===b); });
+  };
+}
+function setupDiffSeg(){
+  var seg=$('diffSeg'); if(!seg) return;
+  [].forEach.call(seg.children,function(b){ b.classList.toggle('on', b.dataset.d===diffKey()); });
+  updateDiffInfo();
+  seg.onclick=function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    prog.diff=b.dataset.d; saveProg();
+    [].forEach.call(seg.children,function(x){ x.classList.toggle('on', x===b); });
+    updateDiffInfo();
   };
 }
 function finishLesson(){
