@@ -116,13 +116,45 @@
   .fairy-slot::before{ content:""; position:absolute; left:8px; right:8px; bottom:22px; border-top:4px solid #94A3B8; }
   .fairy-slot::after{ content:""; position:absolute; left:10px; right:10px; bottom:17px; border-top:2px dashed #475569; }
   .fairy-slot.locked{ background:#F8FAFC; color:#94A3B8; }
-  .fairy-slot.locked img{ filter:grayscale(1); opacity:.2; }
+  .fairy-slot.locked .sprite-wrap{ filter:grayscale(.95); opacity:.28; }
   .fairy-slot.earned{ border-color:#34D399; box-shadow:inset 0 0 0 2px rgba(52,211,153,.18); }
-  .fairy-slot .fairy-img{ position:relative; z-index:1; width:52px; height:52px; object-fit:contain;
-    filter:drop-shadow(0 6px 7px rgba(0,0,0,.16)); }
-  .fairy-slot.stage-2 .fairy-img{ width:58px; height:58px; }
-  .fairy-slot.stage-3 .fairy-img{ width:63px; height:63px; }
-  .fairy-slot.stage-4 .fairy-img{ width:68px; height:68px; }
+  .sprite-wrap{ --sprite:#34D399; --accent:#FBBF24; position:relative; z-index:1; width:62px; height:70px;
+    margin:4px auto 0; filter:drop-shadow(0 6px 7px rgba(0,0,0,.16)); }
+  .fairy-slot.stage-2 .sprite-wrap{ width:70px; height:76px; }
+  .fairy-slot.stage-3 .sprite-wrap{ width:76px; height:82px; }
+  .fairy-slot.stage-4 .sprite-wrap{ width:82px; height:88px; }
+  .sprite-glow{ position:absolute; left:50%; bottom:8px; width:56px; height:20px; transform:translateX(-50%);
+    border-radius:999px; background:radial-gradient(circle,rgba(255,255,255,.9),color-mix(in srgb,var(--accent) 45%,transparent)); }
+  .sprite-body{ position:absolute; left:50%; bottom:14px; width:40px; height:44px; transform:translateX(-50%);
+    border:3px solid rgba(95,59,13,.45); border-radius:52% 52% 40% 40%;
+    background:linear-gradient(180deg,color-mix(in srgb,var(--sprite) 72%,#fff),var(--sprite) 58%,color-mix(in srgb,var(--accent) 72%,#92400e));
+    box-shadow:inset 0 -8px rgba(0,0,0,.09); }
+  .sprite-stem{ position:absolute; left:50%; top:7px; width:5px; height:21px; transform:translateX(-50%) rotate(-7deg);
+    border-radius:999px; background:#047857; z-index:3; }
+  .sprite-leaf{ position:absolute; left:34px; top:0; z-index:4; width:30px; height:26px; display:grid; place-items:center;
+    font-size:18px; transform:rotate(12deg); }
+  .sprite-cap{ position:absolute; left:4px; top:6px; z-index:4; width:30px; height:28px; display:grid; place-items:center;
+    border-radius:50%; background:#fff; border:2px solid rgba(95,59,13,.32); font-size:18px; box-shadow:0 3px 0 rgba(146,64,14,.13); }
+  .sprite-face{ position:absolute; left:50%; bottom:34px; z-index:5; width:24px; height:14px; transform:translateX(-50%); }
+  .sprite-face::before,.sprite-face::after{ content:""; position:absolute; top:1px; width:6px; height:8px; border-radius:50%;
+    background:#3b2508; box-shadow:0 1px 0 rgba(255,255,255,.65); }
+  .sprite-face::before{ left:2px; }
+  .sprite-face::after{ right:2px; }
+  .sprite-mouth{ position:absolute; left:50%; bottom:27px; z-index:5; width:14px; height:7px; transform:translateX(-50%);
+    border-bottom:3px solid #3b2508; border-radius:0 0 999px 999px; }
+  .sprite-badge{ position:absolute; right:8px; bottom:17px; z-index:6; width:24px; height:24px; display:grid; place-items:center;
+    border-radius:50%; background:#FEF3C7; border:2px solid #F59E0B; font-size:14px; box-shadow:0 3px 0 rgba(146,64,14,.17); }
+  .sprite-feet{ position:absolute; left:50%; bottom:8px; z-index:3; width:34px; height:9px; transform:translateX(-50%); }
+  .sprite-feet::before,.sprite-feet::after{ content:""; position:absolute; bottom:0; width:15px; height:8px; border-radius:999px;
+    background:#5f3b0d; }
+  .sprite-feet::before{ left:0; transform:rotate(-7deg); }
+  .sprite-feet::after{ right:0; transform:rotate(7deg); }
+  .sprite-pipe{ position:absolute; left:3px; bottom:12px; z-index:2; width:17px; height:23px; border-radius:5px 5px 3px 3px;
+    border:2px solid #047857; background:linear-gradient(180deg,#86efac,#22c55e); }
+  .sprite-pipe::before{ content:""; position:absolute; left:-4px; right:-4px; top:-8px; height:10px; border-radius:8px;
+    border:2px solid #047857; background:#BBF7D0; }
+  .sprite-wing{ position:absolute; right:3px; bottom:32px; z-index:2; width:19px; height:23px; transform:rotate(14deg);
+    border:2px solid rgba(14,116,144,.24); border-radius:75% 28% 75% 28%; background:rgba(255,255,255,.68); }
   .fairy-vehicle{ position:absolute; right:6px; top:5px; z-index:2; width:28px; height:28px; display:grid;
     place-items:center; background:#fff; border:2px solid #F0D9A8; border-radius:10px; font-size:18px; }
   .fairy-name{ position:relative; z-index:1; font-size:12px; font-weight:950; color:#5f3b0d; line-height:1.2; margin-top:2px; }
@@ -252,7 +284,8 @@
   .treasure-chest{ position:relative; z-index:1; display:inline-grid; place-items:center; width:42px; height:42px;
     margin-bottom:4px; border-radius:14px; background:#FEF3C7; border:2px solid #F59E0B; font-size:26px;
     box-shadow:0 4px 0 rgba(146,64,14,.22); animation:chestBounce 1s ease-in-out infinite; }
-  .reward-pop img{ position:relative; z-index:1; width:96px; height:96px; object-fit:contain;
+  .reward-sprite{ display:grid; place-items:center; min-height:98px; }
+  .reward-pop .sprite-wrap{ width:96px; height:104px; margin:0 auto;
     filter:drop-shadow(0 8px 9px rgba(0,0,0,.16)); animation:fairyPrizeFloat 1.6s ease-in-out infinite; }
   .reward-pop .rp-title{ color:#047857; font-size:18px; font-weight:950; }
   .reward-pop .rp-name{ color:#5f3b0d; font-size:22px; font-weight:950; margin:3px 0; }
@@ -444,7 +477,7 @@
     <div class="reward-pop hidden" id="rewardPop">
       <div>
         <div class="treasure-chest">🎁</div>
-        <img id="rewardImg" src="" alt="">
+        <div class="reward-sprite" id="rewardSprite"></div>
       </div>
       <div>
         <div class="rp-title" id="rewardTitle">寶物獲得！新精靈加入</div>
@@ -541,18 +574,18 @@ var DIFFS={
 var PLANTS=['🌰','🌱','🌿','🌷','🌻','🌳','🍎'];
 var PLANT_STEP=8; // 每收 8 顆種子升一階
 var FAIRY_REWARDS=[
-  {id:'happy-rail-1', name:'笑笑精靈', form:'小小乘客', stage:1, vehicle:'小車', icon:'🚗', image:'assets/preschool-fairies/happy-fairy.png', line:'我坐上小車，陪你把第一段路開得亮亮的。'},
-  {id:'calm-rail-1', name:'柔柔精靈', form:'平交道守護', stage:1, vehicle:'平交道', icon:'🚦', image:'assets/preschool-fairies/calm-fairy.png', line:'我在平交道旁提醒大家慢慢看、穩穩走。'},
-  {id:'scared-rail-2', name:'抖抖精靈', form:'勇氣車掌', stage:2, vehicle:'電車', icon:'🚃', image:'assets/preschool-fairies/scared-fairy.png', line:'我有一點怕，但我會握好扶手，勇敢往下一站。'},
-  {id:'sad-rail-2', name:'淚淚精靈', form:'雨滴列車員', stage:2, vehicle:'火車', icon:'🚆', image:'assets/preschool-fairies/sad-fairy.png', line:'我把眼淚變成雨滴車窗，陪你把難字慢慢讀清楚。'},
-  {id:'angry-rail-2', name:'火火精靈', form:'紅燈守門員', stage:2, vehicle:'號誌', icon:'🚥', image:'assets/preschool-fairies/angry-fairy.png', line:'我把熱熱的力氣變成紅綠燈，停一下再出發。'},
-  {id:'happy-rail-3', name:'笑笑精靈', form:'亮翼車長', stage:3, vehicle:'觀光列車', icon:'🚞', image:'assets/preschool-fairies/happy-fairy.png', line:'我的翅膀變亮了，列車也開得更穩了。'},
-  {id:'calm-rail-3', name:'柔柔精靈', form:'安穩站長', stage:3, vehicle:'月台', icon:'🚉', image:'assets/preschool-fairies/calm-fairy.png', line:'我在月台等你，提醒你每一題都能慢慢想。'},
-  {id:'scared-rail-3', name:'抖抖精靈', form:'鐵道勇者', stage:3, vehicle:'高速列車', icon:'🚄', image:'assets/preschool-fairies/scared-fairy.png', line:'我從發抖變勇敢，和你一起衝過長長的鐵道。'},
-  {id:'sad-rail-4', name:'淚淚精靈', form:'銀河列車守護', stage:4, vehicle:'夜行列車', icon:'🌙', image:'assets/preschool-fairies/sad-fairy.png', line:'我把小難過變成星光，讓夜行列車也看得見路。'},
-  {id:'angry-rail-4', name:'火火精靈', form:'新幹線引擎', stage:4, vehicle:'新幹線', icon:'🚄', image:'assets/preschool-fairies/angry-fairy.png', line:'我把衝勁放進新幹線，快速但守規矩。'},
-  {id:'happy-rail-4', name:'笑笑精靈', form:'彩虹特急', stage:4, vehicle:'特急列車', icon:'🌈', image:'assets/preschool-fairies/happy-fairy.png', line:'彩虹特急出發，帶著你答對的字一路發光。'},
-  {id:'calm-rail-4', name:'柔柔精靈', form:'終點總車長', stage:4, vehicle:'夢想列車', icon:'🏁', image:'assets/preschool-fairies/calm-fairy.png', line:'整個學期的鐵道快完成了，你的識字力變強了。'}
+  {id:'red-sprout-car', name:'紅芽精靈', form:'小車探險型', stage:1, vehicle:'小車', icon:'🚗', color:'#EF4444', accent:'#F97316', leaf:'🌱', cap:'🍄', badge:'⭐', line:'紅芽戴上小蘑菇帽，開著小車把第一段路照亮。'},
+  {id:'blue-pipe-jumper', name:'藍苗精靈', form:'管道跳跳型', stage:1, vehicle:'綠管道', icon:'🟩', color:'#3B82F6', accent:'#22C55E', leaf:'🍃', cap:'🟦', badge:'💧', line:'藍苗從綠管道探出頭，提醒你先聽清楚再出發。'},
+  {id:'yellow-star-train', name:'黃星精靈', form:'星星加速型', stage:2, vehicle:'小火車', icon:'🚆', color:'#F59E0B', accent:'#FDE047', leaf:'🌼', cap:'⭐', badge:'🪙', line:'黃星收集亮亮星幣，小火車一格一格加速。'},
+  {id:'purple-mushroom-guard', name:'紫菇精靈', form:'平交道守護型', stage:2, vehicle:'平交道', icon:'🚦', color:'#8B5CF6', accent:'#EC4899', leaf:'🌿', cap:'🍄', badge:'🛡️', line:'紫菇守在平交道，幫大家停、看、聽，再安全通過。'},
+  {id:'green-seed-carrier', name:'綠苗精靈', form:'花苗搬運型', stage:2, vehicle:'貨車', icon:'🚚', color:'#10B981', accent:'#84CC16', leaf:'🌱', cap:'🌸', badge:'🎒', line:'綠苗把新學會的字裝進小背包，送上貨車前進。'},
+  {id:'cloud-wing-shinkansen', name:'雲翼精靈', form:'新幹線雲翼型', stage:3, vehicle:'新幹線', icon:'🚄', color:'#38BDF8', accent:'#F8FAFC', leaf:'☁️', cap:'🚄', badge:'⚡', line:'雲翼展開白色翅膀，讓新幹線又快又穩。'},
+  {id:'orange-platform-hero', name:'橘跳精靈', form:'跳台勇者型', stage:3, vehicle:'跳台車', icon:'🚌', color:'#FB923C', accent:'#EAB308', leaf:'🍃', cap:'🧱', badge:'✨', line:'橘跳踩上小跳台，把每一次答對都變成勇氣。'},
+  {id:'teal-ticket-conductor', name:'青票精靈', form:'月台車長型', stage:3, vehicle:'電車', icon:'🚃', color:'#06B6D4', accent:'#14B8A6', leaf:'🌵', cap:'🎫', badge:'🎟️', line:'青票在月台剪票，邀請新的字一起上車。'},
+  {id:'pink-flower-healer', name:'粉花精靈', form:'花冠補給型', stage:4, vehicle:'觀光列車', icon:'🚞', color:'#EC4899', accent:'#F9A8D4', leaf:'🌷', cap:'🌺', badge:'💖', line:'粉花撒下花冠能量，讓辛苦練習也變得甜甜的。'},
+  {id:'silver-moon-night', name:'銀月精靈', form:'夜行星光型', stage:4, vehicle:'夜行列車', icon:'🌙', color:'#64748B', accent:'#FDE68A', leaf:'🌙', cap:'🪐', badge:'🌟', line:'銀月把難字照成星光，夜行列車也看得見方向。'},
+  {id:'gold-coin-express', name:'金幣精靈', form:'星幣特急型', stage:4, vehicle:'特急列車', icon:'🚅', color:'#FACC15', accent:'#F59E0B', leaf:'🌻', cap:'👑', badge:'🪙', line:'金幣敲響特急鈴聲，告訴你努力真的會累積。'},
+  {id:'rainbow-captain-final', name:'虹冠精靈', form:'終點隊長型', stage:4, vehicle:'夢想列車', icon:'🏁', color:'#22C55E', accent:'#A855F7', leaf:'🌈', cap:'🎩', badge:'🏆', line:'虹冠在終點站揮旗，整個學期的識字隊伍集合完成。'}
 ];
 var CORRECT_PRAISE=[
   '答對了，太穩了！你把聲音和字形接起來了。',
@@ -599,6 +632,33 @@ function lessonIndex(l){
   return 0;
 }
 function rewardForLesson(l){ return FAIRY_REWARDS[lessonIndex(l)%FAIRY_REWARDS.length]; }
+function spritePart(parent, cls, text){
+  var s=document.createElement('span');
+  s.className=cls;
+  if(text) s.textContent=text;
+  parent.appendChild(s);
+  return s;
+}
+function createRewardSprite(r, locked){
+  var wrap=document.createElement('div');
+  wrap.className='sprite-wrap stage-'+(r.stage||1)+(locked?' locked':'');
+  wrap.style.setProperty('--sprite', r.color||'#34D399');
+  wrap.style.setProperty('--accent', r.accent||'#FBBF24');
+  wrap.setAttribute('role','img');
+  wrap.setAttribute('aria-label', locked ? '尚未加入的精靈' : r.name);
+  spritePart(wrap,'sprite-glow');
+  spritePart(wrap,'sprite-pipe');
+  spritePart(wrap,'sprite-wing');
+  spritePart(wrap,'sprite-stem');
+  spritePart(wrap,'sprite-leaf', r.leaf||'🌱');
+  spritePart(wrap,'sprite-cap', r.cap||'🍄');
+  spritePart(wrap,'sprite-body');
+  spritePart(wrap,'sprite-face');
+  spritePart(wrap,'sprite-mouth');
+  spritePart(wrap,'sprite-badge', r.badge||'⭐');
+  spritePart(wrap,'sprite-feet');
+  return wrap;
+}
 function rewardEarned(l){ return !!(prog.fairies&&prog.fairies[l.id]) || lessonCleared(l); }
 function fairyCount(){ var n=0; lessons.forEach(function(l){ if(rewardEarned(l)) n++; }); return n; }
 function awardLessonReward(l){
@@ -752,15 +812,14 @@ function renderRewards(){
     var r=rewardForLesson(l), earned=rewardEarned(l);
     var slot=document.createElement('div');
     slot.className='fairy-slot '+(earned?'earned':'locked')+' stage-'+r.stage;
-    var img=document.createElement('img');
-    img.className='fairy-img'; img.src=r.image; img.alt=earned ? r.name : '尚未加入的精靈';
+    var sprite=createRewardSprite(r,!earned);
     var vehicle=document.createElement('div');
     vehicle.className='fairy-vehicle'; vehicle.textContent=earned ? r.icon : '？';
     var name=document.createElement('div');
     name.className='fairy-name'; name.textContent=earned ? r.name : l.name;
     var form=document.createElement('div');
     form.className='fairy-form'; form.textContent=earned ? r.form : '待過關';
-    slot.appendChild(vehicle); slot.appendChild(img); slot.appendChild(name); slot.appendChild(form);
+    slot.appendChild(vehicle); slot.appendChild(sprite); slot.appendChild(name); slot.appendChild(form);
     rail.appendChild(slot);
   });
 }
@@ -1006,7 +1065,8 @@ function showRewardPop(r,isNew){
   var pop=$('rewardPop'); if(!pop) return;
   if(!r){ pop.classList.add('hidden'); return; }
   playTreasureMusic();
-  $('rewardImg').src=r.image; $('rewardImg').alt=r.name;
+  var spriteBox=$('rewardSprite');
+  if(spriteBox){ spriteBox.innerHTML=''; spriteBox.appendChild(createRewardSprite(r,false)); }
   $('rewardTitle').textContent=isNew ? '寶物獲得！新精靈加入' : '寶物閃光！精靈回到列車隊';
   $('rewardName').textContent=r.name+' · '+r.form;
   $('rewardLine').textContent=r.line;

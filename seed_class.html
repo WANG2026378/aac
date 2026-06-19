@@ -41,6 +41,25 @@
   .name-row input{ font-size:20px; padding:10px 14px; border:2px solid var(--line); border-radius:12px;
     text-align:center; width:200px; font-family:inherit; }
   .plant-row{ font-size:40px; letter-spacing:8px; margin:14px 0; }
+  .rail-scene{ position:relative; min-height:118px; margin:16px auto; max-width:520px; overflow:hidden;
+    border:3px solid #F0D9A8; border-radius:22px; background:linear-gradient(180deg,#DFF7FF 0 48%,#D9F99D 49% 100%);
+    box-shadow:0 5px 0 #E8C98A; }
+  .rail-track{ position:absolute; left:0; right:0; bottom:35px; height:18px;
+    background:repeating-linear-gradient(90deg,#6b4a12 0 22px,#f8e8bd 22px 34px); border-top:4px solid #374151; border-bottom:4px solid #374151; }
+  .rail-road{ position:absolute; left:0; right:0; bottom:0; height:35px; background:#4B5563; }
+  .rail-road::after{ content:""; position:absolute; left:0; right:0; top:16px; border-top:3px dashed #FDE68A; }
+  .crossing-sign{ position:absolute; left:18px; bottom:28px; width:70px; height:74px; display:grid; place-items:center;
+    color:#7C2D12; font-size:34px; z-index:2; }
+  .crossing-sign::before{ content:""; position:absolute; width:64px; height:8px; border-radius:999px; background:#FDE68A;
+    border:2px solid #7C2D12; transform:rotate(45deg); }
+  .crossing-sign::after{ content:""; position:absolute; width:64px; height:8px; border-radius:999px; background:#FDE68A;
+    border:2px solid #7C2D12; transform:rotate(-45deg); }
+  .crossing-sign span{ position:relative; z-index:1; filter:drop-shadow(0 2px 0 #fff); }
+  .rail-train,.rail-shinkansen,.rail-cars{ position:absolute; white-space:nowrap; will-change:transform; }
+  .rail-train{ bottom:52px; left:0; font-size:28px; animation:railRide 8s linear infinite; }
+  .rail-shinkansen{ bottom:70px; left:0; font-size:30px; animation:railRide 6.7s linear infinite; animation-delay:-3.2s; }
+  .rail-cars{ bottom:3px; left:0; font-size:25px; animation:railRide 9.2s linear infinite; animation-delay:-1.5s; }
+  @keyframes railRide{ from{ transform:translateX(-120px); } to{ transform:translateX(620px); } }
   .mascot-card{ display:grid; grid-template-columns:86px 1fr; gap:14px; align-items:center; background:#fff;
     border:3px solid #B7E4C7; border-radius:18px; padding:12px; box-shadow:0 5px 0 #86efac; text-align:left; }
   .intro-mascot{ margin:18px auto; max-width:430px; }
@@ -67,6 +86,8 @@
   header .grow{ flex:1; }
   .plant-mini{ font-size:22px; }
   .plant-mini b{ font-size:14px; color:var(--green-d); }
+  .plant-mini .fairy-mini{ display:inline-flex; align-items:center; gap:3px; margin-left:6px; padding:3px 7px;
+    border-radius:999px; background:#ECFDF5; color:#047857; font-size:14px; font-weight:950; }
   .icon-btn{ background:#fff; border:2px solid var(--line); border-radius:12px; padding:6px 10px; font-size:16px; }
 
   .wrap{ max-width:920px; margin:0 auto; padding:16px; }
@@ -80,6 +101,66 @@
   .lesson-card .bar{ height:8px; background:#F3E8D0; border-radius:6px; margin-top:10px; overflow:hidden; }
   .lesson-card .bar > i{ display:block; height:100%; background:var(--green); width:0; }
   .lesson-card .check{ color:var(--green-d); font-weight:800; font-size:13px; }
+  .lesson-card .fairy-earned{ display:inline-flex; align-items:center; gap:4px; margin-top:8px; padding:4px 8px;
+    border-radius:999px; background:#ECFDF5; color:#047857; font-size:12px; font-weight:900; }
+
+  .reward-hub{ margin:0 auto 18px; max-width:920px; background:#fff; border:3px solid #B7E4C7;
+    border-radius:20px; padding:14px; box-shadow:0 5px 0 #86efac; }
+  .reward-head{ display:flex; gap:12px; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+  .reward-title{ color:#047857; font-size:20px; font-weight:950; }
+  .reward-count{ color:#92400e; font-weight:950; background:#FEF3C7; border-radius:999px; padding:6px 12px; }
+  .reward-status{ color:#5f3b0d; font-weight:850; line-height:1.45; margin:6px 0 10px; }
+  .fairy-rail{ display:grid; grid-template-columns:repeat(6,1fr); gap:8px; }
+  .fairy-slot{ min-height:122px; border:2px solid #E8C98A; border-radius:14px; padding:7px; text-align:center;
+    background:linear-gradient(180deg,#FFFDF7,#ECFDF5); position:relative; overflow:hidden; }
+  .fairy-slot::before{ content:""; position:absolute; left:8px; right:8px; bottom:22px; border-top:4px solid #94A3B8; }
+  .fairy-slot::after{ content:""; position:absolute; left:10px; right:10px; bottom:17px; border-top:2px dashed #475569; }
+  .fairy-slot.locked{ background:#F8FAFC; color:#94A3B8; }
+  .fairy-slot.locked .sprite-wrap{ filter:grayscale(.95); opacity:.28; }
+  .fairy-slot.earned{ border-color:#34D399; box-shadow:inset 0 0 0 2px rgba(52,211,153,.18); }
+  .sprite-wrap{ --sprite:#34D399; --accent:#FBBF24; position:relative; z-index:1; width:62px; height:70px;
+    margin:4px auto 0; filter:drop-shadow(0 6px 7px rgba(0,0,0,.16)); }
+  .fairy-slot.stage-2 .sprite-wrap{ width:70px; height:76px; }
+  .fairy-slot.stage-3 .sprite-wrap{ width:76px; height:82px; }
+  .fairy-slot.stage-4 .sprite-wrap{ width:82px; height:88px; }
+  .sprite-glow{ position:absolute; left:50%; bottom:8px; width:56px; height:20px; transform:translateX(-50%);
+    border-radius:999px; background:radial-gradient(circle,rgba(255,255,255,.9),color-mix(in srgb,var(--accent) 45%,transparent)); }
+  .sprite-body{ position:absolute; left:50%; bottom:14px; width:40px; height:44px; transform:translateX(-50%);
+    border:3px solid rgba(95,59,13,.45); border-radius:52% 52% 40% 40%;
+    background:linear-gradient(180deg,color-mix(in srgb,var(--sprite) 72%,#fff),var(--sprite) 58%,color-mix(in srgb,var(--accent) 72%,#92400e));
+    box-shadow:inset 0 -8px rgba(0,0,0,.09); }
+  .sprite-stem{ position:absolute; left:50%; top:7px; width:5px; height:21px; transform:translateX(-50%) rotate(-7deg);
+    border-radius:999px; background:#047857; z-index:3; }
+  .sprite-leaf{ position:absolute; left:34px; top:0; z-index:4; width:30px; height:26px; display:grid; place-items:center;
+    font-size:18px; transform:rotate(12deg); }
+  .sprite-cap{ position:absolute; left:4px; top:6px; z-index:4; width:30px; height:28px; display:grid; place-items:center;
+    border-radius:50%; background:#fff; border:2px solid rgba(95,59,13,.32); font-size:18px; box-shadow:0 3px 0 rgba(146,64,14,.13); }
+  .sprite-face{ position:absolute; left:50%; bottom:34px; z-index:5; width:24px; height:14px; transform:translateX(-50%); }
+  .sprite-face::before,.sprite-face::after{ content:""; position:absolute; top:1px; width:6px; height:8px; border-radius:50%;
+    background:#3b2508; box-shadow:0 1px 0 rgba(255,255,255,.65); }
+  .sprite-face::before{ left:2px; }
+  .sprite-face::after{ right:2px; }
+  .sprite-mouth{ position:absolute; left:50%; bottom:27px; z-index:5; width:14px; height:7px; transform:translateX(-50%);
+    border-bottom:3px solid #3b2508; border-radius:0 0 999px 999px; }
+  .sprite-badge{ position:absolute; right:8px; bottom:17px; z-index:6; width:24px; height:24px; display:grid; place-items:center;
+    border-radius:50%; background:#FEF3C7; border:2px solid #F59E0B; font-size:14px; box-shadow:0 3px 0 rgba(146,64,14,.17); }
+  .sprite-feet{ position:absolute; left:50%; bottom:8px; z-index:3; width:34px; height:9px; transform:translateX(-50%); }
+  .sprite-feet::before,.sprite-feet::after{ content:""; position:absolute; bottom:0; width:15px; height:8px; border-radius:999px;
+    background:#5f3b0d; }
+  .sprite-feet::before{ left:0; transform:rotate(-7deg); }
+  .sprite-feet::after{ right:0; transform:rotate(7deg); }
+  .sprite-pipe{ position:absolute; left:3px; bottom:12px; z-index:2; width:17px; height:23px; border-radius:5px 5px 3px 3px;
+    border:2px solid #047857; background:linear-gradient(180deg,#86efac,#22c55e); }
+  .sprite-pipe::before{ content:""; position:absolute; left:-4px; right:-4px; top:-8px; height:10px; border-radius:8px;
+    border:2px solid #047857; background:#BBF7D0; }
+  .sprite-wing{ position:absolute; right:3px; bottom:32px; z-index:2; width:19px; height:23px; transform:rotate(14deg);
+    border:2px solid rgba(14,116,144,.24); border-radius:75% 28% 75% 28%; background:rgba(255,255,255,.68); }
+  .fairy-vehicle{ position:absolute; right:6px; top:5px; z-index:2; width:28px; height:28px; display:grid;
+    place-items:center; background:#fff; border:2px solid #F0D9A8; border-radius:10px; font-size:18px; }
+  .fairy-name{ position:relative; z-index:1; font-size:12px; font-weight:950; color:#5f3b0d; line-height:1.2; margin-top:2px; }
+  .fairy-form{ position:relative; z-index:1; display:inline-flex; align-items:center; min-height:20px; margin-top:4px;
+    padding:2px 6px; border-radius:999px; background:#FEF3C7; color:#92400e; font-size:11px; font-weight:900; }
+  .fairy-slot.locked .fairy-form{ background:#E5E7EB; color:#64748B; }
 
   /* 答題 */
   .quiz{ max-width:880px; margin:0 auto; text-align:center; }
@@ -185,8 +266,60 @@
   .canvas-wrap{ display:flex; justify-content:center; }
   #penCanvas{ width:min(80vw,440px); height:min(80vw,440px); border:3px solid var(--line); border-radius:18px;
     background:#fff; touch-action:none; box-shadow:0 4px 0 var(--line); cursor:crosshair; }
+  .write-praise{ min-height:32px; margin:10px auto 0; color:#047857; font-size:18px; font-weight:950; }
   .write-tools{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:14px; }
   .write-tools .btn{ font-size:16px; padding:10px 16px; }
+  .reward-pop{ display:grid; grid-template-columns:110px 1fr; gap:12px; align-items:center; margin:12px auto;
+    padding:12px; border:3px solid #B7E4C7; border-radius:18px; background:linear-gradient(180deg,#FFF7D6,#F0FDF4);
+    text-align:left; position:relative; overflow:hidden; box-shadow:0 8px 0 rgba(180,83,9,.18); }
+  .reward-pop.hidden{ display:none !important; }
+  .reward-pop > div{ position:relative; z-index:1; }
+  .reward-pop.treasure-enter{ animation:treasurePop .8s cubic-bezier(.2,1.35,.2,1) both; }
+  .reward-pop.treasure-enter::before{ content:""; position:absolute; inset:-20%; background:
+    radial-gradient(circle at 25% 28%,rgba(255,255,255,.9) 0 0.8%,transparent 1.4%),
+    radial-gradient(circle at 70% 25%,rgba(255,255,255,.85) 0 0.7%,transparent 1.3%),
+    radial-gradient(circle at 80% 70%,rgba(255,255,255,.8) 0 0.8%,transparent 1.4%),
+    radial-gradient(circle at 36% 78%,rgba(255,255,255,.85) 0 0.7%,transparent 1.3%);
+    animation:sparkleSweep 1.1s ease-out both; pointer-events:none; }
+  .treasure-chest{ position:relative; z-index:1; display:inline-grid; place-items:center; width:42px; height:42px;
+    margin-bottom:4px; border-radius:14px; background:#FEF3C7; border:2px solid #F59E0B; font-size:26px;
+    box-shadow:0 4px 0 rgba(146,64,14,.22); animation:chestBounce 1s ease-in-out infinite; }
+  .reward-sprite{ display:grid; place-items:center; min-height:98px; }
+  .reward-pop .sprite-wrap{ width:96px; height:104px; margin:0 auto;
+    filter:drop-shadow(0 8px 9px rgba(0,0,0,.16)); animation:fairyPrizeFloat 1.6s ease-in-out infinite; }
+  .reward-pop .rp-title{ color:#047857; font-size:18px; font-weight:950; }
+  .reward-pop .rp-name{ color:#5f3b0d; font-size:22px; font-weight:950; margin:3px 0; }
+  .reward-pop .rp-line{ color:#92400e; font-size:15px; font-weight:850; line-height:1.45; }
+  .reward-route{ display:flex; align-items:center; justify-content:center; gap:8px; margin-top:8px;
+    color:#475569; font-weight:900; }
+  .reward-route .gate{ color:#92400e; }
+  @keyframes treasurePop{
+    0%{ transform:scale(.78) translateY(18px); opacity:0; }
+    55%{ transform:scale(1.06) translateY(-4px); opacity:1; }
+    100%{ transform:scale(1) translateY(0); opacity:1; }
+  }
+  @keyframes sparkleSweep{
+    0%{ transform:scale(.6) rotate(-8deg); opacity:0; }
+    35%{ opacity:1; }
+    100%{ transform:scale(1.08) rotate(8deg); opacity:0; }
+  }
+  @keyframes chestBounce{
+    0%,100%{ transform:translateY(0) rotate(-2deg); }
+    50%{ transform:translateY(-4px) rotate(2deg); }
+  }
+  @keyframes fairyPrizeFloat{
+    0%,100%{ transform:translateY(0) scale(1); }
+    50%{ transform:translateY(-6px) scale(1.04); }
+  }
+  @media (max-width:720px){
+    .fairy-rail{ grid-template-columns:repeat(3,1fr); }
+  }
+  @media (max-width:560px){
+    .rail-scene{ min-height:104px; }
+    .rail-shinkansen{ bottom:65px; }
+    .fairy-rail{ grid-template-columns:repeat(2,1fr); }
+    .reward-pop{ grid-template-columns:1fr; text-align:center; }
+  }
 </style>
 </head>
 <body>
@@ -195,8 +328,16 @@
 <div id="intro">
   <div class="badge">翰林 · 國語一下 · 私用課堂版</div>
   <h1>🌱 識字闖關</h1>
-  <p>聽聲音 → 選對的字 · 一課一關 · 過關收種子養大樹</p>
+  <p>聽聲音 → 選對的字 · 一課一關 · 過關收集精靈列車隊</p>
   <div class="plant-row">🌰 🌱 🌿 🌷 🌻 🌳 🍎</div>
+  <div class="rail-scene" aria-label="精靈鐵道">
+    <div class="crossing-sign"><span>🚦</span></div>
+    <div class="rail-shinkansen">🚄</div>
+    <div class="rail-train">🚆</div>
+    <div class="rail-track"></div>
+    <div class="rail-cars">🚗 🚙 🚌</div>
+    <div class="rail-road"></div>
+  </div>
   <div class="mascot-card intro-mascot">
     <div class="sprout-buddy"><div class="buddy-face"><span class="buddy-mouth"></span></div></div>
     <div>
@@ -241,6 +382,22 @@
         </div>
         <div class="diff-note" id="diffInfo">穩定組：4 選 1，有圖像提示，答錯後打開字義圖形卡。</div>
       </div>
+      <section class="reward-hub" id="rewardHub">
+        <div class="reward-head">
+          <div class="reward-title">精靈車站</div>
+          <div class="reward-count">已加入 <span id="fairyCount">0 / 12</span></div>
+        </div>
+        <div class="reward-status" id="railStatus">小精靈在平交道旁等你，過一課就會有一位加入列車隊。</div>
+        <div class="rail-scene" aria-label="平交道列車">
+          <div class="crossing-sign"><span>🚦</span></div>
+          <div class="rail-shinkansen">🚄</div>
+          <div class="rail-train">🚆</div>
+          <div class="rail-track"></div>
+          <div class="rail-cars">🚗 🚙 🚌</div>
+          <div class="rail-road"></div>
+        </div>
+        <div class="fairy-rail" id="fairyRail"></div>
+      </section>
       <div class="lesson-grid" id="lessonGrid"></div>
     </div>
 
@@ -299,6 +456,7 @@
           <span class="wzh" id="writeZh"></span>
         </div>
         <div class="canvas-wrap"><canvas id="penCanvas" width="560" height="560"></canvas></div>
+        <div class="write-praise" id="writePraise"></div>
         <div class="write-tools">
           <button class="btn ghost" onclick="speakTarget()">🔊 聽</button>
           <button class="btn ghost" id="guideBtn" onclick="toggleGuide()">描紅：開</button>
@@ -316,6 +474,18 @@
     <div class="big">🎉</div>
     <h3 id="endTitle">這一課過關！</h3>
     <p id="endText"></p>
+    <div class="reward-pop hidden" id="rewardPop">
+      <div>
+        <div class="treasure-chest">🎁</div>
+        <div class="reward-sprite" id="rewardSprite"></div>
+      </div>
+      <div>
+        <div class="rp-title" id="rewardTitle">寶物獲得！新精靈加入</div>
+        <div class="rp-name" id="rewardName"></div>
+        <div class="rp-line" id="rewardLine"></div>
+        <div class="reward-route"><span class="gate">平交道</span><span>→</span><span id="rewardVehicle">列車</span><span>→</span><span>下一站</span></div>
+      </div>
+    </div>
     <button class="btn green" onclick="closeEnd()">回課程地圖</button>
   </div>
 </div>
@@ -377,6 +547,7 @@ var lessons = loadWords();
 var prog = loadProg();
 if(!prog.mode) prog.mode='both';
 if(!prog.diff) prog.diff='mid';
+if(!prog.fairies) prog.fairies={};
 var DIFFS={
   low:{
     label:'基礎組',
@@ -402,6 +573,40 @@ var DIFFS={
 };
 var PLANTS=['🌰','🌱','🌿','🌷','🌻','🌳','🍎'];
 var PLANT_STEP=8; // 每收 8 顆種子升一階
+var FAIRY_REWARDS=[
+  {id:'red-sprout-car', name:'紅芽精靈', form:'小車探險型', stage:1, vehicle:'小車', icon:'🚗', color:'#EF4444', accent:'#F97316', leaf:'🌱', cap:'🍄', badge:'⭐', line:'紅芽戴上小蘑菇帽，開著小車把第一段路照亮。'},
+  {id:'blue-pipe-jumper', name:'藍苗精靈', form:'管道跳跳型', stage:1, vehicle:'綠管道', icon:'🟩', color:'#3B82F6', accent:'#22C55E', leaf:'🍃', cap:'🟦', badge:'💧', line:'藍苗從綠管道探出頭，提醒你先聽清楚再出發。'},
+  {id:'yellow-star-train', name:'黃星精靈', form:'星星加速型', stage:2, vehicle:'小火車', icon:'🚆', color:'#F59E0B', accent:'#FDE047', leaf:'🌼', cap:'⭐', badge:'🪙', line:'黃星收集亮亮星幣，小火車一格一格加速。'},
+  {id:'purple-mushroom-guard', name:'紫菇精靈', form:'平交道守護型', stage:2, vehicle:'平交道', icon:'🚦', color:'#8B5CF6', accent:'#EC4899', leaf:'🌿', cap:'🍄', badge:'🛡️', line:'紫菇守在平交道，幫大家停、看、聽，再安全通過。'},
+  {id:'green-seed-carrier', name:'綠苗精靈', form:'花苗搬運型', stage:2, vehicle:'貨車', icon:'🚚', color:'#10B981', accent:'#84CC16', leaf:'🌱', cap:'🌸', badge:'🎒', line:'綠苗把新學會的字裝進小背包，送上貨車前進。'},
+  {id:'cloud-wing-shinkansen', name:'雲翼精靈', form:'新幹線雲翼型', stage:3, vehicle:'新幹線', icon:'🚄', color:'#38BDF8', accent:'#F8FAFC', leaf:'☁️', cap:'🚄', badge:'⚡', line:'雲翼展開白色翅膀，讓新幹線又快又穩。'},
+  {id:'orange-platform-hero', name:'橘跳精靈', form:'跳台勇者型', stage:3, vehicle:'跳台車', icon:'🚌', color:'#FB923C', accent:'#EAB308', leaf:'🍃', cap:'🧱', badge:'✨', line:'橘跳踩上小跳台，把每一次答對都變成勇氣。'},
+  {id:'teal-ticket-conductor', name:'青票精靈', form:'月台車長型', stage:3, vehicle:'電車', icon:'🚃', color:'#06B6D4', accent:'#14B8A6', leaf:'🌵', cap:'🎫', badge:'🎟️', line:'青票在月台剪票，邀請新的字一起上車。'},
+  {id:'pink-flower-healer', name:'粉花精靈', form:'花冠補給型', stage:4, vehicle:'觀光列車', icon:'🚞', color:'#EC4899', accent:'#F9A8D4', leaf:'🌷', cap:'🌺', badge:'💖', line:'粉花撒下花冠能量，讓辛苦練習也變得甜甜的。'},
+  {id:'silver-moon-night', name:'銀月精靈', form:'夜行星光型', stage:4, vehicle:'夜行列車', icon:'🌙', color:'#64748B', accent:'#FDE68A', leaf:'🌙', cap:'🪐', badge:'🌟', line:'銀月把難字照成星光，夜行列車也看得見方向。'},
+  {id:'gold-coin-express', name:'金幣精靈', form:'星幣特急型', stage:4, vehicle:'特急列車', icon:'🚅', color:'#FACC15', accent:'#F59E0B', leaf:'🌻', cap:'👑', badge:'🪙', line:'金幣敲響特急鈴聲，告訴你努力真的會累積。'},
+  {id:'rainbow-captain-final', name:'虹冠精靈', form:'終點隊長型', stage:4, vehicle:'夢想列車', icon:'🏁', color:'#22C55E', accent:'#A855F7', leaf:'🌈', cap:'🎩', badge:'🏆', line:'虹冠在終點站揮旗，整個學期的識字隊伍集合完成。'}
+];
+var CORRECT_PRAISE=[
+  '答對了，太穩了！你把聲音和字形接起來了。',
+  '好厲害，這一題你抓到關鍵線索了。',
+  '答得很棒！小精靈幫你亮一格能量。',
+  '漂亮！你的識字列車又往前一站。',
+  '很會判斷，這個字正在變熟。'
+];
+var WRITE_PRAISE=[
+  '寫好了，筆畫有努力出來，值得稱讚！',
+  '很好，你把剛剛聽到的字留在手上了。',
+  '完成寫字任務，小精靈幫你加一格力量。',
+  '寫完了，很棒！下一站繼續前進。',
+  '你願意動手寫，這就是很重要的進步。'
+];
+var LESSON_PRAISE=[
+  '這一課完成了，精靈列車開進下一站。',
+  '你撐到過關，新的精靈夥伴來報到。',
+  '一課一課慢慢走，識字力真的有變強。',
+  '平交道號誌亮了，下一段鐵道準備出發。'
+];
 
 function loadWords(){
   try{ var s=localStorage.getItem(WORDS_KEY); if(s){ return JSON.parse(s); } }catch(e){}
@@ -416,11 +621,57 @@ function saveProg(){ try{ localStorage.setItem(PROG_KEY, JSON.stringify(prog)); 
 
 function $(id){ return document.getElementById(id); }
 function plantStage(){ return Math.min(PLANTS.length-1, Math.floor(prog.seeds/PLANT_STEP)); }
-function updatePlantMini(){ $('plantMini').innerHTML = PLANTS[plantStage()]+' <b>'+prog.seeds+'</b>'; }
+function updatePlantMini(){ $('plantMini').innerHTML = PLANTS[plantStage()]+' <b>'+prog.seeds+'</b> <span class="fairy-mini">🧚 '+fairyCount()+'</span>'; }
 function allChars(){ var a=[]; lessons.forEach(function(l){ l.chars.forEach(function(c){ a.push(c.w); }); }); return a; }
 function ck(lid,w){ return lid+':'+w; }
 function diffKey(){ return DIFFS[prog.diff] ? prog.diff : 'mid'; }
 function diffConfig(){ return DIFFS[diffKey()]; }
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+function lessonIndex(l){
+  for(var i=0;i<lessons.length;i++){ if(lessons[i].id===l.id) return i; }
+  return 0;
+}
+function rewardForLesson(l){ return FAIRY_REWARDS[lessonIndex(l)%FAIRY_REWARDS.length]; }
+function spritePart(parent, cls, text){
+  var s=document.createElement('span');
+  s.className=cls;
+  if(text) s.textContent=text;
+  parent.appendChild(s);
+  return s;
+}
+function createRewardSprite(r, locked){
+  var wrap=document.createElement('div');
+  wrap.className='sprite-wrap stage-'+(r.stage||1)+(locked?' locked':'');
+  wrap.style.setProperty('--sprite', r.color||'#34D399');
+  wrap.style.setProperty('--accent', r.accent||'#FBBF24');
+  wrap.setAttribute('role','img');
+  wrap.setAttribute('aria-label', locked ? '尚未加入的精靈' : r.name);
+  spritePart(wrap,'sprite-glow');
+  spritePart(wrap,'sprite-pipe');
+  spritePart(wrap,'sprite-wing');
+  spritePart(wrap,'sprite-stem');
+  spritePart(wrap,'sprite-leaf', r.leaf||'🌱');
+  spritePart(wrap,'sprite-cap', r.cap||'🍄');
+  spritePart(wrap,'sprite-body');
+  spritePart(wrap,'sprite-face');
+  spritePart(wrap,'sprite-mouth');
+  spritePart(wrap,'sprite-badge', r.badge||'⭐');
+  spritePart(wrap,'sprite-feet');
+  return wrap;
+}
+function rewardEarned(l){ return !!(prog.fairies&&prog.fairies[l.id]) || lessonCleared(l); }
+function fairyCount(){ var n=0; lessons.forEach(function(l){ if(rewardEarned(l)) n++; }); return n; }
+function awardLessonReward(l){
+  if(!lessonCleared(l)) return null;
+  if(!prog.fairies) prog.fairies={};
+  if(!prog.fairies[l.id]){
+    var r=rewardForLesson(l);
+    prog.fairies[l.id]={id:r.id, stage:r.stage};
+    saveProg();
+    return r;
+  }
+  return null;
+}
 function wordMeta(w){
   for(var i=0;i<lessons.length;i++){
     var cs=lessons[i].chars;
@@ -458,20 +709,81 @@ function setCoach(state, text, cheerText){
 
 // ====== 語音 ======
 var voices=[];
+var autoSpeakSeq=0, praiseActive=false;
 function loadVoices(){ voices=speechSynthesis.getVoices()||[]; }
 loadVoices(); if(speechSynthesis.onvoiceschanged!==undefined){ speechSynthesis.onvoiceschanged=loadVoices; }
 function zhVoice(){
   return voices.find(function(v){ return /zh(-|_)?(TW|Hant)/i.test(v.lang); })
       || voices.find(function(v){ return /^zh/i.test(v.lang); }) || null;
 }
-function speak(text){
-  try{ speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(text);
-    u.lang='zh-TW'; var v=zhVoice(); if(v) u.voice=v; u.rate=0.85; speechSynthesis.speak(u);
-  }catch(e){}
+function estimateSpeechMs(text){
+  return Math.max(1800, Math.min(6500, String(text||'').length*190));
+}
+function speak(text, done){
+  var finished=false, fallback=null;
+  function finish(){
+    if(finished) return;
+    finished=true;
+    if(fallback) clearTimeout(fallback);
+    if(done) done();
+  }
+  try{
+    speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(text);
+    u.lang='zh-TW'; var v=zhVoice(); if(v) u.voice=v; u.rate=0.85;
+    u.onend=finish; u.onerror=finish;
+    if(done) fallback=setTimeout(finish, estimateSpeechMs(text));
+    speechSynthesis.speak(u);
+  }catch(e){
+    if(done) fallback=setTimeout(finish, estimateSpeechMs(text));
+  }
+}
+var audioCtx=null;
+function ensureAudio(){
+  try{
+    var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null;
+    if(!audioCtx) audioCtx=new AC();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    return audioCtx;
+  }catch(e){ return null; }
+}
+function playTone(freq,start,dur,type,vol){
+  var ac=ensureAudio(); if(!ac) return;
+  var osc=ac.createOscillator(), gain=ac.createGain();
+  osc.type=type||'sine'; osc.frequency.setValueAtTime(freq, ac.currentTime+start);
+  gain.gain.setValueAtTime(0.0001, ac.currentTime+start);
+  gain.gain.exponentialRampToValueAtTime(vol||0.08, ac.currentTime+start+0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+start+dur);
+  osc.connect(gain); gain.connect(ac.destination);
+  osc.start(ac.currentTime+start); osc.stop(ac.currentTime+start+dur+0.02);
+}
+function playCorrectSound(){
+  [[659,0,.12],[784,.09,.14],[1046,.19,.18]].forEach(function(n){ playTone(n[0],n[1],n[2],'triangle',.075); });
+}
+function playWriteSound(){
+  [[523,0,.12],[659,.1,.12],[880,.2,.2]].forEach(function(n){ playTone(n[0],n[1],n[2],'sine',.065); });
+}
+function playTreasureMusic(){
+  var notes=[[392,0,.16],[523,.13,.16],[659,.26,.18],[784,.39,.2],[1046,.56,.32],[1318,.78,.28]];
+  notes.forEach(function(n){ playTone(n[0],n[1],n[2],'triangle',.085); });
+  [1568,1760,2093,2349].forEach(function(f,i){ playTone(f,.18+i*.12,.09,'sine',.035); });
+}
+function scheduleTargetSpeak(){
+  var token=++autoSpeakSeq;
+  setTimeout(function(){ if(token===autoSpeakSeq&&!praiseActive) speakTarget(); }, 250);
+}
+function speakPraise(text, done){
+  praiseActive=true;
+  autoSpeakSeq++;
+  speak(text, function(){
+    praiseActive=false;
+    if(done) done();
+  });
 }
 
 // ====== 開始 ======
 function startGame(){
+  ensureAudio();
   var n=$('playerName').value.trim(); if(n) prog.name=n; else if(!prog.name) prog.name='小朋友';
   saveProg();
   $('intro').classList.add('hidden'); $('main').classList.remove('hidden');
@@ -484,26 +796,53 @@ function backToList(){
   $('quizView').classList.add('hidden'); $('lessonView').classList.remove('hidden');
   updateDiffInfo();
   renderLessons();
+  renderRewards();
+  updatePlantMini();
 }
 function lessonCleared(l){ return l.chars.length>0 && l.chars.every(function(c){ return prog.cleared[ck(l.id,c.w)]; }); }
 function lessonDoneCount(l){ var n=0; l.chars.forEach(function(c){ if(prog.cleared[ck(l.id,c.w)]) n++; }); return n; }
+function renderRewards(){
+  var rail=$('fairyRail'); if(!rail) return;
+  var n=fairyCount();
+  $('fairyCount').textContent=n+' / '+lessons.length;
+  $('railStatus').textContent=n===0 ? '小精靈在平交道旁等你，過一課就會有一位加入列車隊。'
+    : (n<lessons.length ? '列車隊已有 '+n+' 位精靈，下一課過關會再進化一格。' : '一下精靈列車隊集合完成，可以回頭重練讓速度更穩。');
+  rail.innerHTML='';
+  lessons.forEach(function(l){
+    var r=rewardForLesson(l), earned=rewardEarned(l);
+    var slot=document.createElement('div');
+    slot.className='fairy-slot '+(earned?'earned':'locked')+' stage-'+r.stage;
+    var sprite=createRewardSprite(r,!earned);
+    var vehicle=document.createElement('div');
+    vehicle.className='fairy-vehicle'; vehicle.textContent=earned ? r.icon : '？';
+    var name=document.createElement('div');
+    name.className='fairy-name'; name.textContent=earned ? r.name : l.name;
+    var form=document.createElement('div');
+    form.className='fairy-form'; form.textContent=earned ? r.form : '待過關';
+    slot.appendChild(vehicle); slot.appendChild(sprite); slot.appendChild(name); slot.appendChild(form);
+    rail.appendChild(slot);
+  });
+}
 function renderLessons(){
   var g=$('lessonGrid'); g.innerHTML='';
   lessons.forEach(function(l){
     var total=l.chars.length, done=lessonDoneCount(l), pct= total? Math.round(done/total*100):0;
+    var reward=rewardEarned(l) ? rewardForLesson(l) : null;
     var card=document.createElement('div');
     card.className='lesson-card'+(total>0&&done===total?' done':'');
     card.innerHTML='<div class="no">'+l.name+'</div>'+
       '<div class="cnt">'+(total? done+' / '+total+' 字':'尚未加字')+'</div>'+
       '<div class="bar"><i style="width:'+pct+'%"></i></div>'+
-      (total>0&&done===total?'<div class="check">✓ 全部學會</div>':'');
+      (total>0&&done===total?'<div class="check">✓ 全部學會</div>':'')+
+      (reward?'<div class="fairy-earned">'+reward.icon+' '+reward.form+'</div>':'');
     card.onclick=function(){ if(total===0){ alert(l.name+'還沒有字，請用右上角 ⚙️ 加字。'); return; } enterLesson(l.id); };
     g.appendChild(card);
   });
+  renderRewards();
 }
 
 // ====== 答題 ======
-var cur={ lesson:null, queue:[], idx:0, target:null, wrong:0, listens:0 };
+var cur={ lesson:null, queue:[], idx:0, target:null, wrong:0, listens:0, writingDone:false };
 function enterLesson(lid){
   var l=lessons.find(function(x){ return x.id===lid; }); if(!l) return;
   cur.lesson=l; cur.mode=prog.mode;
@@ -517,9 +856,10 @@ function enterLesson(lid){
 }
 function nextQuestion(){
   if(cur.idx>=cur.queue.length){ finishLesson(); return; }
-  cur.target=cur.queue[cur.idx]; cur.wrong=0; cur.listens=0;
+  cur.target=cur.queue[cur.idx]; cur.wrong=0; cur.listens=0; cur.writingDone=false;
   $('teachBox').classList.add('hidden'); $('teachNext').classList.add('hidden');
   $('quizMsg').textContent=''; $('quizMsg').className='msg';
+  if($('writePraise')) $('writePraise').textContent='';
   $('quizProg').textContent='第 '+(cur.idx+1)+' / '+cur.queue.length+' 字';
   if(cur.mode==='write'){ enterWritePhase(); }
   else { showRecognize(); }
@@ -529,7 +869,7 @@ function showRecognize(){
   $('recognizeView').classList.remove('hidden');
   setCoach('', diffConfig().coach, diffConfig().cheer);
   renderOptions();
-  setTimeout(function(){ speakTarget(); }, 250);
+  scheduleTargetSpeak();
 }
 function renderOptions(){
   var d=diffConfig();
@@ -554,15 +894,17 @@ function renderOptions(){
   });
 }
 function sayTarget(){ if(cur.target) speak(cur.target.p||cur.target.w); }
-function speakTarget(){ sayTarget(); }
+function speakTarget(){ if(praiseActive) return; sayTarget(); }
 function choose(w, btn){
+  ensureAudio();
   if(w===cur.target.w){
+    var praise=pick(CORRECT_PRAISE);
+    playCorrectSound();
     btn.classList.add('correct');
     [].forEach.call($('opts').children,function(b){ b.disabled=true; });
-    $('quizMsg').textContent='✓ 答對了！'; $('quizMsg').className='msg ok';
-    setCoach('ok','答對了！你把聲音、字形和意思連起來了。','太棒了，這一題的種子準備收下。');
-    sayTarget();
-    setTimeout(function(){ passRecognize(); }, 800);
+    $('quizMsg').textContent='✓ '+praise; $('quizMsg').className='msg ok';
+    setCoach('ok',praise,'加油，你的精靈列車又前進一格。');
+    speakPraise(praise, function(){ passRecognize(); });
   } else {
     cur.wrong++;
     btn.classList.add('wrong'); btn.disabled=true;
@@ -637,10 +979,19 @@ function enterWritePhase(){
   guideAllowed=showAnswer; guideOn=showAnswer;
   $('guideBtn').classList.toggle('hidden', !guideAllowed);
   $('guideBtn').textContent='描紅：'+(guideOn?'開':'關');
+  $('writePraise').textContent='';
   initCanvas(); clearCanvas();
-  setTimeout(function(){ speakTarget(); }, 250);
+  scheduleTargetSpeak();
 }
-function writeDone(){ completeChar(); }
+function writeDone(){
+  ensureAudio();
+  if(cur.writingDone) return;
+  cur.writingDone=true;
+  var praise=pick(WRITE_PRAISE);
+  playWriteSound();
+  $('writePraise').textContent=praise;
+  speakPraise(praise, function(){ completeChar(); });
+}
 function initCanvas(){
   if(canvasReady) return;
   canvas=$('penCanvas'); ctx=canvas.getContext('2d');
@@ -700,10 +1051,30 @@ function setupDiffSeg(){
   };
 }
 function finishLesson(){
+  var newReward=awardLessonReward(cur.lesson);
+  var reward=rewardForLesson(cur.lesson);
   renderLessons();
+  renderRewards();
+  updatePlantMini();
   $('endTitle').textContent=cur.lesson.name+' 過關！🎉';
-  $('endText').textContent='你又學會好多字，種子 '+prog.seeds+' 顆，'+PLANTS[plantStage()]+' 長大了！';
+  $('endText').textContent=pick(LESSON_PRAISE)+' 目前種子 '+prog.seeds+' 顆，精靈 '+fairyCount()+' 隻。';
+  showRewardPop(reward, !!newReward);
   $('endModal').classList.remove('hidden');
+}
+function showRewardPop(r,isNew){
+  var pop=$('rewardPop'); if(!pop) return;
+  if(!r){ pop.classList.add('hidden'); return; }
+  playTreasureMusic();
+  var spriteBox=$('rewardSprite');
+  if(spriteBox){ spriteBox.innerHTML=''; spriteBox.appendChild(createRewardSprite(r,false)); }
+  $('rewardTitle').textContent=isNew ? '寶物獲得！新精靈加入' : '寶物閃光！精靈回到列車隊';
+  $('rewardName').textContent=r.name+' · '+r.form;
+  $('rewardLine').textContent=r.line;
+  $('rewardVehicle').textContent=r.icon+' '+r.vehicle;
+  pop.classList.remove('treasure-enter');
+  pop.classList.remove('hidden');
+  setTimeout(function(){ pop.classList.add('treasure-enter'); }, 20);
+  setTimeout(function(){ speakPraise(($('rewardTitle').textContent||'獲得寶物')+'。'+r.name+'，'+r.form+'。'+r.line); }, 550);
 }
 function closeEnd(){ $('endModal').classList.add('hidden'); backToList(); }
 
@@ -716,7 +1087,7 @@ function openSettings(){
   renderEditor();
   $('settingsModal').classList.remove('hidden');
 }
-function closeSettings(){ $('settingsModal').classList.add('hidden'); renderLessons(); updatePlantMini(); }
+function closeSettings(){ $('settingsModal').classList.add('hidden'); renderLessons(); renderRewards(); updatePlantMini(); }
 function curEditLesson(){ var id=$('setLesson').value; return lessons.find(function(l){ return l.id===id; }); }
 function renderEditor(){
   var l=curEditLesson(); var box=$('editor'); box.innerHTML='';
