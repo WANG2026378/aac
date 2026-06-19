@@ -649,16 +649,34 @@ function setCoach(state, text, cheerText){
 
 // ====== 語音 ======
 var voices=[];
+var autoSpeakSeq=0, praiseActive=false;
 function loadVoices(){ voices=speechSynthesis.getVoices()||[]; }
 loadVoices(); if(speechSynthesis.onvoiceschanged!==undefined){ speechSynthesis.onvoiceschanged=loadVoices; }
 function zhVoice(){
   return voices.find(function(v){ return /zh(-|_)?(TW|Hant)/i.test(v.lang); })
       || voices.find(function(v){ return /^zh/i.test(v.lang); }) || null;
 }
-function speak(text){
-  try{ speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(text);
-    u.lang='zh-TW'; var v=zhVoice(); if(v) u.voice=v; u.rate=0.85; speechSynthesis.speak(u);
-  }catch(e){}
+function estimateSpeechMs(text){
+  return Math.max(1800, Math.min(6500, String(text||'').length*190));
+}
+function speak(text, done){
+  var finished=false, fallback=null;
+  function finish(){
+    if(finished) return;
+    finished=true;
+    if(fallback) clearTimeout(fallback);
+    if(done) done();
+  }
+  try{
+    speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(text);
+    u.lang='zh-TW'; var v=zhVoice(); if(v) u.voice=v; u.rate=0.85;
+    u.onend=finish; u.onerror=finish;
+    if(done) fallback=setTimeout(finish, estimateSpeechMs(text));
+    speechSynthesis.speak(u);
+  }catch(e){
+    if(done) fallback=setTimeout(finish, estimateSpeechMs(text));
+  }
 }
 var audioCtx=null;
 function ensureAudio(){
@@ -690,8 +708,17 @@ function playTreasureMusic(){
   notes.forEach(function(n){ playTone(n[0],n[1],n[2],'triangle',.085); });
   [1568,1760,2093,2349].forEach(function(f,i){ playTone(f,.18+i*.12,.09,'sine',.035); });
 }
-function speakPraise(text){
-  speak(text);
+function scheduleTargetSpeak(){
+  var token=++autoSpeakSeq;
+  setTimeout(function(){ if(token===autoSpeakSeq&&!praiseActive) speakTarget(); }, 250);
+}
+function speakPraise(text, done){
+  praiseActive=true;
+  autoSpeakSeq++;
+  speak(text, function(){
+    praiseActive=false;
+    if(done) done();
+  });
 }
 
 // ====== 開始 ======
@@ -783,7 +810,7 @@ function showRecognize(){
   $('recognizeView').classList.remove('hidden');
   setCoach('', diffConfig().coach, diffConfig().cheer);
   renderOptions();
-  setTimeout(function(){ speakTarget(); }, 250);
+  scheduleTargetSpeak();
 }
 function renderOptions(){
   var d=diffConfig();
@@ -808,7 +835,7 @@ function renderOptions(){
   });
 }
 function sayTarget(){ if(cur.target) speak(cur.target.p||cur.target.w); }
-function speakTarget(){ sayTarget(); }
+function speakTarget(){ if(praiseActive) return; sayTarget(); }
 function choose(w, btn){
   ensureAudio();
   if(w===cur.target.w){
@@ -818,8 +845,7 @@ function choose(w, btn){
     [].forEach.call($('opts').children,function(b){ b.disabled=true; });
     $('quizMsg').textContent='✓ '+praise; $('quizMsg').className='msg ok';
     setCoach('ok',praise,'加油，你的精靈列車又前進一格。');
-    speakPraise(praise);
-    setTimeout(function(){ passRecognize(); }, 1250);
+    speakPraise(praise, function(){ passRecognize(); });
   } else {
     cur.wrong++;
     btn.classList.add('wrong'); btn.disabled=true;
@@ -896,7 +922,7 @@ function enterWritePhase(){
   $('guideBtn').textContent='描紅：'+(guideOn?'開':'關');
   $('writePraise').textContent='';
   initCanvas(); clearCanvas();
-  setTimeout(function(){ speakTarget(); }, 250);
+  scheduleTargetSpeak();
 }
 function writeDone(){
   ensureAudio();
@@ -905,8 +931,7 @@ function writeDone(){
   var praise=pick(WRITE_PRAISE);
   playWriteSound();
   $('writePraise').textContent=praise;
-  speakPraise(praise);
-  setTimeout(function(){ completeChar(); }, 1250);
+  speakPraise(praise, function(){ completeChar(); });
 }
 function initCanvas(){
   if(canvasReady) return;
