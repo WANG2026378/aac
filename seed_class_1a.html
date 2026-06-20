@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>翰林一上 · 識字闖關（私用）</title>
+<!--
+  私用課堂版：翰林國語一上 本冊生字，一課一關。
+  聽聲音選對的字 → 答錯走教學模式（第1次提示+重播，第2次標正解+聽3次才放行）
+  → 過關收種子養大樹。zh-TW 語音。⚙️ 老師可編輯/補字、匯出匯入。
+  存檔 key：hanlin1a_words_v1 / hanlin1a_progress_v1（獨立、不做 clear/removeItem）。
+  ※ 翰林一上共 7 課。生字由使用者提供截圖整理，請可用 ⚙️ 依課本再校對。
+-->
+<style>
+  :root{
+    --bg:#FFF7E6; --card:#fff; --line:#F0D9A8; --ink:#7C4A14; --ink2:#A86A2C;
+    --amber:#F59E0B; --amber-d:#B45309; --green:#10B981; --green-d:#047857;
+    --red:#EF4444; --blue:#3B82F6;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; height:100%; }
+  body{ font-family:"PingFang TC","Microsoft JhengHei",sans-serif; color:var(--ink);
+    background:linear-gradient(180deg,#FDE9C8,#FFF7E6 40%); min-height:100vh; }
+  button{ font-family:inherit; cursor:pointer; border:0; }
+  .hidden{ display:none !important; }
+
+  /* 共用按鈕 */
+  .btn{ background:linear-gradient(180deg,var(--amber),var(--amber-d)); color:#fff; font-weight:800;
+    font-size:18px; padding:12px 22px; border-radius:16px; box-shadow:0 4px 0 #92400e; }
+  .btn:active{ transform:translateY(3px); box-shadow:0 1px 0 #92400e; }
+  .btn.green{ background:linear-gradient(180deg,#34D399,var(--green-d)); box-shadow:0 4px 0 #065f46; }
+  .btn.ghost{ background:#fff; color:var(--ink); box-shadow:0 3px 0 var(--line); border:2px solid var(--line); }
+
+  /* 開始畫面 */
+  #intro{ max-width:560px; margin:0 auto; padding:36px 20px; text-align:center; }
+  #intro h1{ font-size:30px; margin:6px 0; }
+  #intro .badge{ display:inline-block; background:#fff; border:2px solid var(--line); border-radius:20px;
+    padding:4px 16px; font-weight:800; color:var(--amber-d); letter-spacing:2px; margin-bottom:10px; }
+  #intro p{ color:var(--ink2); }
+  .name-row{ margin:18px 0; }
+  .name-row input{ font-size:20px; padding:10px 14px; border:2px solid var(--line); border-radius:12px;
+    text-align:center; width:200px; font-family:inherit; }
+  .plant-row{ font-size:40px; letter-spacing:8px; margin:14px 0; }
+  .rail-scene{ position:relative; min-height:118px; margin:16px auto; max-width:520px; overflow:hidden;
+    border:3px solid #F0D9A8; border-radius:22px; background:linear-gradient(180deg,#DFF7FF 0 48%,#D9F99D 49% 100%);
+    box-shadow:0 5px 0 #E8C98A; }
+  .rail-track{ position:absolute; left:0; right:0; bottom:35px; height:18px;
+    background:repeating-linear-gradient(90deg,#6b4a12 0 22px,#f8e8bd 22px 34px); border-top:4px solid #374151; border-bottom:4px solid #374151; }
+  .rail-road{ position:absolute; left:0; right:0; bottom:0; height:35px; background:#4B5563; }
+  .rail-road::after{ content:""; position:absolute; left:0; right:0; top:16px; border-top:3px dashed #FDE68A; }
+  .crossing-sign{ position:absolute; left:18px; bottom:28px; width:70px; height:74px; display:grid; place-items:center;
+    color:#7C2D12; font-size:34px; z-index:2; }
+  .crossing-sign::before{ content:""; position:absolute; width:64px; height:8px; border-radius:999px; background:#FDE68A;
+    border:2px solid #7C2D12; transform:rotate(45deg); }
+  .crossing-sign::after{ content:""; position:absolute; width:64px; height:8px; border-radius:999px; background:#FDE68A;
+    border:2px solid #7C2D12; transform:rotate(-45deg); }
+  .crossing-sign span{ position:relative; z-index:1; filter:drop-shadow(0 2px 0 #fff); }
+  .rail-train,.rail-shinkansen,.rail-cars{ position:absolute; white-space:nowrap; will-change:transform; }
+  .rail-train{ bottom:52px; left:0; font-size:28px; animation:railRide 8s linear infinite; }
+  .rail-shinkansen{ bottom:70px; left:0; font-size:30px; animation:railRide 6.7s linear infinite; animation-delay:-3.2s; }
+  .rail-cars{ bottom:3px; left:0; font-size:25px; animation:railRide 9.2s linear infinite; animation-delay:-1.5s; }
+  @keyframes railRide{ from{ transform:translateX(-120px); } to{ transform:translateX(620px); } }
+  .mascot-card{ display:grid; grid-template-columns:86px 1fr; gap:14px; align-items:center; background:#fff;
+    border:3px solid #B7E4C7; border-radius:18px; padding:12px; box-shadow:0 5px 0 #86efac; text-align:left; }
+  .intro-mascot{ margin:18px auto; max-width:430px; }
+  .sprout-buddy{ position:relative; width:78px; height:92px; display:grid; place-items:end center; }
+  .sprout-buddy::before{ content:""; position:absolute; top:0; left:38px; width:4px; height:24px;
+    background:#047857; border-radius:999px; transform:rotate(-8deg); transform-origin:bottom center; }
+  .sprout-buddy::after{ content:""; position:absolute; top:2px; left:41px; width:27px; height:20px;
+    background:#bbf7d0; border:3px solid #047857; border-radius:20% 70% 20% 70%; transform:rotate(18deg); }
+  .buddy-face{ position:relative; width:62px; height:66px; display:grid; place-items:center; border:3px solid #047857;
+    border-radius:20px; background:linear-gradient(180deg,#E0F2FE,#FDE68A); color:#075985;
+    box-shadow:inset 0 -8px rgba(4,120,87,.12), 0 8px 0 rgba(4,120,87,.14); font-size:23px; font-weight:900; }
+  .buddy-face::before,.buddy-face::after{ content:""; position:absolute; top:21px; width:8px; height:8px; border-radius:50%; background:#075985; }
+  .buddy-face::before{ left:16px; }
+  .buddy-face::after{ right:16px; }
+  .buddy-mouth{ position:absolute; left:20px; right:20px; bottom:17px; height:7px; border-bottom:3px solid #075985; border-radius:0 0 999px 999px; }
+  .buddy-name{ color:#047857; font-size:14px; font-weight:900; margin-bottom:3px; }
+  .buddy-speech{ color:#5f3b0d; font-size:16px; line-height:1.55; font-weight:800; }
+
+  /* 主畫面 */
+  header{ display:flex; align-items:center; gap:10px; padding:10px 14px; background:#fff;
+    border-bottom:3px solid var(--line); position:sticky; top:0; z-index:5; flex-wrap:wrap; }
+  header h2{ font-size:18px; margin:0; }
+  header .who{ color:var(--ink2); font-size:13px; }
+  header .grow{ flex:1; }
+  .plant-mini{ font-size:22px; }
+  .plant-mini b{ font-size:14px; color:var(--green-d); }
+  .plant-mini .fairy-mini{ display:inline-flex; align-items:center; gap:3px; margin-left:6px; padding:3px 7px;
+    border-radius:999px; background:#ECFDF5; color:#047857; font-size:14px; font-weight:950; }
+  .icon-btn{ background:#fff; border:2px solid var(--line); border-radius:12px; padding:6px 10px; font-size:16px; }
+
+  .wrap{ max-width:920px; margin:0 auto; padding:16px; }
+  .lesson-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px; }
+  .lesson-card{ background:var(--card); border:3px solid var(--line); border-radius:18px; padding:16px;
+    text-align:center; cursor:pointer; box-shadow:0 4px 0 var(--line); transition:transform .1s; }
+  .lesson-card:active{ transform:translateY(3px); box-shadow:0 1px 0 var(--line); }
+  .lesson-card.done{ border-color:var(--green); box-shadow:0 4px 0 #6ee7b7; }
+  .lesson-card .no{ font-size:22px; font-weight:900; }
+  .lesson-card .cnt{ color:var(--ink2); font-size:13px; margin-top:4px; }
+  .lesson-card .bar{ height:8px; background:#F3E8D0; border-radius:6px; margin-top:10px; overflow:hidden; }
+  .lesson-card .bar > i{ display:block; height:100%; background:var(--green); width:0; }
+  .lesson-card .check{ color:var(--green-d); font-weight:800; font-size:13px; }
+  .lesson-card .fairy-earned{ display:inline-flex; align-items:center; gap:4px; margin-top:8px; padding:4px 8px;
+    border-radius:999px; background:#ECFDF5; color:#047857; font-size:12px; font-weight:900; }
+
+  .reward-hub{ margin:0 auto 18px; max-width:920px; background:#fff; border:3px solid #B7E4C7;
+    border-radius:20px; padding:14px; box-shadow:0 5px 0 #86efac; }
+  .reward-head{ display:flex; gap:12px; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+  .reward-title{ color:#047857; font-size:20px; font-weight:950; }
+  .reward-count{ color:#92400e; font-weight:950; background:#FEF3C7; border-radius:999px; padding:6px 12px; }
+  .reward-status{ color:#5f3b0d; font-weight:850; line-height:1.45; margin:6px 0 10px; }
+  .fairy-rail{ display:grid; grid-template-columns:repeat(6,1fr); gap:8px; }
+  .fairy-slot{ min-height:122px; border:2px solid #E8C98A; border-radius:14px; padding:7px; text-align:center;
+    background:linear-gradient(180deg,#FFFDF7,#ECFDF5); position:relative; overflow:hidden; }
+  .fairy-slot::before{ content:""; position:absolute; left:8px; right:8px; bottom:22px; border-top:4px solid #94A3B8; }
+  .fairy-slot::after{ content:""; position:absolute; left:10px; right:10px; bottom:17px; border-top:2px dashed #475569; }
+  .fairy-slot.locked{ background:#F8FAFC; color:#94A3B8; }
+  .fairy-slot.locked .sprite-wrap{ filter:grayscale(.95); opacity:.28; }
+  .fairy-slot.earned{ border-color:#34D399; box-shadow:inset 0 0 0 2px rgba(52,211,153,.18); }
+  .sprite-wrap{ --sprite:#34D399; --accent:#FBBF24; position:relative; z-index:1; width:62px; height:70px;
+    margin:4px auto 0; filter:drop-shadow(0 6px 7px rgba(0,0,0,.16)); }
+  .fairy-slot.stage-2 .sprite-wrap{ width:70px; height:76px; }
+  .fairy-slot.stage-3 .sprite-wrap{ width:76px; height:82px; }
+  .fairy-slot.stage-4 .sprite-wrap{ width:82px; height:88px; }
+  .sprite-glow{ position:absolute; left:50%; bottom:8px; width:56px; height:20px; transform:translateX(-50%);
+    border-radius:999px; background:radial-gradient(circle,rgba(255,255,255,.9),color-mix(in srgb,var(--accent) 45%,transparent)); }
+  .sprite-body{ position:absolute; left:50%; bottom:14px; width:40px; height:44px; transform:translateX(-50%);
+    border:3px solid rgba(95,59,13,.45); border-radius:52% 52% 40% 40%;
+    background:linear-gradient(180deg,color-mix(in srgb,var(--sprite) 72%,#fff),var(--sprite) 58%,color-mix(in srgb,var(--accent) 72%,#92400e));
+    box-shadow:inset 0 -8px rgba(0,0,0,.09); }
+  .sprite-stem{ position:absolute; left:50%; top:7px; width:5px; height:21px; transform:translateX(-50%) rotate(-7deg);
+    border-radius:999px; background:#047857; z-index:3; }
+  .sprite-leaf{ position:absolute; left:34px; top:0; z-index:4; width:30px; height:26px; display:grid; place-items:center;
+    font-size:18px; transform:rotate(12deg); }
+  .sprite-cap{ position:absolute; left:4px; top:6px; z-index:4; width:30px; height:28px; display:grid; place-items:center;
+    border-radius:50%; background:#fff; border:2px solid rgba(95,59,13,.32); font-size:18px; box-shadow:0 3px 0 rgba(146,64,14,.13); }
+  .sprite-face{ position:absolute; left:50%; bottom:34px; z-index:5; width:24px; height:14px; transform:translateX(-50%); }
+  .sprite-face::before,.sprite-face::after{ content:""; position:absolute; top:1px; width:6px; height:8px; border-radius:50%;
+    background:#3b2508; box-shadow:0 1px 0 rgba(255,255,255,.65); }
+  .sprite-face::before{ left:2px; }
+  .sprite-face::after{ right:2px; }
+  .sprite-mouth{ position:absolute; left:50%; bottom:27px; z-index:5; width:14px; height:7px; transform:translateX(-50%);
+    border-bottom:3px solid #3b2508; border-radius:0 0 999px 999px; }
+  .sprite-badge{ position:absolute; right:8px; bottom:17px; z-index:6; width:24px; height:24px; display:grid; place-items:center;
+    border-radius:50%; background:#FEF3C7; border:2px solid #F59E0B; font-size:14px; box-shadow:0 3px 0 rgba(146,64,14,.17); }
+  .sprite-feet{ position:absolute; left:50%; bottom:8px; z-index:3; width:34px; height:9px; transform:translateX(-50%); }
+  .sprite-feet::before,.sprite-feet::after{ content:""; position:absolute; bottom:0; width:15px; height:8px; border-radius:999px;
+    background:#5f3b0d; }
+  .sprite-feet::before{ left:0; transform:rotate(-7deg); }
+  .sprite-feet::after{ right:0; transform:rotate(7deg); }
+  .sprite-pipe{ position:absolute; left:3px; bottom:12px; z-index:2; width:17px; height:23px; border-radius:5px 5px 3px 3px;
+    border:2px solid #047857; background:linear-gradient(180deg,#86efac,#22c55e); }
+  .sprite-pipe::before{ content:""; position:absolute; left:-4px; right:-4px; top:-8px; height:10px; border-radius:8px;
+    border:2px solid #047857; background:#BBF7D0; }
+  .sprite-wing{ position:absolute; right:3px; bottom:32px; z-index:2; width:19px; height:23px; transform:rotate(14deg);
+    border:2px solid rgba(14,116,144,.24); border-radius:75% 28% 75% 28%; background:rgba(255,255,255,.68); }
+  .sprite-img{ position:absolute; left:50%; bottom:9px; z-index:5; width:58px; height:62px; transform:translateX(-50%);
+    object-fit:contain; object-position:center bottom; }
+  .sprite-wrap.has-img::before,.sprite-wrap.has-img::after{ position:absolute; z-index:6; pointer-events:none;
+    font-weight:950; line-height:1; filter:drop-shadow(0 2px 2px rgba(255,255,255,.9)); }
+  .sprite-wrap.has-img .sprite-body,.sprite-wrap.has-img .sprite-face,.sprite-wrap.has-img .sprite-mouth,
+  .sprite-wrap.has-img .sprite-feet,.sprite-wrap.has-img .sprite-stem{ display:none; }
+  .sprite-wrap.has-img .sprite-glow{ width:68px; height:28px; bottom:4px; opacity:.86; }
+  .sprite-wrap.has-img .sprite-cap{ display:none; }
+  .sprite-wrap.has-img .sprite-leaf{ left:42px; top:1px; transform:scale(.82) rotate(12deg); }
+  .sprite-wrap.has-img .sprite-badge{ right:-4px; bottom:4px; transform:scale(.82); background:rgba(255,251,235,.94); opacity:.92; }
+  .sprite-wrap.has-img .sprite-pipe{ left:-3px; bottom:9px; opacity:.84; }
+  .sprite-wrap.has-img .sprite-wing{ right:-1px; bottom:30px; opacity:.72; }
+  .action-cheer .sprite-img{ animation:fairyCheer 1.7s ease-in-out infinite; transform-origin:50% 88%; }
+  .action-float .sprite-img{ animation:fairyCalmFloat 2.8s ease-in-out infinite; }
+  .action-peek .sprite-img{ animation:fairyPeek 1.9s ease-in-out infinite; transform-origin:50% 92%; }
+  .action-dash .sprite-img{ animation:fairyDash 1.35s ease-in-out infinite; transform-origin:48% 88%; }
+  .action-raindrop .sprite-img{ animation:fairyRaindrop 2.35s ease-in-out infinite; }
+  .action-cheer .sprite-badge{ animation:badgeSpark 1.25s ease-in-out infinite; }
+  .action-dash .sprite-glow{ background:radial-gradient(circle,rgba(255,255,255,.9),rgba(251,146,60,.48) 48%,transparent 72%); }
+  .action-raindrop .sprite-glow{ background:radial-gradient(circle,rgba(255,255,255,.9),rgba(125,211,252,.45) 50%,transparent 72%); }
+  .base-happy .sprite-img{ animation:fairyHappyJump 1.62s ease-in-out infinite; transform-origin:50% 88%; }
+  .base-happy::before{ content:"✦"; left:6px; top:9px; color:#FACC15; font-size:18px; animation:starTwinkle 1.2s ease-in-out infinite; }
+  .base-happy::after{ content:"✧"; right:7px; top:28px; color:#FDE047; font-size:15px; animation:starTwinkle 1.4s ease-in-out infinite reverse; }
+  .base-calm .sprite-img{ animation:fairyCalmBreath 3.1s ease-in-out infinite; }
+  .base-calm::before{ content:"○"; left:4px; top:18px; color:#86efac; font-size:18px; animation:bubbleRise 2.6s ease-in-out infinite; }
+  .base-calm::after{ content:"○"; right:5px; bottom:34px; color:#A7F3D0; font-size:13px; animation:bubbleRise 3s ease-in-out infinite .4s; }
+  .base-scared .sprite-img{ animation:fairyScaredPeek 1.8s ease-in-out infinite; transform-origin:50% 92%; }
+  .base-scared::before{ content:"!"; left:4px; top:13px; color:#8B5CF6; font-size:18px; animation:tinyShake 1s ease-in-out infinite; }
+  .base-scared::after{ content:"⋯"; right:2px; top:31px; color:#A78BFA; font-size:16px; animation:tinyShake 1.1s ease-in-out infinite reverse; }
+  .base-angry .sprite-img{ animation:fairyBraveDash 1.24s ease-in-out infinite; transform-origin:47% 88%; }
+  .base-angry::before{ content:""; left:-1px; bottom:20px; width:23px; height:10px; border-radius:999px;
+    background:linear-gradient(90deg,rgba(251,146,60,.85),rgba(251,146,60,0)); animation:speedTrail 1.1s ease-in-out infinite; }
+  .base-angry::after{ content:"✦"; right:2px; top:12px; color:#FB923C; font-size:15px; animation:starTwinkle 1s ease-in-out infinite; }
+  .base-sad .sprite-img{ animation:fairyTearToStar 2.45s ease-in-out infinite; }
+  .base-sad::before{ content:"•"; left:11px; top:14px; color:#38BDF8; font-size:22px; animation:dropFloat 2.2s ease-in-out infinite; }
+  .base-sad::after{ content:"✦"; right:6px; top:28px; color:#FDE68A; font-size:15px; animation:starTwinkle 1.7s ease-in-out infinite .35s; }
+  .fairy-vehicle{ position:absolute; right:6px; top:5px; z-index:2; width:28px; height:28px; display:grid;
+    place-items:center; background:#fff; border:2px solid #F0D9A8; border-radius:10px; font-size:18px; }
+  .fairy-name{ position:relative; z-index:1; font-size:12px; font-weight:950; color:#5f3b0d; line-height:1.2; margin-top:2px; }
+  .fairy-form{ position:relative; z-index:1; display:inline-flex; align-items:center; min-height:20px; margin-top:4px;
+    padding:2px 6px; border-radius:999px; background:#FEF3C7; color:#92400e; font-size:11px; font-weight:900; }
+  .fairy-slot.locked .fairy-form{ background:#E5E7EB; color:#64748B; }
+
+  /* 答題 */
+  .quiz{ max-width:880px; margin:0 auto; text-align:center; }
+  .quiz .lv{ display:inline-block; background:var(--amber); color:#fff; font-weight:800; padding:5px 16px;
+    border-radius:20px; margin-bottom:6px; }
+  .quiz-stage{ display:grid; grid-template-columns:minmax(150px,190px) minmax(0,640px); gap:16px;
+    align-items:start; justify-content:center; margin-top:12px; }
+  .quiz-work{ min-width:0; }
+  .side-cheer{ position:sticky; top:76px; display:grid; gap:10px; justify-items:center; background:#fff;
+    border:3px solid #B7E4C7; border-radius:20px; padding:12px; box-shadow:0 5px 0 #86efac; text-align:center; }
+  .side-cheer.ok{ border-color:#34D399; background:#ECFDF5; }
+  .side-cheer.no{ border-color:#FBBF24; background:#FFFBEB; }
+  .cheer-badge{ display:inline-block; background:#FEF3C7; color:#92400e; border-radius:999px; padding:4px 10px;
+    font-size:13px; font-weight:900; }
+  .cheer-text{ color:#5f3b0d; font-size:15px; line-height:1.5; font-weight:850; }
+  .cheer-meter{ width:100%; height:10px; border-radius:999px; background:#E7F8DD; overflow:hidden; border:1px solid #B7E4C7; }
+  .cheer-meter i{ display:block; width:20%; height:100%; background:linear-gradient(90deg,#34D399,#FBBF24); border-radius:999px; transition:width .25s; }
+  .speak-btn{ background:linear-gradient(180deg,#FBBF24,#D97706); color:#fff; font-size:26px; font-weight:800;
+    padding:18px 30px; border-radius:22px; box-shadow:0 5px 0 #92400e; margin:14px 0; }
+  .speak-btn:active{ transform:translateY(3px); box-shadow:0 2px 0 #92400e; }
+  .coach-panel{ display:grid; grid-template-columns:76px 1fr; gap:12px; align-items:center; margin:0 auto 12px;
+    max-width:560px; padding:12px; border:3px solid #B7E4C7; border-radius:18px; background:#F0FDF4;
+    box-shadow:0 4px 0 #bbf7d0; text-align:left; }
+  .coach-panel.ok{ border-color:#34D399; background:#ECFDF5; }
+  .coach-panel.no{ border-color:#FBBF24; background:#FFFBEB; }
+  .coach-panel .sprout-buddy{ width:68px; height:72px; transform:scale(.78); transform-origin:left center; }
+  .coach-text{ color:#5f3b0d; font-size:16px; line-height:1.55; font-weight:850; }
+  .opts{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0; }
+  .opts.high{ grid-template-columns:repeat(3,1fr); }
+  .opts.high .opt .oe,.opts.high .opt .op{ display:none; }
+  .opts.mid .opt .op{ display:none; }
+  .opt{ background:#fff; border:3px solid var(--line); border-radius:20px; font-weight:800;
+    color:var(--ink); padding:14px 8px; box-shadow:0 5px 0 var(--line); min-height:142px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; }
+  .opt .oc{ font-size:60px; line-height:1; }
+  .opt .oe{ width:54px; height:54px; display:grid; place-items:center; margin-top:4px; border-radius:16px;
+    background:#F0FDF4; border:2px solid #B7E4C7; font-size:31px; line-height:1; }
+  .opt .op{ min-height:22px; color:#6B4A12; font-size:14px; line-height:1.35; margin-top:4px; }
+  .opt:active{ transform:translateY(3px); box-shadow:0 2px 0 var(--line); }
+  .opt.correct{ background:#D1FAE5; border-color:var(--green); color:var(--green-d); }
+  .opt.wrong{ background:#FEE2E2; border-color:var(--red); color:var(--red); }
+  .opt:disabled{ opacity:.55; }
+  .teach{ background:#FFFBEB; border:3px dashed var(--amber); border-radius:18px; padding:14px; margin:12px 0; }
+  .teach-title{ color:#92400e; font-weight:900; margin-bottom:10px; }
+  .meaning-card{ display:grid; grid-template-columns:150px 1fr; gap:14px; align-items:center; background:#fff;
+    border:2px solid #F0D9A8; border-radius:18px; padding:12px; box-shadow:0 4px 0 #F3E8D0; text-align:left; }
+  .meaning-art{ min-height:142px; display:grid; place-items:center; border-radius:16px; background:linear-gradient(180deg,#ECFDF5,#FFF7ED);
+    border:2px solid #B7E4C7; position:relative; overflow:hidden; }
+  .meaning-art::before{ content:""; position:absolute; bottom:12px; width:82%; height:18px; border-radius:999px; background:#D9F99D; }
+  .meaning-emoji{ position:relative; display:grid; place-items:center; width:92px; height:92px; border-radius:24px;
+    background:#fff; border:3px solid #86efac; box-shadow:0 8px 0 rgba(4,120,87,.16); font-size:50px; }
+  .meaning-word{ font-size:64px; font-weight:950; color:#92400e; line-height:1; }
+  .meaning-zh{ color:#047857; font-size:25px; font-weight:900; letter-spacing:2px; margin-top:6px; }
+  .meaning-label{ display:inline-flex; align-items:center; min-height:28px; padding:4px 10px; border-radius:999px;
+    background:#FEF3C7; color:#92400e; font-size:14px; font-weight:900; margin-top:10px; }
+  .meaning-phrase{ color:#4b2d08; font-size:22px; font-weight:900; margin-top:6px; line-height:1.35; }
+  .meaning-clue{ color:#047857; font-size:17px; font-weight:850; margin-top:6px; line-height:1.45; }
+  .msg{ min-height:26px; font-weight:800; margin:8px 0; }
+  .msg.ok{ color:var(--green-d); } .msg.no{ color:var(--red); }
+  .listen-track{ font-weight:800; color:var(--amber-d); }
+  @media (max-width:760px){
+    .quiz-stage{ grid-template-columns:1fr; }
+    .side-cheer{ position:static; max-width:560px; margin:0 auto; grid-template-columns:70px 1fr; text-align:left;
+      justify-items:start; align-items:center; }
+    .side-cheer .sprout-buddy{ transform:scale(.82); transform-origin:left center; }
+    .cheer-meter{ max-width:260px; }
+  }
+  @media (max-width:560px){
+    .mascot-card,.coach-panel{ grid-template-columns:64px 1fr; }
+    .meaning-card{ grid-template-columns:1fr; text-align:center; }
+    .meaning-art{ min-height:118px; }
+    .meaning-info{ text-align:center; }
+    .opts.high{ grid-template-columns:1fr 1fr; }
+  }
+
+  /* 彈窗 */
+  .modal-bg{ position:fixed; inset:0; background:rgba(60,40,10,.45); display:flex; align-items:center;
+    justify-content:center; padding:16px; z-index:20; }
+  .modal{ background:#fff; border-radius:22px; padding:20px; max-width:560px; width:100%;
+    max-height:88vh; overflow:auto; box-shadow:0 20px 60px rgba(0,0,0,.3); }
+  .modal h3{ margin:0 0 10px; }
+  .row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .we{ display:grid; grid-template-columns:46px 76px 46px 1fr auto; gap:6px; margin-bottom:6px; }
+  .we input{ padding:7px 9px; border:1px solid var(--line); border-radius:8px; font-family:inherit; font-size:15px; }
+  .we .del{ background:#FEE2E2; color:var(--red); border-radius:8px; padding:0 10px; font-weight:800; }
+  select,textarea,.field{ font-family:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:10px; font-size:15px; }
+  textarea{ width:100%; min-height:90px; }
+  .end{ text-align:center; }
+  .end .big{ font-size:54px; }
+
+  /* 闖關方式 + 寫字 */
+  .lesson-controls{ display:grid; gap:8px; margin-bottom:16px; }
+  .mode-bar{ display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:14px;
+    font-weight:800; color:var(--ink2); flex-wrap:wrap; }
+  .seg{ display:inline-flex; border:2px solid var(--line); border-radius:14px; overflow:hidden; background:#fff; }
+  .seg button{ padding:8px 16px; background:#fff; color:var(--ink); font-weight:800; font-size:15px; }
+  .seg button.on{ background:var(--amber); color:#fff; }
+  .diff-note{ justify-self:center; max-width:560px; background:#fff; border:2px solid #B7E4C7; border-radius:14px;
+    padding:8px 12px; color:#047857; font-size:14px; font-weight:850; line-height:1.45; }
+  .write-head{ font-size:20px; font-weight:800; margin:6px 0 10px; }
+  .write-head .write-recall{ color:var(--green-d); }
+  .write-head .wzh{ color:var(--green-d); letter-spacing:2px; }
+  .canvas-wrap{ display:flex; justify-content:center; }
+  #penCanvas{ width:min(80vw,440px); height:min(80vw,440px); border:3px solid var(--line); border-radius:18px;
+    background:#fff; touch-action:none; box-shadow:0 4px 0 var(--line); cursor:crosshair; }
+  .write-praise{ min-height:32px; margin:10px auto 0; color:#047857; font-size:18px; font-weight:950; }
+  .write-tools{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:14px; }
+  .write-tools .btn{ font-size:16px; padding:10px 16px; }
+  .reward-pop{ display:grid; grid-template-columns:110px 1fr; gap:12px; align-items:center; margin:12px auto;
+    padding:12px; border:3px solid #B7E4C7; border-radius:18px; background:linear-gradient(180deg,#FFF7D6,#F0FDF4);
+    text-align:left; position:relative; overflow:hidden; box-shadow:0 8px 0 rgba(180,83,9,.18); }
+  .reward-pop.hidden{ display:none !important; }
+  .reward-pop > div{ position:relative; z-index:1; }
+  .reward-pop.treasure-enter{ animation:treasurePop .8s cubic-bezier(.2,1.35,.2,1) both; }
+  .reward-pop.treasure-enter::before{ content:""; position:absolute; inset:-20%; background:
+    radial-gradient(circle at 25% 28%,rgba(255,255,255,.9) 0 0.8%,transparent 1.4%),
+    radial-gradient(circle at 70% 25%,rgba(255,255,255,.85) 0 0.7%,transparent 1.3%),
+    radial-gradient(circle at 80% 70%,rgba(255,255,255,.8) 0 0.8%,transparent 1.4%),
+    radial-gradient(circle at 36% 78%,rgba(255,255,255,.85) 0 0.7%,transparent 1.3%);
+    animation:sparkleSweep 1.1s ease-out both; pointer-events:none; }
+  .treasure-chest{ position:relative; z-index:1; display:inline-grid; place-items:center; width:42px; height:42px;
+    margin-bottom:4px; border-radius:14px; background:#FEF3C7; border:2px solid #F59E0B; font-size:26px;
+    box-shadow:0 4px 0 rgba(146,64,14,.22); animation:chestBounce 1s ease-in-out infinite; }
+  .reward-sprite{ display:grid; place-items:center; min-height:98px; }
+  .reward-pop .sprite-wrap{ width:96px; height:104px; margin:0 auto;
+    filter:drop-shadow(0 8px 9px rgba(0,0,0,.16)); animation:fairyPrizeFloat 1.6s ease-in-out infinite; }
+  .reward-pop .sprite-img{ width:88px; height:94px; bottom:8px; }
+  .reward-pop .rp-title{ color:#047857; font-size:18px; font-weight:950; }
+  .reward-pop .rp-name{ color:#5f3b0d; font-size:22px; font-weight:950; margin:3px 0; }
+  .reward-pop .rp-line{ color:#92400e; font-size:15px; font-weight:850; line-height:1.45; }
+  .reward-route{ display:flex; align-items:center; justify-content:center; gap:8px; margin-top:8px;
+    color:#475569; font-weight:900; }
+  .reward-route .gate{ color:#92400e; }
+  @keyframes treasurePop{
+    0%{ transform:scale(.78) translateY(18px); opacity:0; }
+    55%{ transform:scale(1.06) translateY(-4px); opacity:1; }
+    100%{ transform:scale(1) translateY(0); opacity:1; }
+  }
+  @keyframes sparkleSweep{
+    0%{ transform:scale(.6) rotate(-8deg); opacity:0; }
+    35%{ opacity:1; }
+    100%{ transform:scale(1.08) rotate(8deg); opacity:0; }
+  }
+  @keyframes chestBounce{
+    0%,100%{ transform:translateY(0) rotate(-2deg); }
+    50%{ transform:translateY(-4px) rotate(2deg); }
+  }
+  @keyframes fairyPrizeFloat{
+    0%,100%{ transform:translateY(0) scale(1); }
+    50%{ transform:translateY(-6px) scale(1.04); }
+  }
+  @keyframes fairyCheer{
+    0%,100%{ transform:translateX(-50%) translateY(0) rotate(-2deg) scale(1); }
+    45%{ transform:translateX(-50%) translateY(-7px) rotate(3deg) scale(1.04); }
+  }
+  @keyframes fairyCalmFloat{
+    0%,100%{ transform:translateX(-50%) translateY(0) rotate(0deg); }
+    50%{ transform:translateX(-50%) translateY(-5px) rotate(1deg); }
+  }
+  @keyframes fairyPeek{
+    0%,100%{ transform:translateX(-50%) translateY(0) scale(.98); }
+    35%{ transform:translateX(-51%) translateY(2px) rotate(-2deg) scale(.96); }
+    70%{ transform:translateX(-49%) translateY(-4px) rotate(2deg) scale(1.01); }
+  }
+  @keyframes fairyDash{
+    0%,100%{ transform:translateX(-50%) translateY(0) rotate(-1deg) scale(1); }
+    42%{ transform:translateX(-45%) translateY(-2px) rotate(3deg) scale(1.04); }
+    62%{ transform:translateX(-54%) translateY(1px) rotate(-3deg) scale(1.01); }
+  }
+  @keyframes fairyRaindrop{
+    0%,100%{ transform:translateX(-50%) translateY(0) scale(1); filter:saturate(1); }
+    50%{ transform:translateX(-50%) translateY(-5px) scale(1.02); filter:saturate(1.12); }
+  }
+  @keyframes badgeSpark{
+    0%,100%{ transform:scale(1) rotate(0deg); }
+    50%{ transform:scale(1.13) rotate(7deg); }
+  }
+  @keyframes fairyHappyJump{
+    0%,100%{ transform:translateX(-50%) translateY(0) rotate(-2deg) scale(1); }
+    44%{ transform:translateX(-50%) translateY(-8px) rotate(3deg) scale(1.045); }
+    62%{ transform:translateX(-50%) translateY(-3px) rotate(-1deg) scale(1.02); }
+  }
+  @keyframes fairyCalmBreath{
+    0%,100%{ transform:translateX(-50%) translateY(0) scale(1); }
+    50%{ transform:translateX(-50%) translateY(-4px) scale(1.025); }
+  }
+  @keyframes fairyScaredPeek{
+    0%,100%{ transform:translateX(-50%) translateY(0) scale(.98); }
+    35%{ transform:translateX(-52%) translateY(2px) rotate(-2deg) scale(.965); }
+    70%{ transform:translateX(-49%) translateY(-3px) rotate(2deg) scale(1); }
+  }
+  @keyframes fairyBraveDash{
+    0%,100%{ transform:translateX(-50%) translateY(0) rotate(-1deg) scale(1); }
+    45%{ transform:translateX(-44%) translateY(-3px) rotate(4deg) scale(1.045); }
+    66%{ transform:translateX(-53%) translateY(1px) rotate(-3deg) scale(1.01); }
+  }
+  @keyframes fairyTearToStar{
+    0%,100%{ transform:translateX(-50%) translateY(0) scale(1); filter:saturate(1); }
+    50%{ transform:translateX(-50%) translateY(-5px) scale(1.018); filter:saturate(1.12) brightness(1.03); }
+  }
+  @keyframes starTwinkle{
+    0%,100%{ opacity:.58; transform:scale(.82) rotate(0deg); }
+    50%{ opacity:1; transform:scale(1.16) rotate(9deg); }
+  }
+  @keyframes bubbleRise{
+    0%,100%{ opacity:.34; transform:translateY(6px) scale(.78); }
+    50%{ opacity:.9; transform:translateY(-5px) scale(1.08); }
+  }
+  @keyframes tinyShake{
+    0%,100%{ transform:translateX(0); opacity:.72; }
+    35%{ transform:translateX(-2px); opacity:1; }
+    70%{ transform:translateX(2px); opacity:.9; }
+  }
+  @keyframes speedTrail{
+    0%,100%{ opacity:.35; transform:translateX(5px) scaleX(.72); }
+    50%{ opacity:.9; transform:translateX(-2px) scaleX(1.2); }
+  }
+  @keyframes dropFloat{
+    0%,100%{ opacity:.55; transform:translateY(-1px) scale(.78); }
+    50%{ opacity:1; transform:translateY(8px) scale(1.05); }
+  }
+  @media (max-width:720px){
+    .fairy-rail{ grid-template-columns:repeat(3,1fr); }
+  }
+  @media (max-width:560px){
+    .rail-scene{ min-height:104px; }
+    .rail-shinkansen{ bottom:65px; }
+    .fairy-rail{ grid-template-columns:repeat(2,1fr); }
+    .reward-pop{ grid-template-columns:1fr; text-align:center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 開始 -->
+<div id="intro">
+  <div class="badge">翰林 · 國語一上 · 私用課堂版</div>
+  <h1>🌱 識字闖關</h1>
+  <p>聽聲音 → 選對的字 · 一課一關 · 過關收集精靈列車隊</p>
+  <div class="plant-row">🌰 🌱 🌿 🌷 🌻 🌳 🍎</div>
+  <div class="rail-scene" aria-label="精靈鐵道">
+    <div class="crossing-sign"><span>🚦</span></div>
+    <div class="rail-shinkansen">🚄</div>
+    <div class="rail-train">🚆</div>
+    <div class="rail-track"></div>
+    <div class="rail-cars">🚗 🚙 🚌</div>
+    <div class="rail-road"></div>
+  </div>
+  <div class="mascot-card intro-mascot">
+    <div class="sprout-buddy"><div class="buddy-face"><span class="buddy-mouth"></span></div></div>
+    <div>
+      <div class="buddy-name">小芽助教機器人</div>
+      <div class="buddy-speech">我會在旁邊加油，也會在卡住時給你剛剛好的線索。</div>
+    </div>
+  </div>
+  <div class="name-row">隊長的名字：<br><input id="playerName" maxlength="8" placeholder="梅梅"></div>
+  <button class="btn" onclick="startGame()">開始闖關！</button>
+</div>
+
+<!-- 主畫面 -->
+<div id="main" class="hidden">
+  <header>
+    <h2>🌱 識字闖關</h2>
+    <span class="who" id="whoLabel"></span>
+    <div class="grow"></div>
+    <span class="plant-mini" id="plantMini">🌰 <b>0</b></span>
+    <button class="icon-btn" onclick="openSettings()">⚙️</button>
+    <button class="icon-btn" onclick="backToList()" id="homeBtn" title="回課程">🏠</button>
+  </header>
+
+  <div class="wrap">
+    <!-- 課程選單 -->
+    <div id="lessonView">
+      <div class="lesson-controls">
+        <div class="mode-bar">
+          <span>闖關方式：</span>
+          <div class="seg" id="modeSeg">
+            <button data-m="recognize">🔊 唸讀</button>
+            <button data-m="write">✏️ 寫字</button>
+            <button data-m="both" class="on">🔊+✏️ 唸+寫</button>
+          </div>
+        </div>
+        <div class="mode-bar">
+          <span>學習分組：</span>
+          <div class="seg" id="diffSeg">
+            <button data-d="low">基礎組</button>
+            <button data-d="mid" class="on">穩定組</button>
+            <button data-d="high">挑戰組</button>
+          </div>
+        </div>
+        <div class="diff-note" id="diffInfo">穩定組：4 選 1，有圖像提示，答錯後打開字義圖形卡。</div>
+      </div>
+      <section class="reward-hub" id="rewardHub">
+        <div class="reward-head">
+          <div class="reward-title">精靈車站</div>
+          <div class="reward-count">已加入 <span id="fairyCount">0 / 7</span></div>
+        </div>
+        <div class="reward-status" id="railStatus">小精靈在平交道旁等你，過一課就會有一位加入列車隊。</div>
+        <div class="rail-scene" aria-label="平交道列車">
+          <div class="crossing-sign"><span>🚦</span></div>
+          <div class="rail-shinkansen">🚄</div>
+          <div class="rail-train">🚆</div>
+          <div class="rail-track"></div>
+          <div class="rail-cars">🚗 🚙 🚌</div>
+          <div class="rail-road"></div>
+        </div>
+        <div class="fairy-rail" id="fairyRail"></div>
+      </section>
+      <div class="lesson-grid" id="lessonGrid"></div>
+    </div>
+
+    <!-- 答題 -->
+    <div id="quizView" class="quiz hidden">
+      <div class="lv" id="quizLv">第一課</div>
+      <div style="color:var(--ink2);font-weight:700" id="quizProg"></div>
+      <div id="recognizeView">
+        <div class="quiz-stage">
+          <aside class="side-cheer" id="sideCheer">
+            <div class="sprout-buddy"><div class="buddy-face"><span class="buddy-mouth"></span></div></div>
+            <div>
+              <div class="cheer-badge" id="cheerBadge">助教機器人</div>
+              <div class="cheer-text" id="cheerText">我在旁邊陪你闖關，先聽，再選。</div>
+              <div class="cheer-meter"><i id="cheerMeter"></i></div>
+            </div>
+          </aside>
+          <div class="quiz-work">
+            <div class="coach-panel" id="coachPanel">
+              <div class="sprout-buddy"><div class="buddy-face"><span class="buddy-mouth"></span></div></div>
+              <div>
+                <div class="buddy-name">小芽助教機器人</div>
+                <div class="coach-text" id="coachText">先聽聲音，再看圖形線索。</div>
+              </div>
+            </div>
+            <button class="speak-btn" id="speakBtn" onclick="speakTarget()">🔊 點我聽</button>
+            <div class="msg" id="quizMsg"></div>
+            <div class="opts" id="opts"></div>
+            <div class="teach hidden" id="teachBox">
+              <div class="teach-title">📖 小芽字義圖形卡</div>
+              <div class="meaning-card">
+                <div class="meaning-art"><div class="meaning-emoji" id="teachEmoji">🌱</div></div>
+                <div class="meaning-info">
+                  <div class="meaning-word" id="teachWord">字</div>
+                  <div class="meaning-zh" id="teachZh">ㄗˋ</div>
+                  <div class="meaning-label">字義線索</div>
+                  <div class="meaning-phrase" id="teachPhrase">寫字的字</div>
+                  <div class="meaning-clue" id="teachClue">看圖想意思，再聽一次。</div>
+                </div>
+              </div>
+              <div class="listen-track">聽 <span id="listenCnt">0</span>/3 次</div>
+              <div class="row" style="justify-content:center;margin-top:10px">
+                <button class="btn" onclick="teachListen()">🔊 再聽一次</button>
+                <button class="btn green hidden" id="teachNext" onclick="afterTeach()">學會了，下一個 ➡</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /recognizeView -->
+
+      <div id="writeView" class="hidden">
+        <div class="write-head">
+          <span id="writePrompt">✏️ 把</span>
+          <span id="writeReveal">「<b id="writeWord">字</b>」</span>
+          <span id="writeTail">寫一遍</span>
+          <span class="wzh" id="writeZh"></span>
+        </div>
+        <div class="canvas-wrap"><canvas id="penCanvas" width="560" height="560"></canvas></div>
+        <div class="write-praise" id="writePraise"></div>
+        <div class="write-tools">
+          <button class="btn ghost" onclick="speakTarget()">🔊 聽</button>
+          <button class="btn ghost" id="guideBtn" onclick="toggleGuide()">描紅：開</button>
+          <button class="btn ghost" onclick="clearCanvas()">🧽 清除</button>
+          <button class="btn green" onclick="writeDone()">✓ 寫好了</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 結算 -->
+<div id="endModal" class="modal-bg hidden">
+  <div class="modal end">
+    <div class="big">🎉</div>
+    <h3 id="endTitle">這一課過關！</h3>
+    <p id="endText"></p>
+    <div class="reward-pop hidden" id="rewardPop">
+      <div>
+        <div class="treasure-chest">🎁</div>
+        <div class="reward-sprite" id="rewardSprite"></div>
+      </div>
+      <div>
+        <div class="rp-title" id="rewardTitle">寶物獲得！新精靈加入</div>
+        <div class="rp-name" id="rewardName"></div>
+        <div class="rp-line" id="rewardLine"></div>
+        <div class="reward-route"><span class="gate">平交道</span><span>→</span><span id="rewardVehicle">列車</span><span>→</span><span>下一站</span></div>
+      </div>
+    </div>
+    <button class="btn green" onclick="closeEnd()">回課程地圖</button>
+  </div>
+</div>
+
+<!-- 設定 -->
+<div id="settingsModal" class="modal-bg hidden">
+  <div class="modal">
+    <h3>⚙️ 老師字詞設定</h3>
+    <div class="row" style="margin-bottom:10px">
+      <span>選課：</span>
+      <select id="setLesson" class="field" onchange="renderEditor()"></select>
+      <button class="btn ghost" style="font-size:14px;padding:6px 12px" onclick="addCharRow()">＋ 加字</button>
+    </div>
+    <div id="editor"></div>
+    <div class="row" style="margin:12px 0">
+      <span>試聽：</span><input id="voiceTest" class="field" placeholder="輸入字看效果" style="flex:1">
+      <button class="btn ghost" style="font-size:14px;padding:6px 12px" onclick="testVoice()">🔊</button>
+    </div>
+    <details style="margin-top:8px">
+      <summary style="cursor:pointer;font-weight:700">匯出 / 匯入 JSON（備份用）</summary>
+      <textarea id="jsonArea" placeholder="按「匯出」會把字詞放這裡；貼入後按「匯入」"></textarea>
+      <div class="row" style="margin-top:6px">
+        <button class="btn ghost" style="font-size:14px;padding:6px 12px" onclick="exportJSON()">匯出</button>
+        <button class="btn ghost" style="font-size:14px;padding:6px 12px" onclick="importJSON()">匯入</button>
+      </div>
+    </details>
+    <div class="row" style="margin-top:14px;justify-content:space-between">
+      <button class="btn ghost" style="font-size:14px;padding:6px 12px;color:var(--red)" onclick="resetWords()">🔄 還原預設</button>
+      <button class="btn green" onclick="closeSettings()">完成</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+var WORDS_KEY='hanlin1a_words_v1', PROG_KEY='hanlin1a_progress_v1';
+
+// ====== 預設生字（翰林一上，依使用者截圖整理，請核對）======
+var DEFAULT_LESSONS = [
+  {id:'L1', name:'第一課', chars:[['一','ㄧ','1️⃣','數字一'],['二','ㄦˋ','2️⃣','數字二'],['三','ㄙㄢ','3️⃣','數字三'],['四','ㄙˋ','4️⃣','數字四'],['五','ㄨˇ','5️⃣','數字五'],['六','ㄌㄧㄡˋ','6️⃣','數字六'],['七','ㄑㄧ','7️⃣','數字七'],['八','ㄅㄚ','8️⃣','數字八'],['九','ㄐㄧㄡˇ','9️⃣','數字九'],['十','ㄕˊ','🔟','數字十'],['起','ㄑㄧˇ','⬆️','起立的起'],['走','ㄗㄡˇ','🚶','走路的走'],['你','ㄋㄧˇ','🙋','你的你'],['在','ㄗㄞˋ','📍','在這裡的在'],['左','ㄗㄨㄛˇ','⬅️','左邊的左'],['我','ㄨㄛˇ','🙂','我的我'],['右','ㄧㄡˋ','➡️','右邊的右'],['和','ㄏㄜˊ','🤝','你和我的和'],['向','ㄒㄧㄤˋ','🧭','向前的向'],['前','ㄑㄧㄢˊ','⏩','前面的前']]},
+  {id:'L2', name:'第二課', chars:[['大','ㄉㄚˋ','🐘','大小的大'],['風','ㄈㄥ','🍃','大風的風'],['吹','ㄔㄨㄟ','🌬️','風吹的吹'],['們','˙ㄇㄣ','👥','我們的們'],['來','ㄌㄞˊ','👋','來玩的來'],['玩','ㄨㄢˊ','🪁','玩的玩'],['不','ㄅㄨˋ','✋','不是的不'],['停','ㄊㄧㄥˊ','🛑','不停的停'],['的','˙ㄉㄜ','📌','我的的'],['跑','ㄆㄠˇ','🏃','跑步的跑']]},
+  {id:'L3', name:'第三課', chars:[['火','ㄏㄨㄛˇ','🔥','火車的火'],['車','ㄔㄜ','🚆','火車的車'],['山','ㄕㄢ','⛰️','山洞的山'],['洞','ㄉㄨㄥˋ','🕳️','山洞的洞'],['個','ㄍㄜˋ','1️⃣','一個的個'],['又','ㄧㄡˋ','🔁','又來的又'],['出','ㄔㄨ','🚪','出去的出'],['小','ㄒㄧㄠˇ','🌱','小小的小'],['堆','ㄉㄨㄟ','⛰️','一堆的堆'],['開','ㄎㄞ','🚦','開心的開'],['心','ㄒㄧㄣ','💚','開心的心']]},
+  {id:'L4', name:'第四課', chars:[['請','ㄑㄧㄥˇ','🙏','請問的請'],['問','ㄨㄣˋ','❓','請問的問'],['草','ㄘㄠˇ','🌿','小草的草'],['天','ㄊㄧㄢ','☁️','天空的天'],['有','ㄧㄡˇ','✅','有沒有的有'],['多','ㄉㄨㄛ','➕','多少的多'],['高','ㄍㄠ','⬆️','高高的高'],['星','ㄒㄧㄥ','⭐','星星的星'],['少','ㄕㄠˇ','➖','多少的少'],['太','ㄊㄞˋ','☀️','太陽的太'],['了','˙ㄌㄜ','✔️','好了的了'],['水','ㄕㄨㄟˇ','💧','水的水'],['去','ㄑㄩˋ','👣','去玩的去']]},
+  {id:'L5', name:'第五課', chars:[['彩','ㄘㄞˇ','🌈','彩色的彩'],['上','ㄕㄤˋ','⬆️','上面的上'],['好','ㄏㄠˇ','👍','好的好'],['想','ㄒㄧㄤˇ','💭','想一想的想'],['爬','ㄆㄚˊ','🧗','爬上的爬'],['看','ㄎㄢˋ','👀','看見的看'],['沒','ㄇㄟˊ','🚫','沒有的沒'],['棉','ㄇㄧㄢˊ','☁️','棉花的棉'],['花','ㄏㄨㄚ','🌸','棉花的花'],['下','ㄒㄧㄚˋ','⬇️','下面的下'],['泡','ㄆㄠˋ','🫧','泡泡的泡'],['池','ㄔˊ','🏞️','水池的池']]},
+  {id:'L6', name:'第六課', chars:[['秋','ㄑㄧㄡ','🍂','秋天的秋'],['千','ㄑㄧㄢ','🔢','千的千'],['子','ㄗˇ','👶','孩子的子'],['空','ㄎㄨㄥ','☁️','天空的空'],['說','ㄕㄨㄛ','💬','說話的說'],['早','ㄗㄠˇ','🌅','早上的早'],['田','ㄊㄧㄢˊ','🌾','田地的田'],['是','ㄕˋ','✅','是誰的是'],['誰','ㄕㄟˊ','❓','是誰的誰'],['陪','ㄆㄟˊ','🤝','陪伴的陪'],['他','ㄊㄚ','👦','他的他']]},
+  {id:'L7', name:'第七課', chars:[['回','ㄏㄨㄟˊ','↩️','回音的回'],['音','ㄧㄣ','🔊','聲音的音'],['到','ㄉㄠˋ','📍','到山谷的到'],['谷','ㄍㄨˇ','🏞️','山谷的谷'],['叫','ㄐㄧㄠˋ','📣','叫人的叫'],['人','ㄖㄣˊ','🧍','人的人'],['嗎','˙ㄇㄚ','❓','好嗎的嗎'],['也','ㄧㄝˇ','➕','也會的也'],['笑','ㄒㄧㄠˋ','😄','笑哈哈的笑'],['哈','ㄏㄚ','😆','哈哈的哈']]}
+];
+function toObjs(lessons){
+  return lessons.map(function(l){ return {id:l.id, name:l.name, chars:(l.chars||[]).map(function(c){ return {w:c[0]||c.w, z:c[1]||c.z||'', e:c[2]||c.e||'', p:c[3]||c.p||''}; })}; });
+}
+
+// ====== 狀態 ======
+var lessons = loadWords();
+var prog = loadProg();
+if(!prog.mode) prog.mode='both';
+if(!prog.diff) prog.diff='mid';
+if(!prog.fairies) prog.fairies={};
+var DIFFS={
+  low:{
+    label:'基礎組',
+    options:2,
+    info:'基礎組：2 選 1，直接提供圖像與詞語線索，答錯時立刻打開字義圖形卡。',
+    coach:'基礎組先看圖、聽詞，再選字。你只要先抓住一個線索就很好。',
+    cheer:'我在旁邊幫你把線索亮起來，慢慢選也沒關係。'
+  },
+  mid:{
+    label:'穩定組',
+    options:4,
+    info:'穩定組：4 選 1，有圖像提示，答錯後打開字義圖形卡。',
+    coach:'穩定組先聽聲音，再用圖像確認。準備好就選一個最像的字。',
+    cheer:'先聽，再看，再選。你的判斷力正在長大。'
+  },
+  high:{
+    label:'挑戰組',
+    options:6,
+    info:'挑戰組：6 選 1，先收起圖像提示，主要靠聽音與辨字；需要時再開線索。',
+    coach:'挑戰組先不看圖，試著只靠聲音和字形判斷。想一下再出手。',
+    cheer:'我先不把答案說太滿，讓你保留挑戰的成就感。'
+  }
+};
+var PLANTS=['🌰','🌱','🌿','🌷','🌻','🌳','🍎'];
+var PLANT_STEP=8; // 每收 8 顆種子升一階
+var FAIRY_REWARDS=[
+  {id:'happy-car-cheer', name:'陽光精靈', form:'小車加油型', stage:1, vehicle:'小車', icon:'🚗', image:'assets/preschool-fairies/happy-fairy.png', action:'cheer', color:'#F59E0B', accent:'#FDE047', badge:'🚗', line:'陽光精靈張開手跳一下，替你的小車闖關加油。'},
+  {id:'calm-pipe-float', name:'葉露精靈', form:'管道靜聽型', stage:1, vehicle:'綠管道', icon:'🟩', image:'assets/preschool-fairies/calm-fairy.png', action:'float', color:'#10B981', accent:'#BBF7D0', badge:'🎧', pipe:true, line:'葉露精靈安靜漂浮，提醒你先聽清楚再選字。'},
+  {id:'happy-star-train', name:'星光精靈', form:'星星小火車型', stage:2, vehicle:'小火車', icon:'🚆', image:'assets/preschool-fairies/happy-fairy.png', action:'cheer', color:'#FACC15', accent:'#F59E0B', badge:'🚆', line:'星光精靈把答對的亮點收進小火車，一格一格前進。'},
+  {id:'scared-crossing-peek', name:'紫翼精靈', form:'平交道探看型', stage:2, vehicle:'平交道', icon:'🚦', image:'assets/preschool-fairies/scared-fairy.png', action:'peek', color:'#8B5CF6', accent:'#DDD6FE', badge:'👀', line:'紫翼精靈有一點緊張，所以更會停、看、聽，安全通過。'},
+  {id:'calm-cargo-carrier', name:'青葉精靈', form:'花苗搬運型', stage:2, vehicle:'貨車', icon:'🚚', image:'assets/preschool-fairies/calm-fairy.png', action:'float', color:'#22C55E', accent:'#A7F3D0', badge:'🚚', line:'青葉精靈慢慢把新學會的字送上貨車，穩穩累積。'},
+  {id:'angry-shinkansen-dash', name:'火焰精靈', form:'新幹線衝刺型', stage:3, vehicle:'新幹線', icon:'🚄', image:'assets/preschool-fairies/angry-fairy.png', action:'dash', color:'#EF4444', accent:'#FDBA74', badge:'🚄', line:'火焰精靈把衝勁放進新幹線，快速但守規矩。'},
+  {id:'angry-platform-jump', name:'勇火精靈', form:'跳台勇者型', stage:3, vehicle:'跳台車', icon:'🚌', image:'assets/preschool-fairies/angry-fairy.png', action:'dash', color:'#FB923C', accent:'#FDE68A', badge:'✨', line:'勇火精靈踩上小跳台，把困難題變成可以挑戰的關卡。'},
+  {id:'calm-ticket-conductor', name:'月台精靈', form:'車票引導型', stage:3, vehicle:'電車', icon:'🚃', image:'assets/preschool-fairies/calm-fairy.png', action:'float', color:'#06B6D4', accent:'#CCFBF1', badge:'🚃', line:'月台精靈輕輕剪票，邀請新學會的字一起上車。'},
+  {id:'happy-flower-healer', name:'花冠精靈', form:'花冠補給型', stage:4, vehicle:'觀光列車', icon:'🚞', image:'assets/preschool-fairies/happy-fairy.png', action:'cheer', color:'#EC4899', accent:'#FBCFE8', badge:'💖', line:'花冠精靈撒下亮亮花粉，讓辛苦練習也有甜甜的力量。'},
+  {id:'sad-night-raindrop', name:'水滴精靈', form:'夜行星光型', stage:4, vehicle:'夜行列車', icon:'🌙', image:'assets/preschool-fairies/sad-fairy.png', action:'raindrop', color:'#38BDF8', accent:'#BAE6FD', badge:'🌟', line:'水滴精靈把小難過變成星光，夜行列車也看得見方向。'},
+  {id:'happy-coin-express', name:'金星精靈', form:'星幣特急型', stage:4, vehicle:'特急列車', icon:'🚅', image:'assets/preschool-fairies/happy-fairy.png', action:'cheer', color:'#FACC15', accent:'#FEF08A', badge:'🪙', line:'金星精靈敲響特急鈴聲，告訴你努力真的會累積。'},
+  {id:'happy-rainbow-captain', name:'虹冠精靈', form:'終點隊長型', stage:4, vehicle:'夢想列車', icon:'🏁', image:'assets/preschool-fairies/happy-fairy.png', action:'cheer', color:'#22C55E', accent:'#C084FC', badge:'🏆', line:'虹冠精靈在終點站揮旗，整個學期的識字隊伍集合完成。'}
+];
+var CORRECT_PRAISE=[
+  '答對了，太穩了！你把聲音和字形接起來了。',
+  '好厲害，這一題你抓到關鍵線索了。',
+  '答得很棒！小精靈幫你亮一格能量。',
+  '漂亮！你的識字列車又往前一站。',
+  '很會判斷，這個字正在變熟。'
+];
+var WRITE_PRAISE=[
+  '寫好了，筆畫有努力出來，值得稱讚！',
+  '很好，你把剛剛聽到的字留在手上了。',
+  '完成寫字任務，小精靈幫你加一格力量。',
+  '寫完了，很棒！下一站繼續前進。',
+  '你願意動手寫，這就是很重要的進步。'
+];
+var LESSON_PRAISE=[
+  '這一課完成了，精靈列車開進下一站。',
+  '你撐到過關，新的精靈夥伴來報到。',
+  '一課一課慢慢走，識字力真的有變強。',
+  '平交道號誌亮了，下一段鐵道準備出發。'
+];
+
+function loadWords(){
+  try{ var s=localStorage.getItem(WORDS_KEY); if(s){ return JSON.parse(s); } }catch(e){}
+  return toObjs(DEFAULT_LESSONS);
+}
+function saveWords(){ try{ localStorage.setItem(WORDS_KEY, JSON.stringify(lessons)); }catch(e){} }
+function loadProg(){
+  try{ var s=localStorage.getItem(PROG_KEY); if(s){ return JSON.parse(s); } }catch(e){}
+  return { name:'', cleared:{}, seeds:0 };
+}
+function saveProg(){ try{ localStorage.setItem(PROG_KEY, JSON.stringify(prog)); }catch(e){} }
+
+function $(id){ return document.getElementById(id); }
+function plantStage(){ return Math.min(PLANTS.length-1, Math.floor(prog.seeds/PLANT_STEP)); }
+function updatePlantMini(){ $('plantMini').innerHTML = PLANTS[plantStage()]+' <b>'+prog.seeds+'</b> <span class="fairy-mini">🧚 '+fairyCount()+'</span>'; }
+function allChars(){ var a=[]; lessons.forEach(function(l){ l.chars.forEach(function(c){ a.push(c.w); }); }); return a; }
+function ck(lid,w){ return lid+':'+w; }
+function diffKey(){ return DIFFS[prog.diff] ? prog.diff : 'mid'; }
+function diffConfig(){ return DIFFS[diffKey()]; }
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+function lessonIndex(l){
+  for(var i=0;i<lessons.length;i++){ if(lessons[i].id===l.id) return i; }
+  return 0;
+}
+function rewardForLesson(l){ return FAIRY_REWARDS[lessonIndex(l)%FAIRY_REWARDS.length]; }
+function rewardBase(r){
+  var img=r.image||'';
+  if(r.base) return r.base;
+  if(img.indexOf('happy-fairy')>=0) return 'happy';
+  if(img.indexOf('calm-fairy')>=0) return 'calm';
+  if(img.indexOf('scared-fairy')>=0) return 'scared';
+  if(img.indexOf('angry-fairy')>=0) return 'angry';
+  if(img.indexOf('sad-fairy')>=0) return 'sad';
+  return 'calm';
+}
+function spritePart(parent, cls, text){
+  var s=document.createElement('span');
+  s.className=cls;
+  if(text) s.textContent=text;
+  parent.appendChild(s);
+  return s;
+}
+function createRewardSprite(r, locked){
+  var wrap=document.createElement('div');
+  wrap.className='sprite-wrap stage-'+(r.stage||1)+(locked?' locked':'')+
+    (r.image?' has-img base-'+rewardBase(r)+' action-'+(r.action||'float'):'');
+  wrap.style.setProperty('--sprite', r.color||'#34D399');
+  wrap.style.setProperty('--accent', r.accent||'#FBBF24');
+  wrap.setAttribute('role','img');
+  wrap.setAttribute('aria-label', locked ? '尚未加入的精靈' : r.name);
+  spritePart(wrap,'sprite-glow');
+  if(r.image){
+    if(r.pipe) spritePart(wrap,'sprite-pipe');
+    if(r.wing) spritePart(wrap,'sprite-wing');
+    var img=document.createElement('img');
+    img.className='sprite-img';
+    img.src=r.image;
+    img.alt='';
+    img.loading='lazy';
+    wrap.appendChild(img);
+    if(r.badge) spritePart(wrap,'sprite-badge', r.badge);
+    return wrap;
+  }
+  spritePart(wrap,'sprite-pipe');
+  spritePart(wrap,'sprite-wing');
+  spritePart(wrap,'sprite-stem');
+  spritePart(wrap,'sprite-leaf', r.leaf||'🌱');
+  spritePart(wrap,'sprite-cap', r.cap||'🍄');
+  spritePart(wrap,'sprite-body');
+  spritePart(wrap,'sprite-face');
+  spritePart(wrap,'sprite-mouth');
+  spritePart(wrap,'sprite-badge', r.badge||'⭐');
+  spritePart(wrap,'sprite-feet');
+  return wrap;
+}
+function rewardEarned(l){ return !!(prog.fairies&&prog.fairies[l.id]) || lessonCleared(l); }
+function fairyCount(){ var n=0; lessons.forEach(function(l){ if(rewardEarned(l)) n++; }); return n; }
+function awardLessonReward(l){
+  if(!lessonCleared(l)) return null;
+  if(!prog.fairies) prog.fairies={};
+  if(!prog.fairies[l.id]){
+    var r=rewardForLesson(l);
+    prog.fairies[l.id]={id:r.id, stage:r.stage};
+    saveProg();
+    return r;
+  }
+  return null;
+}
+function wordMeta(w){
+  for(var i=0;i<lessons.length;i++){
+    var cs=lessons[i].chars;
+    for(var j=0;j<cs.length;j++){ if(cs[j].w===w) return cs[j]; }
+  }
+  return {w:w,z:'',e:'',p:w};
+}
+function emojiOf(w){ var c=wordMeta(w); return c.e||'🌱'; }
+function phraseOf(c){ return (c&&c.p)||((c&&c.w)||'')+'這個字'; }
+function meaningClue(c){
+  var p=phraseOf(c), at=p.lastIndexOf('的');
+  if(at>0){ return '可以想：「'+p.slice(0,at)+'」這個意思，再連到「'+c.w+'」。'; }
+  return '看圖想意思，再把聲音和字形連起來。';
+}
+function updateDiffInfo(){
+  var info=$('diffInfo'); if(info) info.textContent=diffConfig().info;
+}
+function updateCheer(state, text){
+  var side=$('sideCheer'), cheer=$('cheerText'), badge=$('cheerBadge'), meter=$('cheerMeter');
+  if(side){ side.className='side-cheer'+(state?' '+state:''); }
+  if(cheer){ cheer.textContent=text||diffConfig().cheer; }
+  if(badge){ badge.textContent='小芽助教機器人 · '+diffConfig().label; }
+  if(meter){
+    var total=cur.queue&&cur.queue.length ? cur.queue.length : 1;
+    var pct=Math.max(12, Math.min(100, Math.round((cur.idx+1)/total*100)));
+    meter.style.width=pct+'%';
+  }
+}
+function setCoach(state, text, cheerText){
+  var panel=$('coachPanel'), coach=$('coachText');
+  if(panel){ panel.className='coach-panel'+(state?' '+state:''); }
+  if(coach){ coach.textContent=text; }
+  updateCheer(state, cheerText||text);
+}
+
+// ====== 語音 ======
+var voices=[];
+var autoSpeakSeq=0, praiseActive=false;
+function loadVoices(){ voices=speechSynthesis.getVoices()||[]; }
+loadVoices(); if(speechSynthesis.onvoiceschanged!==undefined){ speechSynthesis.onvoiceschanged=loadVoices; }
+function zhVoice(){
+  return voices.find(function(v){ return /zh(-|_)?(TW|Hant)/i.test(v.lang); })
+      || voices.find(function(v){ return /^zh/i.test(v.lang); }) || null;
+}
+function estimateSpeechMs(text){
+  return Math.max(1800, Math.min(6500, String(text||'').length*190));
+}
+function speak(text, done){
+  var finished=false, fallback=null;
+  function finish(){
+    if(finished) return;
+    finished=true;
+    if(fallback) clearTimeout(fallback);
+    if(done) done();
+  }
+  try{
+    speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(text);
+    u.lang='zh-TW'; var v=zhVoice(); if(v) u.voice=v; u.rate=0.85;
+    u.onend=finish; u.onerror=finish;
+    if(done) fallback=setTimeout(finish, estimateSpeechMs(text));
+    speechSynthesis.speak(u);
+  }catch(e){
+    if(done) fallback=setTimeout(finish, estimateSpeechMs(text));
+  }
+}
+var audioCtx=null;
+function ensureAudio(){
+  try{
+    var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null;
+    if(!audioCtx) audioCtx=new AC();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    return audioCtx;
+  }catch(e){ return null; }
+}
+function playTone(freq,start,dur,type,vol){
+  var ac=ensureAudio(); if(!ac) return;
+  var osc=ac.createOscillator(), gain=ac.createGain();
+  osc.type=type||'sine'; osc.frequency.setValueAtTime(freq, ac.currentTime+start);
+  gain.gain.setValueAtTime(0.0001, ac.currentTime+start);
+  gain.gain.exponentialRampToValueAtTime(vol||0.08, ac.currentTime+start+0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+start+dur);
+  osc.connect(gain); gain.connect(ac.destination);
+  osc.start(ac.currentTime+start); osc.stop(ac.currentTime+start+dur+0.02);
+}
+function playCorrectSound(){
+  [[659,0,.12],[784,.09,.14],[1046,.19,.18]].forEach(function(n){ playTone(n[0],n[1],n[2],'triangle',.075); });
+}
+function playWriteSound(){
+  [[523,0,.12],[659,.1,.12],[880,.2,.2]].forEach(function(n){ playTone(n[0],n[1],n[2],'sine',.065); });
+}
+function playTreasureMusic(){
+  var notes=[[392,0,.16],[523,.13,.16],[659,.26,.18],[784,.39,.2],[1046,.56,.32],[1318,.78,.28]];
+  notes.forEach(function(n){ playTone(n[0],n[1],n[2],'triangle',.085); });
+  [1568,1760,2093,2349].forEach(function(f,i){ playTone(f,.18+i*.12,.09,'sine',.035); });
+}
+function scheduleTargetSpeak(){
+  var token=++autoSpeakSeq;
+  setTimeout(function(){ if(token===autoSpeakSeq&&!praiseActive) speakTarget(); }, 250);
+}
+function speakPraise(text, done){
+  praiseActive=true;
+  autoSpeakSeq++;
+  speak(text, function(){
+    praiseActive=false;
+    if(done) done();
+  });
+}
+
+// ====== 開始 ======
+function startGame(){
+  ensureAudio();
+  var n=$('playerName').value.trim(); if(n) prog.name=n; else if(!prog.name) prog.name='小朋友';
+  saveProg();
+  $('intro').classList.add('hidden'); $('main').classList.remove('hidden');
+  $('whoLabel').textContent='隊長：'+prog.name;
+  updatePlantMini(); setupModeSeg(); setupDiffSeg(); backToList();
+}
+
+// ====== 課程選單 ======
+function backToList(){
+  $('quizView').classList.add('hidden'); $('lessonView').classList.remove('hidden');
+  updateDiffInfo();
+  renderLessons();
+  renderRewards();
+  updatePlantMini();
+}
+function lessonCleared(l){ return l.chars.length>0 && l.chars.every(function(c){ return prog.cleared[ck(l.id,c.w)]; }); }
+function lessonDoneCount(l){ var n=0; l.chars.forEach(function(c){ if(prog.cleared[ck(l.id,c.w)]) n++; }); return n; }
+function renderRewards(){
+  var rail=$('fairyRail'); if(!rail) return;
+  var n=fairyCount();
+  $('fairyCount').textContent=n+' / '+lessons.length;
+  $('railStatus').textContent=n===0 ? '小精靈在平交道旁等你，過一課就會有一位加入列車隊。'
+    : (n<lessons.length ? '列車隊已有 '+n+' 位精靈，下一課過關會再進化一格。' : '一上精靈列車隊集合完成，可以回頭重練讓速度更穩。');
+  rail.innerHTML='';
+  lessons.forEach(function(l){
+    var r=rewardForLesson(l), earned=rewardEarned(l);
+    var slot=document.createElement('div');
+    slot.className='fairy-slot '+(earned?'earned':'locked')+' stage-'+r.stage;
+    var sprite=createRewardSprite(r,!earned);
+    var vehicle=document.createElement('div');
+    vehicle.className='fairy-vehicle'; vehicle.textContent=earned ? r.icon : '？';
+    var name=document.createElement('div');
+    name.className='fairy-name'; name.textContent=earned ? r.name : l.name;
+    var form=document.createElement('div');
+    form.className='fairy-form'; form.textContent=earned ? r.form : '待過關';
+    slot.appendChild(vehicle); slot.appendChild(sprite); slot.appendChild(name); slot.appendChild(form);
+    rail.appendChild(slot);
+  });
+}
+function renderLessons(){
+  var g=$('lessonGrid'); g.innerHTML='';
+  lessons.forEach(function(l){
+    var total=l.chars.length, done=lessonDoneCount(l), pct= total? Math.round(done/total*100):0;
+    var reward=rewardEarned(l) ? rewardForLesson(l) : null;
+    var card=document.createElement('div');
+    card.className='lesson-card'+(total>0&&done===total?' done':'');
+    card.innerHTML='<div class="no">'+l.name+'</div>'+
+      '<div class="cnt">'+(total? done+' / '+total+' 字':'尚未加字')+'</div>'+
+      '<div class="bar"><i style="width:'+pct+'%"></i></div>'+
+      (total>0&&done===total?'<div class="check">✓ 全部學會</div>':'')+
+      (reward?'<div class="fairy-earned">'+reward.icon+' '+reward.form+'</div>':'');
+    card.onclick=function(){ if(total===0){ alert(l.name+'還沒有字，請用右上角 ⚙️ 加字。'); return; } enterLesson(l.id); };
+    g.appendChild(card);
+  });
+  renderRewards();
+}
+
+// ====== 答題 ======
+var cur={ lesson:null, queue:[], idx:0, target:null, wrong:0, listens:0, writingDone:false };
+function enterLesson(lid){
+  var l=lessons.find(function(x){ return x.id===lid; }); if(!l) return;
+  cur.lesson=l; cur.mode=prog.mode;
+  // 還沒學會的字優先；全學會就整課重練
+  var todo=l.chars.filter(function(c){ return !prog.cleared[ck(l.id,c.w)]; });
+  cur.queue = (todo.length? todo : l.chars.slice());
+  shuffle(cur.queue); cur.idx=0;
+  $('lessonView').classList.add('hidden'); $('quizView').classList.remove('hidden');
+  $('quizLv').textContent=l.name;
+  nextQuestion();
+}
+function nextQuestion(){
+  if(cur.idx>=cur.queue.length){ finishLesson(); return; }
+  cur.target=cur.queue[cur.idx]; cur.wrong=0; cur.listens=0; cur.writingDone=false;
+  $('teachBox').classList.add('hidden'); $('teachNext').classList.add('hidden');
+  $('quizMsg').textContent=''; $('quizMsg').className='msg';
+  if($('writePraise')) $('writePraise').textContent='';
+  $('quizProg').textContent='第 '+(cur.idx+1)+' / '+cur.queue.length+' 字';
+  if(cur.mode==='write'){ enterWritePhase(); }
+  else { showRecognize(); }
+}
+function showRecognize(){
+  $('writeView').classList.add('hidden');
+  $('recognizeView').classList.remove('hidden');
+  setCoach('', diffConfig().coach, diffConfig().cheer);
+  renderOptions();
+  scheduleTargetSpeak();
+}
+function renderOptions(){
+  var d=diffConfig();
+  var pool=allChars().filter(function(w){ return w!==cur.target.w; });
+  shuffle(pool);
+  var targetCount=Math.min(d.options, pool.length+1);
+  var opts=[cur.target.w];
+  for(var i=0;i<pool.length && opts.length<targetCount;i++){ if(opts.indexOf(pool[i])<0) opts.push(pool[i]); }
+  shuffle(opts);
+  var box=$('opts'); box.innerHTML=''; box.className='opts '+diffKey();
+  opts.forEach(function(w){
+    var c=wordMeta(w), b=document.createElement('button'); b.className='opt'; b.dataset.w=w;
+    var oc=document.createElement('span'); oc.className='oc'; oc.textContent=w; b.appendChild(oc);
+    if(diffKey()!=='high'){
+      var oe=document.createElement('span'); oe.className='oe'; oe.textContent=c.e||'🌱'; b.appendChild(oe);
+    }
+    if(diffKey()==='low'){
+      var op=document.createElement('span'); op.className='op'; op.textContent=phraseOf(c); b.appendChild(op);
+    }
+    b.onclick=function(){ choose(w,b); };
+    box.appendChild(b);
+  });
+}
+function sayTarget(){ if(cur.target) speak(cur.target.p||cur.target.w); }
+function speakTarget(){ if(praiseActive) return; sayTarget(); }
+function choose(w, btn){
+  ensureAudio();
+  if(w===cur.target.w){
+    var praise=pick(CORRECT_PRAISE);
+    playCorrectSound();
+    btn.classList.add('correct');
+    [].forEach.call($('opts').children,function(b){ b.disabled=true; });
+    $('quizMsg').textContent='✓ '+praise; $('quizMsg').className='msg ok';
+    setCoach('ok',praise,'加油，你的精靈列車又前進一格。');
+    speakPraise(praise, function(){ passRecognize(); });
+  } else {
+    cur.wrong++;
+    btn.classList.add('wrong'); btn.disabled=true;
+    if(cur.wrong===1){
+      if(diffKey()==='high'){
+        $('quizMsg').textContent='先再聽一次，挑戰組試著從聲音判斷。'; $('quizMsg').className='msg no';
+        setCoach('no','先別急著看提示，我幫你重播一次。再從聲音和字形找答案。','很好，挑戰題本來就需要多想一下。');
+      } else if(diffKey()==='mid'){
+        $('quizMsg').textContent='再聽一次，我打開字義線索給你看。'; $('quizMsg').className='msg no';
+        setCoach('no','看一下圖像和詞語，再聽一次，答案會更清楚。','卡住時會用線索，這就是會學習。');
+        showTeachHint(false);
+      } else {
+        $('quizMsg').textContent='沒關係，小芽把線索放大給你。'; $('quizMsg').className='msg no';
+        setCoach('no','先看圖，再看詞語，慢慢把字找出來。','你正在練習用線索解題，加油。');
+        showTeachHint(false);
+      }
+      sayTarget();
+    } else {
+      // 第二次錯 → 鎖定、標正解、聽3次才放行
+      [].forEach.call($('opts').children,function(b){ b.disabled=true; if(b.dataset.w===cur.target.w) b.classList.add('correct'); });
+      $('quizMsg').textContent='我們一起學這個字！'; $('quizMsg').className='msg no';
+      setCoach('no','我幫你標出正確字。現在聽三次，把字音、字形、字義放在一起。','這不是失敗，是進入教學模式。');
+      showTeachHint(true);
+    }
+  }
+}
+function showTeachHint(full){
+  $('teachBox').classList.remove('hidden');
+  $('teachEmoji').textContent=cur.target.e||'🌱';
+  $('teachWord').textContent=cur.target.w;
+  $('teachZh').textContent=cur.target.z||'';
+  $('teachPhrase').textContent=phraseOf(cur.target);
+  $('teachClue').textContent=meaningClue(cur.target);
+  cur.listens=0; $('listenCnt').textContent='0';
+  $('teachNext').classList.toggle('hidden', !full); // 只有第二次錯才要聽滿3次
+  if(full){ $('teachNext').classList.add('hidden'); }
+}
+function teachListen(){
+  sayTarget();
+  cur.listens++; $('listenCnt').textContent=Math.min(cur.listens,3);
+  if(cur.listens>=3){
+    $('teachNext').classList.remove('hidden');
+    setCoach('ok','聽滿三次了！你可以帶著新線索繼續往下一題。','很好，現在這個字比較熟了。');
+  } else {
+    setCoach('no','很好，再聽 '+(3-cur.listens)+' 次，把字音記起來。','我陪你重複練，重複就是記住的路。');
+  }
+}
+function afterTeach(){ passRecognize(); }
+
+// 唸讀通過後：唸+寫模式進入寫字，否則直接過關
+function passRecognize(){
+  if(cur.mode==='both'){ enterWritePhase(); } else { completeChar(); }
+}
+function completeChar(){
+  var key=ck(cur.lesson.id,cur.target.w);
+  if(!prog.cleared[key]){ prog.cleared[key]=true; prog.seeds++; saveProg(); updatePlantMini(); }
+  cur.idx++; nextQuestion();
+}
+
+// ====== 寫字闖關（觸控板手寫）======
+var canvas,ctx,drawing=false,guideOn=true,canvasReady=false,guideAllowed=true;
+function enterWritePhase(){
+  $('recognizeView').classList.add('hidden');
+  $('writeView').classList.remove('hidden');
+  var showAnswer = diffKey()==='low';
+  $('writeWord').textContent=cur.target.w;
+  $('writePrompt').textContent = showAnswer ? '✏️ 把' : '✏️ 聽聲音，把聽到的字寫一遍';
+  $('writePrompt').classList.toggle('write-recall', !showAnswer);
+  $('writeReveal').classList.toggle('hidden', !showAnswer);
+  $('writeTail').textContent=showAnswer ? '寫一遍' : '';
+  $('writeZh').textContent=showAnswer ? ((cur.target.e?cur.target.e+'　':'')+(cur.target.z||'')) : '先聽，再回想';
+  guideAllowed=showAnswer; guideOn=showAnswer;
+  $('guideBtn').classList.toggle('hidden', !guideAllowed);
+  $('guideBtn').textContent='描紅：'+(guideOn?'開':'關');
+  $('writePraise').textContent='';
+  initCanvas(); clearCanvas();
+  scheduleTargetSpeak();
+}
+function writeDone(){
+  ensureAudio();
+  if(cur.writingDone) return;
+  cur.writingDone=true;
+  var praise=pick(WRITE_PRAISE);
+  playWriteSound();
+  $('writePraise').textContent=praise;
+  speakPraise(praise, function(){ completeChar(); });
+}
+function initCanvas(){
+  if(canvasReady) return;
+  canvas=$('penCanvas'); ctx=canvas.getContext('2d');
+  canvas.addEventListener('pointerdown',pDown);
+  canvas.addEventListener('pointermove',pMove);
+  window.addEventListener('pointerup',pUp);
+  canvas.addEventListener('pointerleave',pUp);
+  canvasReady=true;
+}
+function relPos(e){ var r=canvas.getBoundingClientRect(); return {x:(e.clientX-r.left)*(canvas.width/r.width), y:(e.clientY-r.top)*(canvas.height/r.height)}; }
+function pDown(e){ drawing=true; var p=relPos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p.x+0.1,p.y+0.1); penStroke(); e.preventDefault(); }
+function pMove(e){ if(!drawing) return; var p=relPos(e); ctx.lineTo(p.x,p.y); penStroke(); e.preventDefault(); }
+function pUp(){ drawing=false; }
+function penStroke(){ ctx.strokeStyle='#1f2937'; ctx.lineWidth=16; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.stroke(); }
+function drawGrid(){
+  var W=canvas.width,H=canvas.height,m=10;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='#E8C98A'; ctx.lineWidth=3; ctx.strokeRect(m,m,W-2*m,H-2*m);
+  ctx.save(); ctx.strokeStyle='#F0DDB0'; ctx.lineWidth=2; ctx.setLineDash([10,10]);
+  ctx.beginPath();
+  ctx.moveTo(W/2,m); ctx.lineTo(W/2,H-m);
+  ctx.moveTo(m,H/2); ctx.lineTo(W-m,H/2);
+  ctx.moveTo(m,m); ctx.lineTo(W-m,H-m);
+  ctx.moveTo(W-m,m); ctx.lineTo(m,H-m);
+  ctx.stroke(); ctx.restore();
+}
+function drawGuide(){
+  if(!guideAllowed||!guideOn||!cur.target) return;
+  ctx.save(); ctx.fillStyle='rgba(124,74,20,0.16)';
+  ctx.font='380px "PingFang TC","Microsoft JhengHei",sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(cur.target.w, canvas.width/2, canvas.height/2+10);
+  ctx.restore();
+}
+function clearCanvas(){ if(!ctx) return; drawGrid(); drawGuide(); }
+function toggleGuide(){ if(!guideAllowed) return; guideOn=!guideOn; $('guideBtn').textContent='描紅：'+(guideOn?'開':'關'); clearCanvas(); }
+
+// 闖關方式切換
+function setupModeSeg(){
+  var seg=$('modeSeg'); if(!seg) return;
+  [].forEach.call(seg.children,function(b){ b.classList.toggle('on', b.dataset.m===prog.mode); });
+  seg.onclick=function(e){ var b=e.target.closest('button'); if(!b) return;
+    prog.mode=b.dataset.m; saveProg();
+    [].forEach.call(seg.children,function(x){ x.classList.toggle('on', x===b); });
+  };
+}
+function setupDiffSeg(){
+  var seg=$('diffSeg'); if(!seg) return;
+  [].forEach.call(seg.children,function(b){ b.classList.toggle('on', b.dataset.d===diffKey()); });
+  updateDiffInfo();
+  seg.onclick=function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    prog.diff=b.dataset.d; saveProg();
+    [].forEach.call(seg.children,function(x){ x.classList.toggle('on', x===b); });
+    updateDiffInfo();
+  };
+}
+function finishLesson(){
+  var newReward=awardLessonReward(cur.lesson);
+  var reward=rewardForLesson(cur.lesson);
+  renderLessons();
+  renderRewards();
+  updatePlantMini();
+  $('endTitle').textContent=cur.lesson.name+' 過關！🎉';
+  $('endText').textContent=pick(LESSON_PRAISE)+' 目前種子 '+prog.seeds+' 顆，精靈 '+fairyCount()+' 隻。';
+  showRewardPop(reward, !!newReward);
+  $('endModal').classList.remove('hidden');
+}
+function showRewardPop(r,isNew){
+  var pop=$('rewardPop'); if(!pop) return;
+  if(!r){ pop.classList.add('hidden'); return; }
+  playTreasureMusic();
+  var spriteBox=$('rewardSprite');
+  if(spriteBox){ spriteBox.innerHTML=''; spriteBox.appendChild(createRewardSprite(r,false)); }
+  $('rewardTitle').textContent=isNew ? '寶物獲得！新精靈加入' : '寶物閃光！精靈回到列車隊';
+  $('rewardName').textContent=r.name+' · '+r.form;
+  $('rewardLine').textContent=r.line;
+  $('rewardVehicle').textContent=r.icon+' '+r.vehicle;
+  pop.classList.remove('treasure-enter');
+  pop.classList.remove('hidden');
+  setTimeout(function(){ pop.classList.add('treasure-enter'); }, 20);
+  setTimeout(function(){ speakPraise(($('rewardTitle').textContent||'獲得寶物')+'。'+r.name+'，'+r.form+'。'+r.line); }, 550);
+}
+function closeEnd(){ $('endModal').classList.add('hidden'); backToList(); }
+
+function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+
+// ====== 設定面板 ======
+function openSettings(){
+  var sel=$('setLesson'); sel.innerHTML='';
+  lessons.forEach(function(l){ var o=document.createElement('option'); o.value=l.id; o.textContent=l.name+'（'+l.chars.length+'字）'; sel.appendChild(o); });
+  renderEditor();
+  $('settingsModal').classList.remove('hidden');
+}
+function closeSettings(){ $('settingsModal').classList.add('hidden'); renderLessons(); renderRewards(); updatePlantMini(); }
+function curEditLesson(){ var id=$('setLesson').value; return lessons.find(function(l){ return l.id===id; }); }
+function renderEditor(){
+  var l=curEditLesson(); var box=$('editor'); box.innerHTML='';
+  if(!l) return;
+  l.chars.forEach(function(c,i){
+    var row=document.createElement('div'); row.className='we';
+    row.innerHTML='<input value="'+(c.w||'')+'" maxlength="2" data-i="'+i+'" data-f="w" placeholder="字">'+
+                  '<input value="'+(c.z||'')+'" data-i="'+i+'" data-f="z" placeholder="注音">'+
+                  '<input value="'+(c.e||'')+'" data-i="'+i+'" data-f="e" placeholder="圖示">'+
+                  '<input value="'+(c.p||'')+'" data-i="'+i+'" data-f="p" placeholder="念詞（○○的X）">'+
+                  '<button class="del" data-i="'+i+'">✕</button>';
+    box.appendChild(row);
+  });
+  box.querySelectorAll('input').forEach(function(inp){
+    inp.onchange=function(){ var i=+inp.dataset.i, f=inp.dataset.f; l.chars[i][f]=inp.value.trim(); saveWords(); };
+  });
+  box.querySelectorAll('.del').forEach(function(btn){
+    btn.onclick=function(){ var i=+btn.dataset.i; l.chars.splice(i,1); saveWords(); renderEditor(); openSettingsRefreshCount(); };
+  });
+}
+function addCharRow(){ var l=curEditLesson(); if(!l) return; l.chars.push({w:'',z:'',e:'',p:''}); saveWords(); renderEditor(); }
+function openSettingsRefreshCount(){ var sel=$('setLesson'); var l=curEditLesson(); if(l){ sel.options[sel.selectedIndex].textContent=l.name+'（'+l.chars.length+'字）'; } }
+function testVoice(){ var t=$('voiceTest').value.trim(); if(t) speak(t); }
+function resetWords(){
+  if(!confirm('還原成預設生字？（你自己加/改的字會被覆蓋，進度保留）')) return;
+  lessons=toObjs(DEFAULT_LESSONS); saveWords(); openSettings();
+}
+function exportJSON(){ $('jsonArea').value=JSON.stringify(lessons,null,2); }
+function importJSON(){
+  try{ var d=JSON.parse($('jsonArea').value); if(Array.isArray(d)){ lessons=d; saveWords(); openSettings(); alert('匯入成功！'); } else alert('格式不對'); }
+  catch(e){ alert('JSON 解析失敗：'+e.message); }
+}
+
+// 還原隊長名
+if(prog.name){ /* 可直接開始 */ }
+</script>
+</body>
+</html>
