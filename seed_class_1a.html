@@ -835,6 +835,7 @@ function setCoach(state, text, cheerText){
 // ====== 語音 ======
 var voices=[];
 var autoSpeakSeq=0, praiseActive=false;
+var PRAISE_HANDOFF_MS=650;
 function loadVoices(){ voices=speechSynthesis.getVoices()||[]; }
 loadVoices(); if(speechSynthesis.onvoiceschanged!==undefined){ speechSynthesis.onvoiceschanged=loadVoices; }
 function zhVoice(){
@@ -843,6 +844,9 @@ function zhVoice(){
 }
 function estimateSpeechMs(text){
   return Math.max(1800, Math.min(6500, String(text||'').length*190));
+}
+function estimatePraiseMs(text){
+  return Math.max(2800, Math.min(9500, String(text||'').length*300+1200));
 }
 function speak(text, done){
   var finished=false, fallback=null;
@@ -898,11 +902,17 @@ function scheduleTargetSpeak(){
   setTimeout(function(){ if(token===autoSpeakSeq&&!praiseActive) speakTarget(); }, 250);
 }
 function speakPraise(text, done){
+  var token=++autoSpeakSeq;
+  var started=Date.now();
+  var minWait=estimatePraiseMs(text);
   praiseActive=true;
-  autoSpeakSeq++;
   speak(text, function(){
-    praiseActive=false;
-    if(done) done();
+    var wait=Math.max(PRAISE_HANDOFF_MS, minWait-(Date.now()-started));
+    setTimeout(function(){
+      if(token!==autoSpeakSeq) return;
+      praiseActive=false;
+      if(done) done();
+    }, wait);
   });
 }
 
