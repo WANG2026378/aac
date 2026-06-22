@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="googlebot" content="noindex,nofollow,noarchive">
+<title>會想的人，先有錢．讀書筆記</title>
+<style>
+  :root{
+    --bg:#f6f3eb; --ink:#20242d; --muted:#68707e; --line:#d8d0c2;
+    --paper:#fffdf7; --paper-2:#efe8da; --green:#17735e; --blue:#245c8f;
+    --gold:#c6812f; --red:#b4533a;
+    --serif:"Songti TC","Noto Serif CJK TC",Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans CJK TC","Microsoft JhengHei",sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;}
+  body{
+    min-height:100vh;
+    padding:0 0 116px;
+    background:
+      linear-gradient(180deg,rgba(23,115,94,.10),transparent 320px),
+      linear-gradient(135deg,#f7f1e4 0%,#f8fafc 54%,#eef7f2 100%);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:17px;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:0 18px;}
+  header{padding:28px 0 18px;border-bottom:1px solid var(--line);}
+  .topline{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px;}
+  .back{
+    min-height:42px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 12px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    color:var(--ink);
+    background:rgba(255,255,255,.62);
+    text-decoration:none;
+    font-weight:900;
+  }
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    min-height:34px;
+    padding:6px 10px;
+    border-radius:8px;
+    background:#e9f5ef;
+    color:var(--green);
+    border:1px solid rgba(23,115,94,.18);
+    font-size:13px;
+    font-weight:950;
+  }
+  .eyebrow{font-size:12px;letter-spacing:2px;color:var(--green);text-transform:uppercase;font-weight:950;margin-bottom:10px;}
+  h1{font-family:var(--serif);font-size:clamp(32px,7vw,54px);line-height:1.08;margin:0 0 8px;color:#17352d;}
+  .byline{color:var(--muted);font-size:14px;margin-bottom:16px;font-weight:760;}
+  .tldr{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-left:4px solid var(--green);
+    border-radius:8px;
+    padding:14px 16px;
+    font-size:15.5px;
+    line-height:1.8;
+    box-shadow:0 10px 26px rgba(64,48,28,.08);
+  }
+  .tldr .lbl{display:block;font-size:11px;letter-spacing:2px;color:var(--green);font-weight:950;margin-bottom:5px;}
+  .listenbar{display:flex;gap:10px;align-items:center;margin:18px 0 6px;flex-wrap:wrap;}
+  .listen{
+    flex:1;
+    min-width:210px;
+    min-height:52px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:12px 14px;
+    border:0;
+    border-radius:8px;
+    background:linear-gradient(180deg,#1f8a70,#17735e);
+    color:#fff;
+    font:inherit;
+    font-weight:950;
+    font-size:16px;
+    cursor:pointer;
+    box-shadow:0 4px 0 rgba(12,78,62,.22);
+  }
+  .listen:active{transform:translateY(1px);}
+  .progress-wrap{margin:16px 0 4px;}
+  .progress-top{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--muted);margin-bottom:6px;}
+  .progress-top b{color:var(--green);}
+  .bar{height:8px;background:#e6dfd2;border-radius:999px;overflow:hidden;}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--green));transition:width .35s;}
+  .group-title{
+    margin:28px 0 12px;
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    font-family:var(--serif);
+    color:#17352d;
+    font-size:18px;
+    font-weight:800;
+    border-bottom:1px dashed var(--line);
+    padding-bottom:8px;
+  }
+  .group-title span{font-family:var(--sans);font-size:12px;color:var(--muted);font-weight:850;}
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:8px;
+    margin-bottom:12px;
+    overflow:hidden;
+    box-shadow:0 10px 24px rgba(58,46,28,.08);
+  }
+  .card.warn{border-left:4px solid var(--red);}
+  .card.playing{outline:2px solid rgba(23,115,94,.45);}
+  .card-head{display:flex;align-items:center;gap:12px;padding:14px 15px;cursor:pointer;user-select:none;}
+  .num{width:28px;flex:0 0 28px;font-family:var(--serif);font-size:13px;color:var(--green);font-weight:800;text-align:center;}
+  .card-title{flex:1;font-family:var(--serif);font-size:18px;font-weight:800;line-height:1.45;}
+  .dot-done{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--line);flex:0 0 10px;}
+  .card.done .dot-done{background:var(--green);border-color:var(--green);}
+  .chev{color:var(--muted);font-size:13px;transition:transform .2s;flex-shrink:0;}
+  .card.open .chev{transform:rotate(90deg);}
+  .card-body{display:none;padding:0 15px 15px;}
+  .card.open .card-body{display:block;}
+  .take{
+    background:var(--paper-2);
+    border-radius:8px;
+    padding:10px 12px;
+    margin-bottom:12px;
+    color:#2c312e;
+    font-size:15.5px;
+    line-height:1.7;
+  }
+  .take::before{content:"重點一句話";display:block;font-size:10.5px;letter-spacing:2px;color:var(--green);font-weight:950;margin-bottom:4px;}
+  .points{margin:0;padding:0;list-style:none;}
+  .points li{position:relative;padding:5px 0 5px 19px;font-size:15px;line-height:1.75;border-bottom:1px solid rgba(32,36,45,.06);}
+  .points li::before{content:"";position:absolute;left:4px;top:15px;width:6px;height:6px;border-radius:50%;background:var(--gold);}
+  .eg{margin-top:12px;background:#eef7f5;border:1px solid rgba(23,115,94,.18);border-radius:8px;padding:10px 12px;}
+  .eg .eglbl{font-size:10.5px;letter-spacing:2px;color:var(--blue);font-weight:950;margin-bottom:5px;}
+  .eg .egitem{font-size:14.5px;line-height:1.72;margin:4px 0;}
+  .card.warn .eg{background:#fff1ed;border-color:rgba(180,83,58,.18);}
+  .done-btn{
+    margin-top:13px;
+    width:100%;
+    min-height:42px;
+    padding:9px 10px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:#fff;
+    color:var(--muted);
+    font:inherit;
+    font-size:14px;
+    font-weight:900;
+    cursor:pointer;
+  }
+  .card.done .done-btn{background:#e8f5ef;border-color:rgba(23,115,94,.22);color:var(--green);}
+  footer{color:var(--muted);font-size:12px;text-align:center;margin:28px 0 0;line-height:1.8;}
+  .player{
+    position:fixed;
+    left:0;right:0;bottom:0;z-index:50;
+    background:rgba(255,253,247,.97);
+    border-top:1px solid var(--line);
+    backdrop-filter:blur(8px);
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+    display:none;
+  }
+  .player.show{display:block;}
+  .player-row{max-width:820px;margin:0 auto;display:flex;align-items:center;gap:10px;}
+  .now{flex:1;min-width:0;}
+  .now .lab{font-size:10.5px;color:var(--green);letter-spacing:1px;font-weight:950;}
+  .now .sec{font-size:14px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .pbtn{
+    width:44px;height:44px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:#fff;
+    color:var(--ink);
+    font-size:18px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .pbtn.main{background:var(--green);color:#fff;border-color:var(--green);font-size:20px;}
+  .speed{font-size:13px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer;flex-shrink:0;font-family:var(--sans);font-weight:900;}
+  @media (max-width:560px){
+    .topline{align-items:flex-start;flex-direction:column;}
+    .card-title{font-size:16.5px;}
+    .player-row{gap:8px;}
+    .pbtn{width:40px;height:40px;}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important;}}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app">
+  <header>
+    <div class="topline">
+      <a class="back" href="bookcase.html">← 回書櫃</a>
+      <span class="pill">讀書筆記 · 非投資建議</span>
+    </div>
+    <div class="eyebrow">Money · Family · Life</div>
+    <h1>會想的人，先有錢</h1>
+    <div class="byline">Jonathan Clements 作品精選｜以下為改寫摘要與教學筆記，非原文摘錄</div>
+    <div class="tldr">
+      <span class="lbl">30 秒懶人包</span>
+      這本書談的不是「下一檔會漲什麼」，而是金錢背後的生活設計：家庭怎麼談錢、房子到底是不是投資、市場波動如何看待、華爾街話術如何拆解，以及最後要把錢換成什麼樣的自由、時間與幸福。
+    </div>
+    <div class="listenbar">
+      <button class="listen" id="playAll">🔊 讀給我聽（車上模式）</button>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-top"><span>複習進度</span><span><b id="doneCount">0</b> / <span id="totalCount">0</span> 已複習</span></div>
+      <div class="bar"><i id="progressFill"></i></div>
+    </div>
+  </header>
+
+  <div id="content"></div>
+
+  <footer>
+    這頁是給個人複習用的改寫摘要，不是投資、保險、稅務或法律建議。<br>
+    需要完整內容請支持正版書籍，實際理財決策請依自身狀況審慎評估。
+  </footer>
+</div>
+
+<div class="player" id="player">
+  <div class="player-row">
+    <button class="pbtn" id="prevBtn" title="上一段">⏮</button>
+    <button class="pbtn main" id="toggleBtn" title="播放／暫停">⏯</button>
+    <button class="pbtn" id="nextBtn" title="下一段">⏭</button>
+    <div class="now"><div class="lab">正在讀</div><div class="sec" id="nowSec">—</div></div>
+    <button class="speed" id="speedBtn" title="語速">0.92×</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const DATA = [
+    { group:"先把錢放回生活裡", sub:"錢是工具，不是終點", cards:[
+      { id:"purpose", title:"賺錢前，先問錢要服務什麼",
+        take:"真正成熟的理財，不是只把數字堆高，而是把錢變成安全感、選擇權和更好的生活。",
+        points:[
+          "作者反覆追問：賺錢到底是為了什麼；如果沒有答案，投資組合再精密也只是空轉。",
+          "金錢可以降低焦慮，但超過基本安全後，幸福感更取決於關係、健康、時間和目標。",
+          "讀這本書時，先把每個建議連回自己的生活，而不是急著找一個可以照抄的公式。"
+        ],
+        eg:[
+          {t:"反思題：如果明天帳戶多了一筆錢，你最想換回的是時間、安心、家人關係，還是新的選擇權？"}
+        ]},
+      { id:"option", title:"錢買的是選擇權，不是炫耀權",
+        take:"有錢的價值，在於人生轉彎時有空間，不在於看起來比別人更成功。",
+        points:[
+          "選擇權包含：能換工作、能照顧家人、能拒絕不好的交易，也能在低潮時不被迫賣掉資產。",
+          "外表很富有的人，可能只是把未來收入提前花掉；帳面不耀眼的人，反而可能有更高自由度。",
+          "把『我想買什麼』改問成『我想保留什麼自由』，很多消費會立刻變清楚。"
+        ],
+        eg:[
+          {t:"小練習：把一筆大支出寫成兩欄，一欄是得到的享受，一欄是失去的未來選擇。"}
+        ]}
+    ]},
+
+    { group:"家庭與金錢", sub:"讓孩子真的練習選擇", cards:[
+      { id:"kids", title:"教孩子理財，不是替孩子清路",
+        take:"孩子要學會的是選擇、延遲享樂和承擔後果；大人一直收拾殘局，反而剝奪練習機會。",
+        points:[
+          "零用錢或資源支持要有邊界，重點不是金額，而是讓孩子感覺『這真的是我的選擇』。",
+          "讓孩子在小錢上犯錯，比等到大錢上犯錯更便宜，也更有教育價值。",
+          "投資教育不是只教標的，而是教孩子理解風險、時間、誘惑與責任。"
+        ],
+        eg:[
+          {t:"讀書筆記：書中多次把家庭理財放在投資前面，因為金錢觀通常先在家裡形成。"}
+        ]},
+      { id:"talk", title:"把談錢變成日常，而不是禁忌",
+        take:"家庭談錢不用變成壓力會議；越早自然談，越能降低誤會和恐懼。",
+        points:[
+          "可以從日常決定開始：這筆錢為什麼花、為什麼不花、為什麼先存起來。",
+          "面對遺產、支援子女或長輩照護時，提早講清楚，比事後猜測公平得多。",
+          "談錢的目的不是控制家人，而是讓每個人知道選項、限制和責任。"
+        ],
+        eg:[
+          {t:"反思題：家裡有沒有一件大家都避談、但遲早會影響錢與關係的事？"}
+        ]}
+    ]},
+
+    { group:"房子與負債", sub:"房子是家，也是一張風險表", cards:[
+      { id:"house", title:"房子不是只會上漲的投資品",
+        take:"買房和裝修常被包裝成投資，但很多時候更像消費；真正要算的是總成本和生活彈性。",
+        points:[
+          "房價、房貸、稅費、保險、維修、仲介費與時間成本都要一起看，不能只看賣價變高。",
+          "裝修可以提升生活品質，但不一定能完整回收成本；喜歡它可以，別硬說它一定是好投資。",
+          "房貸槓桿會放大漲跌，也會壓縮未來現金流，尤其會影響退休與換工作的自由。"
+        ],
+        eg:[
+          {t:"筆記重點：把『這房子賺了多少』改成『扣掉所有成本後，我得到什麼生活品質與選擇權』。"}
+        ]},
+      { id:"small-house", title:"小房策略：少一點面子，多一點餘裕",
+        take:"住得剛好，比住得很滿更有力量；房子越大，隱形支出和生活壓力通常也越大。",
+        points:[
+          "較小或較能負擔的房子，可能讓你保留更多儲蓄、投資與應急資金。",
+          "房子太大時，你買到的不只是空間，也買到更高稅費、維修、家具和生活固定成本。",
+          "適合自己的房子，應該支持生活，而不是把生活綁住。"
+        ],
+        eg:[
+          {t:"檢查句：如果少買一點房子，省下來的現金流能不能買到更重要的安全感？"}
+        ]}
+    ]},
+
+    { group:"市場與機率", sub:"不要和情緒一起追高殺低", cards:[
+      { id:"market", title:"鄰居暴富的故事，最容易偷走判斷力",
+        take:"市場狂熱時，最危險的不是資訊不足，而是你看見別人快速致富後開始失去耐心。",
+        points:[
+          "科技股、房市或熱門基金的故事都很會吸引人，因為人腦愛聽勝利樣本。",
+          "低潮時同樣危險：看著短期虧損，人會想做點什麼來停止痛苦，但動作越多越容易犯錯。",
+          "長期投資最難的部分，常常不是選標的，而是在熱鬧和恐慌中守住原本策略。"
+        ],
+        eg:[
+          {t:"給自己的一句話：看到別人炫耀報酬時，先深呼吸，再回到自己的期限、風險和現金流。"}
+        ]},
+      { id:"probability", title:"算機率，不只算感覺",
+        take:"人很怕後悔，所以常選短期看起來安全、長期其實不合理的選項。",
+        points:[
+          "書中用球賽決策提醒：有些選擇當下看起來保守，真正算期望值後未必合理。",
+          "投資也一樣；短期波動很痛，但若目標很長，完全逃避風險可能反而降低達成機率。",
+          "做決定前要問：我是在避免真正風險，還是在避免一時難看的感覺？"
+        ],
+        eg:[
+          {t:"反思題：你最近一次『不想後悔』的決定，是讓未來更安全，還是只讓今天比較舒服？"}
+        ]}
+    ]},
+
+    { group:"理財清單", sub:"把複雜事情變成可檢查的習慣", cards:[
+      { id:"checklist", title:"成熟投資者的跡象，不是每天猜行情",
+        take:"真正穩健的人，通常很無聊：定期存錢、少交易、懂成本、知道自己不知道。",
+        points:[
+          "先存一部分收入，遠比找到下一個熱門標的更重要。",
+          "能清楚說出自己的策略，也能承認沒人能準確預測市場。",
+          "知道債券或現金可能拖累報酬，仍保留一部分，只因它們能降低被迫賣出的風險。"
+        ],
+        eg:[
+          {t:"自評題：你能在 60 秒內說出自己的策略、風險來源、何時需要用錢嗎？"}
+        ]},
+      { id:"cost", title:"成本、稅、通膨：看不見的漏水孔",
+        take:"投資報酬不是看毛利，而是扣掉成本、稅與通膨後，你到底保留下多少購買力。",
+        points:[
+          "高費用不保證高品質；在投資世界，高費用常常只是把你的報酬先分走。",
+          "低成本、少交易、稅務效率，是少數你能比較確定控制的事。",
+          "與其執著打敗市場，不如先避免被費用、衝動和稅務摩擦慢慢吃掉。"
+        ],
+        eg:[
+          {t:"檢查句：這筆產品或交易，對方賺什麼？我付出的費用有沒有被清楚說明？"}
+        ]}
+    ]},
+
+    { group:"華爾街話術", sub:"聽懂廣告背後真正的意思", cards:[
+      { id:"wall-street", title:"績效故事很亮，費用常被放小",
+        take:"金融產品最擅長講贏家故事；但你要看的，常常是被藏起來的費用、風險和失敗樣本。",
+        points:[
+          "基金廣告容易強調過去表現，卻淡化費用與不適合的情境。",
+          "表現差的基金可能被合併或消失，留下來的紀錄看起來自然比較漂亮。",
+          "只要一項建議牽涉大佣金，就要多問一句：這真適合我，還是適合銷售者？"
+        ],
+        eg:[
+          {t:"反思題：如果一個策略真的穩賺，為什麼對方要急著把它賣給我？"}
+        ]},
+      { id:"jargon", title:"專業詞彙有時只是包裝焦慮",
+        take:"市場解釋常常聽起來很聰明，但很多只是事後幫波動找理由。",
+        points:[
+          "股市上漲或下跌後，新聞一定會找到原因；但找到說法，不等於真的能預測下一步。",
+          "太頻繁接收財經噪音，容易讓你以為必須不停反應。",
+          "好策略應該能穿越新聞週期，而不是每天被標題重寫。"
+        ],
+        eg:[
+          {t:"檢查句：這則消息會改變我的期限、現金需求或風險承受力嗎？如果沒有，也許不用動。"}
+        ]}
+    ]},
+
+    { group:"你的大腦", sub:"投資最難的是自己", cards:[
+      { id:"bias", title:"確認偏誤：我們愛讀自己已相信的東西",
+        take:"讀再多財經文章，也可能只是一直餵養原本的信念；真正有用的是願意懷疑自己。",
+        points:[
+          "人會偏好支持自己立場的資料，對相反證據比較嚴格。",
+          "越投入一個想法，越容易把它當成身分，而不是可以修正的假設。",
+          "成熟不是永遠正確，而是知道自己可能錯，並讓策略有容錯空間。"
+        ],
+        eg:[
+          {t:"小練習：替自己的策略寫一段反方論點，看看哪個前提最脆弱。"}
+        ]},
+      { id:"humility", title:"極度無知，反而是保護",
+        take:"承認不能預測，是讓策略變穩的開始；你不需要知道明年市場去哪裡，也能做長期安排。",
+        points:[
+          "作者強調，專業人士也很難穩定預測股價、利率或下一個明星基金。",
+          "既然未來不可知，就更需要分散、低成本、現金緩衝和符合期限的配置。",
+          "謙卑不是放棄思考，而是把不可控的東西交還給市場，把可控的習慣留給自己。"
+        ],
+        eg:[
+          {t:"讀書筆記：『我不知道』不是弱點，它是避免過度自信的安全帶。"}
+        ]}
+    ]},
+
+    { group:"執行與退休", sub:"簡單不等於容易", cards:[
+      { id:"simple", title:"簡單策略最難的是持續",
+        take:"低成本、分散、長期、少交易都不新奇；困難在市場吵鬧時還做得到。",
+        points:[
+          "自動存錢和自動投資能減少每月重新掙扎的次數。",
+          "策略越複雜，越需要你不斷判斷；策略越清楚，越能在疲累時維持。",
+          "不要把刺激感誤認成高報酬；很多刺激的投資，真正賣的是情緒。"
+        ],
+        eg:[
+          {t:"自評題：你的理財流程能不能在很忙、很累、很害怕時仍照常運作？"}
+        ]},
+      { id:"retirement", title:"退休不是空白，而是另一種設計",
+        take:"退休規劃不是只算錢夠不夠，還要想清楚時間、身分、關係和目標怎麼安排。",
+        points:[
+          "很多人急著離開職場，卻沒想過退休後每天要怎麼過。",
+          "最快樂的退休者，往往不是只停止工作，而是找到志工、學習、教練、社群或新的熱情。",
+          "財務自由應該讓你靠近有意義的生活，不只是遠離討厭的工作。"
+        ],
+        eg:[
+          {t:"反思題：如果工作明天消失，你會用哪些活動填滿一週，並仍覺得自己有價值？"}
+        ]}
+    ]},
+
+    { group:"幸福與遺產", sub:"最後回到人怎麼活", cards:[
+      { id:"happiness", title:"把錢花在更耐久的幸福上",
+        take:"物質享受會很快變成日常；關係、健康、回憶、幫助別人，通常更耐放。",
+        points:[
+          "更貴的餐廳、車子或房子會被習慣化，快樂提升常常比想像短。",
+          "花錢減少通勤、換回時間、經營友誼、支持家人或公益，可能更接近幸福核心。",
+          "如果支出能讓你更符合價值觀，它就不只是花掉，而是把資源轉成生命品質。"
+        ],
+        eg:[
+          {t:"小練習：列出最近三筆大支出，標記它們帶來的是短暫刺激、長期便利，還是關係與意義。"}
+        ]},
+      { id:"legacy", title:"真正的財富，是有原則地活",
+        take:"書的最後提醒：財富不只看累積多少，而是你是否活得有目標、有意義、有原則。",
+        points:[
+          "錢是工具，目的在於守護珍惜的人、保留自由、降低恐懼，並讓自己做出對得起人生的選擇。",
+          "好的理財不是冷冰冰的試算表，而是理解人的恐懼、慾望、偏誤和希望。",
+          "如果一個決策同時符合數字與價值觀，它才比較可能走得長久。"
+        ],
+        eg:[
+          {t:"收尾題：你希望自己的金錢安排，十年後替你證明什麼樣的人生選擇？"}
+        ]}
+    ]}
+  ];
+
+  const KEY="thinking_rich_review_v1";
+  let store={done:{},speed:0.92};
+  try{ const raw=localStorage.getItem(KEY); if(raw) store=Object.assign(store,JSON.parse(raw)); }catch(e){}
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(store)); }catch(e){} }
+
+  let flat=[];
+  function escapeHtml(text){
+    return String(text).replace(/[&<>"']/g,function(ch){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch];
+    });
+  }
+  function render(){
+    const wrap=document.getElementById("content");
+    wrap.innerHTML="";
+    let n=0; flat=[];
+    DATA.forEach(function(group){
+      const title=document.createElement("div");
+      title.className="group-title";
+      title.innerHTML=escapeHtml(group.group)+" <span>"+escapeHtml(group.sub)+"</span>";
+      wrap.appendChild(title);
+      group.cards.forEach(function(c){
+        n++; flat.push(c);
+        const card=document.createElement("div");
+        card.className="card"+(c.warn?" warn":"")+(store.done[c.id]?" done":"");
+        card.dataset.id=c.id;
+        const egHtml=(c.eg&&c.eg.length)
+          ? '<div class="eg"><div class="eglbl">思考練習</div>'+c.eg.map(function(e){return '<div class="egitem">'+escapeHtml(e.t)+'</div>';}).join("")+'</div>'
+          : "";
+        card.innerHTML=
+          '<div class="card-head"><span class="num">'+(n<10?"0"+n:n)+'</span>'+
+            '<span class="card-title">'+escapeHtml(c.title)+'</span>'+
+            '<span class="dot-done"></span><span class="chev">▶</span></div>'+
+          '<div class="card-body">'+
+            '<div class="take">'+escapeHtml(c.take)+'</div>'+
+            '<ul class="points">'+c.points.map(function(p){return '<li>'+escapeHtml(p)+'</li>';}).join("")+'</ul>'+
+            egHtml+
+            '<button class="done-btn">'+(store.done[c.id]?"✓ 已複習":"標記為已複習")+'</button>'+
+          '</div>';
+        card.querySelector(".card-head").onclick=function(){ card.classList.toggle("open"); };
+        card.querySelector(".done-btn").onclick=function(ev){
+          ev.stopPropagation();
+          store.done[c.id]=!store.done[c.id]; save();
+          card.classList.toggle("done",!!store.done[c.id]);
+          card.querySelector(".done-btn").textContent=store.done[c.id]?"✓ 已複習":"標記為已複習";
+          updateProgress();
+        };
+        wrap.appendChild(card);
+      });
+    });
+    document.getElementById("totalCount").textContent=flat.length;
+    updateProgress();
+  }
+  function updateProgress(){
+    const total=flat.length;
+    const done=flat.filter(function(c){return store.done[c.id];}).length;
+    document.getElementById("doneCount").textContent=done;
+    document.getElementById("progressFill").style.width=(total?Math.round(done/total*100):0)+"%";
+  }
+
+  const synth=window.speechSynthesis || null;
+  const player=document.getElementById("player");
+  const nowSec=document.getElementById("nowSec");
+  const toggleBtn=document.getElementById("toggleBtn");
+  const speedBtn=document.getElementById("speedBtn");
+  const SPEEDS=[0.85,0.92,1.0,1.12];
+  let idx=-1, playing=false, zhVoice=null, voicesReadyPromise=null;
+
+  function pickVoice(){
+    if(!synth) return null;
+    const voices=synth.getVoices()||[];
+    const female=/mei[-\s]?jia|ting[-\s]?ting|sin[-\s]?ji|li[-\s]?mu|yu[-\s]?shu|hsiao[-\s]?chen|xiaoxiao|xiaoyi|huihui|hanhan|siri.*female|female|woman|girl|女/i;
+    const warm=/mei[-\s]?jia|ting[-\s]?ting|hsiao[-\s]?chen|xiaoxiao|siri|premium|enhanced|neural|natural/i;
+    const male=/yunjian|kangkang|male|man|boy|男/i;
+    const scored=voices
+      .filter(function(v){return /zh/i.test(v.lang)||/chinese|mandarin|國語|中文|普通話/i.test(v.name);})
+      .map(function(v){
+        let score=0;
+        if(/zh[-_]TW/i.test(v.lang)) score+=80;
+        else if(/zh[-_]HK/i.test(v.lang)) score+=62;
+        else if(/zh[-_]CN/i.test(v.lang)) score+=42;
+        if(female.test(v.name)) score+=90;
+        if(warm.test(v.name)) score+=28;
+        if(v.localService) score+=8;
+        if(v.default) score+=3;
+        if(male.test(v.name)) score-=80;
+        return {voice:v,score:score};
+      })
+      .sort(function(a,b){return b.score-a.score;});
+    zhVoice=scored.length?scored[0].voice:null;
+    document.documentElement.dataset.voiceSelected=zhVoice ? zhVoice.name+" ("+zhVoice.lang+")" : "";
+    return zhVoice;
+  }
+  function waitForVoices(){
+    if(!synth) return Promise.resolve(null);
+    const selected=pickVoice();
+    if(selected) return Promise.resolve(selected);
+    if(!voicesReadyPromise){
+      voicesReadyPromise=new Promise(function(resolve){
+        let done=false;
+        function finish(){
+          if(done) return;
+          done=true;
+          resolve(pickVoice());
+        }
+        synth.onvoiceschanged=finish;
+        setTimeout(finish,900);
+      });
+    }
+    return voicesReadyPromise;
+  }
+  pickVoice();
+  if(synth) synth.onvoiceschanged=pickVoice;
+
+  function stopVoice(){
+    if(synth) synth.cancel();
+    document.documentElement.dataset.voiceAudioMode="";
+    document.documentElement.dataset.voiceAudioCurrent="";
+  }
+  function speechFriendly(text){
+    return String(text||"")
+      .replace(/\bETF\b/g,"指數型基金")
+      .replace(/\bVT\b/g,"全球股票指數基金")
+      .replace(/\bWall Street\b/g,"華爾街")
+      .replace(/\s+/g," ")
+      .trim();
+  }
+  async function speakText(text,onend){
+    if(!synth){
+      player.classList.remove("show");
+      alert("這個瀏覽器不支援語音朗讀，建議用 Safari 或 Chrome。");
+      return;
+    }
+    stopVoice();
+    await waitForVoices();
+    const u=new SpeechSynthesisUtterance(speechFriendly(text));
+    u.lang="zh-TW";
+    if(zhVoice) u.voice=zhVoice;
+    u.rate=store.speed||0.92;
+    u.pitch=1.1;
+    u.onend=function(){ if(typeof onend==="function") onend(); };
+    document.documentElement.dataset.voiceAudioMode="tts";
+    synth.speak(u);
+  }
+  function narration(c){
+    return c.title+"。"+c.take+"。重點："+c.points.join("。")+"。"+((c.eg||[]).map(function(e){return e.t;}).join("。"));
+  }
+  function highlight(i){
+    document.querySelectorAll(".card").forEach(function(el){el.classList.remove("playing");});
+    const c=flat[i]; if(!c) return;
+    const card=document.querySelector('.card[data-id="'+c.id+'"]');
+    if(card){ card.classList.add("playing","open"); card.scrollIntoView({behavior:"smooth",block:"center"}); }
+    nowSec.textContent=c.title;
+  }
+  function speak(i){
+    if(i<0||i>=flat.length){ stop(); return; }
+    idx=i; highlight(idx);
+    speakText(narration(flat[idx]),function(){ if(playing) speak(idx+1); });
+  }
+  function start(){
+    player.classList.add("show");
+    playing=true;
+    toggleBtn.textContent="⏸";
+    speak(idx<0?0:idx);
+  }
+  function pause(){
+    playing=false;
+    toggleBtn.textContent="▶";
+    if(synth) synth.pause();
+  }
+  function resume(){
+    playing=true;
+    toggleBtn.textContent="⏸";
+    if(synth) synth.resume();
+  }
+  function stop(){
+    playing=false;
+    toggleBtn.textContent="⏯";
+    stopVoice();
+    document.querySelectorAll(".card").forEach(function(el){el.classList.remove("playing");});
+  }
+
+  document.getElementById("playAll").onclick=function(){ idx=-1; start(); };
+  toggleBtn.onclick=function(){
+    if(!playing){ if(synth&&synth.paused&&idx>=0) resume(); else start(); }
+    else pause();
+  };
+  document.getElementById("nextBtn").onclick=function(){ playing=true; toggleBtn.textContent="⏸"; speak(Math.min(idx+1,flat.length-1)); };
+  document.getElementById("prevBtn").onclick=function(){ playing=true; toggleBtn.textContent="⏸"; speak(Math.max(idx-1,0)); };
+  speedBtn.textContent=(store.speed||0.92).toFixed(2).replace(/0$/,"")+"×";
+  speedBtn.onclick=function(){
+    let cur=SPEEDS.indexOf(store.speed);
+    cur=(cur+1)%SPEEDS.length;
+    store.speed=SPEEDS[cur]; save();
+    speedBtn.textContent=store.speed.toFixed(2).replace(/0$/,"")+"×";
+    if(playing) speak(idx);
+  };
+  window.addEventListener("pagehide",stop);
+  window.thinkingRichNoteStatus=function(){
+    return {
+      cards:flat.length,
+      done:flat.filter(function(c){return store.done[c.id];}).length,
+      voice:document.documentElement.dataset.voiceSelected||"",
+      mode:document.documentElement.dataset.voiceAudioMode||""
+    };
+  };
+
+  render();
+})();
+</script>
+</body>
+</html>
