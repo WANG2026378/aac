@@ -99,10 +99,10 @@
     pointer-events:auto;
   }
   .select-screen.hide{display:none}
-  .select-inner{width:min(1080px,96vw);text-align:center}
+  .select-inner{width:min(1240px,96vw);max-height:100%;overflow:auto;padding:8px 4px;text-align:center}
   .select-inner h1{font-size:clamp(28px,5vw,48px);margin:0 0 7px;text-shadow:0 4px 14px #000}
   .select-inner>p{margin:0 0 22px;color:#d6e5da;font-size:17px}
-  .captains{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+  .captains{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
   .captain-card{
     position:relative;min-width:0;min-height:255px;padding:15px 10px 13px;
     border:1px solid rgba(255,255,255,.32);border-radius:8px;
@@ -141,7 +141,6 @@
     .select-inner{padding:20px 0}
     .captains{grid-template-columns:repeat(2,minmax(0,1fr))}
     .captain-card{min-height:224px}
-    .captain-card:last-child{grid-column:1/-1;width:50%;justify-self:center}
     .shirt-icon{width:64px;height:75px}
   }
 .cine{position:fixed;inset:0;pointer-events:none;z-index:25;opacity:0;transition:opacity .25s}
@@ -209,8 +208,8 @@
 </div>
 <div class="select-screen" id="selectScreen">
   <div class="select-inner">
-    <h1>選擇明星隊長</h1>
-    <p>選中的球員先踢，另外四位隊長接著上場</p>
+    <h1>選擇明星球員</h1>
+    <p>選中的球員先踢，另外四位球星接著上場</p>
     <div class="captains" id="captains"></div>
   </div>
 </div>
@@ -250,7 +249,10 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     {name:'Son Heung-min',short:'孫興慜',nation:'韓國隊長',number:7,height:1.03,skin:0xe0b18a,hair:0x171515,shirt:0xd72f3f,secondary:0x172b45,shorts:0x172b45,power:91,smart:96,stamina:94,foot:'right'},
     {name:'Lamine Yamal',short:'亞馬爾',nation:'西班牙隊長',number:19,height:.95,skin:0x9c6b43,hair:0x141210,shirt:0xc60b1e,secondary:0xffd000,shorts:0x1a2a6c,power:88,smart:96,stamina:92,foot:'left'},
     {name:'Erling Haaland',short:'哈蘭德',nation:'挪威隊長',number:9,height:1.12,skin:0xeac49c,hair:0xcaa856,shirt:0xd0202f,secondary:0xffffff,shorts:0x16224e,power:99,smart:90,stamina:94,foot:'left'},
-    {name:'袁永誠',short:'袁永誠',nation:'台灣隊長',number:10,height:1.00,skin:0xd7a477,hair:0x171210,shirt:0x0b6fb8,secondary:0xffffff,shorts:0xffffff,power:92,smart:94,stamina:93,foot:'right'}
+    {name:'袁永誠',short:'袁永誠',nation:'台灣隊長',number:10,height:1.00,skin:0xd7a477,hair:0x171210,shirt:0x0b6fb8,secondary:0xffffff,shorts:0xffffff,power:92,smart:94,stamina:93,foot:'right'},
+    {name:'Ayase Ueda',short:'上田綺世',nation:'日本代表',number:9,height:1.05,skin:0xd8a77d,hair:0x171412,shirt:0x174694,secondary:0xffffff,shorts:0x142e68,power:93,smart:91,stamina:95,foot:'right',celebrations:['surf','heart']},
+    {name:'Vinícius Júnior',short:'維尼修斯',nation:'巴西代表',number:7,height:.98,skin:0x75472f,hair:0x151210,shirt:0xf3cf2e,secondary:0x16834b,shorts:0x174696,power:94,smart:95,stamina:99,foot:'right',celebrations:['hipdance']},
+    {name:'Virgil van Dijk',short:'范戴克',nation:'荷蘭隊長',number:4,height:1.13,skin:0x9a6848,hair:0x171412,shirt:0xf47b20,secondary:0x171717,shorts:0xf47b20,power:97,smart:98,stamina:92,foot:'right',beard:true,celebrations:['sky']}
   ];
 
   const sceneHost = document.getElementById('scene');
@@ -597,9 +599,10 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   // ── 進球慶祝動畫（隨機多種）──
   let celebration=null;
   const CELEBS=['jump','slide','lap','kneel','hug'];
+  const CELEB_LABELS={surf:'衝浪慶祝',hipdance:'搖屁股舞',heart:'雙手比愛心',sky:'食指指天'};
   function celebrate(){
     if(!currentPlayer)return;
-    const type=pick(CELEBS);
+    const type=pick(lineup[currentIndex].celebrations||CELEBS);
     const c={start:performance.now(),player:currentPlayer,type,
       base:currentPlayer.position.clone(),baseRotY:currentPlayer.rotation.y,
       dir:Math.random()<.5?-1:1};
@@ -609,6 +612,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       scene.add(mate);c.teammate=mate;
     }
     celebration=c;
+    return c;
   }
   function clearCelebration(){ if(celebration&&celebration.teammate)scene.remove(celebration.teammate); celebration=null; }
   function updateCelebration(now){
@@ -659,6 +663,34 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
         mr.arms[0].upper.rotation.set(-1.1,0,-1.25*s);mr.arms[1].upper.rotation.set(-1.1,0,1.25*s);
         mr.arms[0].lower.rotation.set(-.9*s,0,0);mr.arms[1].lower.rotation.set(-.9*s,0,0);
       }
+    }else if(c.type==='surf'){            // 側身壓低重心，雙臂平衡如衝浪
+      const wave=Math.sin(ct*5.8), glide=Math.sin(ct*2.4);
+      pl.position.set(b.x+glide*.3,b.y+Math.abs(wave)*.07,b.z);
+      pl.rotation.set(.08,c.baseRotY+glide*.18,wave*.12);
+      r.legs[0].upper.rotation.set(-.38+wave*.12,0,-.14);r.legs[0].lower.rotation.set(.58,0,0);
+      r.legs[1].upper.rotation.set(.18-wave*.12,0,.16);r.legs[1].lower.rotation.set(.46,0,0);
+      r.arms[0].upper.rotation.set(-1.05+wave*.12,0,-1.28);r.arms[1].upper.rotation.set(.5-wave*.12,0,1.28);
+      r.arms[0].lower.rotation.set(-.12,0,0);r.arms[1].lower.rotation.set(-.18,0,0);
+    }else if(c.type==='hipdance'){        // 維尼修斯式搖臀舞步
+      const beat=Math.sin(ct*11), step=Math.sin(ct*5.5);
+      pl.position.set(b.x+step*.14,b.y+Math.abs(beat)*.08,b.z);
+      pl.rotation.set(0,c.baseRotY+step*.14,beat*.16);
+      r.legs[0].upper.rotation.set(step*.32,0,-.08);r.legs[1].upper.rotation.set(-step*.32,0,.08);
+      r.legs[0].lower.rotation.set(Math.max(0,-step)*.34,0,0);r.legs[1].lower.rotation.set(Math.max(0,step)*.34,0,0);
+      r.arms[0].upper.rotation.set(-.32,0,-.68);r.arms[1].upper.rotation.set(-.32,0,.68);
+      r.arms[0].lower.rotation.set(-1.36,0,.18);r.arms[1].lower.rotation.set(-1.36,0,-.18);
+    }else if(c.type==='heart'){           // 雙臂在頭頂合成愛心
+      const form=THREE.MathUtils.smoothstep(ct,0,.45), bob=Math.sin(ct*4.5)*.04;
+      pl.position.set(b.x,b.y+bob,b.z);pl.rotation.set(0,c.baseRotY,0);
+      r.arms[0].upper.rotation.set(0,0,-2.25*form);r.arms[1].upper.rotation.set(0,0,2.25*form);
+      r.arms[0].lower.rotation.set(0,0,-1.18*form);r.arms[1].lower.rotation.set(0,0,1.18*form);
+      r.legs[0].upper.rotation.set(.05,0,0);r.legs[1].upper.rotation.set(-.05,0,0);
+    }else if(c.type==='sky'){             // 范戴克式單手食指指天
+      const rise=THREE.MathUtils.smoothstep(ct,0,.38), breathe=Math.sin(ct*3.8)*.04;
+      pl.position.set(b.x,b.y+breathe,b.z);pl.rotation.set(0,c.baseRotY-.12*rise,0);
+      r.arms[0].upper.rotation.set(-.65*rise,0,-.5*rise);r.arms[0].lower.rotation.set(-1.35*rise,0,-.18*rise);
+      r.arms[1].upper.rotation.set(-2.82*rise,0,.08);r.arms[1].lower.rotation.set(-.04,0,0);
+      r.legs[0].upper.rotation.set(.04,0,0);r.legs[1].upper.rotation.set(-.04,0,0);
     }
   }
   // ── 守門員撲救：時間軸動畫（蓄力→撲出→觸球爆發→收勢落地）──
@@ -829,8 +861,8 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     state='finished';reticle.visible=false;celebration&&clearCelebration();stopMusic();
     const goals=shots.filter(x=>x==='goal').length;
     document.getElementById('resultTitle').textContent=goals>=4?'世界級表現！':goals>=2?'隊長完成挑戰':'再戰一次';
-    document.getElementById('resultText').textContent=`五位明星隊長合計踢進 ${goals} 球。`;
-    say(`五位隊長合計踢進 ${goals} 球，比賽結束！`,true);
+    document.getElementById('resultText').textContent=`五位明星球員合計踢進 ${goals} 球。`;
+    say(`五位明星球員合計踢進 ${goals} 球，比賽結束！`,true);
     result.classList.add('show');
   }
   function startWithCaptain(index){
@@ -875,6 +907,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     PLAYERS.forEach((p,index)=>{
       const card=document.createElement('button');
       card.type='button';card.className='captain-card';
+      card.dataset.player=p.name;card.dataset.celebrations=(p.celebrations||CELEBS).join(',');
       card.style.setProperty('--shirt',`#${p.shirt.toString(16).padStart(6,'0')}`);
       card.style.setProperty('--secondary',`#${p.secondary.toString(16).padStart(6,'0')}`);
       card.innerHTML=`
@@ -951,7 +984,8 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
         THREE.MathUtils.lerp(.6, ball.position.z, foc));
       if(t>=REPLAY_DUR){
         g.phase='celebrate';g.celebStart=now;
-        cineTagText.textContent='精彩進球';flashCut();celebrate();
+        const celeb=celebrate();
+        cineTagText.textContent=CELEB_LABELS[celeb?.type]||'精彩進球';flashCut();
         ball.position.set(a.actual.x*.3,.24,-15.5);
         goalBigEl.classList.add('show');
         goalNameEl.textContent=g.name+' 進球！';goalNameEl.classList.add('show');
