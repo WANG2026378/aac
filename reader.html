@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="小說閱讀">
 <title>小說閱讀</title>
+<link rel="apple-touch-icon" sizes="180x180" href="reader-icon.png">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html, body { height:100%; overflow:hidden; }
@@ -174,12 +175,12 @@
     });
     return dbPromise;
   }
-  function idbPutBook(meta, fullText) {
+  function idbPutBook(meta, fullText, chaps) {
     return openDb().then(function (db) {
       return new Promise(function (resolve, reject) {
         var tx = db.transaction(['meta', 'texts'], 'readwrite');
         tx.objectStore('meta').put(meta);
-        tx.objectStore('texts').put({ id: meta.id, text: fullText });
+        tx.objectStore('texts').put({ id: meta.id, text: fullText, chapters: chaps || null });
         tx.oncomplete = function () { resolve(); };
         tx.onerror = function () { reject(tx.error || new Error('寫入失敗')); };
       });
@@ -200,11 +201,11 @@
       });
     });
   }
-  function idbGetText(id) {
+  function idbGetBook(id) {
     return openDb().then(function (db) {
       return new Promise(function (resolve, reject) {
         var req = db.transaction('texts', 'readonly').objectStore('texts').get(id);
-        req.onsuccess = function () { resolve(req.result ? req.result.text : null); };
+        req.onsuccess = function () { resolve(req.result || null); };
         req.onerror = function () { reject(req.error || new Error('讀取書失敗')); };
       });
     });
@@ -272,6 +273,8 @@
         var line = str.slice(lineStart, nl);
         if (CH_RE.test(line)) {
           list.push({ title: line.replace(/^\s+|\s+$/g, ''), start: lineStart });
+        } else if (/^#{1,3}\s+\S/.test(line)) {
+          list.push({ title: line.replace(/^#{1,3}\s+/, '').replace(/\s+$/g, ''), start: lineStart });
         }
       }
       lineStart = nl + 1;
@@ -335,6 +338,265 @@
     return null;
   }
 
+  // ---- EPUB 引擎：inflate(RFC1951) + ZIP + EPUB→純文字（零外部依賴，iOS 12 相容） ----
+  function inflateRaw(src) {
+    var out = new Uint8Array(Math.max(65536, src.length * 4));
+    var outLen = 0;
+    var pos = 0, bitBuf = 0, bitCnt = 0;
+  
+    function ensure(n) {
+      if (outLen + n <= out.length) return;
+      var cap = out.length;
+      while (cap < outLen + n) cap *= 2;
+      var nu = new Uint8Array(cap);
+      nu.set(out.subarray(0, outLen));
+      out = nu;
+    }
+    function bits(n) {
+      while (bitCnt < n) {
+        if (pos >= src.length) throw new Error('壓縮資料不完整');
+        bitBuf |= src[pos++] << bitCnt;
+        bitCnt += 8;
+      }
+      var v = bitBuf & ((1 << n) - 1);
+      bitBuf >>>= n; bitCnt -= n;
+      return v;
+    }
+    function buildHuff(lengths, n) {
+      var count = new Int32Array(16);
+      for (var i = 0; i < n; i++) count[lengths[i]]++;
+      count[0] = 0;
+      var offs = new Int32Array(16);
+      for (var l = 1; l < 16; l++) offs[l] = offs[l - 1] + count[l - 1];
+      var syms = new Int32Array(n);
+      for (var s = 0; s < n; s++) if (lengths[s]) syms[offs[lengths[s]]++] = s;
+      return { count: count, syms: syms };
+    }
+    function decodeSym(h) {
+      var code = 0, first = 0, index = 0;
+      for (var len = 1; len < 16; len++) {
+        code |= bits(1);
+        var cnt = h.count[len];
+        if (code - first < cnt) return h.syms[index + code - first];
+        index += cnt; first = (first + cnt) << 1; code <<= 1;
+      }
+      throw new Error('霍夫曼碼無效');
+    }
+    var LBASE = [3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258];
+    var LEXT  = [0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0];
+    var DBASE = [1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577];
+    var DEXT  = [0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13];
+    var fixedLit = null, fixedDist = null;
+  
+    for (;;) {
+      var bfinal = bits(1), btype = bits(2);
+      if (btype === 0) {
+        bitBuf = 0; bitCnt = 0;
+        if (pos + 4 > src.length) throw new Error('stored 區塊標頭不足');
+        var len = src[pos] | (src[pos + 1] << 8);
+        pos += 4;
+        if (pos + len > src.length) throw new Error('stored 區塊資料不足');
+        ensure(len);
+        out.set(src.subarray(pos, pos + len), outLen);
+        outLen += len; pos += len;
+      } else {
+        var lit, dist;
+        if (btype === 1) {
+          if (!fixedLit) {
+            var fl = new Uint8Array(288);
+            for (var i = 0; i < 288; i++) fl[i] = i < 144 ? 8 : i < 256 ? 9 : i < 280 ? 7 : 8;
+            fixedLit = buildHuff(fl, 288);
+            var fd = new Uint8Array(30);
+            for (var j = 0; j < 30; j++) fd[j] = 5;
+            fixedDist = buildHuff(fd, 30);
+          }
+          lit = fixedLit; dist = fixedDist;
+        } else if (btype === 2) {
+          var hlit = bits(5) + 257, hdist = bits(5) + 1, hclen = bits(4) + 4;
+          var ORDER = [16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15];
+          var clens = new Uint8Array(19);
+          for (var k = 0; k < hclen; k++) clens[ORDER[k]] = bits(3);
+          var clh = buildHuff(clens, 19);
+          var lens = new Uint8Array(hlit + hdist);
+          var li = 0;
+          while (li < hlit + hdist) {
+            var sym = decodeSym(clh);
+            if (sym < 16) lens[li++] = sym;
+            else if (sym === 16) { var prev = lens[li - 1]; var r = 3 + bits(2); while (r--) lens[li++] = prev; }
+            else if (sym === 17) { var r2 = 3 + bits(3); while (r2--) lens[li++] = 0; }
+            else { var r3 = 11 + bits(7); while (r3--) lens[li++] = 0; }
+          }
+          lit = buildHuff(lens.subarray(0, hlit), hlit);
+          dist = buildHuff(lens.subarray(hlit), hdist);
+        } else {
+          throw new Error('無效的壓縮區塊');
+        }
+        for (;;) {
+          var s2 = decodeSym(lit);
+          if (s2 < 256) { ensure(1); out[outLen++] = s2; }
+          else if (s2 === 256) { break; }
+          else {
+            var lidx = s2 - 257;
+            var length = LBASE[lidx] + bits(LEXT[lidx]);
+            var dsym = decodeSym(dist);
+            var distance = DBASE[dsym] + bits(DEXT[dsym]);
+            if (distance > outLen) throw new Error('回溯距離超界');
+            ensure(length);
+            var from = outLen - distance;
+            for (var c = 0; c < length; c++) out[outLen++] = out[from + c];
+          }
+        }
+      }
+      if (bfinal) break;
+    }
+    return out.subarray(0, outLen);
+  }
+  
+  function zipOpen(buf) {
+    var u8 = new Uint8Array(buf);
+    var dv = new DataView(buf);
+    var stop = Math.max(0, u8.length - 65558);
+    var eocd = -1;
+    for (var i = u8.length - 22; i >= stop; i--) {
+      if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+    }
+    if (eocd < 0) throw new Error('不是有效的 ZIP/EPUB 檔');
+    var count = dv.getUint16(eocd + 10, true);
+    var p = dv.getUint32(eocd + 16, true);
+    var td = new TextDecoder('utf-8');
+    var entries = {};
+    for (var e = 0; e < count; e++) {
+      if (dv.getUint32(p, true) !== 0x02014b50) break;
+      var method = dv.getUint16(p + 10, true);
+      var csize = dv.getUint32(p + 20, true);
+      var nlen = dv.getUint16(p + 28, true);
+      var xlen = dv.getUint16(p + 30, true);
+      var clen = dv.getUint16(p + 32, true);
+      var lho = dv.getUint32(p + 42, true);
+      var name = td.decode(u8.subarray(p + 46, p + 46 + nlen));
+      entries[name] = { method: method, csize: csize, off: lho };
+      p += 46 + nlen + xlen + clen;
+    }
+    return { u8: u8, dv: dv, entries: entries };
+  }
+  
+  function zipRead(z, name) {
+    var ent = z.entries[name];
+    if (!ent) return null;
+    var p = ent.off;
+    if (z.dv.getUint32(p, true) !== 0x04034b50) throw new Error('ZIP 區塊損毀');
+    var nlen = z.dv.getUint16(p + 26, true);
+    var xlen = z.dv.getUint16(p + 28, true);
+    var start = p + 30 + nlen + xlen;
+    var data = z.u8.subarray(start, start + ent.csize);
+    if (ent.method === 0) return data;
+    if (ent.method === 8) return inflateRaw(data);
+    throw new Error('不支援的壓縮方式（method ' + ent.method + '）');
+  }
+  
+  function htmlToText(html) {
+    var s = html.replace(/<head[\s\S]*?<\/head>/gi, ' ')
+                .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+                .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+                .replace(/<(br|\/p|\/div|\/h[1-6]|\/li|\/tr|\/section)[^>]*>/gi, '\n')
+                .replace(/<[^>]+>/g, '');
+    s = s.replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+         .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'")
+         .replace(/&#(\d+);/g, function (m, d) { return String.fromCharCode(parseInt(d, 10)); })
+         .replace(/&amp;/g, '&');
+    var lines = s.split('\n');
+    var outl = [];
+    for (var i = 0; i < lines.length; i++) {
+      var t = lines[i].replace(/^[\s\u3000]+|[\s\u3000]+$/g, '');
+      if (t.length) outl.push(t);
+    }
+    return outl.join('\n');
+  }
+  
+  function firstHeading(html) {
+    var m = html.match(/<h[1-3][^>]*>([\s\S]*?)<\/h[1-3]>/i) ||
+            html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+    if (!m) return null;
+    var t = htmlToText(m[1]).replace(/\n/g, ' ').replace(/^\s+|\s+$/g, '');
+    return t.length ? t.slice(0, 40) : null;
+  }
+  
+  function resolvePath(baseDir, rel) {
+    rel = rel.split('#')[0];
+    try { rel = decodeURIComponent(rel); } catch (e) {}
+    var stack = baseDir ? baseDir.split('/') : [];
+    var parts = rel.split('/');
+    for (var i = 0; i < parts.length; i++) {
+      var seg = parts[i];
+      if (seg === '' || seg === '.') continue;
+      if (seg === '..') stack.pop();
+      else stack.push(seg);
+    }
+    return stack.join('/');
+  }
+  
+  function attrOf(tag, name) {
+    var m = tag.match(new RegExp('\\b' + name + '\\s*=\\s*"([^"]*)"', 'i')) ||
+            tag.match(new RegExp("\\b" + name + "\\s*=\\s*'([^']*)'", 'i'));
+    return m ? m[1] : null;
+  }
+  
+  function parseEpub(buf) {
+    var z = zipOpen(buf);
+    var td = new TextDecoder('utf-8');
+    var opfPath = null;
+    if (z.entries['META-INF/container.xml']) {
+      var container = td.decode(zipRead(z, 'META-INF/container.xml'));
+      var cm = container.match(/full-path\s*=\s*"([^"]+)"/i) ||
+               container.match(/full-path\s*=\s*'([^']+)'/i);
+      if (cm) opfPath = cm[1];
+    }
+    if (!opfPath || !z.entries[opfPath]) {
+      for (var k in z.entries) { if (/\.opf$/i.test(k)) { opfPath = k; break; } }
+    }
+    var spineFiles = [];
+    if (opfPath && z.entries[opfPath]) {
+      var opf = td.decode(zipRead(z, opfPath));
+      var dir = opfPath.indexOf('/') >= 0 ? opfPath.slice(0, opfPath.lastIndexOf('/')) : '';
+      var items = {};
+      var itemRe = /<item\b[^>]*>/gi, im;
+      while ((im = itemRe.exec(opf)) !== null) {
+        var id = attrOf(im[0], 'id');
+        var href = attrOf(im[0], 'href');
+        var mt = attrOf(im[0], 'media-type') || '';
+        if (id && href && (mt.indexOf('html') >= 0 || /\.x?html?$/i.test(href))) {
+          items[id] = resolvePath(dir, href);
+        }
+      }
+      var refRe = /<itemref\b[^>]*>/gi, rm;
+      while ((rm = refRe.exec(opf)) !== null) {
+        var idref = attrOf(rm[0], 'idref');
+        if (idref && items[idref] && z.entries[items[idref]]) spineFiles.push(items[idref]);
+      }
+    }
+    if (spineFiles.length === 0) {
+      for (var k2 in z.entries) { if (/\.x?html?$/i.test(k2)) spineFiles.push(k2); }
+      spineFiles.sort();
+    }
+    if (spineFiles.length === 0) throw new Error('EPUB 內找不到章節檔');
+    var textParts = [];
+    var chapters = [];
+    var pos = 0;
+    for (var i2 = 0; i2 < spineFiles.length; i2++) {
+      var html;
+      try { html = td.decode(zipRead(z, spineFiles[i2])); } catch (e) { continue; }
+      var t = htmlToText(html);
+      if (!t || t.replace(/\s/g, '').length === 0) continue;
+      var title = firstHeading(html) || ('第 ' + (chapters.length + 1) + ' 節');
+      var chunk = (t.indexOf(title) === 0 ? t : title + '\n' + t) + '\n';
+      chapters.push({ title: title, start: pos, end: pos + chunk.length });
+      textParts.push(chunk);
+      pos += chunk.length;
+    }
+    if (chapters.length === 0) throw new Error('EPUB 內容是空的');
+    return { text: textParts.join(''), chapters: chapters };
+  }
+
   // ---------------- 匯入與開書 ----------------
   function importFile(file) {
     setStatus('匯入《' + file.name + '》…');
@@ -342,17 +604,36 @@
     hidePanels();
     var reader = new FileReader();
     reader.onload = function () {
-      var fullText = decodeBuffer(reader.result);
+      var buf = reader.result;
+      var nameL = file.name.toLowerCase();
+      var u8 = new Uint8Array(buf);
+      var isZip = u8.length > 4 && u8[0] === 0x50 && u8[1] === 0x4b && u8[2] === 3 && u8[3] === 4;
+      var fullText = '';
+      var chaps = null;
+      try {
+        if (isZip || /\.epub$/.test(nameL)) {
+          var ep = parseEpub(buf);
+          fullText = ep.text;
+          chaps = ep.chapters;
+        } else {
+          fullText = decodeBuffer(buf);
+          if (/\.html?$/.test(nameL)) fullText = htmlToText(fullText);
+        }
+      } catch (err2) {
+        setStatus('解析失敗：' + err2.message);
+        showShelf();
+        return;
+      }
       if (!fullText || fullText.length < 10) { setStatus('檔案是空的或無法解讀'); showShelf(); return; }
-      var name = file.name.replace(/\.txt$/i, '');
+      var name = file.name.replace(/\.(txt|epub|md|html?)$/i, '');
       var id = 'b_' + hashCode(name + '|' + file.size);
       var meta = { id: id, title: name, size: file.size, chars: fullText.length, added: Date.now() };
-      idbPutBook(meta, fullText).then(function () {
+      idbPutBook(meta, fullText, chaps).then(function () {
         setStatus('已存入 iPad 本機書庫');
-        startBook(meta, fullText);
+        startBook(meta, fullText, chaps);
       })['catch'](function (err) {
         setStatus('書庫寫入失敗（' + err.message + '），本次仍可閱讀');
-        startBook(meta, fullText);
+        startBook(meta, fullText, chaps);
       });
     };
     reader.onerror = function () { setStatus('檔案讀取失敗'); showShelf(); };
@@ -362,21 +643,21 @@
   function openBookById(id) {
     setStatus('從本機書庫載入…');
     content.innerHTML = '<p style="opacity:0.55">載入中…</p>';
-    Promise.all([idbListBooks(), idbGetText(id)]).then(function (res) {
-      var metas = res[0], fullText = res[1];
+    Promise.all([idbListBooks(), idbGetBook(id)]).then(function (res) {
+      var metas = res[0], rec = res[1];
       var meta = null;
       for (var i = 0; i < metas.length; i++) if (metas[i].id === id) meta = metas[i];
-      if (!meta || fullText === null) { showShelf(); setStatus('書庫裡找不到這本書'); return; }
-      startBook(meta, fullText);
+      if (!meta || !rec || typeof rec.text !== 'string') { showShelf(); setStatus('書庫裡找不到這本書'); return; }
+      startBook(meta, rec.text, rec.chapters);
     })['catch'](function (err) {
       showShelf(); setStatus('載入失敗：' + err.message);
     });
   }
 
-  function startBook(meta, fullText) {
+  function startBook(meta, fullText, storedChaps) {
     book = meta;
     text = fullText || '';
-    chapters = parseChapters(text);
+    chapters = (storedChaps && storedChaps.length) ? storedChaps : parseChapters(text);
     chIndex = 0;
     var pos = loadProgress();
     var ratio = 0;
@@ -561,9 +842,9 @@
         '<button class="bookdel" data-id="' + m.id + '" data-title="' + escapeHtml(m.title) + '">刪</button>' +
         '</div>');
     }
-    html.push('<h3>匯入 TXT</h3>');
-    html.push('<div class="row"><input type="file" id="filepick" accept=".txt,text/plain"></div>');
-    html.push('<p class="hint">把 txt 放到 iPad 的「檔案」App（iCloud Drive 或我的 iPad）再從這裡選取。支援 UTF-8 / GB 編碼自動偵測。書只存在這台裝置，不會上傳到任何地方。</p>');
+    html.push('<h3>匯入書籍（TXT / EPUB / MD / HTML）</h3>');
+    html.push('<div class="row"><input type="file" id="filepick" accept=".txt,.epub,.md,.html,.htm,text/plain,application/epub+zip,text/html"></div>');
+    html.push('<p class="hint">把書檔放到 iPad 的「檔案」App（iCloud Drive 或我的 iPad）再從這裡選取。支援 TXT（UTF-8 / GB 自動偵測）、EPUB、Markdown、HTML。書只存在這台裝置，不會上傳到任何地方。</p>');
     shelfPanel.innerHTML = html.join('');
 
     var mains = shelfPanel.querySelectorAll('.bookmain');
@@ -747,8 +1028,8 @@
   var last = null;
   try { last = localStorage.getItem(KEY_LAST); } catch (e) {}
   if (last) {
-    idbGetText(last).then(function (t) {
-      if (t !== null) openBookById(last);
+    idbGetBook(last).then(function (rec) {
+      if (rec) openBookById(last);
       else showShelf();
     })['catch'](showShelf);
   } else {
