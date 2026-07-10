@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="看圖">
+<link rel="apple-touch-icon" sizes="180x180" href="photo-icon.png">
+<title>PhotoAI · 看圖</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { height:100%; overflow:hidden; }
+  body { background:#14161c; color:#e8eaed; -webkit-text-size-adjust:100%;
+         font-family:-apple-system,"PingFang TC","Heiti TC",sans-serif; }
+
+  #topbar { position:absolute; top:0; left:0; right:0; height:48px; background:#0f1115;
+            border-bottom:1px solid #262b36; display:-webkit-flex; display:flex;
+            -webkit-align-items:center; align-items:center; padding:0 8px; z-index:20; }
+  #topbar h1 { font-size:16px; font-weight:800; margin-right:10px; }
+  #topbar h1 span { color:#3ddc97; }
+  #crumb { -webkit-flex:1; flex:1; font-size:14px; color:#9aa0ab; white-space:nowrap;
+           overflow:hidden; text-overflow:ellipsis; }
+  button { font-family:inherit; font-size:14px; padding:8px 12px; min-height:40px;
+           background:#1d222c; border:1px solid #333a47; border-radius:8px; color:#e8eaed;
+           margin-left:6px; }
+  button:active { opacity:0.7; }
+  button.accent { background:#0f3d2a; border-color:#3ddc97; color:#3ddc97; }
+
+  #main { position:absolute; top:48px; bottom:0; left:0; right:0; overflow-y:auto;
+          -webkit-overflow-scrolling:touch; padding:12px; }
+
+  /* 相簿清單 */
+  .albumcard { display:-webkit-flex; display:flex; -webkit-align-items:center; align-items:center;
+               background:#191d26; border:1px solid #262b36; border-radius:12px;
+               padding:10px; margin-bottom:10px; }
+  .albumcover { width:72px; height:72px; border-radius:8px; background:#262b36 center/cover no-repeat;
+                margin-right:12px; -webkit-flex:none; flex:none; }
+  .albuminfo { -webkit-flex:1; flex:1; min-width:0; }
+  .albumname { font-size:18px; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .albummeta { font-size:13px; color:#9aa0ab; }
+  .hint { font-size:13px; color:#9aa0ab; line-height:1.7; margin:10px 4px; }
+
+  /* 縮圖牆 */
+  #grid { display:-webkit-flex; display:flex; -webkit-flex-wrap:wrap; flex-wrap:wrap; }
+  .thumb { width:33.33%; padding:2px; }
+  @media (min-width:700px) { .thumb { width:25%; } }
+  .thumb .in { position:relative; padding-top:100%; background:#1d222c center/cover no-repeat;
+               border-radius:4px; }
+  #loadmore { display:block; width:100%; margin:14px 0; }
+
+  #busy { position:absolute; left:0; right:0; bottom:0; top:48px; background:rgba(10,12,16,0.88);
+          z-index:40; display:none; -webkit-align-items:center; align-items:center;
+          -webkit-justify-content:center; justify-content:center; text-align:center;
+          font-size:16px; line-height:2; color:#e8eaed; }
+
+  /* 燈箱 */
+  #lightbox { position:absolute; top:0; left:0; right:0; bottom:0; background:#000;
+              z-index:60; display:none; overflow:hidden; }
+  #stage { position:absolute; top:0; left:0; right:0; bottom:0;
+           display:-webkit-flex; display:flex; -webkit-align-items:center; align-items:center;
+           -webkit-justify-content:center; justify-content:center; }
+  #stage img { max-width:100%; max-height:100%; -webkit-transform-origin:center center; }
+  #lbtop { position:absolute; top:0; left:0; right:0; height:48px; z-index:5;
+           background:rgba(10,12,16,0.75); display:-webkit-flex; display:flex;
+           -webkit-align-items:center; align-items:center; padding:0 8px; }
+  #lbcount { -webkit-flex:1; flex:1; font-size:14px; color:#cfd3da; padding-left:6px; }
+  #lightbox.chromeless #lbtop { display:none; }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Photo<span>AI</span></h1>
+  <div id="crumb">相簿</div>
+  <button id="btnBack" style="display:none">相簿</button>
+  <button id="btnImport" class="accent">匯入照片</button>
+</div>
+
+<div id="main"></div>
+<div id="busy"></div>
+
+<div id="lightbox">
+  <div id="stage"><img id="lbimg" alt=""></div>
+  <div id="lbtop">
+    <button id="lbClose">關閉</button>
+    <div id="lbcount"></div>
+    <button id="lbDel">刪除</button>
+  </div>
+</div>
+
+<input type="file" id="filepick" accept="image/*" multiple style="display:none">
+
+<script>
+(function () {
+  'use strict';
+
+  // 偏好（版本化，只做寫入與讀取，不做任何刪除）
+  var KEY_PREFS = 'photo_ipad_prefs_v1';
+  // 照片庫存本機 IndexedDB：albums / photos 兩個 store
+  var DB_NAME = 'photo_db_v1';
+  var DB_VER  = 1;
+  var THUMB_PX = 320;       // 縮圖長邊
+  var FULL_PX  = 2048;      // 大圖長邊上限（節省空間與記憶體）
+  var PAGE     = 60;        // 縮圖牆每批數量
+
+  var mainEl  = document.getElementById('main');
+  var crumb   = document.getElementById('crumb');
+  var btnBack = document.getElementById('btnBack');
+  var btnImport = document.getElementById('btnImport');
+  var filepick  = document.getElementById('filepick');
+  var busyEl  = document.getElementById('busy');
+  var lightbox = document.getElementById('lightbox');
+  var lbimg   = document.getElementById('lbimg');
+  var lbcount = document.getElementById('lbcount');
+
+  var curAlbum = null;      // {id,name}
+  var photos = [];          // 目前相簿的照片 meta（不含 blob）
+  var shown = 0;            // 已顯示縮圖數
+  var thumbUrls = [];       // 已建立的 object URL（離開相簿時 revoke）
+  var lbIndex = 0;
+  var lbUrl = null;
+
+  // ---------------- IndexedDB ----------------
+  var dbPromise = null;
+  function openDb() {
+    if (dbPromise) return dbPromise;
+    dbPromise = new Promise(function (resolve, reject) {
+      var req = indexedDB.open(DB_NAME, DB_VER);
+      req.onupgradeneeded = function () {
+        var db = req.result;
+        if (!db.objectStoreNames.contains('albums')) db.createObjectStore('albums', { keyPath: 'id' });
+        if (!db.objectStoreNames.contains('photos')) {
+          var ps = db.createObjectStore('photos', { keyPath: 'id' });
+          ps.createIndex('byAlbum', 'albumId', { unique: false });
+        }
+      };
+      req.onsuccess = function () { resolve(req.result); };
+      req.onerror = function () { reject(req.error || new Error('相片庫開啟失敗')); };
+    });
+    return dbPromise;
+  }
+  function tx(stores, mode, fn) {
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var t = db.transaction(stores, mode);
+        var out = fn(t);
+        t.oncomplete = function () { resolve(out); };
+        t.onerror = function () { reject(t.error || new Error('資料庫作業失敗')); };
+      });
+    });
+  }
+  function listAlbums() {
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var out = [];
+        var req = db.transaction('albums', 'readonly').objectStore('albums').openCursor();
+        req.onsuccess = function () {
+          var c = req.result;
+          if (c) { out.push(c.value); c['continue'](); } else resolve(out);
+        };
+        req.onerror = function () { reject(req.error); };
+      });
+    });
+  }
+  function listPhotoMeta(albumId) {
+    // 只取 meta 與縮圖,避免一次把所有大圖載入記憶體
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var out = [];
+        var idx = db.transaction('photos', 'readonly').objectStore('photos').index('byAlbum');
+        var req = idx.openCursor(IDBKeyRange.only(albumId));
+        req.onsuccess = function () {
+          var c = req.result;
+          if (c) {
+            var v = c.value;
+            out.push({ id: v.id, albumId: v.albumId, thumb: v.thumb, added: v.added });
+            c['continue']();
+          } else {
+            out.sort(function (a, b) { return (a.added || 0) - (b.added || 0); });
+            resolve(out);
+          }
+        };
+        req.onerror = function () { reject(req.error); };
+      });
+    });
+  }
+  function getPhotoFull(id) {
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var req = db.transaction('photos', 'readonly').objectStore('photos').get(id);
+        req.onsuccess = function () { resolve(req.result || null); };
+        req.onerror = function () { reject(req.error); };
+      });
+    });
+  }
+
+  // ---------------- 匯入 ----------------
+  function importPhotos(files) {
+    if (!curAlbum) return;
+    var list = [];
+    for (var i = 0; i < files.length; i++) list.push(files[i]);
+    if (list.length === 0) return;
+    var done = 0, fail = 0;
+    showBusy('匯入中… 0 / ' + list.length);
+
+    function next() {
+      if (list.length === 0) {
+        hideBusy();
+        openAlbum(curAlbum); // 重新整理縮圖牆
+        return;
+      }
+      var f = list.shift();
+      processOne(f).then(function () {
+        done++;
+        showBusy('匯入中… ' + done + ' / ' + (done + list.length) + (fail ? '（失敗 ' + fail + '）' : ''));
+        setTimeout(next, 0);
+      })['catch'](function () {
+        fail++;
+        setTimeout(next, 0);
+      });
+    }
+    next();
+  }
+
+  function processOne(file) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        try {
+          var full = scaleToBlobSrc(img, FULL_PX);
+          var thumbP = canvasToBlob(scaleCanvas(img, THUMB_PX), 0.7);
+          var fullP = full ? canvasToBlob(full, 0.85) : Promise.resolve(file);
+          Promise.all([thumbP, fullP]).then(function (r) {
+            URL.revokeObjectURL(url);
+            var id = 'p_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+            return tx(['photos'], 'readwrite', function (t) {
+              t.objectStore('photos').put({
+                id: id, albumId: curAlbum.id, thumb: r[0], full: r[1],
+                w: img.naturalWidth, h: img.naturalHeight, added: Date.now()
+              });
+            }).then(resolve, reject);
+          }, function (e) { URL.revokeObjectURL(url); reject(e); });
+        } catch (e) {
+          URL.revokeObjectURL(url);
+          reject(e);
+        }
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('圖片解碼失敗')); };
+      img.src = url;
+    });
+  }
+
+  function scaleCanvas(img, maxSide) {
+    var w = img.naturalWidth, h = img.naturalHeight;
+    var s = Math.min(1, maxSide / Math.max(w, h));
+    var cw = Math.max(1, Math.round(w * s)), chh = Math.max(1, Math.round(h * s));
+    var c = document.createElement('canvas');
+    c.width = cw; c.height = chh;
+    c.getContext('2d').drawImage(img, 0, 0, cw, chh);
+    return c;
+  }
+  // 原圖不超過上限就直接存原檔（省一次重壓縮）；超過才縮
+  function scaleToBlobSrc(img, maxSide) {
+    if (Math.max(img.naturalWidth, img.naturalHeight) <= maxSide) return null;
+    return scaleCanvas(img, maxSide);
+  }
+  function canvasToBlob(canvas, q) {
+    return new Promise(function (resolve, reject) {
+      if (canvas.toBlob) {
+        canvas.toBlob(function (b) {
+          if (b) resolve(b); else reject(new Error('縮圖產生失敗'));
+        }, 'image/jpeg', q);
+      } else {
+        try {
+          var dataUrl = canvas.toDataURL('image/jpeg', q);
+          var bin = atob(dataUrl.split(',')[1]);
+          var u8 = new Uint8Array(bin.length);
+          for (var i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+          resolve(new Blob([u8], { type: 'image/jpeg' }));
+        } catch (e) { reject(e); }
+      }
+    });
+  }
+
+  // ---------------- 相簿清單 ----------------
+  function showAlbums() {
+    releaseThumbs();
+    curAlbum = null;
+    crumb.textContent = '相簿';
+    btnBack.style.display = 'none';
+    mainEl.innerHTML = '<p class="hint">讀取中…</p>';
+    Promise.all([listAlbums(), openDb()]).then(function (r) {
+      var albums = r[0];
+      albums.sort(function (a, b) { return (b.created || 0) - (a.created || 0); });
+      renderAlbums(albums);
+    })['catch'](function (e) {
+      mainEl.innerHTML = '<p class="hint">相片庫無法使用：' + e.message + '</p>';
+    });
+  }
+
+  function renderAlbums(albums) {
+    var h = [];
+    if (albums.length === 0) {
+      h.push('<p class="hint">還沒有相簿。點右上角「匯入照片」建立第一本，照片會存進這台 iPad 的本機相片庫，離線也能看，不會上傳到任何地方。</p>');
+    }
+    for (var i = 0; i < albums.length; i++) {
+      var a = albums[i];
+      h.push('<div class="albumcard">' +
+        '<div class="albumcover" data-cover="' + a.id + '"></div>' +
+        '<div class="albuminfo" data-open="' + a.id + '" data-name="' + escapeHtml(a.name) + '">' +
+          '<div class="albumname">' + escapeHtml(a.name) + '</div>' +
+          '<div class="albummeta" data-meta="' + a.id + '">…</div>' +
+        '</div>' +
+        '<button data-del="' + a.id + '" data-name="' + escapeHtml(a.name) + '">刪</button>' +
+        '</div>');
+    }
+    h.push('<button id="newAlbum" style="width:100%;margin-top:6px">＋ 新增相簿</button>');
+    mainEl.innerHTML = h.join('');
+
+    // 封面與數量
+    for (var j = 0; j < albums.length; j++) {
+      (function (album) {
+        listPhotoMeta(album.id).then(function (metas) {
+          var metaEl = mainEl.querySelector('[data-meta="' + album.id + '"]');
+          if (metaEl) metaEl.textContent = metas.length + ' 張';
+          if (metas.length) {
+            var coverEl = mainEl.querySelector('[data-cover="' + album.id + '"]');
+            if (coverEl) {
+              var u = URL.createObjectURL(metas[metas.length - 1].thumb);
+              thumbUrls.push(u);
+              coverEl.style.backgroundImage = 'url(' + u + ')';
+            }
+          }
+        });
+      })(albums[j]);
+    }
+
+    var opens = mainEl.querySelectorAll('[data-open]');
+    for (var k = 0; k < opens.length; k++) {
+      opens[k].addEventListener('click', function () {
+        openAlbum({ id: this.getAttribute('data-open'), name: this.getAttribute('data-name') });
+      }, false);
+    }
+    var dels = mainEl.querySelectorAll('[data-del]');
+    for (var d = 0; d < dels.length; d++) {
+      dels[d].addEventListener('click', function () {
+        var id = this.getAttribute('data-del');
+        var name = this.getAttribute('data-name');
+        if (window.confirm('刪除相簿《' + name + '》和裡面所有照片？此動作無法復原。')) {
+          deleteAlbum(id).then(showAlbums);
+        }
+      }, false);
+    }
+    document.getElementById('newAlbum').addEventListener('click', function () {
+      createAlbumFlow(false);
+    }, false);
+  }
+
+  function createAlbumFlow(thenImport) {
+    var name = window.prompt('相簿名稱：', '相簿 ' + new Date().toLocaleDateString());
+    if (!name) return;
+    var a = { id: 'a_' + Date.now(), name: name, created: Date.now() };
+    tx(['albums'], 'readwrite', function (t) { t.objectStore('albums').put(a); })
+      .then(function () {
+        if (thenImport) { curAlbum = a; filepick.click(); openAlbum(a); }
+        else showAlbums();
+      });
+  }
+
+  function deleteAlbum(albumId) {
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var t = db.transaction(['albums', 'photos'], 'readwrite');
+        t.objectStore('albums')['delete'](albumId);
+        var idx = t.objectStore('photos').index('byAlbum');
+        var req = idx.openCursor(IDBKeyRange.only(albumId));
+        req.onsuccess = function () {
+          var c = req.result;
+          if (c) { c['delete'](); c['continue'](); }
+        };
+        t.oncomplete = function () { resolve(); };
+        t.onerror = function () { reject(t.error); };
+      });
+    });
+  }
+
+  // ---------------- 縮圖牆 ----------------
+  function openAlbum(album) {
+    releaseThumbs();
+    curAlbum = album;
+    crumb.textContent = album.name;
+    btnBack.style.display = '';
+    mainEl.innerHTML = '<p class="hint">讀取中…</p>';
+    listPhotoMeta(album.id).then(function (metas) {
+      photos = metas;
+      shown = 0;
+      mainEl.innerHTML = (metas.length === 0
+        ? '<p class="hint">這本相簿還沒有照片。點右上角「匯入照片」，可從「照片圖庫」一次選多張。</p>'
+        : '') + '<div id="grid"></div><button id="loadmore" style="display:none">載入更多</button>';
+      document.getElementById('loadmore').addEventListener('click', renderMore, false);
+      renderMore();
+    });
+  }
+
+  function renderMore() {
+    var grid = document.getElementById('grid');
+    if (!grid) return;
+    var end = Math.min(photos.length, shown + PAGE);
+    var frag = document.createDocumentFragment();
+    for (var i = shown; i < end; i++) {
+      var u = URL.createObjectURL(photos[i].thumb);
+      thumbUrls.push(u);
+      var d = document.createElement('div');
+      d.className = 'thumb';
+      d.innerHTML = '<div class="in" style="background-image:url(' + u + ')"></div>';
+      d.setAttribute('data-i', i);
+      d.addEventListener('click', function () {
+        openLightbox(parseInt(this.getAttribute('data-i'), 10));
+      }, false);
+      frag.appendChild(d);
+    }
+    grid.appendChild(frag);
+    shown = end;
+    var more = document.getElementById('loadmore');
+    if (more) more.style.display = shown < photos.length ? 'block' : 'none';
+  }
+
+  function releaseThumbs() {
+    for (var i = 0; i < thumbUrls.length; i++) URL.revokeObjectURL(thumbUrls[i]);
+    thumbUrls = [];
+  }
+
+  // ---------------- 燈箱（滑動/縮放） ----------------
+  var scale = 1, panX = 0, panY = 0;
+  var pinchD0 = 0, scale0 = 1;
+  var swipeX0 = 0, swipeY0 = 0, panX0 = 0, panY0 = 0, oneFinger = false;
+  var lastTapT = 0;
+
+  function openLightbox(i) {
+    lbIndex = i;
+    lightbox.style.display = 'block';
+    lightbox.className = '';
+    loadLbImage();
+  }
+  function closeLightbox() {
+    lightbox.style.display = 'none';
+    if (lbUrl) { URL.revokeObjectURL(lbUrl); lbUrl = null; }
+    lbimg.removeAttribute('src');
+  }
+  function loadLbImage() {
+    resetTransform();
+    lbcount.textContent = (lbIndex + 1) + ' / ' + photos.length;
+    getPhotoFull(photos[lbIndex].id).then(function (rec) {
+      if (!rec) return;
+      if (lbUrl) URL.revokeObjectURL(lbUrl);
+      lbUrl = URL.createObjectURL(rec.full);
+      lbimg.src = lbUrl;
+    });
+  }
+  function resetTransform() {
+    scale = 1; panX = 0; panY = 0;
+    applyTransform();
+  }
+  function applyTransform() {
+    lbimg.style.webkitTransform = 'translate(' + panX + 'px,' + panY + 'px) scale(' + scale + ')';
+    lbimg.style.transform = 'translate(' + panX + 'px,' + panY + 'px) scale(' + scale + ')';
+  }
+  function lbNext(dir) {
+    var n = lbIndex + dir;
+    if (n < 0 || n >= photos.length) return;
+    lbIndex = n;
+    loadLbImage();
+  }
+
+  lightbox.addEventListener('touchstart', function (e) {
+    if (e.touches.length === 2) {
+      oneFinger = false;
+      pinchD0 = dist(e.touches[0], e.touches[1]);
+      scale0 = scale;
+    } else if (e.touches.length === 1) {
+      oneFinger = true;
+      swipeX0 = e.touches[0].clientX;
+      swipeY0 = e.touches[0].clientY;
+      panX0 = panX; panY0 = panY;
+    }
+  }, false);
+  lightbox.addEventListener('touchmove', function (e) {
+    e.preventDefault();
+    if (e.touches.length === 2) {
+      var d = dist(e.touches[0], e.touches[1]);
+      scale = Math.max(1, Math.min(4, scale0 * (d / Math.max(1, pinchD0))));
+      if (scale === 1) { panX = 0; panY = 0; }
+      applyTransform();
+    } else if (e.touches.length === 1 && scale > 1) {
+      panX = panX0 + (e.touches[0].clientX - swipeX0);
+      panY = panY0 + (e.touches[0].clientY - swipeY0);
+      applyTransform();
+    }
+  }, false);
+  lightbox.addEventListener('touchend', function (e) {
+    if (!oneFinger || scale > 1 || e.touches.length > 0) return;
+    var dx = (e.changedTouches[0] ? e.changedTouches[0].clientX : swipeX0) - swipeX0;
+    var dy = (e.changedTouches[0] ? e.changedTouches[0].clientY : swipeY0) - swipeY0;
+    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+      lbNext(dx < 0 ? 1 : -1);
+      return;
+    }
+    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
+      var now = Date.now();
+      if (now - lastTapT < 320) {           // 雙擊縮放
+        scale = scale > 1 ? 1 : 2.5;
+        if (scale === 1) { panX = 0; panY = 0; }
+        applyTransform();
+        lastTapT = 0;
+      } else {
+        lastTapT = now;
+        setTimeout(function () {            // 單擊切換介面
+          if (lastTapT && Date.now() - lastTapT >= 320) {
+            lightbox.className = lightbox.className ? '' : 'chromeless';
+            lastTapT = 0;
+          }
+        }, 330);
+      }
+    }
+  }, false);
+  function dist(a, b) {
+    var dx = a.clientX - b.clientX, dy = a.clientY - b.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  document.getElementById('lbClose').addEventListener('click', closeLightbox, false);
+  document.getElementById('lbDel').addEventListener('click', function () {
+    if (!photos[lbIndex]) return;
+    if (!window.confirm('刪除這張照片？')) return;
+    var id = photos[lbIndex].id;
+    tx(['photos'], 'readwrite', function (t) { t.objectStore('photos')['delete'](id); })
+      .then(function () {
+        photos.splice(lbIndex, 1);
+        if (photos.length === 0) { closeLightbox(); openAlbum(curAlbum); return; }
+        if (lbIndex >= photos.length) lbIndex = photos.length - 1;
+        loadLbImage();
+        lbcount.textContent = (lbIndex + 1) + ' / ' + photos.length;
+      });
+  }, false);
+
+  // ---------------- 介面 ----------------
+  function showBusy(msg) { busyEl.style.display = '-webkit-flex'; busyEl.style.display = 'flex'; busyEl.textContent = msg; }
+  function hideBusy() { busyEl.style.display = 'none'; }
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  btnBack.addEventListener('click', showAlbums, false);
+  btnImport.addEventListener('click', function () {
+    if (curAlbum) { filepick.click(); return; }
+    createAlbumFlow(true);
+  }, false);
+  filepick.addEventListener('change', function () {
+    if (this.files && this.files.length) importPhotos(this.files);
+    this.value = '';
+  }, false);
+
+  // 離線外殼（與 reader 共用 sw.js）
+  if ('serviceWorker' in navigator) {
+    try { navigator.serviceWorker.register('sw.js')['catch'](function () {}); } catch (e) {}
+  }
+
+  showAlbums();
+})();
+</script>
+</body>
+</html>
