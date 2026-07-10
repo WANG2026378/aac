@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="小說閱讀">
+<title>小說閱讀</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { height:100%; overflow:hidden; }
+  body { font-family:"Songti TC","PingFang TC",serif; -webkit-text-size-adjust:100%;
+         background:#f5efdf; color:#2a2620; }
+
+  /* ---- 主題 ---- */
+  body[data-theme=paper]  { background:#f5efdf; color:#2a2620; }
+  body[data-theme=white]  { background:#ffffff; color:#222222; }
+  body[data-theme=green]  { background:#d9e8d4; color:#23302a; }
+  body[data-theme=night]  { background:#17160f; color:#c8c2b4; }
+  body[data-theme=paper] .bar  { background:#fbf7ea; border-color:#e2dccb; color:#5d5d5d; }
+  body[data-theme=white] .bar  { background:#f7f7f7; border-color:#e3e3e3; color:#666; }
+  body[data-theme=green] .bar  { background:#e5efe0; border-color:#c4d6bd; color:#4a5a4e; }
+  body[data-theme=night] .bar  { background:#211f18; border-color:#3a372f; color:#8a8577; }
+  body[data-theme=paper] button { background:#efe9d8; border-color:#cfc7ae; color:#2a2620; }
+  body[data-theme=white] button { background:#efefef; border-color:#cccccc; color:#222; }
+  body[data-theme=green] button { background:#cfe2c8; border-color:#a9c4a0; color:#23302a; }
+  body[data-theme=night] button { background:#33302a; border-color:#4a463c; color:#c8c2b4; }
+  body[data-theme=paper] .panel { background:#fbf7ea; }
+  body[data-theme=white] .panel { background:#fafafa; }
+  body[data-theme=green] .panel { background:#e5efe0; }
+  body[data-theme=night] .panel { background:#211f18; }
+
+  #topbar { position:absolute; top:0; left:0; right:0; height:50px;
+            border-bottom:1px solid; display:-webkit-flex; display:flex;
+            -webkit-align-items:center; align-items:center; padding:0 8px; z-index:20; }
+  #topbar button { margin-right:6px; min-height:38px; }
+  #booktitle { -webkit-flex:1; flex:1; font-size:16px; white-space:nowrap; overflow:hidden;
+               text-overflow:ellipsis; padding:0 6px; }
+
+  #statusbar { position:absolute; bottom:0; left:0; right:0; height:32px;
+               border-top:1px solid; font-size:13px;
+               display:-webkit-flex; display:flex; -webkit-align-items:center; align-items:center;
+               padding:0 14px; z-index:20; }
+  #clock { margin-right:12px; }
+  #statustext { -webkit-flex:1; flex:1; text-align:right; white-space:nowrap; overflow:hidden; }
+
+  #content { position:absolute; top:50px; bottom:32px; left:0; right:0; overflow-y:auto;
+             -webkit-overflow-scrolling:touch; padding:16px 22px 70px 22px;
+             font-size:22px; line-height:1.9; }
+  #content p { margin:0 0 0.85em 0; text-align:justify; }
+  body.indent #content p { text-indent:2em; }
+  #content h2 { font-size:1.12em; margin:0.4em 0 1em 0; }
+  body.fullscreen #topbar, body.fullscreen #statusbar { display:none; }
+  body.fullscreen #content { top:0; bottom:0; }
+
+  #dim { position:absolute; top:0; left:0; right:0; bottom:0; background:#000;
+         opacity:0; pointer-events:none; z-index:50; }
+
+  button { font-family:inherit; font-size:15px; padding:9px 12px; min-height:42px;
+           border:1px solid; border-radius:8px; }
+  button:active { opacity:0.7; }
+  button.on { border-width:2px; font-weight:bold; }
+  body[data-theme=paper] button.on { background:#d9cfae; }
+  body[data-theme=white] button.on { background:#dcdcdc; }
+  body[data-theme=green] button.on { background:#b5d0aa; }
+  body[data-theme=night] button.on { background:#4a463c; }
+
+  .panel { position:absolute; top:50px; left:0; right:0; bottom:32px;
+           overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px 18px 50px 18px;
+           z-index:30; display:none; }
+  .panel h3 { font-size:15px; opacity:0.65; margin:18px 0 8px 0; letter-spacing:1px; }
+  .panel h3:first-child { margin-top:4px; }
+  .row { margin:8px 0; }
+  .seg { display:-webkit-flex; display:flex; }
+  .seg button { -webkit-flex:1; flex:1; margin-right:8px; }
+  .seg button:last-child { margin-right:0; }
+  .sliderrow { display:-webkit-flex; display:flex; -webkit-align-items:center; align-items:center; }
+  .sliderrow input[type=range] { -webkit-flex:1; flex:1; margin:0 12px; height:36px; }
+  .sliderrow .val { min-width:52px; text-align:right; font-size:15px; }
+  .panel .wide { display:block; width:100%; text-align:left; margin:8px 0; }
+
+  .bookcard { border:1px solid; border-radius:10px; padding:12px; margin:10px 0;
+              display:-webkit-flex; display:flex; -webkit-align-items:center; align-items:center; }
+  body[data-theme=paper] .bookcard { background:#fffdf4; border-color:#dcd4bb; }
+  body[data-theme=white] .bookcard { background:#fff; border-color:#ddd; }
+  body[data-theme=green] .bookcard { background:#eef5ea; border-color:#bed3b5; }
+  body[data-theme=night] .bookcard { background:#26241d; border-color:#4a463c; }
+  .bookmain { -webkit-flex:1; flex:1; min-width:0; }
+  .bookname { font-size:19px; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bookmeta { font-size:13px; opacity:0.65; margin-bottom:7px; }
+  .pbar { height:5px; border-radius:3px; background:rgba(128,128,128,0.25); overflow:hidden; }
+  .pbar span { display:block; height:100%; background:#b08d2f; }
+  body[data-theme=night] .pbar span { background:#8f7326; }
+  .bookdel { margin-left:10px; }
+
+  select, input[type=file] { font-size:16px; padding:8px; max-width:100%; width:100%; }
+  .hint { font-size:13px; opacity:0.6; line-height:1.6; margin:8px 0; }
+</style>
+</head>
+<body data-theme="paper" class="indent">
+
+<div id="topbar" class="bar">
+  <button id="btnShelf">書架</button>
+  <button id="btnPrevCh">◀章</button>
+  <button id="btnNextCh">章▶</button>
+  <button id="btnSettings">Aa</button>
+  <div id="booktitle">小說閱讀</div>
+</div>
+
+<div id="content"><p style="opacity:0.55">載入中…</p></div>
+
+<div id="statusbar" class="bar"><span id="clock"></span><span id="statustext">點畫面上/下翻頁，點中間隱藏工具列</span></div>
+
+<div id="shelfPanel" class="panel"></div>
+<div id="settingsPanel" class="panel"></div>
+<div id="dim"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---- localStorage 鍵（版本化，只做寫入與讀取，不做任何刪除） ----
+  var KEY_SETTINGS = 'reader_settings_v1';
+  var KEY_LAST     = 'reader_lastbook_v1';
+  var POS_PREFIX   = 'reader_pos_v1_';
+
+  // ---- 書庫存在裝置本機 IndexedDB，網站上不放任何書檔 ----
+  var DB_NAME = 'reader_db_v1';
+  var DB_VER  = 1;
+
+  var FONTS = {
+    ming: { label: '明體', css: '"Songti TC","Songti SC",serif' },
+    hei:  { label: '黑體', css: '"PingFang TC","Heiti TC",-apple-system,sans-serif' },
+    kai:  { label: '楷體', css: '"Kaiti TC","Kaiti SC","BiauKai","DFKai-SB","Songti TC",serif' }
+  };
+  var THEMES = [
+    { id: 'paper', label: '米色' },
+    { id: 'white', label: '純白' },
+    { id: 'green', label: '護眼' },
+    { id: 'night', label: '夜間' }
+  ];
+
+  var content   = document.getElementById('content');
+  var bookTitle = document.getElementById('booktitle');
+  var statusTxt = document.getElementById('statustext');
+  var clockEl   = document.getElementById('clock');
+  var dimEl     = document.getElementById('dim');
+  var shelfPanel    = document.getElementById('shelfPanel');
+  var settingsPanel = document.getElementById('settingsPanel');
+
+  var settings = { font: 22, theme: 'paper', fontFam: 'ming', lineH: 1.9,
+                   margin: 1, indent: true, reverse: false, tap: true, dim: 0 };
+  var book = null;
+  var text = '';
+  var chapters = [];
+  var chIndex = 0;
+  var saveTimer = null;
+
+  // ---------------- IndexedDB ----------------
+  var dbPromise = null;
+  function openDb() {
+    if (dbPromise) return dbPromise;
+    dbPromise = new Promise(function (resolve, reject) {
+      if (!window.indexedDB) { reject(new Error('此瀏覽器不支援本機書庫')); return; }
+      var req = indexedDB.open(DB_NAME, DB_VER);
+      req.onupgradeneeded = function () {
+        var db = req.result;
+        if (!db.objectStoreNames.contains('meta'))  db.createObjectStore('meta',  { keyPath: 'id' });
+        if (!db.objectStoreNames.contains('texts')) db.createObjectStore('texts', { keyPath: 'id' });
+      };
+      req.onsuccess = function () { resolve(req.result); };
+      req.onerror = function () { reject(req.error || new Error('書庫開啟失敗')); };
+    });
+    return dbPromise;
+  }
+  function idbPutBook(meta, fullText) {
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(['meta', 'texts'], 'readwrite');
+        tx.objectStore('meta').put(meta);
+        tx.objectStore('texts').put({ id: meta.id, text: fullText });
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function () { reject(tx.error || new Error('寫入失敗')); };
+      });
+    });
+  }
+  function idbListBooks() {
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var out = [];
+        var tx = db.transaction('meta', 'readonly');
+        var req = tx.objectStore('meta').openCursor();
+        req.onsuccess = function () {
+          var cur = req.result;
+          if (cur) { out.push(cur.value); cur['continue'](); }
+          else resolve(out);
+        };
+        req.onerror = function () { reject(req.error || new Error('讀取書單失敗')); };
+      });
+    });
+  }
+  function idbGetText(id) {
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var req = db.transaction('texts', 'readonly').objectStore('texts').get(id);
+        req.onsuccess = function () { resolve(req.result ? req.result.text : null); };
+        req.onerror = function () { reject(req.error || new Error('讀取書失敗')); };
+      });
+    });
+  }
+  function idbDeleteBook(id) {
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(['meta', 'texts'], 'readwrite');
+        tx.objectStore('meta')['delete'](id);
+        tx.objectStore('texts')['delete'](id);
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function () { reject(tx.error || new Error('刪除失敗')); };
+      });
+    });
+  }
+
+  // ---------------- 設定 ----------------
+  function loadSettings() {
+    try {
+      var raw = localStorage.getItem(KEY_SETTINGS);
+      if (raw) {
+        var s = JSON.parse(raw);
+        if (typeof s.font === 'number')     settings.font = s.font;
+        if (typeof s.reverse === 'boolean') settings.reverse = s.reverse;
+        if (typeof s.tap === 'boolean')     settings.tap = s.tap;
+        if (typeof s.lineH === 'number')    settings.lineH = s.lineH;
+        if (typeof s.margin === 'number')   settings.margin = s.margin;
+        if (typeof s.indent === 'boolean')  settings.indent = s.indent;
+        if (typeof s.dim === 'number')      settings.dim = s.dim;
+        if (FONTS[s.fontFam])               settings.fontFam = s.fontFam;
+        if (s.theme)                        settings.theme = s.theme;
+        else if (s.night === true)          settings.theme = 'night'; // 舊版設定沿用
+      }
+    } catch (e) {}
+    applySettings();
+  }
+  function saveSettings() {
+    try { localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings)); } catch (e) {}
+  }
+  var MARGINS = [12, 22, 40];
+  function applySettings() {
+    content.style.fontSize   = settings.font + 'px';
+    content.style.lineHeight = settings.lineH;
+    content.style.fontFamily = FONTS[settings.fontFam].css;
+    var m = MARGINS[settings.margin] || 22;
+    content.style.paddingLeft  = m + 'px';
+    content.style.paddingRight = m + 'px';
+    document.body.setAttribute('data-theme', settings.theme);
+    if (settings.indent) document.body.classList.add('indent');
+    else document.body.classList.remove('indent');
+    dimEl.style.opacity = settings.dim;
+  }
+
+  // ---------------- 章節解析 ----------------
+  var CH_RE = /^\s*(第\s*[0-9零〇一二三四五六七八九十百千萬万兩两]+\s*[章卷回節节集部][^\n]{0,40}|序章[^\n]{0,30}|序言[^\n]{0,30}|楔子[^\n]{0,30}|番外[^\n]{0,40}|終章[^\n]{0,30}|尾聲[^\n]{0,30})\s*$/;
+
+  function parseChapters(str) {
+    var list = [];
+    var lineStart = 0;
+    var len = str.length;
+    while (lineStart < len) {
+      var nl = str.indexOf('\n', lineStart);
+      if (nl === -1) nl = len;
+      if (nl - lineStart < 60) {
+        var line = str.slice(lineStart, nl);
+        if (CH_RE.test(line)) {
+          list.push({ title: line.replace(/^\s+|\s+$/g, ''), start: lineStart });
+        }
+      }
+      lineStart = nl + 1;
+    }
+    if (list.length < 2) {
+      list = [];
+      var n = Math.max(1, Math.ceil(len / 8000));
+      for (var i = 0; i < n; i++) {
+        list.push({ title: '第 ' + (i + 1) + ' 段', start: i * 8000 });
+      }
+    }
+    for (var j = 0; j < list.length; j++) {
+      list[j].end = (j + 1 < list.length) ? list[j + 1].start : len;
+    }
+    if (list.length > 0 && list[0].start > 200) {
+      list.unshift({ title: '（開頭）', start: 0, end: list[0].start });
+    }
+    return list;
+  }
+
+  // ---------------- 編碼偵測 ----------------
+  function decodeBuffer(buf) {
+    var s = '';
+    try {
+      s = new TextDecoder('utf-8').decode(buf);
+      var bad = (s.slice(0, 60000).match(/\uFFFD/g) || []).length;
+      if (bad > 30) {
+        try { s = new TextDecoder('gb18030').decode(buf); } catch (e1) {
+          try { s = new TextDecoder('gbk').decode(buf); } catch (e2) {}
+        }
+      }
+    } catch (e) {
+      try { s = new TextDecoder('gb18030').decode(buf); } catch (e3) {}
+    }
+    return s;
+  }
+
+  // ---------------- 進度 ----------------
+  function posKey() { return POS_PREFIX + book.id; }
+  function scrollRatio() {
+    var el = content;
+    return el.scrollHeight > el.clientHeight
+      ? el.scrollTop / (el.scrollHeight - el.clientHeight) : 0;
+  }
+  function saveProgress() {
+    if (!book || chapters.length === 0) return;
+    try {
+      localStorage.setItem(posKey(), JSON.stringify({ ch: chIndex, ratio: scrollRatio() }));
+      localStorage.setItem(KEY_LAST, book.id);
+    } catch (e) {}
+  }
+  function scheduleSave() {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () { saveProgress(); updateStatus(); }, 500);
+  }
+  function loadProgress() {
+    try {
+      var raw = localStorage.getItem(posKey());
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return null;
+  }
+
+  // ---------------- 匯入與開書 ----------------
+  function importFile(file) {
+    setStatus('匯入《' + file.name + '》…');
+    content.innerHTML = '<p style="opacity:0.55">匯入中，大檔要幾秒鐘…</p>';
+    hidePanels();
+    var reader = new FileReader();
+    reader.onload = function () {
+      var fullText = decodeBuffer(reader.result);
+      if (!fullText || fullText.length < 10) { setStatus('檔案是空的或無法解讀'); showShelf(); return; }
+      var name = file.name.replace(/\.txt$/i, '');
+      var id = 'b_' + hashCode(name + '|' + file.size);
+      var meta = { id: id, title: name, size: file.size, chars: fullText.length, added: Date.now() };
+      idbPutBook(meta, fullText).then(function () {
+        setStatus('已存入 iPad 本機書庫');
+        startBook(meta, fullText);
+      })['catch'](function (err) {
+        setStatus('書庫寫入失敗（' + err.message + '），本次仍可閱讀');
+        startBook(meta, fullText);
+      });
+    };
+    reader.onerror = function () { setStatus('檔案讀取失敗'); showShelf(); };
+    reader.readAsArrayBuffer(file);
+  }
+
+  function openBookById(id) {
+    setStatus('從本機書庫載入…');
+    content.innerHTML = '<p style="opacity:0.55">載入中…</p>';
+    Promise.all([idbListBooks(), idbGetText(id)]).then(function (res) {
+      var metas = res[0], fullText = res[1];
+      var meta = null;
+      for (var i = 0; i < metas.length; i++) if (metas[i].id === id) meta = metas[i];
+      if (!meta || fullText === null) { showShelf(); setStatus('書庫裡找不到這本書'); return; }
+      startBook(meta, fullText);
+    })['catch'](function (err) {
+      showShelf(); setStatus('載入失敗：' + err.message);
+    });
+  }
+
+  function startBook(meta, fullText) {
+    book = meta;
+    text = fullText || '';
+    chapters = parseChapters(text);
+    chIndex = 0;
+    var pos = loadProgress();
+    var ratio = 0;
+    if (pos && typeof pos.ch === 'number') {
+      chIndex = Math.max(0, Math.min(chapters.length - 1, pos.ch));
+      ratio = pos.ratio || 0;
+    }
+    bookTitle.textContent = meta.title;
+    hidePanels();
+    renderChapter(ratio);
+    setStatus(pos ? '接續上次進度' : '共 ' + chapters.length + ' 章');
+  }
+
+  function hashCode(s) {
+    var h = 0;
+    for (var i = 0; i < s.length; i++) {
+      h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+    }
+    return (h >>> 0).toString(16);
+  }
+
+  function renderChapter(ratio) {
+    if (chapters.length === 0) return;
+    chIndex = Math.max(0, Math.min(chapters.length - 1, chIndex));
+    var ch = chapters[chIndex];
+    var body = text.slice(ch.start, ch.end);
+    var lines = body.split('\n');
+    var html = ['<h2>' + escapeHtml(ch.title) + '</h2>'];
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].replace(/^\s+|\s+$/g, '');
+      if (line.length === 0) continue;
+      if (i === 0 && line === ch.title) continue;
+      html.push('<p>' + escapeHtml(line) + '</p>');
+    }
+    content.innerHTML = html.join('');
+    var target = 0;
+    if (ratio && ratio > 0) {
+      target = Math.round((content.scrollHeight - content.clientHeight) * ratio);
+    }
+    content.scrollTop = target;
+    updateStatus();
+    scheduleSave();
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  // 全書進度：以字元位置估計
+  function bookPercent() {
+    if (!book || chapters.length === 0 || text.length === 0) return 0;
+    var ch = chapters[chIndex];
+    var posChars = ch.start + scrollRatio() * (ch.end - ch.start);
+    return Math.min(100, Math.max(0, (posChars / text.length) * 100));
+  }
+
+  function updateStatus() {
+    if (!book || chapters.length === 0) return;
+    setStatus('第 ' + (chIndex + 1) + '/' + chapters.length + ' 章・全書 ' + bookPercent().toFixed(1) + '%');
+  }
+  function setStatus(s) { statusTxt.textContent = s; }
+
+  function tickClock() {
+    var d = new Date();
+    var h = d.getHours(), m = d.getMinutes();
+    clockEl.textContent = (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m);
+  }
+  tickClock();
+  setInterval(tickClock, 30000);
+
+  // ---------------- 翻頁 ----------------
+  function pageForward() {
+    var el = content;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 4) {
+      if (chIndex < chapters.length - 1) { chIndex++; renderChapter(0); }
+      else setStatus('已經是最後一章');
+    } else {
+      el.scrollTop = Math.min(el.scrollHeight, el.scrollTop + el.clientHeight * 0.92);
+      scheduleSave();
+    }
+  }
+  function pageBackward() {
+    var el = content;
+    if (el.scrollTop <= 4) {
+      if (chIndex > 0) {
+        chIndex--; renderChapter(0);
+        el.scrollTop = Math.max(0, el.scrollHeight - el.clientHeight);
+        scheduleSave();
+      } else setStatus('已經是第一章');
+    } else {
+      el.scrollTop = Math.max(0, el.scrollTop - el.clientHeight * 0.92);
+      scheduleSave();
+    }
+  }
+  function userNext()     { if (settings.reverse) pageBackward(); else pageForward(); }
+  function userPrevious() { if (settings.reverse) pageForward();  else pageBackward(); }
+
+  function jumpChapter(delta) {
+    if (!book) return;
+    chIndex = Math.max(0, Math.min(chapters.length - 1, chIndex + delta));
+    renderChapter(0);
+  }
+
+  // ---------------- 點按分區 ----------------
+  var touchY = 0, touchX = 0, touchT = 0, moved = false;
+  content.addEventListener('touchstart', function (e) {
+    if (e.touches.length !== 1) { moved = true; return; }
+    touchY = e.touches[0].clientY; touchX = e.touches[0].clientX;
+    touchT = Date.now(); moved = false;
+  }, false);
+  content.addEventListener('touchmove', function (e) {
+    if (e.touches.length !== 1) { moved = true; return; }
+    if (Math.abs(e.touches[0].clientY - touchY) > 10 ||
+        Math.abs(e.touches[0].clientX - touchX) > 10) moved = true;
+  }, false);
+  content.addEventListener('touchend', function (e) {
+    if (!settings.tap || moved || Date.now() - touchT > 500) return;
+    handleTap(touchY);
+    e.preventDefault();
+  }, false);
+  content.addEventListener('click', function (e) {
+    if (!settings.tap) return;
+    if ('ontouchstart' in window) return;
+    handleTap(e.clientY);
+  }, false);
+
+  function handleTap(clientY) {
+    if (!book) return;
+    var rect = content.getBoundingClientRect();
+    var y = clientY - rect.top;
+    var h = rect.height;
+    if (y < h * 0.35)      userPrevious();
+    else if (y > h * 0.65) userNext();
+    else document.body.classList.toggle('fullscreen');
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (!book) return;
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ') { userNext(); e.preventDefault(); }
+    else if (k === 'ArrowLeft' || k === 'PageUp')            { userPrevious(); e.preventDefault(); }
+  }, false);
+
+  // ---------------- 書架 ----------------
+  function showShelf() {
+    hidePanels();
+    shelfPanel.innerHTML = '<h3>書架（存在這台 iPad 裡）</h3><p class="hint">讀取中…</p>';
+    shelfPanel.style.display = 'block';
+    idbListBooks().then(function (metas) {
+      metas.sort(function (a, b) { return (b.added || 0) - (a.added || 0); });
+      renderShelf(metas);
+    })['catch'](function (err) {
+      renderShelf([]);
+      setStatus('書庫無法使用：' + err.message);
+    });
+  }
+
+  function renderShelf(metas) {
+    var html = ['<h3>書架（存在這台 iPad 裡）</h3>'];
+    if (metas.length === 0) {
+      html.push('<p class="hint">還沒有書。用下面的「匯入」選 txt 檔，匯入一次之後書就存在裝置裡，之後打開直接看，不需要網路。</p>');
+    }
+    for (var i = 0; i < metas.length; i++) {
+      var m = metas[i];
+      var pos = null;
+      try { var raw = localStorage.getItem(POS_PREFIX + m.id); if (raw) pos = JSON.parse(raw); } catch (e) {}
+      var pct = 0;
+      var metaLine = '尚未開始';
+      if (pos) {
+        // 沒有全文時以章節序估進度
+        pct = Math.round(((pos.ch + (pos.ratio || 0)) / Math.max(1, (m.chapCount || 0) || 1)) * 100);
+        if (!m.chapCount) pct = 0;
+        metaLine = '上次讀到第 ' + (pos.ch + 1) + ' 章';
+      }
+      html.push('<div class="bookcard">' +
+        '<div class="bookmain" data-id="' + m.id + '">' +
+          '<div class="bookname">' + escapeHtml(m.title) + '</div>' +
+          '<div class="bookmeta">' + metaLine +
+            (m.chars ? '・全書約 ' + Math.round(m.chars / 10000) + ' 萬字' : '') + '</div>' +
+          '<div class="pbar"><span style="width:' + pct + '%"></span></div>' +
+        '</div>' +
+        '<button class="bookdel" data-id="' + m.id + '" data-title="' + escapeHtml(m.title) + '">刪</button>' +
+        '</div>');
+    }
+    html.push('<h3>匯入 TXT</h3>');
+    html.push('<div class="row"><input type="file" id="filepick" accept=".txt,text/plain"></div>');
+    html.push('<p class="hint">把 txt 放到 iPad 的「檔案」App（iCloud Drive 或我的 iPad）再從這裡選取。支援 UTF-8 / GB 編碼自動偵測。書只存在這台裝置，不會上傳到任何地方。</p>');
+    shelfPanel.innerHTML = html.join('');
+
+    var mains = shelfPanel.querySelectorAll('.bookmain');
+    for (var j = 0; j < mains.length; j++) {
+      mains[j].addEventListener('click', function () {
+        openBookById(this.getAttribute('data-id'));
+      }, false);
+    }
+    var dels = shelfPanel.querySelectorAll('.bookdel');
+    for (var k = 0; k < dels.length; k++) {
+      dels[k].addEventListener('click', function () {
+        var id = this.getAttribute('data-id');
+        var title = this.getAttribute('data-title');
+        if (window.confirm('確定要從書架刪除《' + title + '》？\n（只刪書檔，閱讀進度紀錄會保留）')) {
+          idbDeleteBook(id).then(showShelf)['catch'](function (err) {
+            setStatus('刪除失敗：' + err.message);
+          });
+        }
+      }, false);
+    }
+    document.getElementById('filepick').addEventListener('change', function () {
+      if (this.files && this.files[0]) importFile(this.files[0]);
+    }, false);
+  }
+
+  // ---------------- 設定面板 ----------------
+  function showSettings() {
+    hidePanels();
+    var h = [];
+
+    h.push('<h3>主題</h3><div class="seg" id="segTheme">');
+    for (var t = 0; t < THEMES.length; t++) {
+      h.push('<button data-v="' + THEMES[t].id + '"' +
+        (settings.theme === THEMES[t].id ? ' class="on"' : '') + '>' + THEMES[t].label + '</button>');
+    }
+    h.push('</div>');
+
+    h.push('<h3>字體</h3><div class="seg" id="segFont">');
+    for (var f in FONTS) {
+      h.push('<button data-v="' + f + '" style="font-family:' + FONTS[f].css.replace(/"/g, '&quot;') + '"' +
+        (settings.fontFam === f ? ' class="on"' : '') + '>' + FONTS[f].label + '</button>');
+    }
+    h.push('</div>');
+
+    h.push('<h3>字級</h3>');
+    h.push('<div class="sliderrow"><button id="fMinus">A−</button>' +
+      '<input type="range" id="fontRange" min="16" max="48" step="1" value="' + settings.font + '">' +
+      '<button id="fPlus">A＋</button><span class="val" id="fVal">' + settings.font + 'px</span></div>');
+
+    h.push('<h3>行距</h3>');
+    h.push('<div class="sliderrow"><input type="range" id="lineRange" min="1.5" max="2.5" step="0.1" value="' +
+      settings.lineH + '"><span class="val" id="lVal">' + settings.lineH.toFixed(1) + '</span></div>');
+
+    h.push('<h3>邊距</h3><div class="seg" id="segMargin">');
+    var mLabels = ['窄', '中', '寬'];
+    for (var mi = 0; mi < 3; mi++) {
+      h.push('<button data-v="' + mi + '"' + (settings.margin === mi ? ' class="on"' : '') + '>' + mLabels[mi] + '</button>');
+    }
+    h.push('</div>');
+
+    h.push('<h3>螢幕調暗（夜讀省眼）</h3>');
+    h.push('<div class="sliderrow"><input type="range" id="dimRange" min="0" max="0.6" step="0.05" value="' +
+      settings.dim + '"><span class="val" id="dVal">' + Math.round(settings.dim * 100) + '%</span></div>');
+
+    h.push('<h3>翻頁</h3>');
+    h.push('<button class="wide" id="tIndent">段首縮排：' + onOff(settings.indent) + '</button>');
+    h.push('<button class="wide" id="tReverse">反向翻頁（右翻書）：' + onOff(settings.reverse) + '</button>');
+    h.push('<button class="wide" id="tTap">點按畫面翻頁：' + onOff(settings.tap) + '</button>');
+
+    if (book && chapters.length > 1) {
+      h.push('<h3>跳章節</h3><div class="row"><select id="chSel"></select></div>');
+    }
+    h.push('<button class="wide" id="closeSet">關閉設定</button>');
+
+    settingsPanel.innerHTML = h.join('');
+    settingsPanel.style.display = 'block';
+
+    bindSeg('segTheme', function (v) { settings.theme = v; });
+    bindSeg('segFont',  function (v) { settings.fontFam = v; });
+    bindSeg('segMargin',function (v) { settings.margin = parseInt(v, 10) || 0; });
+
+    bindRange('fontRange', function (v) {
+      settings.font = Math.round(v);
+      document.getElementById('fVal').textContent = settings.font + 'px';
+    });
+    bindRange('lineRange', function (v) {
+      settings.lineH = Math.round(v * 10) / 10;
+      document.getElementById('lVal').textContent = settings.lineH.toFixed(1);
+    });
+    bindRange('dimRange', function (v) {
+      settings.dim = v;
+      document.getElementById('dVal').textContent = Math.round(v * 100) + '%';
+    });
+
+    document.getElementById('fMinus').addEventListener('click', function () { bumpFont(-2); }, false);
+    document.getElementById('fPlus').addEventListener('click', function () { bumpFont(2); }, false);
+    bindToggle('tIndent',  'indent',  '段首縮排：');
+    bindToggle('tReverse', 'reverse', '反向翻頁（右翻書）：');
+    bindToggle('tTap',     'tap',     '點按畫面翻頁：');
+    document.getElementById('closeSet').addEventListener('click', hidePanels, false);
+
+    var sel = document.getElementById('chSel');
+    if (sel) {
+      var frag = document.createDocumentFragment();
+      for (var i = 0; i < chapters.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = (i + 1) + '. ' + chapters[i].title.slice(0, 24);
+        frag.appendChild(opt);
+      }
+      sel.appendChild(frag);
+      sel.value = chIndex;
+      sel.addEventListener('change', function () {
+        chIndex = parseInt(this.value, 10) || 0;
+        hidePanels(); renderChapter(0);
+      }, false);
+    }
+  }
+
+  function bindSeg(id, apply) {
+    var seg = document.getElementById(id);
+    if (!seg) return;
+    var btns = seg.querySelectorAll('button');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].addEventListener('click', function () {
+        apply(this.getAttribute('data-v'));
+        saveSettings(); applySettings();
+        var all = this.parentNode.querySelectorAll('button');
+        for (var j = 0; j < all.length; j++) all[j].className = '';
+        this.className = 'on';
+      }, false);
+    }
+  }
+  function bindRange(id, apply) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', function () {
+      apply(parseFloat(this.value));
+      saveSettings(); applySettings();
+    }, false);
+  }
+  function bindToggle(id, key, label) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('click', function () {
+      settings[key] = !settings[key];
+      saveSettings(); applySettings();
+      this.textContent = label + onOff(settings[key]);
+    }, false);
+  }
+  function bumpFont(delta) {
+    settings.font = Math.max(16, Math.min(48, settings.font + delta));
+    saveSettings(); applySettings();
+    var r = document.getElementById('fontRange');
+    if (r) r.value = settings.font;
+    var v = document.getElementById('fVal');
+    if (v) v.textContent = settings.font + 'px';
+  }
+  function onOff(b) { return b ? '開' : '關'; }
+
+  function hidePanels() {
+    shelfPanel.style.display = 'none';
+    settingsPanel.style.display = 'none';
+  }
+
+  // ---------------- 工具列 ----------------
+  document.getElementById('btnShelf').addEventListener('click', function () {
+    if (shelfPanel.style.display === 'block') hidePanels(); else showShelf();
+  }, false);
+  document.getElementById('btnSettings').addEventListener('click', function () {
+    if (settingsPanel.style.display === 'block') hidePanels(); else showSettings();
+  }, false);
+  document.getElementById('btnPrevCh').addEventListener('click', function () { jumpChapter(-1); }, false);
+  document.getElementById('btnNextCh').addEventListener('click', function () { jumpChapter(1); }, false);
+
+  window.addEventListener('pagehide', saveProgress, false);
+  content.addEventListener('scroll', scheduleSave, false);
+
+  // ---------------- 啟動 ----------------
+  loadSettings();
+  var last = null;
+  try { last = localStorage.getItem(KEY_LAST); } catch (e) {}
+  if (last) {
+    idbGetText(last).then(function (t) {
+      if (t !== null) openBookById(last);
+      else showShelf();
+    })['catch'](showShelf);
+  } else {
+    showShelf();
+  }
+
+  // ---------------- 離線外殼（Service Worker） ----------------
+  if ('serviceWorker' in navigator) {
+    try {
+      navigator.serviceWorker.register('sw.js')['catch'](function () {});
+    } catch (e) {}
+  }
+})();
+</script>
+</body>
+</html>
