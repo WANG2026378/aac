@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三國識字大戰 — 國小一至四年級國字學習</title>
+<style>
+:root{
+  --ink:#2b1d0e; --paper:#f3e6c8; --paper2:#e8d5a8; --gold:#c9a227; --gold2:#e8c96a;
+  --red:#8e2f24; --wei:#2f5b8e; --shu:#2f7d4f; --wu:#a33b2e; --qun:#6b5b95;
+  --dark:#1a120a; --panel:#faf3e0;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;}
+body{
+  font-family:"Noto Serif TC","BiauKai","DFKai-SB","Kaiti TC","Microsoft JhengHei",serif;
+  background:radial-gradient(ellipse at 50% 30%, #3a2a16 0%, #1a120a 75%);
+  color:var(--ink); overflow:hidden; user-select:none;
+}
+.screen{display:none; position:absolute; inset:0; overflow:hidden;}
+.screen.on{display:flex; flex-direction:column;}
+
+/* ===== 標題畫面 ===== */
+#scr-title{align-items:center; justify-content:center; text-align:center;
+  background:radial-gradient(ellipse at 50% 25%, #4a3418 0%, #16100a 80%);}
+#scr-title h1{
+  font-size:clamp(44px,8vw,88px); margin:8px 0; letter-spacing:12px; color:var(--gold2);
+  text-shadow:0 0 24px rgba(232,201,106,.35), 0 3px 0 #6b4d12;
+}
+#scr-title .sub{color:#d8c69a; font-size:clamp(15px,2.2vw,22px); letter-spacing:6px; margin-bottom:26px;}
+.force-row{display:flex; gap:26px; justify-content:center; flex-wrap:wrap; margin-top:10px;}
+.force-card{
+  width:180px; padding:18px 12px 14px; border-radius:14px; cursor:pointer;
+  background:linear-gradient(180deg,#f7ecd2,#e6d3a6); border:3px solid #7a5c22;
+  box-shadow:0 8px 22px rgba(0,0,0,.5); transition:transform .15s;
+}
+.force-card:hover{transform:translateY(-6px) scale(1.03);}
+.force-card .fc-flag{font-size:52px; font-weight:900; line-height:1.1;}
+.force-card .fc-name{font-size:19px; margin-top:6px; font-weight:700;}
+.force-card .fc-desc{font-size:12.5px; color:#5a4a28; margin-top:6px; line-height:1.5;}
+.f-wei .fc-flag{color:var(--wei);} .f-shu .fc-flag{color:var(--shu);} .f-wu .fc-flag{color:var(--wu);}
+.title-links{margin-top:30px; display:flex; gap:14px; justify-content:center;}
+.title-note{margin-top:22px; color:#9a8a66; font-size:12.5px; line-height:1.7;}
+
+/* ===== 共用按鈕 ===== */
+.btn{
+  display:inline-block; padding:9px 20px; border-radius:9px; cursor:pointer; border:2px solid #6d5017;
+  background:linear-gradient(180deg,#e8c96a,#c9a227); color:#3a2a08; font-weight:700;
+  font-family:inherit; font-size:15px; letter-spacing:2px; box-shadow:0 3px 8px rgba(0,0,0,.4);
+}
+.btn:hover{filter:brightness(1.08);}
+.btn.ghost{background:linear-gradient(180deg,#efe3c2,#dcc890); }
+.btn.red{background:linear-gradient(180deg,#c05a4a,#8e2f24); color:#ffe9d8; border-color:#5c1d15;}
+.btn:disabled{opacity:.45; cursor:not-allowed;}
+
+/* ===== 地圖畫面 ===== */
+#scr-map{background:#20180e;}
+.topbar{
+  display:flex; align-items:center; gap:14px; padding:8px 16px; flex-wrap:wrap;
+  background:linear-gradient(180deg,#3d2c14,#2a1e0d); border-bottom:2px solid #6d5017; color:#f0e2bb;
+}
+.topbar .tb-title{font-size:20px; font-weight:900; letter-spacing:3px; color:var(--gold2);}
+.topbar .tb-stat{font-size:14.5px; background:#00000038; padding:4px 12px; border-radius:8px;}
+.topbar .spacer{flex:1;}
+#map-wrap{flex:1; position:relative; overflow:hidden;}
+#map-svg{width:100%; height:100%; display:block;}
+.city-node{cursor:pointer;}
+.city-node:hover .city-ring{stroke-width:4;}
+#map-hint{
+  position:absolute; left:50%; bottom:12px; transform:translateX(-50%);
+  background:#000000a8; color:#f5e8c4; padding:7px 18px; border-radius:20px; font-size:14px; letter-spacing:1px;
+  pointer-events:none; white-space:nowrap;
+}
+
+/* ===== 戰鬥畫面 ===== */
+#scr-battle{background:radial-gradient(ellipse at 50% 20%, #4a2c18 0%, #170f08 80%); color:#f2e6c8;}
+.battle-head{text-align:center; padding:10px 0 2px; font-size:21px; letter-spacing:4px; color:var(--gold2); font-weight:900;}
+.battle-sub{text-align:center; font-size:13px; color:#c8b488; margin-bottom:4px;}
+.battle-arena{display:flex; align-items:stretch; justify-content:center; gap:2vw; padding:6px 12px;}
+.fighter{width:min(240px,26vw); text-align:center;}
+.fighter .pbox{border-radius:12px; overflow:hidden; border:3px solid #7a5c22; box-shadow:0 6px 18px rgba(0,0,0,.55); background:#111;}
+.fighter .pbox svg{display:block; width:100%; height:auto;}
+.fighter .fname{font-size:18px; font-weight:900; margin-top:6px; letter-spacing:2px;}
+.fighter .ftitle{font-size:12px; color:#cdb98c;}
+.hpbar{height:14px; background:#00000070; border-radius:8px; margin-top:6px; border:1px solid #00000090; overflow:hidden;}
+.hpbar i{display:block; height:100%; background:linear-gradient(90deg,#4caf50,#8bc34a); border-radius:8px; transition:width .4s;}
+.hpbar.enemy i{background:linear-gradient(90deg,#d84335,#f0704f);}
+.hp-num{font-size:12px; margin-top:3px; color:#e8d9ad;}
+.vs-mid{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-width:120px;}
+.vs-mark{font-size:40px; font-weight:900; color:#e8c96a; text-shadow:0 0 16px #c9a22766;}
+#combo-tag{font-size:14px; color:#ffd76e; min-height:20px; font-weight:700;}
+#battle-log{font-size:13.5px; color:#f0dfae; min-height:22px; text-align:center; padding:0 10px;}
+.q-panel{
+  margin:6px auto 0; width:min(860px,94vw); background:linear-gradient(180deg,#f7ecd2,#eadbb2);
+  border:3px solid #7a5c22; border-radius:16px; padding:14px 18px 16px; color:var(--ink);
+  box-shadow:0 10px 30px rgba(0,0,0,.6);
+}
+.q-type{font-size:13px; color:#8a6a1e; font-weight:700; letter-spacing:2px;}
+.q-text{font-size:clamp(20px,3vw,30px); font-weight:900; margin:6px 0 12px; line-height:1.45;}
+.q-text .bigchar{font-size:1.6em; color:var(--red); padding:0 4px;}
+.opt-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.opt{
+  padding:12px 10px; border-radius:10px; border:2px solid #9a7b33; background:#fdf6e2;
+  font-size:clamp(17px,2.4vw,23px); font-weight:700; cursor:pointer; text-align:center; font-family:inherit;
+  transition:transform .1s;
+}
+.opt:hover{background:#fff; transform:scale(1.02);}
+.opt.correct{background:#c9e8c0; border-color:#3d7a35;}
+.opt.wrong{background:#eebfb5; border-color:#8e2f24;}
+.opt:disabled{cursor:default;}
+.q-feedback{min-height:24px; font-size:14.5px; margin-top:9px; font-weight:700; color:#5a4a1c; line-height:1.5;}
+.battle-foot{text-align:center; padding:8px;}
+
+/* ===== 圖鑑 / 生字簿 ===== */
+.page{flex:1; overflow-y:auto; padding:16px 20px 40px;}
+.page-inner{max-width:1080px; margin:0 auto;}
+.gal-tabs{display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+.gtab{padding:7px 18px; border-radius:20px; border:2px solid #6d5017; cursor:pointer;
+  background:#3a2c14; color:#d8c69a; font-family:inherit; font-size:15px; font-weight:700; letter-spacing:2px;}
+.gtab.on{background:linear-gradient(180deg,#e8c96a,#c9a227); color:#3a2a08;}
+.gal-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px;}
+.gal-card{background:linear-gradient(180deg,#f7ecd2,#e6d3a6); border:2px solid #7a5c22; border-radius:12px;
+  overflow:hidden; cursor:pointer; text-align:center; padding-bottom:8px; transition:transform .12s;}
+.gal-card:hover{transform:translateY(-4px);}
+.gal-card svg{display:block; width:100%; height:auto; background:#111;}
+.gal-card .gname{font-weight:900; font-size:16.5px; margin-top:6px; letter-spacing:2px;}
+.gal-card .gtitle{font-size:11.5px; color:#6b5220;}
+.gal-card.locked{filter:grayscale(1) brightness(.55);}
+.char-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(86px,1fr)); gap:10px;}
+.char-cell{background:linear-gradient(180deg,#f7ecd2,#e6d3a6); border:2px solid #7a5c22; border-radius:10px;
+  text-align:center; padding:10px 4px 6px; cursor:pointer; transition:transform .1s;}
+.char-cell:hover{transform:scale(1.06);}
+.char-cell .cc-ch{font-size:34px; font-weight:900;}
+.char-cell .cc-zy{font-size:12px; color:#7a5c22;}
+.char-cell.learned{box-shadow:0 0 0 3px #4caf5080;}
+.dict-stats{color:#d8c69a; font-size:14px; margin-bottom:12px; letter-spacing:1px;}
+
+/* ===== 彈窗 ===== */
+.modal-mask{display:none; position:fixed; inset:0; background:#000000b8; z-index:50;
+  align-items:center; justify-content:center; padding:18px;}
+.modal-mask.on{display:flex;}
+.modal{background:linear-gradient(180deg,#faf3e0,#eddfb8); border:3px solid #7a5c22; border-radius:18px;
+  max-width:720px; width:100%; max-height:92vh; overflow-y:auto; padding:20px 24px; position:relative;
+  box-shadow:0 16px 50px rgba(0,0,0,.7);}
+.modal .mx{position:absolute; top:10px; right:14px; font-size:26px; cursor:pointer; color:#7a5c22;
+  background:none; border:none; font-weight:900; font-family:inherit;}
+.w-detail{display:flex; gap:20px; flex-wrap:wrap;}
+.w-detail .wd-left{width:220px; flex-shrink:0;}
+.w-detail .wd-left svg{width:100%; height:auto; border-radius:12px; border:3px solid #7a5c22; background:#111; display:block;}
+.w-detail .wd-right{flex:1; min-width:260px;}
+.wd-name{font-size:30px; font-weight:900; letter-spacing:3px;}
+.wd-zi{font-size:15px; color:#6b5220; margin-left:10px;}
+.wd-tag{display:inline-block; font-size:12.5px; padding:2px 12px; border-radius:12px; color:#fff; margin:6px 6px 10px 0; letter-spacing:2px;}
+.statrow{display:flex; align-items:center; gap:8px; margin:5px 0; font-size:14px;}
+.statrow .sl{width:44px; font-weight:700;}
+.statbar{flex:1; height:12px; background:#d9c69022; border:1px solid #a98c4d; border-radius:7px; overflow:hidden;}
+.statbar i{display:block; height:100%; background:linear-gradient(90deg,#c9a227,#e8c96a);}
+.statrow .sv{width:32px; text-align:right; font-weight:900;}
+.wd-intro{font-size:15px; line-height:1.9; margin-top:10px; text-align:justify;}
+.wd-look{font-size:13.5px; line-height:1.8; margin-top:10px; padding:10px 14px; background:#00000010;
+  border-left:4px solid var(--gold); border-radius:6px; color:#4a3a18;}
+.char-detail{text-align:center;}
+.char-detail .cd-ch{font-size:96px; font-weight:900; line-height:1.15; color:var(--red);
+  text-shadow:2px 2px 0 #c9a22740;}
+.cd-grid{display:flex; justify-content:center; gap:26px; flex-wrap:wrap; margin:12px 0; font-size:16px;}
+.cd-grid b{color:#8a6a1e;}
+.cd-words{font-size:18px; letter-spacing:2px; line-height:2;}
+.cd-words span{background:#00000012; padding:3px 14px; border-radius:9px; margin:0 6px; display:inline-block;}
+
+/* 結果彈窗 */
+#modal-result .modal{text-align:center; max-width:560px;}
+#res-title{font-size:34px; font-weight:900; letter-spacing:6px; margin:6px 0 12px;}
+#res-body{font-size:16px; line-height:2;}
+#res-body .newchar{display:inline-block; background:#c9e8c0; border:1px solid #3d7a35; border-radius:8px;
+  padding:1px 10px; margin:3px; font-size:19px; font-weight:900;}
+
+/* 招募彈窗 */
+#modal-recruit .modal{max-width:640px;}
+
+@media (max-width:720px){
+  .battle-arena .fighter{width:31vw;}
+  .vs-mid{min-width:70px;}
+  .opt-grid{grid-template-columns:1fr;}
+  .force-card{width:150px;}
+}
+</style>
+</head>
+<body>
+
+<!-- 標題 -->
+<div id="scr-title" class="screen on">
+  <h1>三國識字大戰</h1>
+  <div class="sub">攻城掠地 × 國小一至四年級國字學習</div>
+  <div style="color:#d8c69a; font-size:16px; letter-spacing:3px; margin-bottom:14px;">請選擇你的勢力</div>
+  <div class="force-row" id="force-row"></div>
+  <div class="title-links">
+    <button class="btn ghost" onclick="openGallery(true)">武將圖鑑</button>
+    <button class="btn ghost" onclick="openDict(true)">生字簿</button>
+    <button class="btn ghost" id="btn-continue" style="display:none" onclick="loadGame()">繼續上次戰役</button>
+  </div>
+  <div class="title-note">答對國字題,武將就會出擊!佔領所有城池,一統天下。<br>城池等級越高,考的生字年級越高(一~四年級)。</div>
+</div>
+
+<!-- 地圖 -->
+<div id="scr-map" class="screen">
+  <div class="topbar">
+    <span class="tb-title" id="tb-force">蜀</span>
+    <span class="tb-stat" id="tb-turn">第 1 回合</span>
+    <span class="tb-stat" id="tb-city">城池 3/16</span>
+    <span class="tb-stat" id="tb-wnum">武將 5</span>
+    <span class="tb-stat" id="tb-learn">已學生字 0</span>
+    <span class="spacer"></span>
+    <button class="btn ghost" onclick="restTurn()">休整補血</button>
+    <button class="btn ghost" onclick="openGallery(false)">武將</button>
+    <button class="btn ghost" onclick="openDict(false)">生字簿</button>
+    <button class="btn ghost" onclick="saveGame(true)">存檔</button>
+    <button class="btn red" onclick="backTitle()">回主畫面</button>
+  </div>
+  <div id="map-wrap"><svg id="map-svg" viewBox="0 0 960 560" preserveAspectRatio="xMidYMid meet"></svg>
+    <div id="map-hint">點選敵方相鄰城池發動進攻</div>
+  </div>
+</div>
+
+<!-- 戰鬥 -->
+<div id="scr-battle" class="screen">
+  <div class="battle-head" id="bt-city">進攻 洛陽</div>
+  <div class="battle-sub" id="bt-wave">守將 1/3</div>
+  <div class="battle-arena">
+    <div class="fighter">
+      <div class="pbox" id="bt-mep"></div>
+      <div class="fname" id="bt-men"></div><div class="ftitle" id="bt-met"></div>
+      <div class="hpbar"><i id="bt-mehp"></i></div><div class="hp-num" id="bt-mehpn"></div>
+    </div>
+    <div class="vs-mid"><div class="vs-mark">VS</div><div id="combo-tag"></div><div id="battle-log"></div></div>
+    <div class="fighter">
+      <div class="pbox" id="bt-enp"></div>
+      <div class="fname" id="bt-enn"></div><div class="ftitle" id="bt-ent"></div>
+      <div class="hpbar enemy"><i id="bt-enhp"></i></div><div class="hp-num" id="bt-enhpn"></div>
+    </div>
+  </div>
+  <div class="q-panel">
+    <div class="q-type" id="q-type"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="opt-grid" id="q-opts"></div>
+    <div class="q-feedback" id="q-fb"></div>
+  </div>
+  <div class="battle-foot"><button class="btn red" onclick="fleeBattle()">撤退</button></div>
+</div>
+
+<!-- 圖鑑 -->
+<div id="scr-gallery" class="screen">
+  <div class="topbar"><span class="tb-title">武將圖鑑</span><span class="spacer"></span>
+    <button class="btn ghost" onclick="closeSub()">返回</button></div>
+  <div class="page"><div class="page-inner">
+    <div class="gal-tabs" id="gal-tabs"></div>
+    <div class="gal-grid" id="gal-grid"></div>
+  </div></div>
+</div>
+
+<!-- 生字簿 -->
+<div id="scr-dict" class="screen">
+  <div class="topbar"><span class="tb-title">生字簿</span><span class="spacer"></span>
+    <button class="btn" onclick="startPractice()">練功房(自由練習)</button>
+    <button class="btn ghost" onclick="closeSub()">返回</button></div>
+  <div class="page"><div class="page-inner">
+    <div class="gal-tabs" id="dict-tabs"></div>
+    <div class="dict-stats" id="dict-stats"></div>
+    <div class="char-grid" id="dict-grid"></div>
+  </div></div>
+</div>
+
+<!-- 武將彈窗 -->
+<div class="modal-mask" id="modal-warrior"><div class="modal">
+  <button class="mx" onclick="closeModal('modal-warrior')">✕</button>
+  <div class="w-detail" id="wd-body"></div>
+</div></div>
+
+<!-- 生字彈窗 -->
+<div class="modal-mask" id="modal-char"><div class="modal" style="max-width:520px">
+  <button class="mx" onclick="closeModal('modal-char')">✕</button>
+  <div class="char-detail" id="cd-body"></div>
+</div></div>
+
+<!-- 出戰選將 -->
+<div class="modal-mask" id="modal-pick"><div class="modal">
+  <button class="mx" onclick="closeModal('modal-pick')">✕</button>
+  <h3 style="margin:2px 0 12px; letter-spacing:3px;" id="pick-title">選擇出戰武將</h3>
+  <div class="gal-grid" id="pick-grid" style="grid-template-columns:repeat(auto-fill,minmax(130px,1fr));"></div>
+</div></div>
+
+<!-- 結果 -->
+<div class="modal-mask" id="modal-result"><div class="modal">
+  <div id="res-title"></div><div id="res-body"></div>
+  <div style="margin-top:16px"><button class="btn" id="res-btn" onclick="closeResult()">確定</button></div>
+</div></div>
+
+<!-- 招募 -->
+<div class="modal-mask" id="modal-recruit"><div class="modal">
+  <h3 style="margin:2px 0 4px; letter-spacing:3px;">招降敵將!</h3>
+  <div style="font-size:14px; color:#6b5220; margin-bottom:8px;" id="rec-sub">答對這一題,敵將就願意歸順!</div>
+  <div class="q-type" id="rq-type"></div>
+  <div class="q-text" id="rq-text"></div>
+  <div class="opt-grid" id="rq-opts"></div>
+  <div class="q-feedback" id="rq-fb"></div>
+</div></div>
+
+<script>
+/* ===== 生字資料庫:一至四年級(依台灣國小常用生字彙編) c字 z注音 r部首 w造詞 g年級 ===== */
+const CHARS = [
+/* ---------- 一年級 ---------- */
+{c:"大",z:"ㄉㄚˋ",r:"大",w:["大家","大小"],g:1},
+{c:"小",z:"ㄒㄧㄠˇ",r:"小",w:["小心","大小"],g:1},
+{c:"上",z:"ㄕㄤˋ",r:"一",w:["上學","上面"],g:1},
+{c:"下",z:"ㄒㄧㄚˋ",r:"一",w:["下課","上下"],g:1},
+{c:"山",z:"ㄕㄢ",r:"山",w:["高山","山洞"],g:1},
+{c:"水",z:"ㄕㄨㄟˇ",r:"水",w:["喝水","水果"],g:1},
+{c:"火",z:"ㄏㄨㄛˇ",r:"火",w:["火車","生火"],g:1},
+{c:"木",z:"ㄇㄨˋ",r:"木",w:["樹木","木頭"],g:1},
+{c:"土",z:"ㄊㄨˇ",r:"土",w:["土地","泥土"],g:1},
+{c:"日",z:"ㄖˋ",r:"日",w:["日出","生日"],g:1},
+{c:"月",z:"ㄩㄝˋ",r:"月",w:["月亮","月光"],g:1},
+{c:"天",z:"ㄊㄧㄢ",r:"大",w:["天空","今天"],g:1},
+{c:"人",z:"ㄖㄣˊ",r:"人",w:["大人","人們"],g:1},
+{c:"口",z:"ㄎㄡˇ",r:"口",w:["開口","門口"],g:1},
+{c:"手",z:"ㄕㄡˇ",r:"手",w:["拍手","手心"],g:1},
+{c:"耳",z:"ㄦˇ",r:"耳",w:["耳朵","木耳"],g:1},
+{c:"目",z:"ㄇㄨˋ",r:"目",w:["目光","題目"],g:1},
+{c:"米",z:"ㄇㄧˇ",r:"米",w:["白米","米飯"],g:1},
+{c:"田",z:"ㄊㄧㄢˊ",r:"田",w:["田地","種田"],g:1},
+{c:"石",z:"ㄕˊ",r:"石",w:["石頭","寶石"],g:1},
+{c:"花",z:"ㄏㄨㄚ",r:"艸",w:["花朵","花園"],g:1},
+{c:"草",z:"ㄘㄠˇ",r:"艸",w:["草地","花草"],g:1},
+{c:"魚",z:"ㄩˊ",r:"魚",w:["小魚","釣魚"],g:1},
+{c:"鳥",z:"ㄋㄧㄠˇ",r:"鳥",w:["小鳥","鳥兒"],g:1},
+{c:"牛",z:"ㄋㄧㄡˊ",r:"牛",w:["牛奶","黃牛"],g:1},
+{c:"羊",z:"ㄧㄤˊ",r:"羊",w:["山羊","羊毛"],g:1},
+{c:"雨",z:"ㄩˇ",r:"雨",w:["下雨","雨天"],g:1},
+{c:"風",z:"ㄈㄥ",r:"風",w:["風雨","颱風"],g:1},
+{c:"雲",z:"ㄩㄣˊ",r:"雨",w:["白雲","烏雲"],g:1},
+{c:"白",z:"ㄅㄞˊ",r:"白",w:["白色","明白"],g:1},
+{c:"紅",z:"ㄏㄨㄥˊ",r:"糸",w:["紅色","紅花"],g:1},
+{c:"青",z:"ㄑㄧㄥ",r:"青",w:["青草","青蛙"],g:1},
+{c:"光",z:"ㄍㄨㄤ",r:"儿",w:["陽光","燈光"],g:1},
+{c:"明",z:"ㄇㄧㄥˊ",r:"日",w:["明天","明白"],g:1},
+{c:"星",z:"ㄒㄧㄥ",r:"日",w:["星星","星期"],g:1},
+{c:"春",z:"ㄔㄨㄣ",r:"日",w:["春天","春風"],g:1},
+{c:"夏",z:"ㄒㄧㄚˋ",r:"夊",w:["夏天","夏日"],g:1},
+{c:"秋",z:"ㄑㄧㄡ",r:"禾",w:["秋天","中秋"],g:1},
+{c:"冬",z:"ㄉㄨㄥ",r:"冫",w:["冬天","冬瓜"],g:1},
+{c:"東",z:"ㄉㄨㄥ",r:"木",w:["東方","東西"],g:1},
+{c:"西",z:"ㄒㄧ",r:"襾",w:["西瓜","西方"],g:1},
+{c:"南",z:"ㄋㄢˊ",r:"十",w:["南方","南部"],g:1},
+{c:"北",z:"ㄅㄟˇ",r:"匕",w:["北方","台北"],g:1},
+{c:"中",z:"ㄓㄨㄥ",r:"丨",w:["中間","中午"],g:1},
+{c:"出",z:"ㄔㄨ",r:"凵",w:["出門","日出"],g:1},
+{c:"入",z:"ㄖㄨˋ",r:"入",w:["進入","入口"],g:1},
+{c:"左",z:"ㄗㄨㄛˇ",r:"工",w:["左手","左右"],g:1},
+{c:"右",z:"ㄧㄡˋ",r:"口",w:["右邊","左右"],g:1},
+{c:"年",z:"ㄋㄧㄢˊ",r:"干",w:["新年","去年"],g:1},
+{c:"子",z:"ㄗˇ",r:"子",w:["孩子","子女"],g:1},
+{c:"女",z:"ㄋㄩˇ",r:"女",w:["女生","女兒"],g:1},
+{c:"父",z:"ㄈㄨˋ",r:"父",w:["父親","父母"],g:1},
+{c:"母",z:"ㄇㄨˇ",r:"毋",w:["母親","母雞"],g:1},
+{c:"兄",z:"ㄒㄩㄥ",r:"儿",w:["兄弟","兄長"],g:1},
+{c:"弟",z:"ㄉㄧˋ",r:"弓",w:["弟弟","兄弟"],g:1},
+{c:"我",z:"ㄨㄛˇ",r:"戈",w:["我們","自我"],g:1},
+{c:"你",z:"ㄋㄧˇ",r:"人",w:["你們","你好"],g:1},
+{c:"他",z:"ㄊㄚ",r:"人",w:["他們","其他"],g:1},
+{c:"好",z:"ㄏㄠˇ",r:"女",w:["你好","好人"],g:1},
+{c:"來",z:"ㄌㄞˊ",r:"人",w:["過來","來去"],g:1},
+{c:"去",z:"ㄑㄩˋ",r:"厶",w:["去年","來去"],g:1},
+{c:"坐",z:"ㄗㄨㄛˋ",r:"土",w:["坐下","請坐"],g:1},
+{c:"立",z:"ㄌㄧˋ",r:"立",w:["站立","立正"],g:1},
+{c:"行",z:"ㄒㄧㄥˊ",r:"行",w:["行走","飛行"],g:1},
+{c:"走",z:"ㄗㄡˇ",r:"走",w:["走路","行走"],g:1},
+{c:"飛",z:"ㄈㄟ",r:"飛",w:["飛機","起飛"],g:1},
+{c:"見",z:"ㄐㄧㄢˋ",r:"見",w:["看見","再見"],g:1},
+{c:"多",z:"ㄉㄨㄛ",r:"夕",w:["很多","多少"],g:1},
+{c:"少",z:"ㄕㄠˇ",r:"小",w:["多少","不少"],g:1},
+{c:"長",z:"ㄔㄤˊ",r:"長",w:["長大","長短"],g:1},
+{c:"高",z:"ㄍㄠ",r:"高",w:["高山","高大"],g:1},
+{c:"門",z:"ㄇㄣˊ",r:"門",w:["大門","開門"],g:1},
+{c:"開",z:"ㄎㄞ",r:"門",w:["開門","開心"],g:1},
+{c:"心",z:"ㄒㄧㄣ",r:"心",w:["小心","開心"],g:1},
+{c:"生",z:"ㄕㄥ",r:"生",w:["學生","生日"],g:1},
+{c:"學",z:"ㄒㄩㄝˊ",r:"子",w:["學生","上學"],g:1},
+{c:"王",z:"ㄨㄤˊ",r:"玉",w:["國王","王子"],g:1},
+{c:"貝",z:"ㄅㄟˋ",r:"貝",w:["寶貝","貝殼"],g:1},
+{c:"車",z:"ㄔㄜ",r:"車",w:["火車","汽車"],g:1},
+{c:"馬",z:"ㄇㄚˇ",r:"馬",w:["騎馬","馬車"],g:1},
+/* ---------- 二年級 ---------- */
+{c:"朋",z:"ㄆㄥˊ",r:"月",w:["朋友","親朋"],g:2},
+{c:"友",z:"ㄧㄡˇ",r:"又",w:["朋友","友愛"],g:2},
+{c:"同",z:"ㄊㄨㄥˊ",r:"口",w:["同學","相同"],g:2},
+{c:"班",z:"ㄅㄢ",r:"玉",w:["班級","同班"],g:2},
+{c:"校",z:"ㄒㄧㄠˋ",r:"木",w:["學校","校長"],g:2},
+{c:"師",z:"ㄕ",r:"巾",w:["老師","軍師"],g:2},
+{c:"老",z:"ㄌㄠˇ",r:"老",w:["老師","老人"],g:2},
+{c:"早",z:"ㄗㄠˇ",r:"日",w:["早安","早上"],g:2},
+{c:"晚",z:"ㄨㄢˇ",r:"日",w:["晚上","晚安"],g:2},
+{c:"午",z:"ㄨˇ",r:"十",w:["中午","午餐"],g:2},
+{c:"夜",z:"ㄧㄝˋ",r:"夕",w:["夜晚","半夜"],g:2},
+{c:"今",z:"ㄐㄧㄣ",r:"人",w:["今天","今年"],g:2},
+{c:"昨",z:"ㄗㄨㄛˊ",r:"日",w:["昨天","昨晚"],g:2},
+{c:"每",z:"ㄇㄟˇ",r:"毋",w:["每天","每年"],g:2},
+{c:"時",z:"ㄕˊ",r:"日",w:["時間","小時"],g:2},
+{c:"分",z:"ㄈㄣ",r:"刀",w:["分開","十分"],g:2},
+{c:"半",z:"ㄅㄢˋ",r:"十",w:["一半","半天"],g:2},
+{c:"點",z:"ㄉㄧㄢˇ",r:"黑",w:["點心","地點"],g:2},
+{c:"前",z:"ㄑㄧㄢˊ",r:"刀",w:["前面","以前"],g:2},
+{c:"後",z:"ㄏㄡˋ",r:"彳",w:["後面","以後"],g:2},
+{c:"面",z:"ㄇㄧㄢˋ",r:"面",w:["前面","面對"],g:2},
+{c:"外",z:"ㄨㄞˋ",r:"夕",w:["外面","外國"],g:2},
+{c:"內",z:"ㄋㄟˋ",r:"入",w:["內外","室內"],g:2},
+{c:"旁",z:"ㄆㄤˊ",r:"方",w:["旁邊","一旁"],g:2},
+{c:"邊",z:"ㄅㄧㄢ",r:"辵",w:["旁邊","海邊"],g:2},
+{c:"房",z:"ㄈㄤˊ",r:"戶",w:["房間","書房"],g:2},
+{c:"屋",z:"ㄨ",r:"尸",w:["房屋","屋頂"],g:2},
+{c:"家",z:"ㄐㄧㄚ",r:"宀",w:["家人","回家"],g:2},
+{c:"園",z:"ㄩㄢˊ",r:"囗",w:["公園","花園"],g:2},
+{c:"店",z:"ㄉㄧㄢˋ",r:"广",w:["商店","書店"],g:2},
+{c:"街",z:"ㄐㄧㄝ",r:"行",w:["街道","逛街"],g:2},
+{c:"路",z:"ㄌㄨˋ",r:"足",w:["走路","馬路"],g:2},
+{c:"橋",z:"ㄑㄧㄠˊ",r:"木",w:["過橋","天橋"],g:2},
+{c:"河",z:"ㄏㄜˊ",r:"水",w:["河水","小河"],g:2},
+{c:"海",z:"ㄏㄞˇ",r:"水",w:["大海","海邊"],g:2},
+{c:"湖",z:"ㄏㄨˊ",r:"水",w:["湖水","湖邊"],g:2},
+{c:"池",z:"ㄔˊ",r:"水",w:["水池","池塘"],g:2},
+{c:"洞",z:"ㄉㄨㄥˋ",r:"水",w:["山洞","洞口"],g:2},
+{c:"島",z:"ㄉㄠˇ",r:"山",w:["小島","海島"],g:2},
+{c:"森",z:"ㄙㄣ",r:"木",w:["森林","森林區"],g:2},
+{c:"林",z:"ㄌㄧㄣˊ",r:"木",w:["樹林","森林"],g:2},
+{c:"樹",z:"ㄕㄨˋ",r:"木",w:["大樹","樹木"],g:2},
+{c:"葉",z:"ㄧㄝˋ",r:"艸",w:["樹葉","葉子"],g:2},
+{c:"枝",z:"ㄓ",r:"木",w:["樹枝","枝葉"],g:2},
+{c:"根",z:"ㄍㄣ",r:"木",w:["樹根","根本"],g:2},
+{c:"果",z:"ㄍㄨㄛˇ",r:"木",w:["水果","結果"],g:2},
+{c:"菜",z:"ㄘㄞˋ",r:"艸",w:["青菜","菜園"],g:2},
+{c:"豆",z:"ㄉㄡˋ",r:"豆",w:["豆子","紅豆"],g:2},
+{c:"瓜",z:"ㄍㄨㄚ",r:"瓜",w:["西瓜","冬瓜"],g:2},
+{c:"蛋",z:"ㄉㄢˋ",r:"虫",w:["雞蛋","蛋糕"],g:2},
+{c:"雞",z:"ㄐㄧ",r:"隹",w:["公雞","母雞"],g:2},
+{c:"鴨",z:"ㄧㄚ",r:"鳥",w:["鴨子","小鴨"],g:2},
+{c:"豬",z:"ㄓㄨ",r:"豕",w:["小豬","豬肉"],g:2},
+{c:"狗",z:"ㄍㄡˇ",r:"犬",w:["小狗","狗兒"],g:2},
+{c:"貓",z:"ㄇㄠ",r:"豸",w:["小貓","貓咪"],g:2},
+{c:"兔",z:"ㄊㄨˋ",r:"儿",w:["兔子","白兔"],g:2},
+{c:"虎",z:"ㄏㄨˇ",r:"虍",w:["老虎","虎將"],g:2},
+{c:"象",z:"ㄒㄧㄤˋ",r:"豕",w:["大象","氣象"],g:2},
+{c:"熊",z:"ㄒㄩㄥˊ",r:"火",w:["小熊","熊貓"],g:2},
+{c:"鹿",z:"ㄌㄨˋ",r:"鹿",w:["小鹿","梅花鹿"],g:2},
+{c:"色",z:"ㄙㄜˋ",r:"色",w:["顏色","紅色"],g:2},
+{c:"黃",z:"ㄏㄨㄤˊ",r:"黃",w:["黃色","蛋黃"],g:2},
+{c:"黑",z:"ㄏㄟ",r:"黑",w:["黑色","黑夜"],g:2},
+{c:"綠",z:"ㄌㄩˋ",r:"糸",w:["綠色","綠豆"],g:2},
+{c:"藍",z:"ㄌㄢˊ",r:"艸",w:["藍色","藍天"],g:2},
+{c:"彩",z:"ㄘㄞˇ",r:"彡",w:["彩色","彩虹"],g:2},
+{c:"畫",z:"ㄏㄨㄚˋ",r:"田",w:["畫圖","圖畫"],g:2},
+{c:"圖",z:"ㄊㄨˊ",r:"囗",w:["圖畫","地圖"],g:2},
+{c:"紙",z:"ㄓˇ",r:"糸",w:["白紙","報紙"],g:2},
+{c:"筆",z:"ㄅㄧˇ",r:"竹",w:["鉛筆","毛筆"],g:2},
+{c:"書",z:"ㄕㄨ",r:"曰",w:["讀書","書包"],g:2},
+{c:"讀",z:"ㄉㄨˊ",r:"言",w:["讀書","閱讀"],g:2},
+{c:"寫",z:"ㄒㄧㄝˇ",r:"宀",w:["寫字","寫作"],g:2},
+{c:"字",z:"ㄗˋ",r:"子",w:["寫字","生字"],g:2},
+{c:"話",z:"ㄏㄨㄚˋ",r:"言",w:["說話","電話"],g:2},
+{c:"說",z:"ㄕㄨㄛ",r:"言",w:["說話","小說"],g:2},
+{c:"聽",z:"ㄊㄧㄥ",r:"耳",w:["聽話","聽見"],g:2},
+{c:"唱",z:"ㄔㄤˋ",r:"口",w:["唱歌","合唱"],g:2},
+{c:"歌",z:"ㄍㄜ",r:"欠",w:["唱歌","歌聲"],g:2},
+{c:"跳",z:"ㄊㄧㄠˋ",r:"足",w:["跳舞","跳高"],g:2},
+{c:"舞",z:"ㄨˇ",r:"舛",w:["跳舞","舞台"],g:2},
+{c:"玩",z:"ㄨㄢˊ",r:"玉",w:["玩具","遊玩"],g:2},
+{c:"球",z:"ㄑㄧㄡˊ",r:"玉",w:["打球","地球"],g:2},
+{c:"遊",z:"ㄧㄡˊ",r:"辵",w:["遊戲","旅遊"],g:2},
+{c:"戲",z:"ㄒㄧˋ",r:"戈",w:["遊戲","看戲"],g:2},
+/* ---------- 三年級 ---------- */
+{c:"想",z:"ㄒㄧㄤˇ",r:"心",w:["想念","理想"],g:3},
+{c:"念",z:"ㄋㄧㄢˋ",r:"心",w:["想念","念書"],g:3},
+{c:"感",z:"ㄍㄢˇ",r:"心",w:["感謝","感動"],g:3},
+{c:"謝",z:"ㄒㄧㄝˋ",r:"言",w:["謝謝","感謝"],g:3},
+{c:"情",z:"ㄑㄧㄥˊ",r:"心",w:["心情","友情"],g:3},
+{c:"愛",z:"ㄞˋ",r:"心",w:["愛心","可愛"],g:3},
+{c:"快",z:"ㄎㄨㄞˋ",r:"心",w:["快樂","飛快"],g:3},
+{c:"樂",z:"ㄌㄜˋ",r:"木",w:["快樂","歡樂"],g:3},
+{c:"喜",z:"ㄒㄧˇ",r:"口",w:["喜歡","歡喜"],g:3},
+{c:"歡",z:"ㄏㄨㄢ",r:"欠",w:["喜歡","歡樂"],g:3},
+{c:"怕",z:"ㄆㄚˋ",r:"心",w:["害怕","可怕"],g:3},
+{c:"害",z:"ㄏㄞˋ",r:"宀",w:["害怕","傷害"],g:3},
+{c:"傷",z:"ㄕㄤ",r:"人",w:["受傷","傷心"],g:3},
+{c:"哭",z:"ㄎㄨ",r:"口",w:["大哭","哭聲"],g:3},
+{c:"笑",z:"ㄒㄧㄠˋ",r:"竹",w:["微笑","笑話"],g:3},
+{c:"希",z:"ㄒㄧ",r:"巾",w:["希望","希奇"],g:3},
+{c:"望",z:"ㄨㄤˋ",r:"月",w:["希望","願望"],g:3},
+{c:"願",z:"ㄩㄢˋ",r:"頁",w:["願望","心願"],g:3},
+{c:"交",z:"ㄐㄧㄠ",r:"亠",w:["交通","交換"],g:3},
+{c:"通",z:"ㄊㄨㄥ",r:"辵",w:["交通","通過"],g:3},
+{c:"運",z:"ㄩㄣˋ",r:"辵",w:["運動","運氣"],g:3},
+{c:"動",z:"ㄉㄨㄥˋ",r:"力",w:["運動","動物"],g:3},
+{c:"場",z:"ㄔㄤˇ",r:"土",w:["操場","廣場"],g:3},
+{c:"館",z:"ㄍㄨㄢˇ",r:"食",w:["旅館","餐館"],g:3},
+{c:"練",z:"ㄌㄧㄢˋ",r:"糸",w:["練習","教練"],g:3},
+{c:"習",z:"ㄒㄧˊ",r:"羽",w:["練習","學習"],g:3},
+{c:"功",z:"ㄍㄨㄥ",r:"力",w:["功課","成功"],g:3},
+{c:"課",z:"ㄎㄜˋ",r:"言",w:["上課","功課"],g:3},
+{c:"考",z:"ㄎㄠˇ",r:"老",w:["考試","思考"],g:3},
+{c:"試",z:"ㄕˋ",r:"言",w:["考試","嘗試"],g:3},
+{c:"題",z:"ㄊㄧˊ",r:"頁",w:["題目","問題"],g:3},
+{c:"答",z:"ㄉㄚˊ",r:"竹",w:["回答","答案"],g:3},
+{c:"問",z:"ㄨㄣˋ",r:"口",w:["問題","請問"],g:3},
+{c:"教",z:"ㄐㄧㄠ",r:"攴",w:["教書","請教"],g:3},
+{c:"室",z:"ㄕˋ",r:"宀",w:["教室","室內"],g:3},
+{c:"桌",z:"ㄓㄨㄛ",r:"木",w:["桌子","書桌"],g:3},
+{c:"椅",z:"ㄧˇ",r:"木",w:["椅子","桌椅"],g:3},
+{c:"窗",z:"ㄔㄨㄤ",r:"穴",w:["窗戶","窗外"],g:3},
+{c:"燈",z:"ㄉㄥ",r:"火",w:["電燈","路燈"],g:3},
+{c:"電",z:"ㄉㄧㄢˋ",r:"雨",w:["電話","電燈"],g:3},
+{c:"腦",z:"ㄋㄠˇ",r:"肉",w:["電腦","頭腦"],g:3},
+{c:"視",z:"ㄕˋ",r:"見",w:["電視","重視"],g:3},
+{c:"機",z:"ㄐㄧ",r:"木",w:["飛機","手機"],g:3},
+{c:"器",z:"ㄑㄧˋ",r:"口",w:["機器","樂器"],g:3},
+{c:"世",z:"ㄕˋ",r:"一",w:["世界","一世"],g:3},
+{c:"界",z:"ㄐㄧㄝˋ",r:"田",w:["世界","邊界"],g:3},
+{c:"國",z:"ㄍㄨㄛˊ",r:"囗",w:["國家","三國"],g:3},
+{c:"城",z:"ㄔㄥˊ",r:"土",w:["城市","城門"],g:3},
+{c:"鄉",z:"ㄒㄧㄤ",r:"邑",w:["家鄉","鄉下"],g:3},
+{c:"村",z:"ㄘㄨㄣ",r:"木",w:["鄉村","農村"],g:3},
+{c:"市",z:"ㄕˋ",r:"巾",w:["城市","市場"],g:3},
+{c:"區",z:"ㄑㄩ",r:"匸",w:["社區","地區"],g:3},
+{c:"農",z:"ㄋㄨㄥˊ",r:"辰",w:["農夫","農田"],g:3},
+{c:"夫",z:"ㄈㄨ",r:"大",w:["農夫","丈夫"],g:3},
+{c:"工",z:"ㄍㄨㄥ",r:"工",w:["工作","工人"],g:3},
+{c:"作",z:"ㄗㄨㄛˋ",r:"人",w:["工作","作業"],g:3},
+{c:"業",z:"ㄧㄝˋ",r:"木",w:["作業","畢業"],g:3},
+{c:"商",z:"ㄕㄤ",r:"口",w:["商店","商人"],g:3},
+{c:"買",z:"ㄇㄞˇ",r:"貝",w:["買賣","買菜"],g:3},
+{c:"賣",z:"ㄇㄞˋ",r:"貝",w:["買賣","賣力"],g:3},
+{c:"錢",z:"ㄑㄧㄢˊ",r:"金",w:["金錢","價錢"],g:3},
+{c:"銀",z:"ㄧㄣˊ",r:"金",w:["銀行","銀色"],g:3},
+{c:"金",z:"ㄐㄧㄣ",r:"金",w:["金色","黃金"],g:3},
+{c:"鐵",z:"ㄊㄧㄝˇ",r:"金",w:["鐵路","打鐵"],g:3},
+{c:"銅",z:"ㄊㄨㄥˊ",r:"金",w:["銅像","銅板"],g:3},
+{c:"陽",z:"ㄧㄤˊ",r:"阜",w:["太陽","陽光"],g:3},
+{c:"太",z:"ㄊㄞˋ",r:"大",w:["太陽","太平"],g:3},
+{c:"空",z:"ㄎㄨㄥ",r:"穴",w:["天空","空氣"],g:3},
+{c:"氣",z:"ㄑㄧˋ",r:"气",w:["空氣","生氣"],g:3},
+{c:"溫",z:"ㄨㄣ",r:"水",w:["溫暖","氣溫"],g:3},
+{c:"暖",z:"ㄋㄨㄢˇ",r:"日",w:["溫暖","暖和"],g:3},
+{c:"冷",z:"ㄌㄥˇ",r:"冫",w:["寒冷","冷氣"],g:3},
+{c:"熱",z:"ㄖㄜˋ",r:"火",w:["炎熱","熱水"],g:3},
+{c:"晴",z:"ㄑㄧㄥˊ",r:"日",w:["晴天","晴朗"],g:3},
+{c:"陰",z:"ㄧㄣ",r:"阜",w:["陰天","光陰"],g:3},
+{c:"雪",z:"ㄒㄩㄝˇ",r:"雨",w:["下雪","雪白"],g:3},
+{c:"冰",z:"ㄅㄧㄥ",r:"冫",w:["結冰","冰水"],g:3},
+{c:"霧",z:"ㄨˋ",r:"雨",w:["大霧","霧氣"],g:3},
+{c:"雷",z:"ㄌㄟˊ",r:"雨",w:["打雷","雷聲"],g:3},
+{c:"閃",z:"ㄕㄢˇ",r:"門",w:["閃電","閃亮"],g:3},
+/* ---------- 四年級 ---------- */
+{c:"戰",z:"ㄓㄢˋ",r:"戈",w:["戰爭","戰場"],g:4},
+{c:"爭",z:"ㄓㄥ",r:"爪",w:["戰爭","爭取"],g:4},
+{c:"勝",z:"ㄕㄥˋ",r:"力",w:["勝利","勝負"],g:4},
+{c:"敗",z:"ㄅㄞˋ",r:"攴",w:["失敗","打敗"],g:4},
+{c:"攻",z:"ㄍㄨㄥ",r:"攴",w:["攻擊","攻城"],g:4},
+{c:"守",z:"ㄕㄡˇ",r:"宀",w:["防守","守護"],g:4},
+{c:"防",z:"ㄈㄤˊ",r:"阜",w:["防守","預防"],g:4},
+{c:"擊",z:"ㄐㄧˊ",r:"手",w:["攻擊","打擊"],g:4},
+{c:"軍",z:"ㄐㄩㄣ",r:"車",w:["軍隊","將軍"],g:4},
+{c:"隊",z:"ㄉㄨㄟˋ",r:"阜",w:["軍隊","排隊"],g:4},
+{c:"將",z:"ㄐㄧㄤˋ",r:"寸",w:["將軍","大將"],g:4},
+{c:"兵",z:"ㄅㄧㄥ",r:"八",w:["士兵","騎兵"],g:4},
+{c:"士",z:"ㄕˋ",r:"士",w:["士兵","勇士"],g:4},
+{c:"勇",z:"ㄩㄥˇ",r:"力",w:["勇敢","勇士"],g:4},
+{c:"敢",z:"ㄍㄢˇ",r:"攴",w:["勇敢","不敢"],g:4},
+{c:"猛",z:"ㄇㄥˇ",r:"犬",w:["勇猛","猛烈"],g:4},
+{c:"烈",z:"ㄌㄧㄝˋ",r:"火",w:["激烈","烈日"],g:4},
+{c:"謀",z:"ㄇㄡˊ",r:"言",w:["計謀","參謀"],g:4},
+{c:"略",z:"ㄌㄩㄝˋ",r:"田",w:["謀略","省略"],g:4},
+{c:"計",z:"ㄐㄧˋ",r:"言",w:["計謀","計畫"],g:4},
+{c:"策",z:"ㄘㄜˋ",r:"竹",w:["計策","對策"],g:4},
+{c:"智",z:"ㄓˋ",r:"日",w:["智慧","智謀"],g:4},
+{c:"慧",z:"ㄏㄨㄟˋ",r:"心",w:["智慧","聰慧"],g:4},
+{c:"聰",z:"ㄘㄨㄥ",r:"耳",w:["聰明","聰慧"],g:4},
+{c:"忠",z:"ㄓㄨㄥ",r:"心",w:["忠心","忠誠"],g:4},
+{c:"誠",z:"ㄔㄥˊ",r:"言",w:["誠實","忠誠"],g:4},
+{c:"義",z:"ㄧˋ",r:"羊",w:["正義","義氣"],g:4},
+{c:"仁",z:"ㄖㄣˊ",r:"人",w:["仁愛","仁慈"],g:4},
+{c:"慈",z:"ㄘˊ",r:"心",w:["慈祥","仁慈"],g:4},
+{c:"德",z:"ㄉㄜˊ",r:"彳",w:["品德","道德"],g:4},
+{c:"品",z:"ㄆㄧㄣˇ",r:"口",w:["品德","作品"],g:4},
+{c:"貴",z:"ㄍㄨㄟˋ",r:"貝",w:["寶貴","珍貴"],g:4},
+{c:"珍",z:"ㄓㄣ",r:"玉",w:["珍貴","珍惜"],g:4},
+{c:"惜",z:"ㄒㄧˊ",r:"心",w:["珍惜","可惜"],g:4},
+{c:"寶",z:"ㄅㄠˇ",r:"宀",w:["寶貝","寶物"],g:4},
+{c:"劍",z:"ㄐㄧㄢˋ",r:"刀",w:["寶劍","舞劍"],g:4},
+{c:"刀",z:"ㄉㄠ",r:"刀",w:["大刀","刀劍"],g:4},
+{c:"槍",z:"ㄑㄧㄤ",r:"木",w:["長槍","標槍"],g:4},
+{c:"箭",z:"ㄐㄧㄢˋ",r:"竹",w:["弓箭","射箭"],g:4},
+{c:"弓",z:"ㄍㄨㄥ",r:"弓",w:["弓箭","彈弓"],g:4},
+{c:"射",z:"ㄕㄜˋ",r:"寸",w:["射箭","發射"],g:4},
+{c:"騎",z:"ㄑㄧˊ",r:"馬",w:["騎馬","騎兵"],g:4},
+{c:"營",z:"ㄧㄥˊ",r:"火",w:["軍營","營地"],g:4},
+{c:"旗",z:"ㄑㄧˊ",r:"方",w:["國旗","軍旗"],g:4},
+{c:"鼓",z:"ㄍㄨˇ",r:"鼓",w:["打鼓","鼓勵"],g:4},
+{c:"勵",z:"ㄌㄧˋ",r:"力",w:["鼓勵","勉勵"],g:4},
+{c:"努",z:"ㄋㄨˇ",r:"力",w:["努力"],g:4},
+{c:"力",z:"ㄌㄧˋ",r:"力",w:["努力","力量"],g:4},
+{c:"量",z:"ㄌㄧㄤˋ",r:"里",w:["力量","重量"],g:4},
+{c:"重",z:"ㄓㄨㄥˋ",r:"里",w:["重要","尊重"],g:4},
+{c:"要",z:"ㄧㄠˋ",r:"襾",w:["重要","需要"],g:4},
+{c:"需",z:"ㄒㄩ",r:"雨",w:["需要","需求"],g:4},
+{c:"求",z:"ㄑㄧㄡˊ",r:"水",w:["要求","請求"],g:4},
+{c:"請",z:"ㄑㄧㄥˇ",r:"言",w:["請求","請問"],g:4},
+{c:"接",z:"ㄐㄧㄝ",r:"手",w:["接受","迎接"],g:4},
+{c:"受",z:"ㄕㄡˋ",r:"又",w:["接受","感受"],g:4},
+{c:"迎",z:"ㄧㄥˊ",r:"辵",w:["歡迎","迎接"],g:4},
+{c:"送",z:"ㄙㄨㄥˋ",r:"辵",w:["歡送","送禮"],g:4},
+{c:"禮",z:"ㄌㄧˇ",r:"示",w:["禮物","禮貌"],g:4},
+{c:"貌",z:"ㄇㄠˋ",r:"豸",w:["禮貌","外貌"],g:4},
+{c:"容",z:"ㄖㄨㄥˊ",r:"宀",w:["容易","笑容"],g:4},
+{c:"易",z:"ㄧˋ",r:"日",w:["容易","交易"],g:4},
+{c:"難",z:"ㄋㄢˊ",r:"隹",w:["困難","災難"],g:4},
+{c:"困",z:"ㄎㄨㄣˋ",r:"囗",w:["困難","困住"],g:4},
+{c:"災",z:"ㄗㄞ",r:"火",w:["災難","火災"],g:4},
+{c:"救",z:"ㄐㄧㄡˋ",r:"攴",w:["救人","救火"],g:4},
+{c:"護",z:"ㄏㄨˋ",r:"言",w:["保護","護士"],g:4},
+{c:"保",z:"ㄅㄠˇ",r:"人",w:["保護","保存"],g:4},
+{c:"存",z:"ㄘㄨㄣˊ",r:"子",w:["保存","存錢"],g:4},
+{c:"危",z:"ㄨㄟˊ",r:"卩",w:["危險","危機"],g:4},
+{c:"險",z:"ㄒㄧㄢˇ",r:"阜",w:["危險","冒險"],g:4},
+{c:"冒",z:"ㄇㄠˋ",r:"冂",w:["冒險","感冒"],g:4},
+{c:"奇",z:"ㄑㄧˊ",r:"大",w:["奇怪","好奇"],g:4},
+{c:"怪",z:"ㄍㄨㄞˋ",r:"心",w:["奇怪","怪物"],g:4},
+{c:"妙",z:"ㄇㄧㄠˋ",r:"女",w:["巧妙","美妙"],g:4},
+{c:"巧",z:"ㄑㄧㄠˇ",r:"工",w:["巧妙","技巧"],g:4},
+{c:"技",z:"ㄐㄧˋ",r:"手",w:["技巧","科技"],g:4},
+{c:"科",z:"ㄎㄜ",r:"禾",w:["科技","科學"],g:4},
+{c:"歷",z:"ㄌㄧˋ",r:"止",w:["歷史","經歷"],g:4},
+{c:"史",z:"ㄕˇ",r:"口",w:["歷史","史書"],g:4},
+{c:"朝",z:"ㄔㄠˊ",r:"月",w:["朝代","王朝"],g:4},
+{c:"代",z:"ㄉㄞˋ",r:"人",w:["朝代","時代"],g:4},
+{c:"統",z:"ㄊㄨㄥˇ",r:"糸",w:["統一","總統"],g:4},
+{c:"領",z:"ㄌㄧㄥˇ",r:"頁",w:["帶領","首領"],g:4},
+{c:"導",z:"ㄉㄠˇ",r:"寸",w:["領導","指導"],g:4},
+{c:"雄",z:"ㄒㄩㄥˊ",r:"隹",w:["英雄","雄壯"],g:4},
+{c:"英",z:"ㄧㄥ",r:"艸",w:["英雄","英勇"],g:4},
+{c:"豪",z:"ㄏㄠˊ",r:"豕",w:["自豪","豪傑"],g:4},
+{c:"傑",z:"ㄐㄧㄝˊ",r:"人",w:["傑出","豪傑"],g:4},
+];
+/* ===== 武將資料庫(50名) 能力值參考光榮《三國志》系列
+   n名 f勢力 z字 t稱號 wp兵器 wu武力 zh智力 ld統率
+   intro 史實介紹 look 史書/演義外貌記載 p 畫像設定 ===== */
+const WARRIORS = [
+/* ---------- 蜀 (15) ---------- */
+{n:"劉備",f:"蜀",z:"玄德",t:"蜀漢昭烈皇帝",wp:"雙股劍",wu:76,zh:75,ld:79,
+ intro:"漢景帝之子中山靖王劉勝的後代,以編草鞋、草蓆為生,卻胸懷大志。與關羽、張飛桃園結義,三顧茅廬請出諸葛亮,赤壁之戰後取得荊州、益州,西元221年在成都稱帝,建立蜀漢。他以仁德待人聞名,臨終前告誡兒子:「勿以惡小而為之,勿以善小而不為。」",
+ look:"《三國志》記載他「身長七尺五寸,垂手下膝,顧自見其耳」——手長過膝、耳大能自見,面相不凡。",
+ p:{sk:"#eec9a0",ey:"gentle",br:"thin",bd:"mo",bc:"#3a2a1a",ht:"official",hc:"#3d5a3a",ac:"#4a6b4a",at:"robe",ex:["bigears"]}},
+{n:"關羽",f:"蜀",z:"雲長",t:"武聖・五虎上將之首",wp:"青龍偃月刀",wu:97,zh:76,ld:95,
+ intro:"河東解良人,與劉備、張飛情同兄弟。白馬之戰中萬軍之中斬顏良,樊城之戰水淹七軍、擒于禁、斬龐德,威震華夏。他重情重義,「身在曹營心在漢」,千里走單騎回到劉備身邊。後世尊他為「武聖」,與「文聖」孔子並稱。",
+ look:"《三國演義》描寫他「身長九尺,髯長二尺;面如重棗,唇若塗脂;丹鳳眼,臥蠶眉,相貌堂堂,威風凜凜」,人稱「美髯公」。",
+ p:{sk:"#b25a42",ey:"narrow",br:"angry",bd:"long",bc:"#1d1208",ht:"band",hc:"#2f6b3f",ac:"#2f6b3f",at:"scale",ex:[]}},
+{n:"張飛",f:"蜀",z:"益德",t:"萬人敵・五虎上將",wp:"丈八蛇矛",wu:98,zh:45,ld:85,
+ intro:"涿郡人,勇猛過人,與關羽並稱「萬人敵」。長坂坡之戰,他獨自站在當陽橋上大喝三聲,嚇退曹操大軍,史書記載「敵皆無敢近者」。入蜀時義釋老將嚴顏,展現智勇雙全的一面。個性豪爽剛烈,嫉惡如仇。",
+ look:"《三國演義》描寫他「身長八尺,豹頭環眼,燕頷虎鬚,聲若巨雷,勢如奔馬」。",
+ p:{sk:"#8a5a3a",ey:"round",br:"bushy",bd:"short",bc:"#151008",ht:"helm",hc:"#3a3a44",ac:"#4a3a2a",at:"armor",ex:[]}},
+{n:"趙雲",f:"蜀",z:"子龍",t:"常勝將軍・五虎上將",wp:"龍膽亮銀槍",wu:96,zh:76,ld:91,
+ intro:"常山真定人,初隨公孫瓚,後追隨劉備。長坂坡之戰單騎衝入曹軍,七進七出救回幼主劉禪,劉備讚他「子龍一身都是膽」。漢水之戰以空營計大破曹軍。他一生謹慎穩重,深受軍民愛戴,是演義中近乎完美的武將。",
+ look:"《三國演義》描寫他「身長八尺,濃眉大眼,闊面重頤,威風凜凜」,一身銀甲白袍,英姿煥發。",
+ p:{sk:"#efcda6",ey:"calm",br:"flat",bd:"none",bc:"#222",ht:"helm",hc:"#c8ccd8",ac:"#b8bfcf",at:"armor",ex:["plume"]}},
+{n:"諸葛亮",f:"蜀",z:"孔明",t:"臥龍・蜀漢丞相",wp:"白羽扇",wu:38,zh:100,ld:92,
+ intro:"琅琊陽都人,隱居隆中耕讀,人稱「臥龍」。劉備三顧茅廬請他出山,他提出《隆中對》三分天下的戰略。輔佐劉備建立蜀漢,又受託孤輔佐劉禪,五次北伐中原,發明木牛流馬、改良連弩。「鞠躬盡瘁,死而後已」是他一生的寫照。",
+ look:"《三國志》記載他「身長八尺,容貌甚偉」;演義中他頭戴綸巾、手搖羽扇,「面如冠玉,飄飄然有神仙之概」。",
+ p:{sk:"#f2d8b2",ey:"calm",br:"thin",bd:"goatee",bc:"#2a1d10",ht:"guanjin",hc:"#4a5a7a",ac:"#e8e0cc",at:"robe",ex:["fan"]}},
+{n:"馬超",f:"蜀",z:"孟起",t:"錦馬超・五虎上將",wp:"龍騎尖",wu:97,zh:44,ld:88,
+ intro:"扶風茂陵人,西涼名將馬騰之子。潼關之戰起兵反曹,殺得曹操「割鬚棄袍」狼狽逃走。歸順劉備後,率軍兵臨成都,幫助劉備取得益州。羌人敬畏他,稱他為「神威天將軍」。",
+ look:"《三國演義》描寫他「面如冠玉,眼若流星,虎體猿臂,彪腹狼腰」,因相貌俊秀、盔甲鮮明,人稱「錦馬超」。",
+ p:{sk:"#efcda6",ey:"sharp",br:"flat",bd:"none",bc:"#222",ht:"goldhelm",hc:"#d8d2c2",ac:"#e3ddd0",at:"armor",ex:["plume"]}},
+{n:"黃忠",f:"蜀",z:"漢升",t:"老當益壯・五虎上將",wp:"寶雕弓",wu:93,zh:60,ld:86,
+ intro:"南陽人,原是劉表、韓玄部下,年過六十歸順劉備。定軍山之戰,他一鼓作氣陣斬曹軍大將夏侯淵,立下大功,被封為後將軍。「老當益壯」說的就是像黃忠這樣越老越勇的英雄。",
+ look:"演義中他鬚髮皆白仍能開二石之弓,百發百中,「雖老,猶有萬夫不當之勇」。",
+ p:{sk:"#dfb68e",ey:"aged",br:"bushy",bd:"full",bc:"#e8e4da",ht:"helm",hc:"#8a6b34",ac:"#7a5c2a",at:"armor",ex:["oldlines"]}},
+{n:"魏延",f:"蜀",z:"文長",t:"漢中太守",wp:"大刀",wu:92,zh:69,ld:84,
+ intro:"義陽人,隨劉備入蜀屢立戰功。劉備破格提拔他鎮守漢中重地,他豪言:「若曹操舉天下而來,請為大王拒之!」北伐時提出奇襲子午谷之計。勇猛善戰,是蜀漢後期的頭號大將。",
+ look:"《三國志》記載他「善養士卒,勇猛過人」;演義描寫他「面如重棗,目若朗星」。",
+ p:{sk:"#a86848",ey:"sharp",br:"angry",bd:"full",bc:"#1d150c",ht:"helm",hc:"#6b3a2a",ac:"#5a3a3a",at:"armor",ex:[]}},
+{n:"姜維",f:"蜀",z:"伯約",t:"幼麟・蜀漢大將軍",wp:"綠沉槍",wu:89,zh:90,ld:90,
+ intro:"天水冀縣人,原是魏國將領,諸葛亮北伐時歸順蜀漢,深受器重,盡得諸葛亮兵法真傳。諸葛亮死後,他繼承遺志九伐中原,文武雙全,忠心耿耿,至死仍想復興漢室。",
+ look:"演義稱他「智勇足備,真當世之英傑」,是俊朗沉穩的青年將才。",
+ p:{sk:"#efcda6",ey:"calm",br:"flat",bd:"mo",bc:"#2a1d10",ht:"helm",hc:"#4a6b6b",ac:"#3f5f5f",at:"armor",ex:[]}},
+{n:"龐統",f:"蜀",z:"士元",t:"鳳雛",wp:"羽扇",wu:34,zh:97,ld:78,
+ intro:"襄陽人,與諸葛亮齊名,時人說:「臥龍、鳳雛,得一可安天下。」赤壁之戰獻連環計,使曹操戰船相連,助周瑜火攻成功。輔佐劉備入蜀,獻上上中下三策,可惜在落鳳坡中箭身亡,年僅三十六歲。",
+ look:"演義描寫他「濃眉掀鼻,黑面短髯,形容古怪」——相貌平凡,才華卻蓋世。",
+ p:{sk:"#c99a6e",ey:"sharp",br:"bushy",bd:"short",bc:"#26190d",ht:"cap",hc:"#4a4a3a",ac:"#6b6b52",at:"robe",ex:[]}},
+{n:"馬岱",f:"蜀",z:"伯瞻",t:"平北將軍",wp:"大刀",wu:85,zh:60,ld:75,
+ intro:"馬超的堂弟,隨馬超歸順劉備,多次參與北伐。諸葛亮臨終前授以密計,由他在關鍵時刻斬了謀反的魏延,安定了蜀漢軍心。作戰沉著可靠,是蜀漢中後期的重要將領。",
+ look:"演義中他常隨馬超衝鋒陷陣,盔明甲亮,沉穩幹練。",
+ p:{sk:"#dfb68e",ey:"calm",br:"flat",bd:"mo",bc:"#26190d",ht:"helm",hc:"#8a4a3a",ac:"#7a4a3a",at:"armor",ex:[]}},
+{n:"關平",f:"蜀",z:"坦之",t:"少年虎將",wp:"大刀",wu:82,zh:68,ld:74,
+ intro:"關羽的兒子(演義中為義子),自小隨父親征戰,武藝得關羽真傳。樊城之戰隨父奮戰,與龐德大戰三十回合不分勝負。麥城突圍時與父親一同被擒,寧死不降,忠孝兩全。",
+ look:"演義中他年少英武,白面長身,常持刀侍立於關羽身側。",
+ p:{sk:"#efcda6",ey:"calm",br:"flat",bd:"none",bc:"#222",ht:"band",hc:"#2f6b3f",ac:"#3f7a4f",at:"armor",ex:[]}},
+{n:"徐庶",f:"蜀",z:"元直",t:"忠孝軍師",wp:"長劍",wu:62,zh:93,ld:80,
+ intro:"潁川人,年輕時仗劍行俠,後棄武從文。是劉備的第一位軍師,用計大破曹仁的八門金鎖陣。曹操捉了他的母親逼他離開,他臨走前推薦了諸葛亮,並發誓「終身不為曹操設一謀」。",
+ look:"演義中他葛巾布袍、皂絛烏履,一派瀟灑書生模樣,卻帶著俠客的英氣。",
+ p:{sk:"#eec9a0",ey:"calm",br:"flat",bd:"goatee",bc:"#2a1d10",ht:"cap",hc:"#3a3a4a",ac:"#5a5a6b",at:"robe",ex:[]}},
+{n:"法正",f:"蜀",z:"孝直",t:"奇謀之士",wp:"書卷",wu:45,zh:94,ld:76,
+ intro:"扶風郿縣人,原是劉璋部下,後幫助劉備取得益州。漢中之戰他獻計聲東擊西,使黃忠陣斬夏侯淵,連曹操都感嘆:「我收盡天下英才,怎麼偏偏漏了法正?」是劉備最信任的謀士。",
+ look:"史載他智術過人、恩怨分明,眉宇間帶著銳利的鋒芒。",
+ p:{sk:"#eec9a0",ey:"sharp",br:"thin",bd:"goatee",bc:"#2a1d10",ht:"official",hc:"#5a4a6b",ac:"#6b5a7a",at:"robe",ex:[]}},
+{n:"嚴顏",f:"蜀",z:"希伯",t:"斷頭將軍",wp:"大刀",wu:84,zh:62,ld:78,
+ intro:"巴郡臨江人,劉璋帳下老將,鎮守江州。兵敗被張飛所擒,張飛喝令他投降,他昂然回答:「我州只有斷頭將軍,沒有投降將軍!」張飛敬佩他的氣節,親自解開繩索待為上賓。",
+ look:"演義中他白髮蒼髯仍威風凜凜,寶刀不老,氣節如鋼。",
+ p:{sk:"#d9ad84",ey:"aged",br:"bushy",bd:"full",bc:"#ddd8ce",ht:"helm",hc:"#5a5244",ac:"#6b5c3a",at:"armor",ex:["oldlines"]}},
+/* ---------- 魏 (15) ---------- */
+{n:"曹操",f:"魏",z:"孟德",t:"亂世梟雄・魏武帝",wp:"倚天劍",wu:72,zh:91,ld:96,
+ intro:"沛國譙縣人,東漢末年最傑出的政治家、軍事家、詩人。他「挾天子以令諸侯」,官渡之戰以少勝多擊敗袁紹,統一北方。唯才是舉、屯田養民,也寫下〈短歌行〉等名篇。人們評價他:「治世之能臣,亂世之奸雄。」",
+ look:"《三國志》注引記載他「姿貌短小,而神明英發」——個子不高,眼神卻銳利懾人。",
+ p:{sk:"#e8c398",ey:"narrow",br:"angry",bd:"goatee",bc:"#26190d",ht:"official",hc:"#22283a",ac:"#2a3450",at:"robe",ex:[]}},
+{n:"司馬懿",f:"魏",z:"仲達",t:"冢虎・晉朝奠基者",wp:"塵尾",wu:63,zh:96,ld:93,
+ intro:"河內溫縣人,深謀遠慮,是諸葛亮北伐時最難纏的對手。他堅守不戰拖垮蜀軍,連「死諸葛嚇走活仲達」也不以為意,笑說:「我能料生,不能料死。」高平陵之變奪取魏國大權,為孫子司馬炎建立晉朝鋪路。",
+ look:"史書稱他有「狼顧之相」——身體不動便能回頭後望,形容他深沉多疑、城府極深。",
+ p:{sk:"#e8c398",ey:"narrow",br:"thin",bd:"goatee",bc:"#33261a",ht:"official",hc:"#3a2a4a",ac:"#4a3a5a",at:"robe",ex:[]}},
+{n:"張遼",f:"魏",z:"文遠",t:"五子良將之首",wp:"月牙戟",wu:92,zh:78,ld:93,
+ intro:"雁門馬邑人,原是呂布部將,歸曹後屢建奇功。合肥之戰率八百勇士突襲孫權十萬大軍,殺得吳軍聞風喪膽,「張遼止啼」——江東的小孩聽到他的名字都不敢哭。是智勇兼備的名將典範。",
+ look:"演義中他面容剛毅、目光如電,披堅執銳,有大將之風。",
+ p:{sk:"#dfb68e",ey:"sharp",br:"flat",bd:"short",bc:"#1d150c",ht:"helm",hc:"#2f4a6b",ac:"#2f4a6b",at:"armor",ex:[]}},
+{n:"夏侯惇",f:"魏",z:"元讓",t:"獨眼將軍",wp:"大刀",wu:90,zh:58,ld:85,
+ intro:"沛國譙縣人,曹操最信任的宗族大將。濮陽之戰左眼中箭,他大喊「父精母血,不可棄也」,拔箭吞睛,繼續作戰,軍中稱他「盲夏侯」。他為人清儉,把賞賜都分給將士,深得軍心。",
+ look:"演義中他左眼帶傷、氣勢懾人,虯髯怒目,勇不可當。",
+ p:{sk:"#dfb68e",ey:"sharp",br:"angry",bd:"full",bc:"#1d150c",ht:"helm",hc:"#2a3450",ac:"#33405e",at:"armor",ex:["eyepatch"]}},
+{n:"夏侯淵",f:"魏",z:"妙才",t:"虎步關右",wp:"鐵胎弓",wu:91,zh:55,ld:84,
+ intro:"夏侯惇的族弟,擅長千里奔襲,軍中流傳:「典軍校尉夏侯淵,三日五百,六日一千。」平定西涼,虎步關右,所向披靡。後鎮守漢中,在定軍山被黃忠突襲陣斬,壯烈戰死。",
+ look:"演義中他弓馬嫻熟、行軍如風,是曹軍最迅捷的閃電戰名將。",
+ p:{sk:"#dfb68e",ey:"sharp",br:"angry",bd:"mo",bc:"#1d150c",ht:"helm",hc:"#3a4a6b",ac:"#3a4a6b",at:"armor",ex:[]}},
+{n:"許褚",f:"魏",z:"仲康",t:"虎痴",wp:"大刀",wu:96,zh:36,ld:68,
+ intro:"譙國譙縣人,力大無窮,能倒拖牛尾走百步。擔任曹操的貼身護衛,忠心耿耿。潼關之戰他裸衣戰馬超,大戰兩百餘回合不分勝負,嚇得馬超問:「曹公的虎侯在哪裡?」從此「虎痴」威名遠播。",
+ look:"《三國志》記載他「長八尺餘,腰大十圍,容貌雄毅,勇力絕人」。",
+ p:{sk:"#e0a877",ey:"round",br:"bushy",bd:"short",bc:"#26190d",ht:"band",hc:"#8a6b34",ac:"#7a6b4a",at:"armor",ex:["wide"]}},
+{n:"典韋",f:"魏",z:"-",t:"古之惡來",wp:"雙鐵戟",wu:95,zh:35,ld:66,
+ intro:"陳留己吾人,單手能舉起軍門大旗,使一對重八十斤的鐵戟,曹操讚他是「古之惡來」(商朝著名大力士)。宛城之變中,他為掩護曹操逃走,獨守營門死戰,身無片甲仍殺敵數十人,壯烈犧牲。",
+ look:"《三國志》記載他「形貌魁梧,旅力過人」,提戟而立如同鐵塔。",
+ p:{sk:"#b57947",ey:"round",br:"bushy",bd:"full",bc:"#151008",ht:"band",hc:"#4a3a2a",ac:"#5a4a3a",at:"armor",ex:["wide"]}},
+{n:"徐晃",f:"魏",z:"公明",t:"周亞夫之風",wp:"開山大斧",wu:90,zh:68,ld:86,
+ intro:"河東楊縣人,治軍嚴整,曹操稱讚他有西漢名將「周亞夫之風」。樊城之戰他長驅直入,擊退威震華夏的關羽,解了樊城之圍。一生儉樸謹慎,常說:「戰場就是我報效國家的地方。」",
+ look:"演義中他威嚴持重,手持大斧,軍容整肅如山。",
+ p:{sk:"#dfb68e",ey:"calm",br:"flat",bd:"full",bc:"#26190d",ht:"helm",hc:"#4a5a4a",ac:"#4a5a4a",at:"armor",ex:[]}},
+{n:"張郃",f:"魏",z:"儁乂",t:"巧變名將",wp:"長槍",wu:89,zh:69,ld:89,
+ intro:"河間鄚縣人,原為袁紹部將,官渡之戰歸順曹操。他用兵「以巧變為稱」,擅長利用地形,街亭之戰大破馬謖,使諸葛亮第一次北伐功敗垂成,連劉備和諸葛亮都對他十分忌憚。",
+ look:"演義中他儀表堂堂,槍法精熟,臨陣機變百出。",
+ p:{sk:"#e8c398",ey:"sharp",br:"flat",bd:"mo",bc:"#26190d",ht:"helm",hc:"#5a4a6b",ac:"#5a4a6b",at:"armor",ex:[]}},
+{n:"郭嘉",f:"魏",z:"奉孝",t:"鬼才",wp:"書卷",wu:25,zh:98,ld:72,
+ intro:"潁川陽翟人,曹操早期最倚重的謀士,料事如神。他提出「十勝十敗論」堅定曹操與袁紹決戰的信心,又遺計定遼東,算無遺策。可惜三十八歲早逝,赤壁戰敗後曹操痛哭:「若奉孝在,不使孤至此!」",
+ look:"史載他行事灑脫不拘小節,眉目清朗,帶著幾分放達不羈的才子氣。",
+ p:{sk:"#f2d8b2",ey:"gentle",br:"thin",bd:"none",bc:"#222",ht:"cap",hc:"#4a5a7a",ac:"#5a6b8a",at:"robe",ex:[]}},
+{n:"荀彧",f:"魏",z:"文若",t:"王佐之才",wp:"書卷",wu:30,zh:95,ld:80,
+ intro:"潁川潁陰人,被譽為「王佐之才」。他為曹操規劃「奉天子以令不臣」的大戰略,坐鎮後方十餘年,舉薦郭嘉、司馬懿等大批人才,是曹操陣營的第一文臣,人稱「荀令君」。",
+ look:"史載他儀容端雅,舉止有度,所到之處留有香氣,後世稱「令君香」。",
+ p:{sk:"#f2d8b2",ey:"calm",br:"thin",bd:"goatee",bc:"#2a1d10",ht:"official",hc:"#6b5a3a",ac:"#e8e0cc",at:"robe",ex:[]}},
+{n:"曹仁",f:"魏",z:"子孝",t:"天人將軍",wp:"長槍",wu:86,zh:62,ld:89,
+ intro:"曹操的堂弟,魏國宗族第一名將,擅長防守。江陵之戰他率數十騎衝入周瑜大軍救回部將,將士驚呼:「將軍真天人也!」樊城之戰死守孤城,擋住關羽的猛攻,官至大司馬。",
+ look:"演義中他沉毅勇決,鎮守城池固若金湯。",
+ p:{sk:"#dfb68e",ey:"calm",br:"angry",bd:"full",bc:"#1d150c",ht:"helm",hc:"#33405e",ac:"#33405e",at:"armor",ex:[]}},
+{n:"于禁",f:"魏",z:"文則",t:"最號毅重",wp:"大刀",wu:79,zh:65,ld:84,
+ intro:"泰山鉅平人,治軍最為嚴整,曹操稱他「最號毅重」,是外姓將領中唯一假節鉞的大將。樊城之戰遇上關羽水淹七軍,兵敗被俘投降,晚節不保,一生功名毀於一旦,令人唏噓。",
+ look:"演義中他持重威嚴,軍紀如鐵,面容剛正。",
+ p:{sk:"#e8c398",ey:"calm",br:"flat",bd:"goatee",bc:"#26190d",ht:"helm",hc:"#4a4a3a",ac:"#5a5a4a",at:"armor",ex:[]}},
+{n:"樂進",f:"魏",z:"文謙",t:"先登猛將",wp:"短劍",wu:83,zh:55,ld:80,
+ intro:"陽平衛國人,個子矮小卻膽識過人,每次攻城都第一個登上城牆,「先登」之功無人能比。從擊袁紹、戰烏桓、守合肥,大小數十戰無不奮勇當先,與張遼、李典合力大破孫權。",
+ look:"《三國志》記載他「容貌短小,以膽烈從太祖」——身材雖小,膽氣蓋軍。",
+ p:{sk:"#dfb68e",ey:"sharp",br:"angry",bd:"short",bc:"#26190d",ht:"helm",hc:"#6b4a3a",ac:"#6b4a3a",at:"armor",ex:[]}},
+{n:"賈詡",f:"魏",z:"文和",t:"毒士・算無遺策",wp:"書卷",wu:42,zh:97,ld:78,
+ intro:"武威姑臧人,亂世中最懂自保的智者。他先後輔佐董卓、張繡、曹操,獻計無一失手:宛城之計差點要了曹操的命,離間馬超韓遂助曹操平定關中。曹丕能當上皇帝也多虧他指點,官至太尉,得享天年。",
+ look:"史載他深沉低調,平日閉門自守,渾濁的眼中藏著看透人心的精光。",
+ p:{sk:"#e0bd94",ey:"narrow",br:"thin",bd:"goatee",bc:"#8a8378",ht:"cap",hc:"#3a3a2a",ac:"#4a4a3a",at:"robe",ex:["oldlines"]}},
+/* ---------- 吳 (13) ---------- */
+{n:"孫堅",f:"吳",z:"文台",t:"江東之虎",wp:"古錠刀",wu:91,zh:70,ld:89,
+ intro:"吳郡富春人,十七歲便隻身喝退海盜,勇冠江東。討伐董卓時,他是聯軍中打得最勇的一路,大破華雄、攻入洛陽,還得到了傳國玉璽。可惜在攻打荊州劉表時中埋伏戰死,他是孫策、孫權的父親,東吳基業的開創者。",
+ look:"《三國志》記載他「容貌不凡,性闊達,好奇節」,常以紅巾裹頭,虎虎生威。",
+ p:{sk:"#dfb68e",ey:"sharp",br:"angry",bd:"full",bc:"#26190d",ht:"band",hc:"#a33b2e",ac:"#8a3a2e",at:"armor",ex:[]}},
+{n:"孫策",f:"吳",z:"伯符",t:"小霸王",wp:"霸王槍",wu:92,zh:69,ld:90,
+ intro:"孫堅長子,人稱「小霸王」。父親死後,他以傳國玉璽向袁術借兵三千,數年間橫掃江東六郡,打下東吳基業。與周瑜是結拜兄弟,又同娶大喬、小喬為妻。可惜二十六歲遇刺身亡,臨終把江東託付給弟弟孫權。",
+ look:"《三國志》記載他「美姿顏,好笑語」——英俊愛笑,軍民都樂意為他效死。",
+ p:{sk:"#efcda6",ey:"sharp",br:"flat",bd:"none",bc:"#222",ht:"helm",hc:"#a33b2e",ac:"#a33b2e",at:"armor",ex:["plume"]}},
+{n:"孫權",f:"吳",z:"仲謀",t:"吳大帝",wp:"白虹劍",wu:67,zh:80,ld:89,
+ intro:"十九歲繼承父兄基業,坐斷東南。他重用周瑜、魯肅、呂蒙、陸遜四任都督,聯劉抗曹打贏赤壁之戰,又奪回荊州,西元229年稱帝建立吳國。連曹操都感嘆:「生子當如孫仲謀!」",
+ look:"《三國志》注記載他「碧眼紫髯」「方頤大口」——綠眼睛、紫鬍鬚,相貌奇偉,一看就是人主之相。",
+ p:{sk:"#eec9a0",ey:"green",br:"bushy",bd:"full",bc:"#6b4a5a",ht:"crown",hc:"#8a6b34",ac:"#8a3a2e",at:"robe",ex:[]}},
+{n:"周瑜",f:"吳",z:"公瑾",t:"美周郎・大都督",wp:"長劍",wu:71,zh:96,ld:94,
+ intro:"廬江舒縣人,文武雙全又精通音律,「曲有誤,周郎顧」。赤壁之戰他以三萬吳軍火燒曹操數十萬大軍,是三國最著名的以少勝多戰役,奠定三分天下的局面。蘇軾詞中「羽扇綸巾,談笑間,檣櫓灰飛煙滅」寫的就是他的瀟灑。",
+ look:"《三國志》記載他「長壯有姿貌」,江東人稱「美周郎」,俊雅風流,氣度恢弘。",
+ p:{sk:"#f2d8b2",ey:"calm",br:"thin",bd:"mo",bc:"#2a1d10",ht:"guanjin",hc:"#8a3a2e",ac:"#a34a3a",at:"robe",ex:[]}},
+{n:"陸遜",f:"吳",z:"伯言",t:"書生都督",wp:"長劍",wu:69,zh:95,ld:93,
+ intro:"吳郡吳縣人,外表斯文像個書生,用兵卻深不可測。夷陵之戰他堅守不出,再以火燒連營七百里大破劉備大軍,一戰成名。後又在石亭大敗魏軍,官至丞相,是吳國後期的擎天之柱。",
+ look:"史載他「身長八尺,面如美玉」,溫文儒雅,胸藏百萬兵。",
+ p:{sk:"#f2d8b2",ey:"calm",br:"thin",bd:"none",bc:"#222",ht:"cap",hc:"#5a6b8a",ac:"#6b7a9a",at:"robe",ex:[]}},
+{n:"呂蒙",f:"吳",z:"子明",t:"士別三日刮目相看",wp:"大刀",wu:81,zh:89,ld:88,
+ intro:"汝南富陂人,出身貧寒不愛讀書,被笑是「吳下阿蒙」。孫權勸他讀書,他發憤苦學,連魯肅都驚嘆:「士別三日,即更刮目相待!」後來他「白衣渡江」奇襲荊州,擒獲關羽,為東吳奪回戰略要地。",
+ look:"演義中他從一介武夫蛻變為儒將,目光沉毅,智勇兼備。",
+ p:{sk:"#dfb68e",ey:"sharp",br:"flat",bd:"short",bc:"#26190d",ht:"helm",hc:"#8a5a3a",ac:"#8a5a3a",at:"armor",ex:[]}},
+{n:"甘寧",f:"吳",z:"興霸",t:"錦帆賊・百騎劫營",wp:"鑌鐵刀",wu:94,zh:66,ld:82,
+ intro:"巴郡臨江人,年輕時是長江上的水賊頭目,船掛錦帆、腰繫銅鈴,人稱「錦帆賊」。歸吳後成為第一猛將:濡須之戰率百騎夜劫曹營,無一人傷亡,孫權大讚:「曹操有張遼,孤有甘興霸,足相敵也!」",
+ look:"史載他「少有氣力,好游俠」,銅鈴聲到之處人人退避,豪氣干雲。",
+ p:{sk:"#c98a5a",ey:"sharp",br:"angry",bd:"short",bc:"#1d150c",ht:"band",hc:"#2f6b6b",ac:"#2f6b6b",at:"armor",ex:["scar"]}},
+{n:"太史慈",f:"吳",z:"子義",t:"神射手",wp:"手戟・弓",wu:93,zh:66,ld:82,
+ intro:"東萊黃縣人,箭術天下無雙,能射穿城樓上敵人的手腕。北海之圍單騎突圍為孔融求援,神亭嶺與孫策單挑大戰百回合不分勝負,後成為東吳大將。臨終慨嘆:「大丈夫生於亂世,當帶三尺之劍,立不世之功!」",
+ look:"《三國志》記載他「長七尺七寸,美鬚髯,猿臂善射,弦不虛發」。",
+ p:{sk:"#dfb68e",ey:"sharp",br:"flat",bd:"full",bc:"#26190d",ht:"helm",hc:"#4a5a3a",ac:"#5a6b4a",at:"armor",ex:[]}},
+{n:"黃蓋",f:"吳",z:"公覆",t:"苦肉計老將",wp:"鐵鞭",wu:83,zh:65,ld:80,
+ intro:"零陵泉陵人,歷仕孫堅、孫策、孫權三代的元老宿將。赤壁之戰他獻上火攻之計,並自願行「苦肉計」詐降曹操,親率火船撞向曹軍艦隊,燒出了赤壁的沖天大火。「周瑜打黃蓋,一個願打一個願挨」正是出自這段故事。",
+ look:"演義中他鬚髮斑白、筋骨強健,揮動鐵鞭仍虎虎生風。",
+ p:{sk:"#d9ad84",ey:"aged",br:"bushy",bd:"full",bc:"#d8d2c6",ht:"helm",hc:"#8a6b34",ac:"#7a5c2a",at:"armor",ex:["oldlines"]}},
+{n:"程普",f:"吳",z:"德謀",t:"江東老臣之首",wp:"鐵脊蛇矛",wu:80,zh:74,ld:83,
+ intro:"右北平土垠人,東吳資歷最深的老將,人稱「程公」。歷經孫家三代所有大戰,赤壁之戰與周瑜分任左右都督。他曾說:「與周公瑾相交,如飲美酒,不覺自醉。」展現老將的胸襟氣度。",
+ look:"史載他「有容貌計略,善於應對」,白鬚長髯,老成持重。",
+ p:{sk:"#d9ad84",ey:"aged",br:"flat",bd:"goatee",bc:"#cfc9bd",ht:"helm",hc:"#5a5244",ac:"#6b6252",at:"armor",ex:["oldlines"]}},
+{n:"周泰",f:"吳",z:"幼平",t:"渾身是膽的傷疤將軍",wp:"大刀",wu:89,zh:48,ld:76,
+ intro:"九江下蔡人,孫權的救命恩人。宣城之戰他捨身護主,身中十二槍仍死戰不退。濡須之戰又兩次殺入重圍救出孫權。孫權設宴時讓他解衣,指著滿身傷疤一一詢問來歷,感動落淚,親自為他把盞敬酒。",
+ look:"演義中他滿身刀箭傷痕「膚如刻畫」,每道疤都是一枚勳章。",
+ p:{sk:"#c98a5a",ey:"round",br:"angry",bd:"short",bc:"#1d150c",ht:"band",hc:"#8a3a2e",ac:"#7a3a2e",at:"armor",ex:["scar"]}},
+{n:"凌統",f:"吳",z:"公績",t:"少年猛將",wp:"雙刀",wu:86,zh:60,ld:77,
+ intro:"吳郡餘杭人,十五歲就代領父親的兵馬。合肥之戰張遼突襲,他率三百親兵死保孫權突圍,部下全數戰死,他負傷殺出重圍。與甘寧有殺父之仇,後被甘寧救命之恩化解,兩人成為生死之交。",
+ look:"演義中他少年英氣,雙刀如雪,忠烈過人。",
+ p:{sk:"#efcda6",ey:"sharp",br:"flat",bd:"none",bc:"#222",ht:"band",hc:"#3a5a8a",ac:"#3a5a8a",at:"armor",ex:[]}},
+{n:"魯肅",f:"吳",z:"子敬",t:"忠厚長者・大都督",wp:"書卷",wu:56,zh:92,ld:85,
+ intro:"臨淮東城人,家財萬貫卻仗義疏財,一出手就送周瑜一整倉三千斛米。他向孫權提出「榻上策」,比隆中對更早規劃天下大勢;力主孫劉聯盟抗曹,促成赤壁大捷。是東吳最有遠見的戰略家。",
+ look:"史載他「體貌魁奇,少有壯節」,寬厚的面容下是深遠的眼光。",
+ p:{sk:"#eec9a0",ey:"gentle",br:"flat",bd:"full",bc:"#33261a",ht:"official",hc:"#4a5a4a",ac:"#5a6b5a",at:"robe",ex:[]}},
+/* ---------- 群雄 (7) ---------- */
+{n:"呂布",f:"群",z:"奉先",t:"飛將・天下無雙",wp:"方天畫戟",wu:100,zh:26,ld:80,
+ intro:"五原九原人,三國第一猛將,「人中呂布,馬中赤兔」。虎牢關前一人獨戰劉備、關羽、張飛三英,轅門射戟一箭定和平。可惜他反覆無常,先後背叛丁原、董卓,最後在下邳被曹操擒殺,勇冠天下卻敗在人品。",
+ look:"演義描寫他「頭戴三叉束髮紫金冠,體挂西川紅錦百花袍,身披獸面吞頭連環鎧」,器宇軒昂,威風無雙。",
+ p:{sk:"#efcda6",ey:"sharp",br:"angry",bd:"mo",bc:"#1d150c",ht:"goldhelm",hc:"#c9a227",ac:"#8a3a2e",at:"armor",ex:["plume2"]}},
+{n:"董卓",f:"群",z:"仲穎",t:"暴虐權臣",wp:"佩劍",wu:85,zh:68,ld:65,
+ intro:"隴西臨洮人,率西涼軍進京把持朝政,廢立皇帝、火燒洛陽,殘暴不仁,天下群雄因此共同起兵討伐他。最後王允巧施連環計,利用貂蟬離間他與呂布,被呂布所殺,長安百姓歡呼慶祝。",
+ look:"史載他「膂力過人,雙帶兩鞬,左右馳射」,晚年體肥多疑,凶相畢露。",
+ p:{sk:"#d9a072",ey:"narrow",br:"bushy",bd:"full",bc:"#26190d",ht:"official",hc:"#3a2a1a",ac:"#4a3020",at:"robe",ex:["wide"]}},
+{n:"袁紹",f:"群",z:"本初",t:"四世三公",wp:"寶劍",wu:70,zh:70,ld:85,
+ intro:"汝南汝陽人,家族「四世三公」,是漢末聲望最高的諸侯,曾任討董聯軍盟主,雄踞冀、青、幽、并四州,帶甲百萬。可惜他「好謀無斷」,官渡之戰不聽田豐、沮授忠言,被曹操以少勝多擊潰,從此一蹶不振。",
+ look:"《三國志》記載他「姿貌威容」,儀表堂堂,有領袖風範。",
+ p:{sk:"#eec9a0",ey:"calm",br:"bushy",bd:"full",bc:"#26190d",ht:"crown",hc:"#8a6b34",ac:"#6b5a3a",at:"robe",ex:[]}},
+{n:"袁術",f:"群",z:"公路",t:"僭號仲家",wp:"佩劍",wu:65,zh:60,ld:65,
+ intro:"袁紹的堂弟,佔據淮南,兵多糧足。得到孫策抵押的傳國玉璽後利令智昏,竟搶先稱帝,結果眾叛親離,被各路諸侯圍攻,兵敗窮途,連想喝一口蜂蜜水都不可得,吐血而亡。",
+ look:"演義中他錦衣玉帶、志大才疏,驕氣寫在臉上。",
+ p:{sk:"#eec9a0",ey:"narrow",br:"thin",bd:"goatee",bc:"#26190d",ht:"crown",hc:"#a08a3a",ac:"#7a6b8a",at:"robe",ex:[]}},
+{n:"張角",f:"群",z:"-",t:"太平道大賢良師",wp:"九節杖",wu:25,zh:86,ld:82,
+ intro:"鉅鹿人,自稱得到南華老仙授予《太平要術》,以符水咒語為人治病,信徒數十萬。西元184年率黃巾軍起義,「蒼天已死,黃天當立」,天下震動,東漢從此走向瓦解——三國亂世的序幕就是由他揭開的。",
+ look:"演義中他碧眼童顏,手執九節杖,頭裹黃巾,道袍飄飄。",
+ p:{sk:"#e0bd94",ey:"aged",br:"thin",bd:"long",bc:"#b8b2a6",ht:"turban",hc:"#c9a227",ac:"#b8952e",at:"robe",ex:["oldlines"]}},
+{n:"華雄",f:"群",z:"-",t:"董卓帳下驍騎校尉",wp:"大刀",wu:90,zh:40,ld:70,
+ intro:"董卓麾下猛將,虎牢關前連斬聯軍數員大將,各路諸侯無人敢戰。正當眾人束手無策時,關羽請纓出戰,「溫酒斬華雄」——酒還沒涼,關羽已提著華雄首級回營,這一戰讓關羽一舉成名。",
+ look:"演義描寫他「身長九尺,虎體狼腰,豹頭猿臂」,凶悍絕倫。",
+ p:{sk:"#b57947",ey:"round",br:"bushy",bd:"full",bc:"#151008",ht:"helm",hc:"#3a3a44",ac:"#4a4452",at:"armor",ex:[]}},
+{n:"公孫瓚",f:"群",z:"伯珪",t:"白馬將軍",wp:"長槍",wu:84,zh:60,ld:80,
+ intro:"遼西令支人,鎮守北疆,專挑白馬組成「白馬義從」騎兵,塞外胡人聞之喪膽,互相告誡「避白馬長史」。他是劉備的同窗好友,趙雲最早也在他麾下。後與袁紹爭奪河北,兵敗於易京。",
+ look:"史載他「有姿儀,大音聲」,白馬銀鞍,英武非凡。",
+ p:{sk:"#e8c398",ey:"sharp",br:"flat",bd:"mo",bc:"#26190d",ht:"helm",hc:"#cfd4de",ac:"#c8ccd8",at:"armor",ex:[]}},
+];
+/* ===== SVG 武將畫像產生器:依史書/演義記載特徵繪製 ===== */
+const FCOLOR = {"蜀":"#2f7d4f","魏":"#2f5b8e","吳":"#a33b2e","群":"#6b5b95"};
+const FBG = {
+ "蜀":["#2a4a33","#0e1a12"], "魏":["#243450","#0c1220"],
+ "吳":["#4a251d","#1c0d0a"], "群":["#3a3046","#171226"]
+};
+let _pid = 0;
+function drawPortrait(w, size){
+  const p = w.p, uid = "pg" + (_pid++);
+  const wide = p.ex.includes("wide");
+  const rx = wide ? 50 : 43, ry = wide ? 50 : 54;
+  const cx = 100, cy = 112;
+  const sk = p.sk, dark = shade(sk, -28), darker = shade(sk, -55);
+  const bg = FBG[w.f];
+  let s = `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" ${size?`width="${size}"`:""}>`;
+  s += `<defs>
+   <radialGradient id="${uid}bg" cx="50%" cy="38%" r="75%">
+     <stop offset="0%" stop-color="${bg[0]}"/><stop offset="100%" stop-color="${bg[1]}"/>
+   </radialGradient>
+   <linearGradient id="${uid}fa" x1="0" y1="0" x2="0" y2="1">
+     <stop offset="0%" stop-color="${shade(sk,14)}"/><stop offset="100%" stop-color="${dark}"/>
+   </linearGradient>
+   <linearGradient id="${uid}ar" x1="0" y1="0" x2="0" y2="1">
+     <stop offset="0%" stop-color="${shade(p.ac,26)}"/><stop offset="100%" stop-color="${shade(p.ac,-30)}"/>
+   </linearGradient>
+   <linearGradient id="${uid}ht" x1="0" y1="0" x2="0" y2="1">
+     <stop offset="0%" stop-color="${shade(p.hc,30)}"/><stop offset="100%" stop-color="${shade(p.hc,-25)}"/>
+   </linearGradient>
+  </defs>`;
+  s += `<rect width="200" height="240" fill="url(#${uid}bg)"/>`;
+  s += `<circle cx="100" cy="105" r="78" fill="none" stroke="${FCOLOR[w.f]}" stroke-opacity=".28" stroke-width="3"/>`;
+  /* 身體/鎧甲或袍服 */
+  s += body(uid, p, wide);
+  /* 長鬚(垂胸,畫在身體上、頭之下) */
+  if(p.bd === "long") s += `<path d="M78 150 Q74 190 84 226 Q100 236 116 226 Q126 190 122 150 Q100 168 78 150" fill="${p.bc}" opacity=".96"/>
+    <path d="M88 160 Q86 195 92 222 M100 165 Q100 200 100 228 M112 160 Q114 195 108 222" stroke="${shade(p.bc,25)}" stroke-width="1.6" fill="none" opacity=".5"/>`;
+  /* 頸 */
+  s += `<path d="M86 142 L86 172 Q100 182 114 172 L114 142 Z" fill="${dark}"/>`;
+  /* 耳 */
+  const el = p.ex.includes("bigears") ? 15 : 10;
+  s += `<ellipse cx="${cx-rx+1}" cy="${cy+6}" rx="7" ry="${el}" fill="url(#${uid}fa)" stroke="${darker}" stroke-width="1"/>`;
+  s += `<ellipse cx="${cx+rx-1}" cy="${cy+6}" rx="7" ry="${el}" fill="url(#${uid}fa)" stroke="${darker}" stroke-width="1"/>`;
+  /* 頭 */
+  s += `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#${uid}fa)" stroke="${darker}" stroke-width="1.4"/>`;
+  /* 顴骨陰影 */
+  s += `<path d="M${cx-rx*0.62} ${cy+18} Q${cx} ${cy+30} ${cx+rx*0.62} ${cy+18}" stroke="${dark}" stroke-width="2" fill="none" opacity=".25"/>`;
+  /* 鬢角髮 */
+  s += `<path d="M${cx-rx+3} ${cy-14} Q${cx-rx-2} ${cy+8} ${cx-rx+6} ${cy+22} L${cx-rx+9} ${cy-16} Z" fill="#221609" opacity=".85"/>`;
+  s += `<path d="M${cx+rx-3} ${cy-14} Q${cx+rx+2} ${cy+8} ${cx+rx-6} ${cy+22} L${cx+rx-9} ${cy-16} Z" fill="#221609" opacity=".85"/>`;
+  /* 五官 */
+  s += brows(p, cx, cy);
+  s += eyes(p, cx, cy);
+  s += nose(cx, cy, dark);
+  s += mouth(p, cx, cy);
+  /* 鬍鬚 */
+  s += beard(p, cx, cy, rx, ry);
+  /* 老年紋 */
+  if(p.ex.includes("oldlines")) s += `
+    <path d="M${cx-30} ${cy-2} q6 5 13 3 M${cx+30} ${cy-2} q-6 5 -13 3" stroke="${darker}" stroke-width="1.2" fill="none" opacity=".55"/>
+    <path d="M${cx-14} ${cy+24} q4 3 9 2 M${cx+14} ${cy+24} q-4 3 -9 2" stroke="${darker}" stroke-width="1.1" fill="none" opacity=".45"/>`;
+  /* 疤痕 */
+  if(p.ex.includes("scar")) s += `<path d="M${cx+16} ${cy-10} l10 22 M${cx+14} ${cy-4} l7 3 M${cx+19} ${cy+4} l7 3" stroke="#7a3b2e" stroke-width="2" fill="none" opacity=".8" stroke-linecap="round"/>`;
+  /* 頭飾 */
+  s += headgear(uid, p, cx, cy, rx, ry);
+  /* 眼罩(夏侯惇)— 蓋在頭飾之下、眼之上,最後畫確保可見 */
+  if(p.ex.includes("eyepatch")) s += `
+    <path d="M${cx-rx} ${cy-16} L${cx+rx} ${cy-2}" stroke="#241a10" stroke-width="4"/>
+    <ellipse cx="${cx-17}" cy="${cy-6}" rx="14" ry="11" fill="#241a10" stroke="#0f0a05" stroke-width="1.5"/>`;
+  /* 羽扇(諸葛亮) */
+  if(p.ex.includes("fan")) s += fan(cx);
+  s += `</svg>`;
+  return s;
+}
+function shade(hex, amt){
+  const n = parseInt(hex.slice(1),16);
+  let r=(n>>16)+amt, g=((n>>8)&255)+amt, b=(n&255)+amt;
+  r=Math.max(0,Math.min(255,r)); g=Math.max(0,Math.min(255,g)); b=Math.max(0,Math.min(255,b));
+  return "#"+((r<<16)|(g<<8)|b).toString(16).padStart(6,"0");
+}
+function body(uid, p, wide){
+  const ac = p.ac, w = wide ? 14 : 0;
+  let s = "";
+  if(p.at === "robe"){
+    s += `<path d="M${34-w} 240 Q${40-w} 186 ${66-w} 172 L100 186 L${134+w} 172 Q${160+w} 186 ${166+w} 240 Z" fill="url(#${uid}ar)" stroke="${shade(ac,-45)}" stroke-width="2"/>`;
+    s += `<path d="M100 186 L${66-w} 172 L84 226 L100 186 L116 226 L${134+w} 172 Z" fill="${shade(ac,-18)}"/>`;
+    s += `<path d="M86 170 L100 188 L114 170" fill="none" stroke="${shade(ac,40)}" stroke-width="3"/>`;
+    s += `<path d="M100 188 L96 240 M100 188 L104 240" stroke="${shade(ac,-40)}" stroke-width="2" fill="none"/>`;
+  }else{
+    /* 鎧甲 */
+    s += `<path d="M${36-w} 240 Q${38-w} 192 ${64-w} 176 L100 184 L${136+w} 176 Q${162+w} 192 ${164+w} 240 Z" fill="url(#${uid}ar)" stroke="${shade(ac,-45)}" stroke-width="2"/>`;
+    /* 肩甲 */
+    s += `<path d="M${64-w} 176 Q${44-w} 178 ${40-w} 196 Q${58-w} 204 ${74-w} 196 Q${72-w} 182 ${64-w} 176" fill="${shade(ac,18)}" stroke="${shade(ac,-40)}" stroke-width="1.6"/>`;
+    s += `<path d="M${136+w} 176 Q${156+w} 178 ${160+w} 196 Q${142+w} 204 ${126+w} 196 Q${128+w} 182 ${136+w} 176" fill="${shade(ac,18)}" stroke="${shade(ac,-40)}" stroke-width="1.6"/>`;
+    /* 護心鏡 */
+    s += `<circle cx="100" cy="212" r="15" fill="${shade(ac,30)}" stroke="${shade(ac,-40)}" stroke-width="2"/>`;
+    s += `<circle cx="100" cy="212" r="8" fill="${shade(ac,50)}" opacity=".8"/>`;
+    if(p.at === "scale"){
+      for(let yy=188; yy<236; yy+=10)
+        s += `<path d="M${52} ${yy} q8 6 16 0 q8 6 16 0 q8 6 16 0 q8 6 16 0 q8 6 16 0 q8 6 16 0" stroke="${shade(ac,-32)}" stroke-width="1.4" fill="none" opacity=".65"/>`;
+    }else{
+      s += `<circle cx="66" cy="196" r="2.4" fill="${shade(ac,45)}"/><circle cx="134" cy="196" r="2.4" fill="${shade(ac,45)}"/>
+            <circle cx="60" cy="222" r="2.4" fill="${shade(ac,45)}"/><circle cx="140" cy="222" r="2.4" fill="${shade(ac,45)}"/>`;
+    }
+    /* 領甲 */
+    s += `<path d="M80 174 L100 188 L120 174 L114 166 L100 174 L86 166 Z" fill="${shade(ac,-24)}" stroke="${shade(ac,-45)}" stroke-width="1.4"/>`;
+  }
+  return s;
+}
+function brows(p, cx, cy){
+  const y = cy - 18, c = "#241a10";
+  switch(p.br){
+    case "angry": return `<path d="M${cx-32} ${y-2} L${cx-8} ${y+7} L${cx-9} ${y+11} L${cx-33} ${y+3} Z" fill="${c}"/>
+                          <path d="M${cx+32} ${y-2} L${cx+8} ${y+7} L${cx+9} ${y+11} L${cx+33} ${y+3} Z" fill="${c}"/>`;
+    case "bushy": return `<path d="M${cx-33} ${y+4} Q${cx-20} ${y-6} ${cx-7} ${y+3} L${cx-8} ${y+9} Q${cx-20} ${y+1} ${cx-32} ${y+9} Z" fill="${c}"/>
+                          <path d="M${cx+33} ${y+4} Q${cx+20} ${y-6} ${cx+7} ${y+3} L${cx+8} ${y+9} Q${cx+20} ${y+1} ${cx+32} ${y+9} Z" fill="${c}"/>`;
+    case "thin":  return `<path d="M${cx-30} ${y+5} Q${cx-19} ${y-1} ${cx-8} ${y+4}" stroke="${c}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+                          <path d="M${cx+30} ${y+5} Q${cx+19} ${y-1} ${cx+8} ${y+4}" stroke="${c}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+    default:      return `<path d="M${cx-31} ${y+2} L${cx-8} ${y+2} L${cx-8} ${y+7} L${cx-31} ${y+7} Z" fill="${c}"/>
+                          <path d="M${cx+31} ${y+2} L${cx+8} ${y+2} L${cx+8} ${y+7} L${cx+31} ${y+7} Z" fill="${c}"/>`;
+  }
+}
+function eyes(p, cx, cy){
+  const y = cy - 5, iris = p.ey === "green" ? "#3f7a4f" : "#241a10";
+  let s = "";
+  const eye = (ex, flip) => {
+    const f = flip ? -1 : 1;
+    switch(p.ey){
+      case "round":
+        return `<circle cx="${ex}" cy="${y}" r="8.5" fill="#f4ede0" stroke="#241a10" stroke-width="1.6"/>
+                <circle cx="${ex}" cy="${y}" r="4" fill="${iris}"/><circle cx="${ex+1.4}" cy="${y-1.6}" r="1.3" fill="#fff"/>`;
+      case "narrow":
+        return `<path d="M${ex-13*f} ${y+2} Q${ex} ${y-6} ${ex+11*f} ${y-2} Q${ex+2*f} ${y+4} ${ex-13*f} ${y+2}" fill="#f4ede0" stroke="#241a10" stroke-width="1.5"/>
+                <circle cx="${ex}" cy="${y-1}" r="2.6" fill="${iris}"/>`;
+      case "sharp":
+        return `<path d="M${ex-11*f} ${y+3} Q${ex} ${y-6} ${ex+11*f} ${y-3} Q${ex} ${y+6} ${ex-11*f} ${y+3}" fill="#f4ede0" stroke="#241a10" stroke-width="1.5"/>
+                <circle cx="${ex}" cy="${y}" r="3.2" fill="${iris}"/><circle cx="${ex+1}" cy="${y-1}" r="1" fill="#fff"/>`;
+      case "gentle":
+        return `<path d="M${ex-10*f} ${y} Q${ex} ${y-7} ${ex+10*f} ${y} Q${ex} ${y+7} ${ex-10*f} ${y}" fill="#f4ede0" stroke="#241a10" stroke-width="1.5"/>
+                <circle cx="${ex}" cy="${y}" r="3.4" fill="${iris}"/><circle cx="${ex+1}" cy="${y-1.2}" r="1.1" fill="#fff"/>`;
+      case "aged":
+        return `<path d="M${ex-10*f} ${y+1} Q${ex} ${y-5} ${ex+10*f} ${y} Q${ex} ${y+5} ${ex-10*f} ${y+1}" fill="#f4ede0" stroke="#241a10" stroke-width="1.5"/>
+                <circle cx="${ex}" cy="${y}" r="3" fill="${iris}"/>
+                <path d="M${ex-8*f} ${y+8} q${8*f} 4 ${14*f} 1" stroke="#00000040" stroke-width="1.2" fill="none"/>`;
+      default: /* calm / green */
+        return `<path d="M${ex-11*f} ${y+1} Q${ex} ${y-7} ${ex+11*f} ${y+1} Q${ex} ${y+6} ${ex-11*f} ${y+1}" fill="#f4ede0" stroke="#241a10" stroke-width="1.5"/>
+                <circle cx="${ex}" cy="${y}" r="3.4" fill="${iris}"/><circle cx="${ex+1.2}" cy="${y-1.2}" r="1.1" fill="#fff"/>`;
+    }
+  };
+  s += eye(cx-19,false) + eye(cx+19,true);
+  return s;
+}
+function nose(cx, cy, dark){
+  return `<path d="M${cx-3} ${cy-2} Q${cx-5} ${cy+12} ${cx-7} ${cy+15} Q${cx} ${cy+20} ${cx+7} ${cy+15} Q${cx+5} ${cy+12} ${cx+3} ${cy-2}" fill="none" stroke="${dark}" stroke-width="1.8" stroke-linecap="round" opacity=".75"/>`;
+}
+function mouth(p, cx, cy){
+  const y = cy + 30;
+  if(["full","long","short"].includes(p.bd)) return "";
+  const shape = (p.ey==="gentle"||p.br==="thin") ?
+    `M${cx-11} ${y} Q${cx} ${y+6} ${cx+11} ${y}` : `M${cx-11} ${y+2} Q${cx} ${y+3} ${cx+11} ${y+2}`;
+  return `<path d="${shape}" stroke="#6b3428" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+}
+function beard(p, cx, cy, rx, ry){
+  if(p.bd === "none") return "";
+  const c = p.bc, lite = shade(c, 30);
+  let s = "";
+  const mo = `<path d="M${cx-4} ${cy+22} Q${cx-16} ${cy+20} ${cx-22} ${cy+30}" stroke="${c}" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <path d="M${cx+4} ${cy+22} Q${cx+16} ${cy+20} ${cx+22} ${cy+30}" stroke="${c}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  switch(p.bd){
+    case "mo": s = mo; break;
+    case "goatee":
+      s = mo + `<path d="M${cx-7} ${cy+38} Q${cx} ${cy+34} ${cx+7} ${cy+38} L${cx+4} ${cy+56} Q${cx} ${cy+60} ${cx-4} ${cy+56} Z" fill="${c}"/>`;
+      break;
+    case "short":
+      s = mo + `<path d="M${cx-rx+8} ${cy+16} Q${cx-rx+4} ${cy+38} ${cx-14} ${cy+48} Q${cx} ${cy+55} ${cx+14} ${cy+48} Q${cx+rx-4} ${cy+38} ${cx+rx-8} ${cy+16} Q${cx+rx-14} ${cy+34} ${cx} ${cy+40} Q${cx-rx+14} ${cy+34} ${cx-rx+8} ${cy+16}" fill="${c}" opacity=".92"/>`;
+      break;
+    case "full":
+      s = `<path d="M${cx-rx+6} ${cy+10} Q${cx-rx+2} ${cy+42} ${cx-12} ${cy+54} Q${cx} ${cy+64} ${cx+12} ${cy+54} Q${cx+rx-2} ${cy+42} ${cx+rx-6} ${cy+10} Q${cx+rx-12} ${cy+30} ${cx+14} ${cy+33} Q${cx} ${cy+36} ${cx-14} ${cy+33} Q${cx-rx+12} ${cy+30} ${cx-rx+6} ${cy+10}" fill="${c}"/>` + mo +
+          `<path d="M${cx-14} ${cy+40} Q${cx} ${cy+47} ${cx+14} ${cy+40}" stroke="${lite}" stroke-width="1.4" fill="none" opacity=".5"/>`;
+      break;
+    case "long":
+      s = `<path d="M${cx-rx+6} ${cy+8} Q${cx-rx+2} ${cy+40} ${cx-14} ${cy+50} Q${cx} ${cy+58} ${cx+14} ${cy+50} Q${cx+rx-2} ${cy+40} ${cx+rx-6} ${cy+8} Q${cx+rx-12} ${cy+28} ${cx+14} ${cy+31} Q${cx} ${cy+34} ${cx-14} ${cy+31} Q${cx-rx+12} ${cy+28} ${cx-rx+6} ${cy+8}" fill="${c}"/>` + mo;
+      break;
+  }
+  return s;
+}
+function headgear(uid, p, cx, cy, rx, ry){
+  const top = cy - ry, hc = p.hc, hd = shade(hc,-30), hl = shade(hc,35);
+  let s = "";
+  switch(p.ht){
+    case "band":
+      s = `<path d="M${cx} ${top-16} Q${cx-12} ${top-12} ${cx-10} ${top+2} L${cx+10} ${top+2} Q${cx+12} ${top-12} ${cx} ${top-16}" fill="#221609"/>
+           <path d="M${cx-rx-2} ${top+24} Q${cx} ${top-4} ${cx+rx+2} ${top+24} L${cx+rx+2} ${top+33} Q${cx} ${top+6} ${cx-rx-2} ${top+33} Z" fill="url(#${uid}ht)" stroke="${hd}" stroke-width="1.4"/>
+           <path d="M${cx-rx} ${top+18} Q${cx} ${top-8} ${cx+rx} ${top+18}" fill="#221609" opacity=".9"/>
+           <path d="M${cx+rx-6} ${top+30} q10 8 8 22" stroke="${hc}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+      break;
+    case "helm":
+      s = `<path d="M${cx-rx-3} ${top+26} Q${cx} ${top-22} ${cx+rx+3} ${top+26} L${cx+rx+3} ${top+34} L${cx-rx-3} ${top+34} Z" fill="url(#${uid}ht)" stroke="${hd}" stroke-width="2"/>
+           <path d="M${cx-rx-5} ${top+32} L${cx+rx+5} ${top+32} L${cx+rx+2} ${top+40} L${cx-rx-2} ${top+40} Z" fill="${hd}"/>
+           <circle cx="${cx}" cy="${top-16}" r="5" fill="${hl}" stroke="${hd}" stroke-width="1.5"/>
+           <path d="M${cx} ${top-11} L${cx} ${top+2}" stroke="${hd}" stroke-width="3"/>
+           <path d="M${cx-26} ${top+14} Q${cx} ${top-2} ${cx+26} ${top+14}" stroke="${hl}" stroke-width="2" fill="none" opacity=".7"/>`;
+      if(p.ex.includes("plume"))
+        s += `<path d="M${cx} ${top-14} Q${cx-20} ${top-34} ${cx-44} ${top-26} Q${cx-24} ${top-18} ${cx-2} ${top-8}" fill="#e8e2d2" stroke="#b8b2a2" stroke-width="1"/>`;
+      break;
+    case "goldhelm":
+      s = `<path d="M${cx-rx-3} ${top+26} Q${cx} ${top-24} ${cx+rx+3} ${top+26} L${cx+rx+3} ${top+34} L${cx-rx-3} ${top+34} Z" fill="url(#${uid}ht)" stroke="${hd}" stroke-width="2"/>
+           <path d="M${cx-14} ${top+2} L${cx} ${top-20} L${cx+14} ${top+2} Z" fill="${hl}" stroke="${hd}" stroke-width="1.4"/>
+           <circle cx="${cx}" cy="${top+14}" r="5.5" fill="#d84335" stroke="${hd}" stroke-width="1.4"/>
+           <path d="M${cx-rx-6} ${top+30} q-8 -20 4 -34 M${cx+rx+6} ${top+30} q8 -20 -4 -34" stroke="${hl}" stroke-width="3" fill="none"/>`;
+      if(p.ex.includes("plume2"))
+        s += `<path d="M${cx-10} ${top-6} Q${cx-30} ${top-60} ${cx-52} ${top-64} Q${cx-34} ${top-34} ${cx-16} ${top-2}" fill="none" stroke="#8a5a3a" stroke-width="5" stroke-linecap="round"/>
+              <path d="M${cx+10} ${top-6} Q${cx+30} ${top-60} ${cx+52} ${top-64} Q${cx+34} ${top-34} ${cx+16} ${top-2}" fill="none" stroke="#8a5a3a" stroke-width="5" stroke-linecap="round"/>`;
+      break;
+    case "cap":
+      s = `<path d="M${cx-rx+2} ${top+22} Q${cx-rx+8} ${top-14} ${cx} ${top-16} Q${cx+rx-8} ${top-14} ${cx+rx-2} ${top+22} Q${cx} ${top+4} ${cx-rx+2} ${top+22}" fill="url(#${uid}ht)" stroke="${hd}" stroke-width="1.8"/>
+           <path d="M${cx-rx+2} ${top+22} Q${cx} ${top+8} ${cx+rx-2} ${top+22}" stroke="${hd}" stroke-width="2" fill="none"/>`;
+      break;
+    case "guanjin":
+      s = `<path d="M${cx-16} ${top-26} L${cx+16} ${top-26} L${cx+24} ${top+2} L${cx-24} ${top+2} Z" fill="url(#${uid}ht)" stroke="${hd}" stroke-width="1.6"/>
+           <path d="M${cx-10} ${top-26} L${cx} ${top-38} L${cx+10} ${top-26}" fill="${shade(hc,12)}" stroke="${hd}" stroke-width="1.4"/>
+           <path d="M${cx-rx-1} ${top+22} Q${cx} ${top-6} ${cx+rx+1} ${top+22} L${cx+rx+1} ${top+30} Q${cx} ${top+6} ${cx-rx-1} ${top+30} Z" fill="${shade(hc,-8)}" stroke="${hd}" stroke-width="1.4"/>
+           <path d="M${cx-8} ${top-26} L${cx-14} ${top+2} M${cx+8} ${top-26} L${cx+14} ${top+2}" stroke="${hd}" stroke-width="1.2" opacity=".7"/>`;
+      break;
+    case "official":
+      s = `<path d="M${cx-20} ${top-24} L${cx+20} ${top-24} L${cx+26} ${top+4} L${cx-26} ${top+4} Z" fill="url(#${uid}ht)" stroke="${hd}" stroke-width="1.8"/>
+           <path d="M${cx-26} ${top-30} L${cx+26} ${top-30} L${cx+29} ${top-22} L${cx-29} ${top-22} Z" fill="${shade(hc,-14)}" stroke="${hd}" stroke-width="1.4"/>
+           <path d="M${cx-rx-1} ${top+22} Q${cx} ${top-4} ${cx+rx+1} ${top+22} L${cx+rx+1} ${top+29} Q${cx} ${top+6} ${cx-rx-1} ${top+29} Z" fill="#221609"/>
+           <circle cx="${cx}" cy="${top-9}" r="3.4" fill="${hl}"/>`;
+      break;
+    case "crown":
+      s = `<path d="M${cx-rx-1} ${top+22} Q${cx} ${top-6} ${cx+rx+1} ${top+22} L${cx+rx+1} ${top+30} Q${cx} ${top+6} ${cx-rx-1} ${top+30} Z" fill="#221609"/>
+           <path d="M${cx-26} ${top+14} L${cx-26} ${top-8} L${cx-13} ${top+2} L${cx} ${top-14} L${cx+13} ${top+2} L${cx+26} ${top-8} L${cx+26} ${top+14} Z" fill="url(#${uid}ht)" stroke="${hd}" stroke-width="1.6"/>
+           <circle cx="${cx}" cy="${top+4}" r="3.6" fill="#d84335"/><circle cx="${cx-17}" cy="${top+6}" r="2.4" fill="#3f7a4f"/><circle cx="${cx+17}" cy="${top+6}" r="2.4" fill="#3f7a4f"/>`;
+      break;
+    case "turban":
+      s = `<path d="M${cx-rx-2} ${top+24} Q${cx-rx} ${top-16} ${cx} ${top-18} Q${cx+rx} ${top-16} ${cx+rx+2} ${top+24} Q${cx} ${top+2} ${cx-rx-2} ${top+24}" fill="url(#${uid}ht)" stroke="${hd}" stroke-width="1.8"/>
+           <path d="M${cx-rx} ${top+14} Q${cx} ${top-8} ${cx+rx} ${top+14} M${cx-rx+6} ${top+2} Q${cx} ${top-16} ${cx+rx-6} ${top+2}" stroke="${hd}" stroke-width="1.6" fill="none" opacity=".7"/>
+           <path d="M${cx+rx-4} ${top+22} q12 4 14 18" stroke="${hc}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+      break;
+    default: /* topknot 露髻 */
+      s = `<path d="M${cx-rx-1} ${top+24} Q${cx} ${top-10} ${cx+rx+1} ${top+24} L${cx+rx+1} ${top+32} Q${cx} ${top+8} ${cx-rx-1} ${top+32} Z" fill="#221609"/>
+           <path d="M${cx} ${top-18} Q${cx-13} ${top-14} ${cx-10} ${top+2} L${cx+10} ${top+2} Q${cx+13} ${top-14} ${cx} ${top-18}" fill="#221609"/>`;
+  }
+  return s;
+}
+function fan(cx){
+  return `<g transform="translate(26,178) rotate(-18)">
+    <path d="M0 44 L8 10 Q20 -6 34 2 Q30 20 14 40 Z" fill="#f2ede0" stroke="#c9c2ae" stroke-width="1.4"/>
+    <path d="M8 12 L14 38 M14 8 L19 34 M20 4 L24 30 M27 2 L28 26" stroke="#d8d2be" stroke-width="1.2"/>
+    <rect x="-2" y="42" width="7" height="16" rx="3" fill="#8a6b4a"/>
+  </g>`;
+}
+/* ===== 城池資料 ===== */
+const CITIES = [
+ {id:"beiping", n:"北平", x:720, y:70,  tier:1, owner:"群", defs:["公孫瓚","張角"]},
+ {id:"yecheng", n:"鄴城", x:640, y:140, tier:3, owner:"群", defs:["袁紹"]},
+ {id:"chenliu", n:"陳留", x:600, y:230, tier:1, owner:"魏", defs:["夏侯惇","樂進"]},
+ {id:"luoyang", n:"洛陽", x:480, y:220, tier:3, owner:"群", defs:["呂布","華雄"]},
+ {id:"changan", n:"長安", x:330, y:200, tier:4, owner:"群", defs:["董卓"]},
+ {id:"hanzhong",n:"漢中", x:260, y:300, tier:2, owner:"蜀", defs:["魏延","黃忠","姜維"]},
+ {id:"chengdu", n:"成都", x:140, y:380, tier:4, owner:"蜀", defs:["劉備","諸葛亮","關羽","馬超"]},
+ {id:"jiangling",n:"江陵",x:430, y:420, tier:1, owner:"蜀", defs:["張飛","趙雲","關平"]},
+ {id:"jingzhou",n:"荊州", x:480, y:330, tier:3, owner:"吳", defs:["呂蒙","陸遜"]},
+ {id:"wancheng",n:"宛城", x:520, y:272, tier:2, owner:"群", defs:["袁術"]},
+ {id:"xuchang", n:"許昌", x:620, y:295, tier:4, owner:"魏", defs:["曹操","司馬懿","張遼","許褚"]},
+ {id:"xuzhou",  n:"徐州", x:760, y:260, tier:2, owner:"魏", defs:["張郃","徐晃","曹仁"]},
+ {id:"jianye",  n:"建業", x:800, y:360, tier:4, owner:"吳", defs:["孫權","周瑜","孫堅"]},
+ {id:"chaisang",n:"柴桑", x:640, y:420, tier:1, owner:"吳", defs:["魯肅","程普"]},
+ {id:"jiangxia",n:"江夏", x:560, y:400, tier:2, owner:"吳", defs:["甘寧","黃蓋","周泰"]},
+ {id:"kuaiji",  n:"會稽", x:860, y:450, tier:2, owner:"吳", defs:["孫策","凌統"]},
+];
+const EDGES = [["beiping","yecheng"],["yecheng","chenliu"],["yecheng","luoyang"],
+ ["chenliu","luoyang"],["chenliu","xuchang"],["chenliu","xuzhou"],
+ ["luoyang","changan"],["luoyang","wancheng"],["luoyang","xuchang"],
+ ["changan","hanzhong"],["hanzhong","chengdu"],["chengdu","jiangling"],
+ ["jiangling","jingzhou"],["jiangling","jiangxia"],["jingzhou","wancheng"],
+ ["jingzhou","jiangxia"],["wancheng","xuchang"],["xuchang","xuzhou"],
+ ["xuzhou","jianye"],["jianye","chaisang"],["jianye","kuaiji"],
+ ["chaisang","jiangxia"]];
+const FORCES = {
+ "蜀":{starters:["劉備","關羽","張飛","趙雲","諸葛亮"],
+      desc:"以仁德立國。桃園三結義,五虎上將齊聚,臥龍鳳雛輔佐。"},
+ "魏":{starters:["曹操","張遼","夏侯惇","許褚","郭嘉"],
+      desc:"挾天子以令諸侯。兵多將廣,謀士如雲,雄踞中原。"},
+ "吳":{starters:["孫權","周瑜","甘寧","太史慈","呂蒙"],
+      desc:"據長江天險,坐斷東南。四代都督,水軍無敵。"},
+};
+const GTITLE = {1:"一年級",2:"二年級",3:"三年級",4:"四年級"};
+const wByName = n => WARRIORS.find(w => w.n === n);
+const cityById = id => CITIES.find(c => c.id === id);
+const $ = id => document.getElementById(id);
+
+/* ===== 遊戲狀態 ===== */
+let G = null;      // {f, turn, owner:{cityId:力}, roster:[{n,hp,mx}], reserve:[], learned:[]}
+let B = null;      // 戰鬥狀態
+let P = null;      // 練功房狀態
+
+function newWar(n){ const w = wByName(n); const mx = 80 + Math.round(w.ld/2); return {n:n, hp:mx, mx:mx}; }
+
+function startGame(f){
+  const owner = {};
+  CITIES.forEach(c => owner[c.id] = (c.owner === f ? "我" : c.owner));
+  const roster = FORCES[f].starters.map(newWar);
+  const reserve = WARRIORS.filter(w => w.f === f && !FORCES[f].starters.includes(w.n)).map(w => w.n);
+  G = {f:f, turn:1, owner:owner, roster:roster, reserve:reserve, learned:[]};
+  show("scr-map"); renderMap(); saveGame(false);
+}
+function show(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("on"));
+  $(id).classList.add("on");
+}
+function backTitle(){ if(G) saveGame(false); show("scr-title"); initTitle(); }
+function closeModal(id){ $(id).classList.remove("on"); }
+
+/* ===== 標題 ===== */
+function initTitle(){
+  const row = $("force-row"); row.innerHTML = "";
+  ["蜀","魏","吳"].forEach(f => {
+    const d = document.createElement("div");
+    d.className = "force-card f-" + (f==="魏"?"wei":f==="蜀"?"shu":"wu");
+    d.innerHTML = `<div class="fc-flag">${f}</div><div class="fc-name">${f==="蜀"?"蜀漢・劉備":f==="魏"?"曹魏・曹操":"東吳・孫權"}</div>
+      <div class="fc-desc">${FORCES[f].desc}<br>起始武將:${FORCES[f].starters.join("、")}</div>`;
+    d.onclick = () => { if(!G || confirm("開始新戰役?目前進度將被覆蓋。")) startGame(f); };
+    row.appendChild(d);
+  });
+  try{ $("btn-continue").style.display = localStorage.getItem("sgz_learn_save") ? "" : "none"; }catch(e){}
+}
+
+/* ===== 存讀檔 ===== */
+function saveGame(toast){
+  try{ localStorage.setItem("sgz_learn_save", JSON.stringify(G));
+       if(toast) hint("已存檔!"); }
+  catch(e){ if(toast) hint("此環境無法存檔"); }
+}
+function loadGame(){
+  try{ const d = localStorage.getItem("sgz_learn_save");
+    if(d){ G = JSON.parse(d); show("scr-map"); renderMap(); } }catch(e){}
+}
+function hint(t){ const h = $("map-hint"); h.textContent = t;
+  clearTimeout(hint._t); hint._t = setTimeout(()=>h.textContent="點選敵方相鄰城池發動進攻", 2600); }
+
+/* ===== 地圖 ===== */
+const OCOLOR = {"我":"#e8c96a","蜀":"#2f7d4f","魏":"#2f5b8e","吳":"#a33b2e","群":"#6b5b95"};
+function renderMap(){
+  $("tb-force").textContent = G.f + "軍";
+  $("tb-turn").textContent = "第 " + G.turn + " 回合";
+  const own = CITIES.filter(c => G.owner[c.id] === "我").length;
+  $("tb-city").textContent = "城池 " + own + "/" + CITIES.length;
+  $("tb-wnum").textContent = "武將 " + G.roster.length;
+  $("tb-learn").textContent = "已學生字 " + G.learned.length;
+  let s = "";
+  EDGES.forEach(e => { const a = cityById(e[0]), b = cityById(e[1]);
+    s += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="#8a7444" stroke-width="2.5" stroke-dasharray="7 6" opacity=".55"/>`; });
+  CITIES.forEach(c => {
+    const o = G.owner[c.id], col = OCOLOR[o], mine = o === "我";
+    const atk = !mine && isAdjacentToMine(c.id);
+    s += `<g class="city-node" onclick="cityClick('${c.id}')">`;
+    if(atk) s += `<circle cx="${c.x}" cy="${c.y}" r="30" fill="${col}" opacity=".18">
+      <animate attributeName="r" values="26;34;26" dur="1.6s" repeatCount="indefinite"/></circle>`;
+    s += `<circle class="city-ring" cx="${c.x}" cy="${c.y}" r="22" fill="${col}" stroke="${mine?"#fff2c8":"#1a120a"}" stroke-width="${mine?3.5:2.5}"/>
+      <text x="${c.x}" y="${c.y+1}" text-anchor="middle" font-size="15" font-weight="900" fill="#fff8e8" style="pointer-events:none">${o==="我"?G.f:o}</text>
+      <text x="${c.x}" y="${c.y+42}" text-anchor="middle" font-size="17" font-weight="900" fill="#f0e2bb" style="pointer-events:none">${c.n}</text>
+      <text x="${c.x}" y="${c.y+58}" text-anchor="middle" font-size="11" fill="#c8b488" style="pointer-events:none">${"★".repeat(c.tier)} ${GTITLE[c.tier]}</text>`;
+    if(!mine) s += `<text x="${c.x}" y="${c.y-30}" text-anchor="middle" font-size="11.5" fill="#d8c69a" style="pointer-events:none">守將${c.defs.length}名</text>`;
+    s += `</g>`;
+  });
+  $("map-svg").innerHTML = s;
+  checkVictory();
+}
+function isAdjacentToMine(id){
+  return EDGES.some(e => (e[0]===id && G.owner[e[1]]==="我") || (e[1]===id && G.owner[e[0]]==="我"));
+}
+function cityClick(id){
+  const c = cityById(id), o = G.owner[id];
+  if(o === "我"){ hint(c.n + "是我方城池(" + "★".repeat(c.tier) + ")"); return; }
+  if(!isAdjacentToMine(id)){ hint("太遠了!只能進攻與我方城池相鄰的城。"); return; }
+  openPick(id);
+}
+
+/* ===== 選將出戰 ===== */
+let pickCity = null;
+function openPick(cityId){
+  pickCity = cityId; const c = cityById(cityId);
+  $("pick-title").textContent = "進攻" + c.n + "(守將:" + c.defs.join("、") + ")— 選擇出戰武將";
+  const g = $("pick-grid"); g.innerHTML = "";
+  G.roster.forEach(r => {
+    const w = wByName(r.n), hurt = r.hp <= 0;
+    const d = document.createElement("div");
+    d.className = "gal-card" + (hurt ? " locked" : "");
+    d.innerHTML = drawPortrait(w) + `<div class="gname">${w.n}</div>
+      <div class="gtitle">${hurt ? "重傷休養中" : "體力 " + r.hp + "/" + r.mx + "・武力" + w.wu}</div>`;
+    if(!hurt) d.onclick = () => { closeModal("modal-pick"); startBattle(cityId, r.n); };
+    g.appendChild(d);
+  });
+  $("modal-pick").classList.add("on");
+}
+
+/* ===== 戰鬥 ===== */
+function startBattle(cityId, wname){
+  const c = cityById(cityId);
+  B = { city:c, me:G.roster.find(r => r.n === wname), wave:0, combo:0,
+        defs:c.defs.map(n => { const w = wByName(n); return {n:n, hp:60 + w.ld, mx:60 + w.ld}; }),
+        newChars:[], practice:false };
+  $("bt-city").textContent = "進攻 " + c.n + "(" + GTITLE[c.tier] + "生字)";
+  show("scr-battle"); setupWave(); updateBars(); askQuestion();
+}
+function setupWave(){
+  const d = B.defs[B.wave], w = wByName(d.n), me = wByName(B.me.n);
+  $("bt-wave").textContent = B.practice ? "陪練武將" : "守將 " + (B.wave+1) + "/" + B.defs.length;
+  $("bt-mep").innerHTML = drawPortrait(me); $("bt-men").textContent = me.n; $("bt-met").textContent = me.t;
+  $("bt-enp").innerHTML = drawPortrait(w);  $("bt-enn").textContent = w.n;  $("bt-ent").textContent = w.t;
+  log(B.practice ? "自由練習,答錯不扣血!" : d.n + "出城迎戰!答對國字就能發動攻擊!");
+}
+function updateBars(){
+  const d = B.defs[B.wave];
+  $("bt-mehp").style.width = Math.max(0, B.me.hp / B.me.mx * 100) + "%";
+  $("bt-mehpn").textContent = Math.max(0,B.me.hp) + " / " + B.me.mx;
+  $("bt-enhp").style.width = Math.max(0, d.hp / d.mx * 100) + "%";
+  $("bt-enhpn").textContent = Math.max(0,d.hp) + " / " + d.mx;
+  $("combo-tag").textContent = B.combo >= 2 ? "連擊 x" + B.combo + "!" : "";
+}
+function log(t){ $("battle-log").textContent = t; }
+
+/* ===== 出題 ===== */
+function pool(maxG, exactG){
+  return CHARS.filter(ch => exactG ? ch.g === exactG : ch.g <= maxG);
+}
+function pick(arr, n, exclude){
+  const cand = arr.filter(x => !exclude.includes(x));
+  const out = [];
+  while(out.length < n && cand.length){ out.push(cand.splice(Math.floor(Math.random()*cand.length),1)[0]); }
+  return out;
+}
+function genQuestion(pl){
+  const ch = pl[Math.floor(Math.random()*pl.length)];
+  const types = ["zy","cz","bs","tz"];
+  const t = types[Math.floor(Math.random()*types.length)];
+  let q = {ch:ch, type:t};
+  if(t === "zy"){
+    q.label = "讀音題"; q.html = `「<span class="bigchar">${ch.c}</span>」的注音是?`;
+    const ds = pick([...new Set(pl.filter(x=>x.z!==ch.z).map(x=>x.z))], 3, [ch.z]);
+    q.opts = shuffle([ch.z, ...ds]); q.ans = ch.z;
+    q.exp = `「${ch.c}」讀作 ${ch.z},部首「${ch.r}」,例如:${ch.w.join("、")}。`;
+  }else if(t === "cz"){
+    q.label = "選字題";
+    const cs = pl.filter(x => x.z === ch.z ? x.c === ch.c : true);
+    q.html = `注音「${ch.z}」(${ch.w[0]}的「${ch.c}」)是哪個字?`;
+    const ds = pick(pl.filter(x => x.z !== ch.z).map(x=>x.c), 3, [ch.c]);
+    q.opts = shuffle([ch.c, ...ds]); q.ans = ch.c;
+    q.exp = `${ch.z} 就是「${ch.c}」,可以造詞:${ch.w.join("、")}。`;
+  }else if(t === "bs"){
+    q.label = "部首題"; q.html = `「<span class="bigchar">${ch.c}</span>」(${ch.z})的部首是?`;
+    const ds = pick([...new Set(pl.filter(x=>x.r!==ch.r).map(x=>x.r))], 3, [ch.r]);
+    q.opts = shuffle([ch.r, ...ds]); q.ans = ch.r;
+    q.exp = `「${ch.c}」的部首是「${ch.r}」。造詞:${ch.w.join("、")}。`;
+  }else{
+    q.label = "造詞題";
+    const word = ch.w[Math.floor(Math.random()*ch.w.length)];
+    const blank = word.replace(ch.c, "▢");
+    q.html = `「${blank}」(${ch.z})的 ▢ 要填哪個字?`;
+    const rest = word.replace(ch.c, "");
+    const ds = pick(pl.filter(x => x.c !== ch.c && x.z !== ch.z &&
+        !x.w.some(w2 => w2.includes(rest) && rest.length > 0)).map(x=>x.c), 3, [ch.c]);
+    q.opts = shuffle([ch.c, ...ds]); q.ans = ch.c;
+    q.exp = `正確答案是「${ch.c}」(${ch.z}),組成「${word}」。`;
+  }
+  return q;
+}
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+let curQ = null;
+function askQuestion(){
+  const pl = B.practice ? B.pool : pool(B.city.tier, null);
+  curQ = genQuestion(pl);
+  $("q-type").textContent = curQ.label + (B.practice ? "・練功房" : "・" + GTITLE[B.city.tier] + "程度");
+  $("q-text").innerHTML = curQ.html;
+  $("q-fb").textContent = "";
+  const box = $("q-opts"); box.innerHTML = "";
+  curQ.opts.forEach(o => {
+    const b = document.createElement("button");
+    b.className = "opt"; b.textContent = o;
+    b.onclick = () => answer(b, o);
+    box.appendChild(b);
+  });
+}
+function answer(btn, val){
+  document.querySelectorAll("#q-opts .opt").forEach(b => { b.disabled = true;
+    if(b.textContent === curQ.ans) b.classList.add("correct"); });
+  const ok = val === curQ.ans;
+  const ch = curQ.ch;
+  if(ok){
+    if(!G.learned.includes(ch.c)){ G.learned.push(ch.c); if(!B.practice) B.newChars.push(ch.c); }
+    $("q-fb").textContent = "答對了!" + curQ.exp;
+  }else{
+    btn.classList.add("wrong");
+    $("q-fb").textContent = "答錯了~ " + curQ.exp;
+  }
+  if(B.practice){ practiceStep(ok); return; }
+  const d = B.defs[B.wave], me = wByName(B.me.n), en = wByName(d.n);
+  if(ok){
+    B.combo++;
+    const dmg = 18 + Math.round(me.wu/6) + Math.min(B.combo,5)*4;
+    d.hp -= dmg;
+    log(me.n + "發動攻擊,造成 " + dmg + " 點傷害!");
+  }else{
+    B.combo = 0;
+    const dmg = 12 + Math.round(en.wu/8);
+    B.me.hp -= dmg;
+    log(en.n + "趁機反擊,我方損失 " + dmg + " 點體力!");
+  }
+  updateBars();
+  setTimeout(() => {
+    if(d.hp <= 0){ waveDown(); }
+    else if(B.me.hp <= 0){ meDown(); }
+    else askQuestion();
+  }, ok ? 1600 : 3000);
+}
+function waveDown(){
+  const d = B.defs[B.wave];
+  log("擊敗守將" + d.n + "!");
+  if(B.wave < B.defs.length - 1){
+    B.wave++;
+    setTimeout(() => { setupWave(); updateBars(); askQuestion(); }, 1200);
+  }else{
+    setTimeout(battleWon, 900);
+  }
+}
+function meDown(){
+  log(B.me.n + "受了重傷!");
+  const alive = G.roster.filter(r => r.hp > 0);
+  if(alive.length){
+    setTimeout(() => {
+      $("pick-title").textContent = B.me.n + "重傷退場!選擇下一位武將接替出戰";
+      const g = $("pick-grid"); g.innerHTML = "";
+      alive.forEach(r => {
+        const w = wByName(r.n);
+        const el = document.createElement("div");
+        el.className = "gal-card";
+        el.innerHTML = drawPortrait(w) + `<div class="gname">${w.n}</div><div class="gtitle">體力 ${r.hp}/${r.mx}</div>`;
+        el.onclick = () => { closeModal("modal-pick"); B.me = r; setupWave(); updateBars(); askQuestion(); };
+        g.appendChild(el);
+      });
+      $("modal-pick").classList.add("on");
+    }, 1200);
+  }else{
+    setTimeout(() => endBattle(false), 1200);
+  }
+}
+function fleeBattle(){
+  if(B && B.practice){ endPractice(); return; }
+  endBattle(false, true);
+}
+function battleWon(){
+  G.owner[B.city.id] = "我";
+  endBattle(true);
+}
+function endBattle(won, fled){
+  G.turn++;
+  G.roster.forEach(r => { if(r.hp <= 0) r.hp = Math.round(r.mx * 0.4); });
+  let html = "";
+  if(won){
+    html += `成功佔領<b>${B.city.n}</b>!`;
+    if(G.reserve.length){
+      const j = G.reserve.shift();
+      G.roster.push(newWar(j));
+      html += `<br>本國武將<b>${j}</b>前來會合,加入我軍!`;
+    }
+  }else{
+    html += fled ? "我軍撤退,下次再來!" : "我軍全員負傷,進攻失敗…休整後再出發!";
+  }
+  if(B.newChars.length){
+    html += `<br>這場戰役學會了 ${B.newChars.length} 個新字:<br>` +
+      B.newChars.map(c => `<span class="newchar">${c}</span>`).join("");
+  }
+  $("res-title").textContent = won ? "攻城成功!" : "暫時撤退";
+  $("res-title").style.color = won ? "#2f7d4f" : "#8e2f24";
+  $("res-body").innerHTML = html;
+  const recruitable = won ? B.defs.map(d => d.n).filter(n => !G.roster.some(r => r.n === n)) : [];
+  $("res-btn").onclick = () => {
+    closeModal("modal-result");
+    if(won && recruitable.length){ openRecruit(recruitable[0], B.city.tier); }
+    else { show("scr-map"); renderMap(); saveGame(false); }
+  };
+  $("modal-result").classList.add("on");
+}
+function closeResult(){ closeModal("modal-result"); show("scr-map"); renderMap(); saveGame(false); }
+
+/* ===== 招募 ===== */
+function openRecruit(name, tier){
+  const w = wByName(name);
+  $("rec-sub").innerHTML = `敗將<b>${name}</b>(${w.t})願意考驗你:答對就歸順我軍!`;
+  const q = genQuestion(pool(null, tier));
+  $("rq-type").textContent = q.label + "・挑戰題(" + GTITLE[tier] + ")";
+  $("rq-text").innerHTML = q.html;
+  $("rq-fb").textContent = "";
+  const box = $("rq-opts"); box.innerHTML = "";
+  q.opts.forEach(o => {
+    const b = document.createElement("button");
+    b.className = "opt"; b.textContent = o;
+    b.onclick = () => {
+      document.querySelectorAll("#rq-opts .opt").forEach(x => { x.disabled = true;
+        if(x.textContent === q.ans) x.classList.add("correct"); });
+      const ok = o === q.ans;
+      if(ok){
+        if(!G.learned.includes(q.ch.c)) G.learned.push(q.ch.c);
+        G.roster.push(newWar(name));
+        $("rq-fb").textContent = "答對了!" + name + "歸順我軍!" + q.exp;
+      }else{
+        b.classList.add("wrong");
+        $("rq-fb").textContent = "可惜~" + name + "離開了。" + q.exp;
+      }
+      setTimeout(() => { closeModal("modal-recruit"); show("scr-map"); renderMap(); saveGame(false); }, 2600);
+    };
+    box.appendChild(b);
+  });
+  $("modal-recruit").classList.add("on");
+}
+
+/* ===== 休整 / 勝利 ===== */
+function restTurn(){
+  G.turn++;
+  G.roster.forEach(r => r.hp = Math.min(r.mx, r.hp + Math.round(r.mx*0.5)));
+  hint("全軍休整,體力大幅恢復!");
+  renderMap(); saveGame(false);
+}
+function checkVictory(){
+  if(G && CITIES.every(c => G.owner[c.id] === "我")){
+    $("res-title").textContent = "一統天下!";
+    $("res-title").style.color = "#c9a227";
+    $("res-body").innerHTML = `恭喜!${G.f}軍佔領了全部 ${CITIES.length} 座城池!<br>
+      你總共學會了 <b>${G.learned.length}</b> 個國字,收服了 <b>${G.roster.length}</b> 名武將。<br>真正的英雄,是用智慧贏得天下!`;
+    $("res-btn").onclick = () => { closeModal("modal-result"); };
+    $("modal-result").classList.add("on");
+  }
+}
+
+/* ===== 武將圖鑑 ===== */
+let galFrom = "map";
+function openGallery(fromTitle){ galFrom = fromTitle ? "title" : "map"; show("scr-gallery"); renderGalTabs("全部"); }
+function renderGalTabs(cur){
+  const tabs = ["全部","蜀","魏","吳","群"];
+  $("gal-tabs").innerHTML = tabs.map(t =>
+    `<button class="gtab${t===cur?" on":""}" onclick="renderGalTabs('${t}')">${t}${t==="全部"?"("+WARRIORS.length+")":""}</button>`).join("");
+  const g = $("gal-grid"); g.innerHTML = "";
+  WARRIORS.filter(w => cur === "全部" || w.f === cur).forEach(w => {
+    const mine = G && G.roster.some(r => r.n === w.n);
+    const d = document.createElement("div");
+    d.className = "gal-card";
+    d.innerHTML = drawPortrait(w) + `<div class="gname">${w.n}${mine?" ⚑":""}</div><div class="gtitle">${w.f}・${w.t}</div>`;
+    d.onclick = () => showWarrior(w.n);
+    g.appendChild(d);
+  });
+}
+function showWarrior(n){
+  const w = wByName(n);
+  const bar = (l,v) => `<div class="statrow"><span class="sl">${l}</span>
+    <span class="statbar"><i style="width:${v}%"></i></span><span class="sv">${v}</span></div>`;
+  $("wd-body").innerHTML = `
+    <div class="wd-left">${drawPortrait(w)}</div>
+    <div class="wd-right">
+      <div><span class="wd-name">${w.n}</span><span class="wd-zi">${w.z !== "-" ? "字 " + w.z : ""}</span></div>
+      <span class="wd-tag" style="background:${FCOLOR[w.f]}">${w.f === "群" ? "群雄" : w.f + "國"}</span>
+      <span class="wd-tag" style="background:#8a6a1e">${w.t}</span>
+      <span class="wd-tag" style="background:#6b4a2a">兵器:${w.wp}</span>
+      ${bar("武力", w.wu)}${bar("智力", w.zh)}${bar("統率", w.ld)}
+      <div class="wd-intro">${w.intro}</div>
+      <div class="wd-look">【史料記載的容貌】${w.look}</div>
+    </div>`;
+  $("modal-warrior").classList.add("on");
+}
+
+/* ===== 生字簿 ===== */
+let dictFrom = "map", dictTab = 0;
+function openDict(fromTitle){ dictFrom = fromTitle ? "title" : "map"; show("scr-dict"); renderDict(0); }
+function renderDict(gr){
+  dictTab = gr;
+  const tabs = [0,1,2,3,4];
+  $("dict-tabs").innerHTML = tabs.map(t =>
+    `<button class="gtab${t===gr?" on":""}" onclick="renderDict(${t})">${t===0?"全部":GTITLE[t]}</button>`).join("");
+  const list = CHARS.filter(ch => gr === 0 || ch.g === gr);
+  const learned = G ? G.learned : [];
+  const ln = list.filter(ch => learned.includes(ch.c)).length;
+  $("dict-stats").textContent = `共 ${list.length} 個字|已學會 ${ln} 個(打過勝仗的字會亮起來)`;
+  const g = $("dict-grid"); g.innerHTML = "";
+  list.forEach(ch => {
+    const d = document.createElement("div");
+    d.className = "char-cell" + (learned.includes(ch.c) ? " learned" : "");
+    d.innerHTML = `<div class="cc-ch">${ch.c}</div><div class="cc-zy">${ch.z}</div>`;
+    d.onclick = () => showChar(ch);
+    g.appendChild(d);
+  });
+}
+function showChar(ch){
+  $("cd-body").innerHTML = `
+    <div style="font-size:13px;color:#8a6a1e;letter-spacing:2px">${GTITLE[ch.g]}生字</div>
+    <div class="cd-ch">${ch.c}</div>
+    <div style="font-size:24px;letter-spacing:3px">${ch.z}</div>
+    <div class="cd-grid"><span><b>部首</b> ${ch.r} 部</span><span><b>年級</b> ${GTITLE[ch.g]}</span></div>
+    <div class="cd-words">${ch.w.map(w => `<span>${w}</span>`).join("")}</div>`;
+  $("modal-char").classList.add("on");
+}
+function closeSub(){
+  const from = $("scr-gallery").classList.contains("on") ? galFrom : dictFrom;
+  if(from === "title" || !G){ show("scr-title"); initTitle(); }
+  else { show("scr-map"); renderMap(); }
+}
+
+/* ===== 練功房 ===== */
+function startPractice(){
+  const gr = dictTab === 0 ? null : dictTab;
+  const pl = gr ? CHARS.filter(c => c.g === gr) : CHARS.slice();
+  const sparring = WARRIORS[Math.floor(Math.random()*WARRIORS.length)];
+  if(!G){ G = {f:"蜀", turn:0, owner:null, roster:[], reserve:[], learned:[], freeplay:true}; }
+  B = { practice:true, pool:pl, left:10, score:0,
+        city:{n:"練功房", tier:gr||4},
+        me:{n:sparring.n, hp:1, mx:1},
+        defs:[{n:sparring.n, hp:1, mx:1}], wave:0, combo:0, newChars:[] };
+  B.me = {n:sparring.n, hp:100, mx:100};
+  B.defs = [{n:sparring.n, hp:100, mx:100}];
+  $("bt-city").textContent = "練功房・" + (gr ? GTITLE[gr] : "全年級") + "生字(共10題)";
+  show("scr-battle"); setupWave(); updateBars(); askQuestion();
+}
+function practiceStep(ok){
+  if(ok) B.score++;
+  B.left--;
+  log(ok ? "答對!目前 " + B.score + " 分" : "再接再厲!");
+  if(B.left <= 0){ setTimeout(endPractice, 1800); }
+  else setTimeout(askQuestion, ok ? 1500 : 2800);
+}
+function endPractice(){
+  $("res-title").textContent = "練功結束";
+  $("res-title").style.color = "#2f5b8e";
+  $("res-body").innerHTML = `10 題答對 <b>${B.score}</b> 題!` +
+    (B.score >= 9 ? "太厲害了,將軍之才!" : B.score >= 6 ? "不錯喔,繼續努力!" : "多練幾次一定會更好!");
+  $("res-btn").onclick = () => {
+    closeModal("modal-result");
+    if(G && G.freeplay){ G = null; show("scr-dict"); renderDict(dictTab); }
+    else { show("scr-dict"); renderDict(dictTab); saveGame(false); }
+  };
+  $("modal-result").classList.add("on");
+}
+
+/* ===== 啟動 ===== */
+initTitle();
+</script>
+</body>
+</html>
