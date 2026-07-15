@@ -83,8 +83,10 @@ body{
 .battle-sub{text-align:center; font-size:13px; color:#c8b488; margin-bottom:4px;}
 .battle-arena{display:flex; align-items:stretch; justify-content:center; gap:2vw; padding:6px 12px;}
 .fighter{width:min(240px,26vw); text-align:center;}
-.fighter .pbox{border-radius:12px; overflow:hidden; border:3px solid #7a5c22; box-shadow:0 6px 18px rgba(0,0,0,.55); background:#111;}
-.fighter .pbox svg{display:block; width:100%; height:auto;}
+.fighter .pbox{border-radius:18px; overflow:hidden; border:1px solid #f0d878; padding:4px;
+  box-shadow:0 12px 28px rgba(0,0,0,.65), inset 0 0 0 1px rgba(255,245,205,.25);
+  background:linear-gradient(145deg,#f0d878,#7a5c22 38%,#160e06 72%);}
+.fighter .pbox svg{display:block; width:100%; height:auto; border-radius:13px; box-shadow:0 0 0 1px rgba(0,0,0,.55);}
 .fighter .fname{font-size:18px; font-weight:900; margin-top:6px; letter-spacing:2px;}
 .fighter .ftitle{font-size:12px; color:#cdb98c;}
 .hpbar{height:14px; background:#00000070; border-radius:8px; margin-top:6px; border:1px solid #00000090; overflow:hidden;}
@@ -124,10 +126,11 @@ body{
   background:#3a2c14; color:#d8c69a; font-family:inherit; font-size:15px; font-weight:700; letter-spacing:2px;}
 .gtab.on{background:linear-gradient(180deg,#e8c96a,#c9a227); color:#3a2a08;}
 .gal-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px;}
-.gal-card{background:linear-gradient(180deg,#f7ecd2,#e6d3a6); border:2px solid #7a5c22; border-radius:12px;
-  overflow:hidden; cursor:pointer; text-align:center; padding-bottom:8px; transition:transform .12s;}
-.gal-card:hover{transform:translateY(-4px);}
-.gal-card svg{display:block; width:100%; height:auto; background:#111;}
+.gal-card{background:linear-gradient(180deg,#fff8df 0%,#ead39b 66%,#d2ac5a 100%); border:1px solid #8a681f; border-radius:14px;
+  overflow:hidden; cursor:pointer; text-align:center; padding:6px 6px 10px; transition:transform .12s, box-shadow .12s;
+  box-shadow:0 8px 18px rgba(0,0,0,.36), inset 0 0 0 1px rgba(255,255,255,.42);}
+.gal-card:hover{transform:translateY(-5px); box-shadow:0 12px 24px rgba(0,0,0,.42), 0 0 0 2px rgba(232,201,106,.42);}
+.gal-card svg{display:block; width:100%; height:auto; background:#111; border-radius:10px; box-shadow:0 0 0 1px rgba(56,35,10,.45);}
 .gal-card .gname{font-weight:900; font-size:16.5px; margin-top:6px; letter-spacing:2px;}
 .gal-card .gtitle{font-size:11.5px; color:#6b5220;}
 .gal-card.locked{filter:grayscale(1) brightness(.55);}
@@ -151,7 +154,8 @@ body{
   background:none; border:none; font-weight:900; font-family:inherit;}
 .w-detail{display:flex; gap:20px; flex-wrap:wrap;}
 .w-detail .wd-left{width:220px; flex-shrink:0;}
-.w-detail .wd-left svg{width:100%; height:auto; border-radius:12px; border:3px solid #7a5c22; background:#111; display:block;}
+.w-detail .wd-left svg{width:100%; height:auto; border-radius:16px; border:1px solid #f0d878; background:#111; display:block;
+  box-shadow:0 12px 26px rgba(0,0,0,.4), 0 0 0 4px #7a5c22;}
 .w-detail .wd-right{flex:1; min-width:260px;}
 .wd-name{font-size:30px; font-weight:900; letter-spacing:3px;}
 .wd-zi{font-size:15px; color:#6b5220; margin-left:10px;}
@@ -874,10 +878,16 @@ function drawPortrait(w, size){
   const cx = 100, cy = 112;
   const sk = p.sk, dark = shade(sk, -28), darker = shade(sk, -55);
   const bg = FBG[w.f];
+  const faction = FCOLOR[w.f], weapon = weaponIcon(w.wp);
   let s = `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" ${size?`width="${size}"`:""}>`;
   s += `<defs>
    <radialGradient id="${uid}bg" cx="50%" cy="38%" r="75%">
      <stop offset="0%" stop-color="${bg[0]}"/><stop offset="100%" stop-color="${bg[1]}"/>
+   </radialGradient>
+   <radialGradient id="${uid}stage" cx="50%" cy="40%" r="62%">
+     <stop offset="0%" stop-color="${shade(faction,54)}" stop-opacity=".5"/>
+     <stop offset="48%" stop-color="${faction}" stop-opacity=".18"/>
+     <stop offset="100%" stop-color="#000" stop-opacity="0"/>
    </radialGradient>
    <linearGradient id="${uid}fa" x1="0" y1="0" x2="0" y2="1">
      <stop offset="0%" stop-color="${shade(sk,14)}"/><stop offset="100%" stop-color="${dark}"/>
@@ -888,16 +898,37 @@ function drawPortrait(w, size){
    <linearGradient id="${uid}ht" x1="0" y1="0" x2="0" y2="1">
      <stop offset="0%" stop-color="${shade(p.hc,30)}"/><stop offset="100%" stop-color="${shade(p.hc,-25)}"/>
    </linearGradient>
+   <linearGradient id="${uid}frame" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0%" stop-color="#fff0a8"/><stop offset="45%" stop-color="#c9a227"/><stop offset="100%" stop-color="#7a5c22"/>
+   </linearGradient>
+   <filter id="${uid}drop" x="-30%" y="-30%" width="160%" height="170%">
+     <feDropShadow dx="0" dy="8" stdDeviation="5" flood-color="#000" flood-opacity=".5"/>
+   </filter>
+   <filter id="${uid}glow" x="-45%" y="-45%" width="190%" height="190%">
+     <feGaussianBlur stdDeviation="5" result="blur"/>
+     <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+   </filter>
   </defs>`;
   s += `<rect width="200" height="240" fill="url(#${uid}bg)"/>`;
-  s += `<circle cx="100" cy="105" r="78" fill="none" stroke="${FCOLOR[w.f]}" stroke-opacity=".28" stroke-width="3"/>`;
+  s += `<rect width="200" height="240" fill="url(#${uid}stage)"/>`;
+  s += `<text x="100" y="132" text-anchor="middle" font-size="112" font-weight="900" fill="#fff4c8" opacity=".055"
+    font-family="Noto Serif TC, BiauKai, DFKai-SB, serif">${w.f}</text>`;
+  s += `<path d="M20 52 C54 28 146 28 180 52 L168 74 C136 56 64 56 32 74 Z" fill="${faction}" opacity=".18"/>`;
+  s += `<path d="M28 182 C64 205 136 205 172 182" stroke="${shade(faction,50)}" stroke-width="16" stroke-linecap="round" opacity=".13" fill="none"/>`;
+  s += `<circle cx="100" cy="105" r="78" fill="none" stroke="${faction}" stroke-opacity=".42" stroke-width="3" filter="url(#${uid}glow)"/>`;
+  s += `<circle cx="100" cy="105" r="63" fill="none" stroke="#fff4c8" stroke-opacity=".12" stroke-width="1.4"/>`;
   /* 身體/鎧甲或袍服 */
-  s += body(uid, p, wide);
+  s += `<g filter="url(#${uid}drop)">` + body(uid, p, wide) + `</g>`;
+  s += `<g filter="url(#${uid}drop)">`;
   /* 長鬚(垂胸,畫在身體上、頭之下) */
   if(p.bd === "long") s += `<path d="M78 150 Q74 190 84 226 Q100 236 116 226 Q126 190 122 150 Q100 168 78 150" fill="${p.bc}" opacity=".96"/>
     <path d="M88 160 Q86 195 92 222 M100 165 Q100 200 100 228 M112 160 Q114 195 108 222" stroke="${shade(p.bc,25)}" stroke-width="1.6" fill="none" opacity=".5"/>`;
   /* 頸 */
   s += `<path d="M86 142 L86 172 Q100 182 114 172 L114 142 Z" fill="${dark}"/>`;
+  /* 女性長髮(後髮,墊在頭與耳後方) */
+  const fem = p.ex.includes("fem");
+  if(fem) s += `<path d="M${cx-rx-8} ${cy-10} Q${cx-rx-16} ${cy+60} ${cx-rx+2} ${cy+118} L${cx+rx-2} ${cy+118} Q${cx+rx+16} ${cy+60} ${cx+rx+8} ${cy-10} Q${cx} ${cy-ry-26} ${cx-rx-8} ${cy-10}" fill="${p.bc}"/>
+    <path d="M${cx-rx-4} ${cy+10} Q${cx-rx-8} ${cy+70} ${cx-rx+6} ${cy+112} M${cx+rx+4} ${cy+10} Q${cx+rx+8} ${cy+70} ${cx+rx-6} ${cy+112}" stroke="${shade(p.bc,28)}" stroke-width="1.6" fill="none" opacity=".55"/>`;
   /* 耳 */
   const el = p.ex.includes("bigears") ? 15 : 10;
   s += `<ellipse cx="${cx-rx+1}" cy="${cy+6}" rx="7" ry="${el}" fill="url(#${uid}fa)" stroke="${darker}" stroke-width="1"/>`;
@@ -909,11 +940,18 @@ function drawPortrait(w, size){
   /* 鬢角髮 */
   s += `<path d="M${cx-rx+3} ${cy-14} Q${cx-rx-2} ${cy+8} ${cx-rx+6} ${cy+22} L${cx-rx+9} ${cy-16} Z" fill="#221609" opacity=".85"/>`;
   s += `<path d="M${cx+rx-3} ${cy-14} Q${cx+rx+2} ${cy+8} ${cx+rx-6} ${cy+22} L${cx+rx-9} ${cy-16} Z" fill="#221609" opacity=".85"/>`;
+  /* 女性瀏海與腮紅 */
+  if(fem){
+    s += `<path d="M${cx-rx+2} ${cy-8} Q${cx-rx} ${cy-ry-6} ${cx} ${cy-ry-8} Q${cx+rx} ${cy-ry-6} ${cx+rx-2} ${cy-8} Q${cx+rx-10} ${cy-24} ${cx} ${cy-26} Q${cx-rx+10} ${cy-24} ${cx-rx+2} ${cy-8}" fill="${p.bc}"/>`;
+    s += `<circle cx="${cx-26}" cy="${cy+16}" r="7" fill="#e8a0a0" opacity=".4"/><circle cx="${cx+26}" cy="${cy+16}" r="7" fill="#e8a0a0" opacity=".4"/>`;
+  }
   /* 五官 */
   s += brows(p, cx, cy);
   s += eyes(p, cx, cy);
   s += nose(cx, cy, dark);
   s += mouth(p, cx, cy);
+  /* 女性唇色 */
+  if(fem) s += `<path d="M${cx-6} ${cy+30} Q${cx} ${cy+34} ${cx+6} ${cy+30}" stroke="#b8485a" stroke-width="3.2" fill="none" stroke-linecap="round" opacity=".85"/>`;
   /* 鬍鬚 */
   s += beard(p, cx, cy, rx, ry);
   /* 老年紋 */
@@ -930,8 +968,30 @@ function drawPortrait(w, size){
     <ellipse cx="${cx-17}" cy="${cy-6}" rx="14" ry="11" fill="#241a10" stroke="#0f0a05" stroke-width="1.5"/>`;
   /* 羽扇(諸葛亮) */
   if(p.ex.includes("fan")) s += fan(cx);
+  s += `</g>`;
+  s += `<rect x="5" y="5" width="190" height="230" rx="16" fill="none" stroke="url(#${uid}frame)" stroke-width="4"/>
+    <rect x="10" y="10" width="180" height="220" rx="12" fill="none" stroke="#1a120a" stroke-opacity=".55" stroke-width="1.5"/>
+    <path d="M15 18 H58 M142 18 H185 M15 222 H58 M142 222 H185" stroke="#fff0a8" stroke-opacity=".55" stroke-width="2" stroke-linecap="round"/>
+    <g transform="translate(28 30)">
+      <path d="M0 -13 L14 -5 L14 12 L0 20 L-14 12 L-14 -5 Z" fill="${faction}" stroke="#fff0a8" stroke-width="1.4" opacity=".94"/>
+      <text x="0" y="7" text-anchor="middle" font-size="20" font-weight="900" fill="#fff8d8" font-family="Noto Serif TC, BiauKai, DFKai-SB, serif">${w.f}</text>
+    </g>
+    <g transform="translate(164 202)">
+      <circle cx="0" cy="0" r="20" fill="#1a120a" opacity=".78"/>
+      <circle cx="0" cy="0" r="16" fill="${shade(faction,12)}" stroke="#fff0a8" stroke-width="1.2"/>
+      <text x="0" y="6" text-anchor="middle" font-size="14" font-weight="900" fill="#fff8d8" font-family="Noto Serif TC, BiauKai, DFKai-SB, serif">${weapon}</text>
+    </g>`;
   s += `</svg>`;
   return s;
+}
+function weaponIcon(wp){
+  if(/弓|箭|射/.test(wp)) return "弓";
+  if(/扇/.test(wp)) return "扇";
+  if(/書|卷|詩|賦|謀|策|塵/.test(wp)) return "策";
+  if(/槍|矛|戟/.test(wp)) return "槍";
+  if(/斧/.test(wp)) return "斧";
+  if(/刀|劍|鞭|雙|飛刀/.test(wp)) return "刃";
+  return "兵";
 }
 function shade(hex, amt){
   const n = parseInt(hex.slice(1),16);
