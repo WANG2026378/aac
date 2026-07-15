@@ -66,6 +66,7 @@ header .hBtn{background:#fff;border-radius:14px;font-size:3.2vh;padding:.6vh 2vw
 .c1{background:radial-gradient(#e8b77d,#c98a4b);color:#6b3f14}
 .c5{background:radial-gradient(#e3e6ea,#a9b0ba);color:#3d434c}
 .c10{background:radial-gradient(#f6d365,#d4a017);color:#6b4e00}
+.c50{background:radial-gradient(#ffe9a8,#c9a227);color:#5c4300}
 .coinPile{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;font-size:9vh;max-width:92vw}
 
 /* ===== 答案區（下半部觸控） ===== */
@@ -99,6 +100,56 @@ header .hBtn{background:#fff;border-radius:14px;font-size:3.2vh;padding:.6vh 2vw
 .back{background:#fff;transform:rotateY(180deg);box-shadow:inset 0 0 0 .5vh #bee3f8}
 .card.done .back{background:#c6f6d5;box-shadow:inset 0 0 0 .5vh #48bb78}
 
+/* ===== 哆啦A夢道具 ===== */
+#gadgetBar{position:absolute;right:1vw;top:11vh;display:flex;flex-direction:column;gap:1.5vh;z-index:20}
+.gBtn{background:#fff;border:.5vh solid #4299e1;border-radius:18px;padding:1vh .5vh;font-size:4.5vh;
+  display:flex;flex-direction:column;align-items:center;box-shadow:0 4px 0 #90bfe8;position:relative;width:12vh}
+.gBtn span{font-size:1.9vh;font-weight:bold;color:#2b6cb0}
+.gBtn b{position:absolute;top:-1.2vh;right:-1.2vh;background:#e53e3e;color:#fff;border-radius:50%;
+  width:3.4vh;height:3.4vh;display:flex;align-items:center;justify-content:center;font-size:2.2vh}
+.gBtn.off{opacity:.35;pointer-events:none}
+/* 放大燈效果 */
+#qArea.zoomed .sz1{font-size:17vh}#qArea.zoomed .sz2{font-size:13vh}#qArea.zoomed .sz3{font-size:9.5vh}
+#qArea.zoomed .coinPile{font-size:11.5vh}#qArea.zoomed .shadowItem{font-size:24vh}
+#qArea.zoomed .seqBox{font-size:12vh}#qArea.zoomed .bigNum{font-size:20vh}#qArea.zoomed .anaBox{font-size:15vh}
+
+/* ===== 提示框 ===== */
+#hintBox{display:none;background:#fffbe6;border:.5vh dashed #f5c518;border-radius:14px;
+  padding:1.2vh 3vw;font-size:3vh;font-weight:bold;color:#8a6d00;text-align:center;margin:0 14vw 1vh 2vw}
+#hintBox.show{display:block}
+
+/* ===== 口袋能量／法寶 ===== */
+.energy{display:flex;gap:.8vh;align-items:center;font-weight:bold;font-size:2.8vh}
+.eDot{width:2.8vh;height:2.8vh;border-radius:50%;background:#dceefb;border:.4vh solid #9cc9ee;display:inline-block}
+.eDot.on{background:#f5c518;border-color:#b8940e;box-shadow:0 0 8px #f5c518}
+.modal{position:fixed;inset:0;background:rgba(10,40,70,.75);z-index:100;display:flex;align-items:center;justify-content:center;padding:2vh}
+.modalCard{background:#fff;border-radius:24px;padding:3vh 4vw;text-align:center;max-width:88vw;max-height:90vh;overflow-y:auto;animation:mpop .4s}
+@keyframes mpop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+.gadgetEmoji{font-size:13vh;display:inline-block;animation:gbounce .8s infinite alternate}
+@keyframes gbounce{from{transform:translateY(0)}to{transform:translateY(-1.5vh)}}
+.gName{font-size:4.5vh;font-weight:bold;color:#0b5ea8}
+.gDesc{font-size:2.8vh;color:#555;margin:1vh 0;line-height:1.5}
+.gFx{background:#f0e6ff;border-radius:12px;padding:1.2vh;margin:1vh 0 2vh;font-weight:bold;color:#4a2d8a;font-size:3vh}
+.mBtn{background:#e0332c;color:#fff;border-radius:16px;padding:1.8vh 4vw;font-size:3.6vh;font-weight:bold;box-shadow:0 4px 0 #9c1f1a;margin:.5vh 1vw}
+.mBtn.blue{background:#2b6cb0;box-shadow:0 4px 0 #1a4a80}
+.collGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1vh;margin:1.5vh 0}
+.collItem{background:#eaf5ff;border:.3vh solid #9cc9ee;border-radius:12px;padding:1vh .5vh;font-size:2vh;text-align:center;font-weight:bold}
+.collItem .em{font-size:4.5vh;display:block}
+.collItem.locked{filter:grayscale(1);opacity:.4}
+.invRow{display:flex;justify-content:center;gap:3vw;font-weight:bold;font-size:3vh;flex-wrap:wrap}
+
+/* ===== 類比推理 ===== */
+.anaBox{display:flex;align-items:center;gap:1.2vw;font-size:12vh;flex-wrap:wrap;justify-content:center}
+.anaArrow{font-size:6vh;color:#2b6cb0}
+.anaSep{color:#cbd5e0;font-size:9vh;margin:0 1.5vw}
+
+/* ===== 順序達人 ===== */
+.slotRow{display:flex;align-items:center;gap:1vw;margin-top:2vh;flex-wrap:wrap;justify-content:center}
+.slot{width:14vh;height:14vh;border:.6vh dashed #a0aec0;border-radius:18px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;font-size:5vh;color:#a0aec0;background:#fff}
+.slot.filled{border-style:solid;border-color:#48bb78;background:#f0fff4}
+.slotArrow{font-size:4.5vh;color:#2b6cb0}
+
 /* ===== 結束畫面 ===== */
 #endScreen{background:linear-gradient(#fff6e5,#ffe9f0);align-items:center;justify-content:center;gap:3vh}
 #endScreen .cele{font-size:16vh}
@@ -115,7 +166,7 @@ header .hBtn{background:#fff;border-radius:14px;font-size:3.2vh;padding:.6vh 2vw
   <!-- 主選單 -->
   <div id="menu" class="screen">
     <h1>🎯 配對學習遊戲</h1>
-    <div class="sub">點一點大按鈕，開始練習吧！</div>
+    <div class="sub">點一點大按鈕開始練習！卡住了，可以用哆啦A夢道具幫忙喔 🔍🚪🍞</div>
     <div class="menuSec">
       <h2>🔢 數量配對（生活數學）</h2>
       <div class="menuGrid">
@@ -134,7 +185,18 @@ header .hBtn{background:#fff;border-radius:14px;font-size:3.2vh;padding:.6vh 2vw
         <button class="modeBtn" onclick="chooseMode('pattern')"><span class="ic">🔴</span>規律接龍</button>
       </div>
     </div>
-    <button class="hBtn" id="soundBtn" style="font-size:3vh;padding:1vh 3vw;border-radius:14px;background:#fff;color:#2b6cb0;font-weight:bold" onclick="toggleSound()">🔊 語音：開</button>
+    <div class="menuSec">
+      <h2>🚀 進階挑戰（中高年級也好玩）</h2>
+      <div class="menuGrid">
+        <button class="modeBtn" onclick="chooseMode('analogy')"><span class="ic">🧩</span>類比推理</button>
+        <button class="modeBtn" onclick="chooseMode('simon')"><span class="ic">🎹</span>記憶密碼</button>
+        <button class="modeBtn" onclick="chooseMode('sequence')"><span class="ic">🎬</span>順序達人</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:2vw;margin-bottom:2vh">
+      <button class="hBtn" id="soundBtn" style="font-size:3vh;padding:1vh 3vw;border-radius:14px;background:#fff;color:#2b6cb0;font-weight:bold" onclick="toggleSound()">🔊 語音：開</button>
+      <button class="hBtn" id="gBagMenu" style="font-size:3vh;padding:1vh 3vw;border-radius:14px;background:#fff;color:#2b6cb0;font-weight:bold" onclick="showColl()">🎒 法寶收藏 0/12</button>
+    </div>
   </div>
 
   <!-- 難度選擇 -->
@@ -150,10 +212,19 @@ header .hBtn{background:#fff;border-radius:14px;font-size:3.2vh;padding:.6vh 2vw
       <button class="hBtn" onclick="goHome()">🏠 回家</button>
       <div id="progress"></div>
       <div id="stars"></div>
+      <div class="energy" id="energyBox"></div>
+      <button class="hBtn" id="gBagGame" onclick="showColl()">🎒 0/12</button>
       <button class="hBtn" onclick="repeatSpeech()">🔊 再聽一次</button>
     </header>
     <div id="qArea"></div>
+    <div id="hintBox"></div>
     <div id="ansArea"></div>
+    <div id="gadgetBar">
+      <button class="gBtn" onclick="useZoom()">🔍<span>放大鏡</span></button>
+      <button class="gBtn" id="itFifty" onclick="useFifty()">🔦<span>縮小燈</span><b id="nFifty">1</b></button>
+      <button class="gBtn" id="itHint" onclick="useHint()">🍞<span>記憶吐司</span><b id="nHint">1</b></button>
+      <button class="gBtn" id="itSkip" onclick="useSkip()">🚪<span>任意門</span><b id="nSkip">0</b></button>
+    </div>
   </div>
 
   <!-- 記憶翻翻樂 -->
@@ -161,6 +232,8 @@ header .hBtn{background:#fff;border-radius:14px;font-size:3.2vh;padding:.6vh 2vw
     <header>
       <button class="hBtn" onclick="goHome()">🏠 回家</button>
       <div id="memProgress"></div>
+      <div class="energy" id="memEnergy"></div>
+      <button class="hBtn" id="toastBtn" onclick="useToast()">🍞 記憶吐司 x1</button>
       <button class="hBtn" onclick="startMemory(memLevel)">🔄 重玩</button>
     </header>
     <div id="memBoard"></div>
@@ -178,6 +251,47 @@ header .hBtn{background:#fff;border-radius:14px;font-size:3.2vh;padding:.6vh 2vw
   </div>
 
   <div id="feedback"><span>⭐</span></div>
+
+  <!-- 四次元口袋抽法寶 -->
+  <div class="modal hidden" id="gachaModal">
+    <div class="modalCard">
+      <div style="font-size:3.5vh;font-weight:bold;color:#0b5ea8">✨ 能量集滿！四次元口袋打開了！ ✨</div>
+      <div class="gadgetEmoji" id="gadgetEmoji">❓</div>
+      <div class="gName" id="gadgetName"></div>
+      <div class="gDesc" id="gadgetDesc"></div>
+      <div class="gFx" id="gadgetFx"></div>
+      <button class="mBtn" onclick="closeGacha()">收下法寶！🎉</button>
+    </div>
+  </div>
+
+  <!-- 竹蜻蜓救援 -->
+  <div class="modal hidden" id="shieldModal">
+    <div class="modalCard">
+      <div style="font-size:10vh">🚁</div>
+      <div class="gName">要用竹蜻蜓嗎？</div>
+      <div class="gDesc">用了竹蜻蜓，⭐星星不會不見，<br>可以再答一次！</div>
+      <div>
+        <button class="mBtn" onclick="useShield(true)">🚁 要用！（剩 <span id="nShield">1</span> 個）</button>
+        <button class="mBtn blue" onclick="useShield(false)">先不用</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 法寶收藏 -->
+  <div class="modal hidden" id="collModal">
+    <div class="modalCard" style="min-width:60vw">
+      <div style="font-size:3.5vh;font-weight:bold;color:#0b5ea8">🎒 我的法寶收藏</div>
+      <div class="collGrid" id="collGrid"></div>
+      <div class="invRow">
+        <span>🔦 ×<span id="cFifty">1</span></span>
+        <span>🍞 ×<span id="cHint">1</span></span>
+        <span>🚪 ×<span id="cSkip">0</span></span>
+        <span>🚁 ×<span id="cShield">1</span></span>
+      </div>
+      <div style="font-size:2.4vh;color:#666;margin-top:1vh">答對題目集⚡能量，集滿 3 格就能抽新法寶！</div>
+      <button class="mBtn blue" onclick="$('collModal').classList.add('hidden')" style="margin-top:1.5vh">關閉</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -223,10 +337,13 @@ const LEVELS={
   count:['🐣 1～10','🐥 11～20','🦉 1～20 混合'],
   coins:['🪙 數錢（10元以內）','💵 數錢（20元以內）','🛒 買東西（拿剛好的錢）'],
   addsub:['➕ 加法（10以內）','➕ 加法（20以內）','➖ 減法（10以內）','➕➖ 加減混合'],
-  memory:['🐣 簡單（6張）','🐥 中等（12張）','🦉 挑戰（16張）']
+  memory:['🐣 簡單（6張）','🐥 中等（12張）','🦉 挑戰（16張）'],
+  simon:['🐣 短密碼（記到4個）','🐥 中密碼（記到6個）','🦉 長密碼（記到8個）'],
+  sequence:['🐣 3個步驟','🐥 4個步驟','🦉 混合挑戰']
 };
 const TITLES={count:'🍎 數一數',quantity:'🍪 實物配對',coins:'💰 錢幣小達人',addsub:'➕ 簡易加減',
-  memory:'🃏 記憶翻翻樂',related:'🤝 好朋友配對',shadow:'🌑 影子配對',pattern:'🔴 規律接龍'};
+  memory:'🃏 記憶翻翻樂',related:'🤝 好朋友配對',shadow:'🌑 影子配對',pattern:'🔴 規律接龍',
+  analogy:'🧩 類比推理',simon:'🎹 記憶密碼',sequence:'🎬 順序達人'};
 
 function chooseMode(m){
   mode=m;
@@ -243,9 +360,14 @@ function chooseMode(m){
 function startGame(m,lv){
   mode=m;level=lv;
   if(m==='memory'){memLevel=lv;startMemory(lv);return}
+  if(m==='simon'){simonPickSet(lv);return}
+  seqUsed.clear();
   qIndex=0;starCount=0;showScreen('game');nextQuestion();
 }
-function replay(){startGame(mode,level)}
+function replay(){
+  if(mode==='simon')return simonStart(level,simonSetKey);
+  startGame(mode,level);
+}
 
 function updateHeader(){
   $('progress').textContent=`第 ${qIndex} / ${Q_TOTAL} 題`;
@@ -255,14 +377,20 @@ function nextQuestion(){
   qIndex++;firstTry=true;
   if(qIndex>Q_TOTAL){finish();return}
   updateHeader();
-  const q=GEN[mode]();
+  const q=GEN[mode]();q._next=0;
+  curQ=q;usedFifty=false;usedHint=false;
+  $('hintBox').classList.remove('show');
+  $('qArea').classList.remove('zoomed');
+  $('gadgetBar').classList.remove('hidden');
+  updateItems();renderEnergy();
   $('qArea').innerHTML=q.qHTML;
-  const ans=$('ansArea');ans.innerHTML='';
+  const ans=$('ansArea');ans.innerHTML='';ans.style.opacity='';ans.style.pointerEvents='';
   shuffle(q.options).forEach(op=>{
     const b=document.createElement('button');
     b.className='ansBtn'+(op.cls?' '+op.cls:'');
     b.innerHTML=op.html;
-    b.onclick=()=>answer(b,op.correct,q.answerSpeech);
+    if(q.seq){b.onclick=()=>seqTap(b,op.idx,q)}
+    else{b.dataset.ok=op.correct?'1':'';b.onclick=()=>answer(b,op.correct,q.answerSpeech)}
     ans.appendChild(b);
   });
   if(q.subRemove)enableSubTap(q.subRemove);else enableTapCount();
@@ -273,16 +401,22 @@ function answer(btn,correct,answerSpeech){
     btn.classList.add('correct');
     [...$('ansArea').children].forEach(b=>{if(b!==btn)b.classList.add('dim')});
     if(firstTry)starCount++;
-    updateHeader();beep(true);
+    updateHeader();beep(true);addEnergy();
     const fb=$('feedback');fb.querySelector('span').textContent=pick(['⭐','🌟','👍','🎈','💯']);
     fb.classList.remove('show');void fb.offsetWidth;fb.classList.add('show');
     say(pick(PRAISE)+(answerSpeech?('　'+answerSpeech):''),false);
     setTimeout(nextQuestion,1500);
   }else{
-    firstTry=false;
     btn.classList.add('wrong');beep(false);
-    say('再試一次，你可以的！',false);
     setTimeout(()=>{btn.classList.remove('wrong');btn.classList.add('dim')},450);
+    if(firstTry&&inv.shield>0){ /* 竹蜻蜓救援：保住星星再答一次 */
+      $('nShield').textContent=inv.shield;
+      $('shieldModal').classList.remove('hidden');
+      say('答錯了！要用竹蜻蜓保住星星嗎？',false);
+    }else{
+      firstTry=false;
+      say('再試一次，你可以的！',false);
+    }
   }
 }
 function finish(){
@@ -508,6 +642,321 @@ GEN.pattern=function(){
   };
 };
 
+/* ================= 哆啦A夢法寶系統 ================= */
+/* 效果：fifty=縮小燈(刪1個錯誤答案) hint=提示 skip=直接通過 shield=答錯保住星星 */
+const GADGETS=[
+  {e:'🚪',n:'任意門',fx:'skip',d:'打開門就能到任何地方，直接通過這一題！'},
+  {e:'🚁',n:'竹蜻蜓',fx:'shield',d:'戴在頭上就能飛，危機時救你一命！'},
+  {e:'🛸',n:'時光機',fx:'skip',d:'穿越時空，直接跳到下一題！'},
+  {e:'🔦',n:'縮小燈',fx:'fifty',d:'把錯誤的答案縮小到看不見！'},
+  {e:'🍞',n:'記憶吐司',fx:'hint',d:'吃下去就想起解題方法！'},
+  {e:'🍮',n:'翻譯蒟蒻',fx:'hint',d:'把難懂的題目變成簡單的提示！'},
+  {e:'💥',n:'空氣砲',fx:'fifty',d:'「砰」！把錯誤答案打飛！'},
+  {e:'🧣',n:'時光包巾',fx:'shield',d:'把答錯的時間包起來，重新再來！'},
+  {e:'⭕',n:'穿透環',fx:'skip',d:'穿過難題的牆壁，直接通關！'},
+  {e:'👒',n:'石頭帽',fx:'shield',d:'戴上帽子，錯誤就當作沒發生！'},
+  {e:'🪄',n:'換身棒',fx:'hint',d:'和數學小老師交換腦袋，獲得提示！'},
+  {e:'🍙',n:'桃太郎飯糰',fx:'shield',d:'吃了變勇敢，失敗了也不怕再試！'}
+];
+const FX_NAME={fifty:'🔦 讓一個錯誤答案消失 ×1',hint:'🍞 獲得一個提示 ×1',
+  skip:'🚪 直接通過一題 ×1',shield:'🚁 答錯時保住星星再答一次 ×1'};
+const HINTS={
+  count:'每10個一格！可以點圖幫忙數，一個一個慢慢數',
+  quantity:'先看清楚大數字，再一盤一盤慢慢數',
+  coins:'先數大的錢幣：10元、5元，最後數1元',
+  addsub:'加法：先數左邊，再接著數右邊。減法：點掉的不算，只數剩下的',
+  related:'想一想，它們平常會不會一起出現？',
+  shadow:'看影子的形狀：耳朵、尾巴、翅膀像誰呢？',
+  pattern:'把圖案大聲唸出來，找一找哪裡開始重複',
+  analogy:'先想左邊兩個是什麼關係，右邊也要用一樣的關係',
+  sequence:'想一想：第一步要先做什麼？'
+};
+let inv={fifty:1,hint:1,skip:0,shield:1};
+let energy=0,collected=new Set(),curQ=null,usedFifty=false,usedHint=false;
+
+function renderEnergy(){
+  const dots='⚡'+[0,1,2].map(i=>`<span class="eDot${i<energy?' on':''}"></span>`).join('');
+  $('energyBox').innerHTML=dots;
+  $('memEnergy').innerHTML=dots;
+  $('gBagGame').textContent=`🎒 ${collected.size}/12`;
+  $('gBagMenu').textContent=`🎒 法寶收藏 ${collected.size}/12`;
+}
+function addEnergy(){
+  energy++;
+  if(energy>=3){energy=0;renderEnergy();setTimeout(openGacha,1000)}
+  else renderEnergy();
+}
+function updateItems(){
+  $('nFifty').textContent=inv.fifty;$('nHint').textContent=inv.hint;$('nSkip').textContent=inv.skip;
+  const seqq=curQ&&curQ.seq;
+  $('itFifty').classList.toggle('off',inv.fifty<1||usedFifty||!!seqq);
+  $('itHint').classList.toggle('off',inv.hint<1||usedHint);
+  $('itSkip').classList.toggle('off',inv.skip<1||!!seqq);
+  $('toastBtn').textContent=`🍞 記憶吐司 x${inv.hint}`;
+  $('toastBtn').style.opacity=inv.hint>0?1:.4;
+}
+function openGacha(){
+  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f),i*120));
+  const locked=GADGETS.filter((g,i)=>!collected.has(i));
+  let g;
+  if(locked.length){g=pick(locked);collected.add(GADGETS.indexOf(g))}
+  else g=pick(GADGETS);
+  inv[g.fx]++;
+  $('gadgetEmoji').textContent=g.e;
+  $('gadgetName').textContent=g.n;
+  $('gadgetDesc').textContent=g.d;
+  $('gadgetFx').textContent='獲得道具：'+FX_NAME[g.fx];
+  $('gachaModal').classList.remove('hidden');
+  say(`能量集滿！四次元口袋打開了！獲得法寶：${g.n}！`);
+  renderEnergy();updateItems();
+}
+function closeGacha(){$('gachaModal').classList.add('hidden')}
+function showColl(){
+  const grid=$('collGrid');grid.innerHTML='';
+  GADGETS.forEach((g,i)=>{
+    const has=collected.has(i);
+    const d=document.createElement('div');
+    d.className='collItem'+(has?'':' locked');
+    d.innerHTML=`<span class="em">${has?g.e:'❓'}</span>${has?g.n:'？？？'}`;
+    grid.appendChild(d);
+  });
+  $('cFifty').textContent=inv.fifty;$('cHint').textContent=inv.hint;
+  $('cSkip').textContent=inv.skip;$('cShield').textContent=inv.shield;
+  $('collModal').classList.remove('hidden');
+}
+function useZoom(){
+  const z=$('qArea').classList.toggle('zoomed');
+  say(z?'放大鏡！變大了！':'縮小回來了',false);
+}
+function useFifty(){
+  if(inv.fifty<1||usedFifty||(curQ&&curQ.seq))return;
+  const cands=[...$('ansArea').children].filter(b=>b.dataset.ok===''&&!b.classList.contains('dim'));
+  if(!cands.length)return;
+  inv.fifty--;usedFifty=true;
+  const b=pick(cands);
+  b.style.transition='transform .5s';b.style.transform='scale(0)';
+  say('縮小燈！一個錯的答案變不見了！',false);
+  setTimeout(()=>b.classList.add('dim'),500);
+  updateItems();
+}
+function useHint(){
+  if(inv.hint<1||usedHint)return;
+  inv.hint--;usedHint=true;
+  const h=HINTS[mode]||'慢慢想，你可以的！';
+  const hb=$('hintBox');hb.textContent='🍞 '+h;hb.classList.add('show');
+  say(h,false);updateItems();
+}
+function useSkip(){
+  if(inv.skip<1||(curQ&&curQ.seq))return;
+  const cb=[...$('ansArea').children].find(b=>b.dataset.ok==='1'&&!b.classList.contains('correct'));
+  if(!cb)return;
+  inv.skip--;updateItems();
+  say('任意門開啟！直接通過！',false);
+  cb.click();
+}
+function useShield(yes){
+  $('shieldModal').classList.add('hidden');
+  if(yes&&inv.shield>0){
+    inv.shield--;updateItems();
+    say('竹蜻蜓出動！星星保住了，再選一次！',false);
+  }else{
+    firstTry=false;
+    say('沒關係，再試一次，你可以的！',false);
+  }
+}
+function useToast(){ /* 記憶翻翻樂的記憶吐司（用法寶庫存） */
+  if(inv.hint<1||memLock)return;
+  inv.hint--;updateItems();
+  memLock=true;
+  if(memFirst){memFirst.classList.remove('flip');memFirst=null}
+  const cards=[...$('memBoard').children];
+  cards.forEach(c=>{if(!c.classList.contains('done'))c.classList.add('flip')});
+  say('記憶吐司！快記住卡片的位置',false);
+  setTimeout(()=>{
+    cards.forEach(c=>{if(!c.classList.contains('done'))c.classList.remove('flip')});
+    memLock=false;
+  },2500);
+}
+function tone(f){
+  try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);
+    o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(.3,AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.4);o.start();o.stop(AC.currentTime+.45);}catch(e){}
+}
+
+/* ================= 8. 類比推理 ================= */
+const ANALOGY=[
+  {pairs:[['🐛','🦋'],['🥚','🐥'],['🌱','🌳'],['👶','🧑']]},          // 長大以後
+  {pairs:[['🐶','🦴'],['🐰','🥕'],['🐵','🍌'],['🐱','🐟'],['🐼','🎋']]}, // 最愛吃的
+  {pairs:[['🧤','🖐️'],['🧦','🦶'],['👓','👀'],['🎧','👂']]},           // 穿戴的地方
+  {pairs:[['👨‍🍳','🍳'],['👩‍⚕️','💉'],['👮','🚓'],['🧑‍🚒','🚒'],['🧑‍🌾','🚜']]}, // 工作的工具
+  {pairs:[['🌧️','☂️'],['☀️','🕶️'],['❄️','🧣']]},                    // 天氣要用
+  {pairs:[['🐟','🌊'],['🐦','🪹'],['🐝','🌸']]}                        // 住／去的地方
+];
+GEN.analogy=function(){
+  const gi=rnd(ANALOGY.length);
+  const [p,p2]=shuffle(ANALOGY[gi].pairs).slice(0,2);
+  const others=shuffle(ANALOGY.filter((_,i)=>i!==gi).flatMap(o=>o.pairs.map(pr=>pr[1])));
+  const opts=new Set([p2[1]]);
+  for(const d of others){if(opts.size>=3)break;opts.add(d)}
+  return {
+    qHTML:`<div class="qText">想一想：左邊是一對，右邊要配誰？</div>
+      <div class="anaBox"><span>${p[0]}</span><span class="anaArrow">➜</span><span>${p[1]}</span>
+      <span class="anaSep">｜</span><span>${p2[0]}</span><span class="anaArrow">➜</span><span class="qBox">？</span></div>`,
+    speech:'想一想，左邊兩個是怎麼配對的？右邊要配誰呢？',
+    answerSpeech:'',
+    options:[...opts].map(e=>({html:e,cls:'big-emoji',correct:e===p2[1]}))
+  };
+};
+
+/* ================= 9. 順序達人 ================= */
+const SEQS=[
+  {name:'吃飯的順序',steps:[['🧼','洗手'],['🍚','吃飯'],['🪥','刷牙']]},
+  {name:'下雨了',steps:[['☁️','烏雲來了'],['🌧️','下雨'],['🌈','出彩虹']]},
+  {name:'洗手的步驟',steps:[['🧼','抹肥皂'],['🫧','搓泡泡'],['💧','沖乾淨']]},
+  {name:'過馬路',steps:[['🚦','等綠燈'],['👀','看左右'],['🚶','走過去']]},
+  {name:'種花',steps:[['🌰','種子'],['🌱','發芽'],['🌿','長葉子'],['🌻','開花']]},
+  {name:'小雞出生',steps:[['🥚','蛋'],['🐣','破殼'],['🐤','小雞'],['🐔','母雞']]},
+  {name:'一天的時間',steps:[['🌅','早上'],['☀️','中午'],['🌇','傍晚'],['🌙','晚上']]},
+  {name:'人的成長',steps:[['👶','嬰兒'],['🧒','小孩'],['🧑','大人'],['🧓','老人']]},
+  {name:'煮麵',steps:[['💧','裝水'],['🔥','煮滾'],['🍜','下麵'],['😋','開動']]},
+  {name:'刷牙',steps:[['🪥','擠牙膏'],['🦷','刷一刷'],['💦','漱口']]},
+  {name:'寄信',steps:[['✍️','寫信'],['✉️','裝信封'],['📮','投郵筒']]},
+  {name:'買東西',steps:[['🛒','挑東西'],['💰','付錢'],['🛍️','帶回家']]},
+  {name:'睡覺前',steps:[['🛁','洗澡'],['📖','聽故事'],['😴','睡覺']]},
+  {name:'做蛋糕',steps:[['🥚','打蛋'],['🥣','攪拌'],['🔥','烤一烤'],['🎂','完成']]},
+  {name:'洗衣服',steps:[['🧺','放衣服'],['🫧','洗衣機洗'],['☀️','曬太陽'],['👕','摺衣服']]},
+  {name:'上學的一天',steps:[['⏰','起床'],['🎒','背書包'],['🏫','上學'],['🏠','回家']]},
+  {name:'去野餐',steps:[['🧺','準備食物'],['🚌','搭車'],['🌳','到公園'],['🍱','開動野餐']]},
+  {name:'打果汁',steps:[['🍎','洗水果'],['🔪','切一切'],['🥤','打成果汁'],['😋','喝果汁']]}
+];
+let seqUsed=new Set();
+GEN.sequence=function(){
+  const fit=s=>level===2?true:s.steps.length===(level===0?3:4);
+  let pool=SEQS.filter(s=>fit(s)&&!seqUsed.has(s.name));
+  if(!pool.length){seqUsed.clear();pool=SEQS.filter(fit)}
+  const s=pick(pool);seqUsed.add(s.name);
+  return {
+    qHTML:`<div class="qText">「${s.name}」：照順序點下面的圖</div>
+      <div class="slotRow">${s.steps.map((_,i)=>`<div class="slot" id="slot${i}">${i+1}</div>`)
+        .join('<div class="slotArrow">➡</div>')}</div>`,
+    speech:`${s.name}。先做什麼，再做什麼？照順序點下面的圖`,
+    seq:{steps:s.steps},
+    options:s.steps.map((st,i)=>({html:`${st[0]}<span style="font-size:2.8vh">${st[1]}</span>`,cls:'big-emoji',idx:i}))
+  };
+};
+function seqTap(b,idx,q){
+  if(b.classList.contains('dim'))return;
+  if(idx===q._next){
+    b.classList.add('correct');
+    const st=q.seq.steps[idx];
+    const slot=$('slot'+idx);slot.innerHTML=`<span style="font-size:6.5vh">${st[0]}</span><span style="font-size:2.2vh;color:#2f855a">${st[1]}</span>`;
+    slot.classList.add('filled');
+    say(st[1],false);tone(392+idx*80);
+    setTimeout(()=>b.classList.add('dim'),300);
+    q._next++;
+    if(q._next===q.seq.steps.length){
+      if(firstTry)starCount++;updateHeader();beep(true);addEnergy();
+      const fb=$('feedback');fb.querySelector('span').textContent=pick(['⭐','🌟','👍','🎈']);
+      fb.classList.remove('show');void fb.offsetWidth;fb.classList.add('show');
+      say(pick(PRAISE),false);
+      setTimeout(nextQuestion,1600);
+    }
+  }else{
+    firstTry=false;
+    b.classList.add('wrong');beep(false);
+    say('想一想，先做哪一個？',false);
+    setTimeout(()=>b.classList.remove('wrong'),450);
+  }
+}
+
+/* ================= 10. 記憶密碼（西蒙遊戲） ================= */
+const SIMON_SETS={
+  color:{name:'顏色',items:[['🔴','#feb2b2',262],['🔵','#90cdf4',330],['🟡','#faf089',392],['🟢','#9ae6b4',523]]},
+  shape:{name:'形狀',items:[['⭐','#fefcbf',262],['🔺','#fed7d7',330],['🟦','#bee3f8',392],['🟣','#e9d8fd',523]]},
+  coin:{name:'錢幣',items:[[coinHTML(1),'#f6e0c8',262],[coinHTML(5),'#e2e8f0',330],[coinHTML(10),'#fdeeba',392],[coinHTML(50),'#ffe9a8',523]]},
+  animal:{name:'動物',items:[['🐶','#fbd38d',262],['🐱','#fed7e2',330],['🐰','#e9d8fd',392],['🐸','#c6f6d5',523]]}
+};
+let simonSeq=[],simonPos=0,simonTarget=4,simonLen=2,simonPlaying=false,simonSet=null,simonSetKey='color';
+function simonPickSet(lv){
+  $('levelTitle').textContent='🎹 記憶密碼　選一種圖案';
+  const box=$('levelBtns');box.innerHTML='';
+  Object.entries(SIMON_SETS).forEach(([k,s])=>{
+    const b=document.createElement('button');b.className='lvBtn';
+    b.innerHTML=`${s.items.map(i=>i[0]).join(' ')}　${s.name}`;
+    b.onclick=()=>simonStart(lv,k);
+    box.appendChild(b);
+  });
+  showScreen('levelScreen');say('選一種圖案');
+}
+function simonStart(lv,setKey){
+  mode='simon';level=lv;
+  simonSetKey=setKey||simonSetKey;simonSet=SIMON_SETS[simonSetKey].items;
+  simonTarget=[4,6,8][lv];simonLen=2;starCount=0;
+  showScreen('game');
+  $('gadgetBar').classList.add('hidden');
+  $('hintBox').classList.remove('show');
+  $('qArea').classList.remove('zoomed');
+  renderEnergy();
+  $('qArea').innerHTML=`<div class="qText" id="simonMsg">記憶密碼</div>
+    <div id="simonShow" style="font-size:20vh;min-height:24vh;transition:transform .15s">🤖</div>`;
+  const ans=$('ansArea');ans.innerHTML='';
+  simonSet.forEach((c,i)=>{
+    const b=document.createElement('button');
+    b.className='ansBtn big-emoji';b.style.background=c[1];b.style.boxShadow='0 8px 0 rgba(0,0,0,.15)';
+    b.innerHTML=c[0];b.onclick=()=>simonTap(i,b);
+    ans.appendChild(b);
+  });
+  simonRound();
+}
+function simonRound(){
+  simonSeq=Array.from({length:simonLen},()=>rnd(4));simonPos=0;simonPlaying=true;
+  $('progress').textContent=`密碼長度 ${simonLen}（目標 ${simonTarget}）`;
+  $('stars').textContent='⭐'.repeat(starCount)||'　';
+  const ans=$('ansArea');ans.style.opacity=.4;ans.style.pointerEvents='none';
+  $('simonMsg').textContent='👀 仔細看，記住順序！';
+  say('仔細看，記住順序');
+  simonSeq.forEach((c,i)=>{
+    setTimeout(()=>{
+      $('simonShow').innerHTML=simonSet[c][0];tone(simonSet[c][2]);
+      $('simonShow').style.transform='scale(1.25)';
+      setTimeout(()=>{$('simonShow').innerHTML='&nbsp;';$('simonShow').style.transform='scale(1)'},550);
+    },900+i*850);
+  });
+  setTimeout(()=>{
+    simonPlaying=false;
+    $('simonMsg').textContent='✋ 換你了！照順序點';
+    say('換你了！照順序點下面的顏色');
+    ans.style.opacity=1;ans.style.pointerEvents='auto';
+  },900+simonSeq.length*850+300);
+}
+function simonTap(i,b){
+  if(simonPlaying)return;
+  tone(simonSet[i][2]);
+  b.classList.add('correct');setTimeout(()=>b.classList.remove('correct'),250);
+  $('simonShow').innerHTML=simonSet[i][0];
+  if(i===simonSeq[simonPos]){
+    simonPos++;
+    if(simonPos===simonSeq.length){
+      starCount++;beep(true);addEnergy();say(pick(PRAISE),false);
+      simonLen++;
+      if(simonLen>simonTarget){
+        setTimeout(()=>{
+          showScreen('endScreen');
+          $('endTitle').textContent=`記憶密碼破解成功！記住了 ${simonTarget} 個！`;
+          $('endStars').textContent='⭐'.repeat(starCount);
+          say('太厲害了！你破解了記憶密碼！');
+        },1200);
+        return;
+      }
+      setTimeout(simonRound,1500);
+    }
+  }else{
+    beep(false);say('記錯了沒關係，再看一次！',false);
+    setTimeout(simonRound,1300);
+  }
+}
+
 /* ================= 記憶翻翻樂 ================= */
 const MEM_EMOJI=['🍎','🍌','🍇','🍓','🐶','🐱','🐰','🦁','🚗','✈️','⭐','🌈','🎈','⚽','🍪','🧁'];
 let memFirst=null,memLock=false,memMatched=0,memPairs=0;
@@ -516,6 +965,7 @@ function startMemory(lv){
   memPairs=[3,6,8][lv];
   const cols=[3,4,4][lv];
   memMatched=0;memFirst=null;memLock=false;
+  updateItems();renderEnergy();
   showScreen('memoryGame');
   $('memProgress').textContent=`配對成功：0 / ${memPairs}`;
   const board=$('memBoard');
@@ -539,7 +989,7 @@ function flipCard(c){
   const a=memFirst,b=c;memFirst=null;
   if(a.dataset.v===b.dataset.v){
     a.classList.add('done');b.classList.add('done');
-    memMatched++;beep(true);
+    memMatched++;beep(true);addEnergy();
     $('memProgress').textContent=`配對成功：${memMatched} / ${memPairs}`;
     say(pick(['配對成功！','找到了！好棒！','一樣的，答對了！']),false);
     memLock=false;
@@ -558,9 +1008,9 @@ function flipCard(c){
   }
 }
 
+renderEnergy();updateItems();
 say('歡迎來玩配對學習遊戲！');
 </script>
-
 <style id="portal-home-style">
 .portal-home-link{position:fixed;top:calc(10px + env(safe-area-inset-top));left:calc(10px + env(safe-area-inset-left));z-index:2147483000;display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border-radius:999px;background:rgba(255,255,255,.94);color:#1f2937;text-decoration:none;font:700 14px/1.2 "PingFang TC","Microsoft JhengHei",sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.18);border:2px solid rgba(255,107,107,.28);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);user-select:none;touch-action:manipulation}.portal-home-link:active{transform:translateY(1px)}@media(max-width:640px){.portal-home-link{font-size:13px;padding:8px 11px}}
 </style>
