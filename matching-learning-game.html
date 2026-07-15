@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>配對學習遊戲</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;touch-action:manipulation}
+html,body{height:100%;overflow:hidden;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;background:#eef7ff}
+#app{position:relative;height:100%}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column}
+.hidden{display:none!important}
+button{font-family:inherit;border:none;cursor:pointer}
+
+/* ===== 主選單 ===== */
+#menu{background:linear-gradient(#d6ecff,#fff6e5);align-items:center;padding:2vh 3vw;overflow-y:auto}
+#menu h1{font-size:6vh;color:#2b6cb0;margin:2vh 0 1vh}
+#menu .sub{font-size:2.6vh;color:#666;margin-bottom:2vh}
+.menuSec{width:100%;max-width:1100px;margin-bottom:2vh}
+.menuSec h2{font-size:3.2vh;color:#c05621;margin:1vh 0}
+.menuGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2vh}
+.modeBtn{background:#fff;border-radius:24px;padding:3vh 1vh;font-size:3.4vh;font-weight:bold;color:#333;
+  box-shadow:0 6px 0 #cbd5e0;transition:transform .1s}
+.modeBtn:active{transform:translateY(4px);box-shadow:0 2px 0 #cbd5e0}
+.modeBtn .ic{display:block;font-size:7vh;margin-bottom:1vh}
+
+/* ===== 難度選擇 ===== */
+#levelScreen{background:#fff6e5;align-items:center;justify-content:center;gap:3vh;padding:3vw}
+#levelTitle{font-size:5vh;color:#2b6cb0;font-weight:bold}
+.lvBtn{background:#fff;border-radius:24px;padding:3vh 6vw;font-size:4.2vh;font-weight:bold;color:#333;box-shadow:0 6px 0 #f6ad55;min-width:50vw}
+.lvBtn:active{transform:translateY(4px);box-shadow:0 2px 0 #f6ad55}
+
+/* ===== 遊戲畫面 ===== */
+#game,#memoryGame{background:#fff}
+header{display:flex;align-items:center;justify-content:space-between;padding:1vh 2vw;background:#2b6cb0;color:#fff;min-height:8vh}
+header .hBtn{background:#fff;border-radius:14px;font-size:3.2vh;padding:.6vh 2vw;font-weight:bold;color:#2b6cb0}
+#progress,#memProgress{font-size:3.2vh;font-weight:bold}
+#stars{font-size:3.2vh}
+
+#qArea{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1vh 2vw;overflow:hidden;background:#f7fbff}
+.qText{font-size:4.2vh;font-weight:bold;color:#2d3748;margin-bottom:1.5vh;text-align:center}
+.itemBox{display:flex;flex-wrap:wrap;justify-content:center;align-content:center;gap:1vh;max-width:94vw;line-height:1.2}
+.sz1{font-size:14vh}.sz2{font-size:10.5vh}.sz3{font-size:7.5vh}
+.tenGroup{display:flex;flex-wrap:wrap;justify-content:center;gap:.8vh;padding:1vh 1.2vh;border-radius:18px;margin:.5vh}
+.it{position:relative;display:inline-block;cursor:pointer}
+.it.marked{transform:scale(1.1)}
+.it.marked::after{content:attr(data-n);position:absolute;top:-.12em;right:-.22em;background:#e53e3e;color:#fff;
+  border-radius:50%;font-size:.34em;min-width:1.6em;height:1.6em;display:flex;align-items:center;justify-content:center;
+  font-weight:bold;box-shadow:0 2px 5px rgba(0,0,0,.35)}
+.g1{background:#ebf8ff}.g2{background:#fefcbf}
+.gone{opacity:.25;position:relative}
+.gone::after{content:"✖";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#e53e3e;font-size:.7em}
+.bigNum{font-size:16vh;font-weight:bold;color:#dd6b20;background:#fffaf0;border-radius:24px;padding:0 6vw;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+.plusSign{font-size:8vh;font-weight:bold;color:#2b6cb0;margin:0 2vw}
+.shadowItem{filter:brightness(0);font-size:18vh}
+.seqBox{display:flex;gap:1.5vw;font-size:9vh;align-items:center}
+.qBox{width:11vh;height:11vh;border:.6vh dashed #dd6b20;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#dd6b20;font-size:7vh}
+.priceTag{font-size:6vh;font-weight:bold;color:#c53030;background:#fff5f5;border-radius:16px;padding:1vh 3vw;margin-top:1vh}
+
+/* 錢幣 */
+.coin{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;font-weight:bold;position:relative;
+  width:1.7em;height:1.7em;margin:.12em;box-shadow:inset -3px -3px 8px rgba(0,0,0,.25),0 2px 4px rgba(0,0,0,.2);flex:none}
+#qArea .coin{cursor:pointer}
+#qArea .coin.ck{outline:.5vh solid #38a169;outline-offset:.3vh}
+#qArea .coin.ck::after{content:"✓";position:absolute;top:-.5em;right:-.35em;color:#38a169;font-size:.6em;font-weight:bold}
+.c1{background:radial-gradient(#e8b77d,#c98a4b);color:#6b3f14}
+.c5{background:radial-gradient(#e3e6ea,#a9b0ba);color:#3d434c}
+.c10{background:radial-gradient(#f6d365,#d4a017);color:#6b4e00}
+.coinPile{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;font-size:9vh;max-width:92vw}
+
+/* ===== 答案區（下半部觸控） ===== */
+#ansArea{height:44%;display:flex;gap:2vw;padding:2vh 2vw;background:#e6f0fa;border-top:.5vh solid #bcd4ea}
+.ansBtn{flex:1;background:#fff;border-radius:24px;font-weight:bold;color:#2d3748;
+  box-shadow:0 8px 0 #90bfe8;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:11vh;overflow:hidden;padding:1vh;transition:transform .1s}
+.ansBtn:active{transform:translateY(5px);box-shadow:0 3px 0 #90bfe8}
+.ansBtn .grp{display:flex;flex-wrap:wrap;justify-content:center;align-content:center;gap:.5vh;font-size:5.5vh;line-height:1.15}
+.ansBtn .grp.few{font-size:7.5vh}
+.ansBtn .grp.coins{font-size:4.6vh}
+.ansBtn.big-emoji{font-size:12vh}
+.ansBtn.correct{background:#c6f6d5;box-shadow:0 8px 0 #48bb78}
+.ansBtn.wrong{background:#fed7d7;box-shadow:0 8px 0 #f56565;animation:shake .4s}
+.ansBtn.dim{opacity:.35;pointer-events:none}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-12px)}75%{transform:translateX(12px)}}
+
+/* 大回饋 */
+#feedback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:50}
+#feedback span{font-size:24vh;opacity:0;transform:scale(.3)}
+#feedback.show span{animation:pop .9s ease}
+@keyframes pop{0%{opacity:0;transform:scale(.3)}30%{opacity:1;transform:scale(1.15)}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+
+/* ===== 記憶翻牌 ===== */
+#memBoard{flex:1;display:grid;gap:1.5vh;padding:2vh;background:#f7fbff}
+.card{perspective:800px;position:relative}
+.card .inner{position:absolute;inset:0;transition:transform .35s;transform-style:preserve-3d}
+.card.flip .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:18px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden;font-size:min(9vh,9vw)}
+.front{background:linear-gradient(135deg,#63b3ed,#2b6cb0);color:#fff;font-size:min(7vh,7vw)}
+.back{background:#fff;transform:rotateY(180deg);box-shadow:inset 0 0 0 .5vh #bee3f8}
+.card.done .back{background:#c6f6d5;box-shadow:inset 0 0 0 .5vh #48bb78}
+
+/* ===== 結束畫面 ===== */
+#endScreen{background:linear-gradient(#fff6e5,#ffe9f0);align-items:center;justify-content:center;gap:3vh}
+#endScreen .cele{font-size:16vh}
+#endTitle{font-size:6vh;font-weight:bold;color:#c05621}
+#endStars{font-size:6vh;letter-spacing:1vw}
+#endScreen .row{display:flex;gap:4vw}
+.endBtn{background:#fff;border-radius:24px;padding:2.5vh 5vw;font-size:4vh;font-weight:bold;color:#2b6cb0;box-shadow:0 6px 0 #90bfe8}
+.endBtn:active{transform:translateY(4px)}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- 主選單 -->
+  <div id="menu" class="screen">
+    <h1>🎯 配對學習遊戲</h1>
+    <div class="sub">點一點大按鈕，開始練習吧！</div>
+    <div class="menuSec">
+      <h2>🔢 數量配對（生活數學）</h2>
+      <div class="menuGrid">
+        <button class="modeBtn" onclick="chooseMode('count')"><span class="ic">🍎</span>數一數</button>
+        <button class="modeBtn" onclick="chooseMode('quantity')"><span class="ic">🍪</span>實物配對</button>
+        <button class="modeBtn" onclick="chooseMode('coins')"><span class="ic">💰</span>錢幣小達人</button>
+        <button class="modeBtn" onclick="chooseMode('addsub')"><span class="ic">➕</span>簡易加減</button>
+      </div>
+    </div>
+    <div class="menuSec">
+      <h2>🧠 智力配對（動動腦）</h2>
+      <div class="menuGrid">
+        <button class="modeBtn" onclick="chooseMode('memory')"><span class="ic">🃏</span>記憶翻翻樂</button>
+        <button class="modeBtn" onclick="chooseMode('related')"><span class="ic">🤝</span>好朋友配對</button>
+        <button class="modeBtn" onclick="chooseMode('shadow')"><span class="ic">🌑</span>影子配對</button>
+        <button class="modeBtn" onclick="chooseMode('pattern')"><span class="ic">🔴</span>規律接龍</button>
+      </div>
+    </div>
+    <button class="hBtn" id="soundBtn" style="font-size:3vh;padding:1vh 3vw;border-radius:14px;background:#fff;color:#2b6cb0;font-weight:bold" onclick="toggleSound()">🔊 語音：開</button>
+  </div>
+
+  <!-- 難度選擇 -->
+  <div id="levelScreen" class="screen hidden">
+    <div id="levelTitle"></div>
+    <div id="levelBtns" style="display:flex;flex-direction:column;gap:2.5vh;align-items:center"></div>
+    <button class="lvBtn" style="background:#edf2f7;min-width:30vw;font-size:3.2vh" onclick="goHome()">🏠 回主選單</button>
+  </div>
+
+  <!-- 題目型遊戲 -->
+  <div id="game" class="screen hidden">
+    <header>
+      <button class="hBtn" onclick="goHome()">🏠 回家</button>
+      <div id="progress"></div>
+      <div id="stars"></div>
+      <button class="hBtn" onclick="repeatSpeech()">🔊 再聽一次</button>
+    </header>
+    <div id="qArea"></div>
+    <div id="ansArea"></div>
+  </div>
+
+  <!-- 記憶翻翻樂 -->
+  <div id="memoryGame" class="screen hidden">
+    <header>
+      <button class="hBtn" onclick="goHome()">🏠 回家</button>
+      <div id="memProgress"></div>
+      <button class="hBtn" onclick="startMemory(memLevel)">🔄 重玩</button>
+    </header>
+    <div id="memBoard"></div>
+  </div>
+
+  <!-- 結束畫面 -->
+  <div id="endScreen" class="screen hidden">
+    <div class="cele">🎉</div>
+    <div id="endTitle"></div>
+    <div id="endStars"></div>
+    <div class="row">
+      <button class="endBtn" onclick="replay()">🔄 再玩一次</button>
+      <button class="endBtn" onclick="goHome()">🏠 回主選單</button>
+    </div>
+  </div>
+
+  <div id="feedback"><span>⭐</span></div>
+</div>
+
+<script>
+/* ================= 工具 ================= */
+const $=id=>document.getElementById(id);
+const rnd=n=>Math.floor(Math.random()*n);
+const pick=a=>a[rnd(a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+function rndBetween(min,max){return min+rnd(max-min+1)}
+
+let sound=true;
+function toggleSound(){sound=!sound;$('soundBtn').textContent=sound?'🔊 語音：開':'🔇 語音：關';if(sound)say('語音打開了')}
+let lastSpeech='';
+function say(t,remember=true){
+  if(remember)lastSpeech=t;
+  if(!sound||!window.speechSynthesis)return;
+  try{speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(t);u.lang='zh-TW';u.rate=0.85;speechSynthesis.speak(u);}catch(e){}
+}
+function repeatSpeech(){if(lastSpeech)say(lastSpeech)}
+
+/* 簡單音效 */
+let AC;
+function beep(good){
+  try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    const notes=good?[523,659,784]:[220];
+    notes.forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();
+      o.connect(g);g.connect(AC.destination);o.frequency.value=f;o.type='sine';
+      g.gain.setValueAtTime(.25,AC.currentTime+i*.12);
+      g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+i*.12+.25);
+      o.start(AC.currentTime+i*.12);o.stop(AC.currentTime+i*.12+.3);});}catch(e){}
+}
+const PRAISE=['答對了！好棒！','太厲害了！','你成功了！','答對了，繼續加油！','哇，好聰明！'];
+
+function showScreen(id){['menu','levelScreen','game','memoryGame','endScreen'].forEach(s=>$(s).classList.add('hidden'));$(id).classList.remove('hidden')}
+function goHome(){speechSynthesis&&speechSynthesis.cancel();showScreen('menu')}
+
+/* ================= 流程控制 ================= */
+const Q_TOTAL=8;
+let mode='',level=0,qIndex=0,starCount=0,firstTry=true,memLevel=0;
+
+const LEVELS={
+  count:['🐣 1～10','🐥 11～20','🦉 1～20 混合'],
+  coins:['🪙 數錢（10元以內）','💵 數錢（20元以內）','🛒 買東西（拿剛好的錢）'],
+  addsub:['➕ 加法（10以內）','➕ 加法（20以內）','➖ 減法（10以內）','➕➖ 加減混合'],
+  memory:['🐣 簡單（6張）','🐥 中等（12張）','🦉 挑戰（16張）']
+};
+const TITLES={count:'🍎 數一數',quantity:'🍪 實物配對',coins:'💰 錢幣小達人',addsub:'➕ 簡易加減',
+  memory:'🃏 記憶翻翻樂',related:'🤝 好朋友配對',shadow:'🌑 影子配對',pattern:'🔴 規律接龍'};
+
+function chooseMode(m){
+  mode=m;
+  if(LEVELS[m]){
+    $('levelTitle').textContent=TITLES[m]+'　選一個難度';
+    const box=$('levelBtns');box.innerHTML='';
+    LEVELS[m].forEach((name,i)=>{
+      const b=document.createElement('button');b.className='lvBtn';b.textContent=name;
+      b.onclick=()=>startGame(m,i);box.appendChild(b);
+    });
+    showScreen('levelScreen');say('選一個難度');
+  }else startGame(m,0);
+}
+function startGame(m,lv){
+  mode=m;level=lv;
+  if(m==='memory'){memLevel=lv;startMemory(lv);return}
+  qIndex=0;starCount=0;showScreen('game');nextQuestion();
+}
+function replay(){startGame(mode,level)}
+
+function updateHeader(){
+  $('progress').textContent=`第 ${qIndex} / ${Q_TOTAL} 題`;
+  $('stars').textContent='⭐'.repeat(starCount)||'　';
+}
+function nextQuestion(){
+  qIndex++;firstTry=true;
+  if(qIndex>Q_TOTAL){finish();return}
+  updateHeader();
+  const q=GEN[mode]();
+  $('qArea').innerHTML=q.qHTML;
+  const ans=$('ansArea');ans.innerHTML='';
+  shuffle(q.options).forEach(op=>{
+    const b=document.createElement('button');
+    b.className='ansBtn'+(op.cls?' '+op.cls:'');
+    b.innerHTML=op.html;
+    b.onclick=()=>answer(b,op.correct,q.answerSpeech);
+    ans.appendChild(b);
+  });
+  if(q.subRemove)enableSubTap(q.subRemove);else enableTapCount();
+  say(q.speech);
+}
+function answer(btn,correct,answerSpeech){
+  if(correct){
+    btn.classList.add('correct');
+    [...$('ansArea').children].forEach(b=>{if(b!==btn)b.classList.add('dim')});
+    if(firstTry)starCount++;
+    updateHeader();beep(true);
+    const fb=$('feedback');fb.querySelector('span').textContent=pick(['⭐','🌟','👍','🎈','💯']);
+    fb.classList.remove('show');void fb.offsetWidth;fb.classList.add('show');
+    say(pick(PRAISE)+(answerSpeech?('　'+answerSpeech):''),false);
+    setTimeout(nextQuestion,1500);
+  }else{
+    firstTry=false;
+    btn.classList.add('wrong');beep(false);
+    say('再試一次，你可以的！',false);
+    setTimeout(()=>{btn.classList.remove('wrong');btn.classList.add('dim')},450);
+  }
+}
+function finish(){
+  showScreen('endScreen');
+  $('endTitle').textContent=`完成了！答對 ${starCount} 題`;
+  $('endStars').textContent='⭐'.repeat(Math.max(starCount,1));
+  say(`太棒了！你完成了所有題目，得到 ${starCount} 顆星星！`);
+}
+
+/* ================= 畫面小工具 ================= */
+const ITEMS=[['🍎','蘋果','吃掉了'],['🍓','草莓','吃掉了'],['🍪','餅乾','吃掉了'],['🍬','糖果','吃掉了'],
+  ['⭐','星星','不見了'],['🎈','氣球','飛走了'],['🐶','小狗','跑走了'],['🧁','杯子蛋糕','吃掉了']];
+function itemsHTML(emoji,n,gone=0,szTotal){
+  // 每10個一組，幫助點數；圖示大小依總數自動放大
+  const t=szTotal||n;
+  const sz=t<=5?'sz1':t<=10?'sz2':'sz3';
+  let html=`<div class="itemBox ${sz}">`;
+  for(let g=0;g<n;g+=10){
+    html+=`<span class="tenGroup ${g===0?'g1':'g2'}">`;
+    for(let i=g;i<Math.min(g+10,n);i++){
+      html+=i>=n-gone?`<span class="gone">${emoji}</span>`:`<span class="it">${emoji}</span>`;
+    }
+    html+='</span>';
+  }
+  return html+'</div>';
+}
+/* 點數輔助：點一個圖示標一個號碼並唸出來 */
+function enableTapCount(){
+  let tapN=0;
+  $('qArea').querySelectorAll('.it').forEach(el=>{
+    el.onclick=()=>{
+      if(el.dataset.n)return;
+      el.dataset.n=++tapN;el.classList.add('marked');
+      say(String(tapN),false);
+    };
+  });
+  $('qArea').querySelectorAll('.coin').forEach(el=>{
+    el.onclick=()=>el.classList.toggle('ck');
+  });
+}
+/* 減法：學生自己點掉 b 個，點掉的變 ✖ 且不能再按；點完後剩下的變成點數模式 */
+function enableSubTap(b){
+  let removed=0;
+  const items=[...$('qArea').querySelectorAll('.it')];
+  items.forEach(el=>{
+    el.onclick=()=>{
+      if(el.classList.contains('gone'))return;
+      el.classList.add('gone');el.onclick=null;
+      removed++;say(String(removed),false);
+      if(removed===b){
+        say(`好棒！點掉了${b}個。現在數一數，還剩幾個？`,false);
+        let tapN=0;
+        items.forEach(e2=>{
+          if(e2.classList.contains('gone'))return;
+          e2.onclick=()=>{
+            if(e2.dataset.n)return;
+            e2.dataset.n=++tapN;e2.classList.add('marked');
+            say(String(tapN),false);
+          };
+        });
+      }
+    };
+  });
+}
+function numOptions(correct,min,max){
+  const set=new Set([correct]);
+  while(set.size<3){
+    let d=correct+(rnd(2)?1:-1)*(1+rnd(3));
+    if(d>=min&&d<=max)set.add(d);
+  }
+  return [...set];
+}
+function coinHTML(v){return `<span class="coin c${v}">${v}</span>`}
+function pileHTML(coins,cls=''){return `<span class="coinPile ${cls}">${coins.map(coinHTML).join('')}</span>`}
+function makePile(total){
+  let t=Math.floor(total/10),rest=total%10,f=0;
+  if(rest>=5){f=1;rest-=5}
+  if(t>0&&rnd(3)===0){t--;f+=2} // 偶爾把10元換成兩個5元
+  const coins=[...Array(t).fill(10),...Array(f).fill(5),...Array(rest).fill(1)];
+  return coins;
+}
+
+/* ================= 題目產生器 ================= */
+const GEN={};
+
+/* 1. 數一數 */
+GEN.count=function(){
+  const range=[[1,10],[11,20],[1,20]][level];
+  const n=rndBetween(range[0],range[1]);
+  const [emoji,name]=pick(ITEMS);
+  return {
+    qHTML:`<div class="qText">數一數，有幾個${name}？</div>${itemsHTML(emoji,n)}`,
+    speech:`數一數，有幾個${name}？可以點圖幫忙數，數完再點下面的數字`,
+    answerSpeech:`一共有${n}個${name}`,
+    options:numOptions(n,range[0]===11?11:1,20).map(v=>({html:v,correct:v===n}))
+  };
+};
+
+/* 2. 實物配對：看數字選數量 */
+GEN.quantity=function(){
+  const n=rndBetween(1,10);
+  const [emoji,name]=pick(ITEMS);
+  const opts=numOptions(n,1,10);
+  return {
+    qHTML:`<div class="qText">哪一盤有 ${n} 個${name}？</div><div class="bigNum">${n}</div>`,
+    speech:`哪一盤有${n}個${name}？點下面的盤子`,
+    answerSpeech:`這一盤有${n}個${name}`,
+    options:opts.map(v=>({html:`<span class="grp${v<=4?' few':''}">${emoji.repeat(v)}</span>`,correct:v===n}))
+  };
+};
+
+/* 3. 錢幣 */
+GEN.coins=function(){
+  if(level<2){ // 數錢
+    const max=level===0?10:20;
+    const total=rndBetween(2,max);
+    const coins=makePile(total);
+    return {
+      qHTML:`<div class="qText">這些錢一共是幾元？</div>${pileHTML(shuffle(coins))}`,
+      speech:'這些錢一共是幾元？先數大的錢幣，再數小的',
+      answerSpeech:`一共是${total}元`,
+      options:numOptions(total,1,max+3).map(v=>({html:v+'<span style="font-size:.4em">元</span>',correct:v===total}))
+    };
+  }
+  // 買東西：選剛好的錢
+  const goods=[['🍬','糖果'],['🍪','餅乾'],['🥤','飲料'],['🍞','麵包'],['🧃','果汁']];
+  const [emoji,name]=pick(goods);
+  const price=rndBetween(3,18);
+  const totals=numOptions(price,1,20);
+  return {
+    qHTML:`<div class="qText">買${name}要 ${price} 元，哪一堆錢剛剛好？</div>
+      <div style="font-size:14vh">${emoji}</div><div class="priceTag">${price} 元</div>`,
+    speech:`買${name}要${price}元，點一堆剛剛好的錢`,
+    answerSpeech:`這一堆剛好是${price}元`,
+    options:totals.map(v=>({html:`<span class="grp coins">${makePile(v).map(coinHTML).join('')}</span>`,correct:v===price}))
+  };
+};
+
+/* 4. 簡易加減 */
+GEN.addsub=function(){
+  let op;
+  if(level===0||level===1)op='add';
+  else if(level===2)op='sub';
+  else op=rnd(2)?'add':'sub';
+  const [emoji,name,verb]=pick(ITEMS);
+  if(op==='add'){
+    const max=level===1?20:10;
+    const a=rndBetween(1,max-1),b=rndBetween(1,max-a);
+    return {
+      qHTML:`<div class="qText">${a} 個${name}，再加 ${b} 個，一共有幾個？</div>
+        <div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap">
+        ${itemsHTML(emoji,a,0,a+b)}<span class="plusSign">＋</span>${itemsHTML(emoji,b,0,a+b)}</div>`,
+      speech:`${a}個${name}，再加${b}個，一共有幾個？`,
+      answerSpeech:`${a}加${b}等於${a+b}`,
+      options:numOptions(a+b,1,max).map(v=>({html:v,correct:v===a+b}))
+    };
+  }
+  const a=rndBetween(2,10),b=rndBetween(1,a-1);
+  return {
+    qHTML:`<div class="qText">有 ${a} 個${name}，${verb} ${b} 個，還剩幾個？<br>
+      <span style="font-size:.7em;color:#c05621">👆 先用手點掉 ${b} 個</span></div>${itemsHTML(emoji,a)}`,
+    speech:`有${a}個${name}，${verb}${b}個。先用手點掉${b}個，再數一數剩下幾個`,
+    answerSpeech:`${a}減${b}等於${a-b}`,
+    subRemove:b,
+    options:numOptions(a-b,0,10).map(v=>({html:v,correct:v===a-b}))
+  };
+};
+
+/* 5. 好朋友配對（關聯思考） */
+const RELATED=[
+  ['🌧️','下雨','☂️','雨傘'],['🦶','腳','🧦','襪子'],['✏️','鉛筆','📕','本子'],
+  ['🔒','鎖','🔑','鑰匙'],['🍚','白飯','🥢','筷子'],['😴','睡覺','🛏️','床'],
+  ['⚽','足球','👟','球鞋'],['🌙','晚上','⭐','星星'],['🐶','小狗','🦴','骨頭'],
+  ['🐝','蜜蜂','🌸','花'],['✉️','信','📮','郵筒'],['🥶','好冷','🧥','外套'],
+  ['☀️','好熱','🧢','帽子'],['🪥','牙刷','😁','牙齒'],['🚗','汽車','⛽','加油站'],
+  ['🎂','生日','🎁','禮物'],['📺','電視','🛋️','沙發'],['🖌️','畫筆','🎨','顏料']
+];
+GEN.related=function(){
+  const qs=shuffle(RELATED).slice(0,3);
+  const main=qs[0];
+  return {
+    qHTML:`<div class="qText">「${main[1]}」和誰是好朋友？</div><div style="font-size:16vh">${main[0]}</div>`,
+    speech:`${main[1]}，和誰是好朋友？想一想，點下面的圖`,
+    answerSpeech:`${main[1]}和${main[3]}是好朋友`,
+    options:qs.map((p,i)=>({html:`${p[2]}<span style="font-size:3.2vh">${p[3]}</span>`,cls:'big-emoji',correct:i===0}))
+  };
+};
+
+/* 6. 影子配對 */
+const SHADOWS=['🐘','🦒','🐰','🐢','🦆','🐟','🦋','🌂','✈️','🚲','🍌','🍍','🏠','🎸','🐫','🦀'];
+GEN.shadow=function(){
+  const opts=shuffle(SHADOWS).slice(0,3);
+  const target=opts[0];
+  return {
+    qHTML:`<div class="qText">這是誰的影子？</div><div class="shadowItem">${target}</div>`,
+    speech:'仔細看，這是誰的影子？點下面的圖',
+    answerSpeech:'',
+    options:opts.map((e,i)=>({html:e,cls:'big-emoji',correct:i===0}))
+  };
+};
+
+/* 7. 規律接龍 */
+const PAT_EMOJI=['🔴','🔵','🟡','🟢','⭐','❤️','🟣','🔶'];
+GEN.pattern=function(){
+  const type=pick(['AB','AB','AABB','ABC']);
+  const sym=shuffle(PAT_EMOJI);
+  let base;
+  if(type==='AB')base=[sym[0],sym[1]];
+  else if(type==='AABB')base=[sym[0],sym[0],sym[1],sym[1]];
+  else base=[sym[0],sym[1],sym[2]];
+  const len=type==='AABB'?7:6;
+  const seq=[];for(let i=0;i<len;i++)seq.push(base[i%base.length]);
+  const ansIdx=len%base.length;
+  const answer=base[ansIdx];
+  const optSet=new Set([answer,...base]);
+  let k=3;while(optSet.size<3)optSet.add(sym[k++]);
+  return {
+    qHTML:`<div class="qText">看一看規律，接下來是什麼？</div>
+      <div class="seqBox">${seq.map(e=>`<span>${e}</span>`).join('')}<span class="qBox">？</span></div>`,
+    speech:'看一看規律，接下來是什麼？點下面的圖',
+    answerSpeech:'',
+    options:shuffle([...optSet]).slice(0,3).map(e=>({html:e,cls:'big-emoji',correct:e===answer}))
+  };
+};
+
+/* ================= 記憶翻翻樂 ================= */
+const MEM_EMOJI=['🍎','🍌','🍇','🍓','🐶','🐱','🐰','🦁','🚗','✈️','⭐','🌈','🎈','⚽','🍪','🧁'];
+let memFirst=null,memLock=false,memMatched=0,memPairs=0;
+function startMemory(lv){
+  memLevel=lv;
+  memPairs=[3,6,8][lv];
+  const cols=[3,4,4][lv];
+  memMatched=0;memFirst=null;memLock=false;
+  showScreen('memoryGame');
+  $('memProgress').textContent=`配對成功：0 / ${memPairs}`;
+  const board=$('memBoard');
+  board.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+  board.innerHTML='';
+  const emojis=shuffle(MEM_EMOJI).slice(0,memPairs);
+  shuffle([...emojis,...emojis]).forEach(e=>{
+    const c=document.createElement('div');c.className='card';
+    c.innerHTML=`<div class="inner"><div class="face front">❓</div><div class="face back">${e}</div></div>`;
+    c.dataset.v=e;
+    c.onclick=()=>flipCard(c);
+    board.appendChild(c);
+  });
+  say('找出兩張一樣的圖卡。點一張卡片翻開看看');
+}
+function flipCard(c){
+  if(memLock||c.classList.contains('flip'))return;
+  c.classList.add('flip');
+  if(!memFirst){memFirst=c;return}
+  memLock=true;
+  const a=memFirst,b=c;memFirst=null;
+  if(a.dataset.v===b.dataset.v){
+    a.classList.add('done');b.classList.add('done');
+    memMatched++;beep(true);
+    $('memProgress').textContent=`配對成功：${memMatched} / ${memPairs}`;
+    say(pick(['配對成功！','找到了！好棒！','一樣的，答對了！']),false);
+    memLock=false;
+    if(memMatched===memPairs){
+      setTimeout(()=>{
+        showScreen('endScreen');
+        $('endTitle').textContent='全部配對成功！';
+        $('endStars').textContent='⭐'.repeat(memPairs);
+        mode='memory';level=memLevel;
+        say('太棒了！全部配對成功！');
+      },800);
+    }
+  }else{
+    say('不一樣喔，記住它們的位置',false);
+    setTimeout(()=>{a.classList.remove('flip');b.classList.remove('flip');memLock=false},1000);
+  }
+}
+
+say('歡迎來玩配對學習遊戲！');
+</script>
+</body>
+</html>
