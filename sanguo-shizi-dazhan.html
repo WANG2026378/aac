@@ -189,11 +189,90 @@ body{
 /* 招募彈窗 */
 #modal-recruit .modal{max-width:640px;}
 
+/* ===== v2 戰場兩軍對戰動畫 ===== */
+#battlefield{position:relative; height:92px; margin:4px auto 0; width:min(860px,94vw); overflow:hidden;
+  background:linear-gradient(180deg,transparent 40%,#3a281244 78%,#4a341a66 100%); border-radius:12px;}
+#battlefield .ground{position:absolute; left:2%; right:2%; bottom:7px; height:2px; background:#6d501755;}
+.bf-deco{position:absolute; bottom:8px; font-size:30px; filter:drop-shadow(0 3px 3px #000a);}
+.bf-unit{position:absolute; bottom:10px; font-size:24px; filter:drop-shadow(0 3px 2px #00000090);
+  animation:bfBob 1.6s ease-in-out infinite alternate; --fx:1;}
+.bf-unit.me{--fx:-1;}
+@keyframes bfBob{from{transform:scaleX(var(--fx)) translateY(0)}to{transform:scaleX(var(--fx)) translateY(-4px)}}
+.bf-unit.hit{animation:bfHit .5s;}
+@keyframes bfHit{0%,100%{transform:scaleX(var(--fx)) translate(0,0)}25%{transform:scaleX(var(--fx)) translate(6px,-7px) rotate(10deg)}60%{transform:scaleX(var(--fx)) translate(-4px,0) rotate(-8deg)}}
+.bf-unit.dead{transition:all .7s; transform:scaleX(var(--fx)) rotate(84deg) translateY(10px); opacity:.25;}
+.bf-proj{position:absolute; pointer-events:none; will-change:left,transform; z-index:3;}
+.bf-proj.arrowp{font-size:16px; color:#ffd76e; text-shadow:0 0 4px #000; transition:left .55s linear, bottom .55s ease-in;}
+.bf-proj.rock{font-size:22px; transition:left 1s linear; animation:bfArc 1s ease-in-out;}
+@keyframes bfArc{0%{transform:translateY(0) rotate(0)}50%{transform:translateY(-58px) rotate(180deg)}100%{transform:translateY(0) rotate(360deg)}}
+.bf-proj.eleph{font-size:36px; transition:left 1.05s cubic-bezier(.5,0,.8,1);}
+.bf-boom{position:absolute; bottom:14px; font-size:34px; z-index:4; animation:boomPop .65s ease-out forwards;}
+@keyframes boomPop{0%{transform:scale(.3);opacity:0}25%{transform:scale(1.5);opacity:1}100%{transform:scale(1);opacity:0}}
+#scr-battle.shake{animation:scrShake .45s;}
+@keyframes scrShake{0%,100%{transform:translate(0,0)}20%{transform:translate(-7px,3px)}40%{transform:translate(6px,-4px)}60%{transform:translate(-4px,2px)}80%{transform:translate(3px,-2px)}}
+.fighter{position:relative;}
+.dmgfloat{position:absolute; left:50%; top:38%; transform:translateX(-50%); font-size:30px; font-weight:900;
+  text-shadow:0 2px 4px #000; animation:dmgUp 1.05s ease-out forwards; pointer-events:none; z-index:5;}
+@keyframes dmgUp{0%{opacity:0; transform:translate(-50%,10px) scale(.6)}20%{opacity:1; transform:translate(-50%,-6px) scale(1.25)}100%{opacity:0; transform:translate(-50%,-46px) scale(1)}}
+
+/* ===== v2 佔領城池動畫 ===== */
+#occupy{position:fixed; inset:0; z-index:80; display:none; overflow:hidden;
+  background:radial-gradient(ellipse at 50% 40%, #4a2c18ee 0%, #0d0805f5 80%);}
+#occupy.on{display:block;}
+#oc-castle{position:absolute; left:50%; top:36%; transform:translate(-50%,-50%); font-size:clamp(90px,18vw,150px); filter:drop-shadow(0 10px 24px #000);}
+#oc-flag-old{position:absolute; left:50%; top:14%; transform:translate(-50%,0); font-size:44px; color:#d84335; transition:all 1s ease-in;}
+#occupy.captured #oc-flag-old{transform:translate(-90%,140px) rotate(120deg); opacity:0;}
+#oc-flag-new{position:absolute; left:50%; top:15%; transform:translate(-50%,30px) scale(0); font-size:52px; transition:all .8s cubic-bezier(.3,1.5,.6,1);}
+#occupy.captured #oc-flag-new{transform:translate(-50%,0) scale(1.15);}
+#oc-title{position:absolute; left:50%; top:58%; transform:translate(-50%,0) scale(0); font-size:clamp(34px,6vw,54px);
+  color:#ffe9a8; font-weight:900; letter-spacing:10px; white-space:nowrap;
+  text-shadow:0 0 24px #c9a227aa, 0 4px 0 #6b4d12; transition:transform .5s cubic-bezier(.3,1.6,.6,1);}
+#occupy.captured #oc-title{transform:translate(-50%,0) scale(1);}
+.oc-troop{position:absolute; left:-70px; font-size:36px; filter:drop-shadow(0 4px 4px #000); animation:ocMarch linear forwards;}
+@keyframes ocMarch{0%{left:-70px}100%{left:calc(50% - 46px)}}
+
+/* ===== v3 戰前過場:單挑/兩軍廝殺 ===== */
+#cutscene{position:fixed; inset:0; z-index:85; display:none; overflow:hidden;
+  background:radial-gradient(ellipse at 50% 45%, #3a2210f2 0%, #0a0603fa 80%);}
+#cutscene.on{display:block;}
+.cs-hint{position:absolute; bottom:14px; right:20px; color:#c8b488; font-size:13px; letter-spacing:2px;}
+.cs-title{position:absolute; left:50%; top:10%; transform:translate(-50%,0) scale(0); white-space:nowrap;
+  font-size:clamp(30px,5vw,46px); font-weight:900; color:#e8c96a; letter-spacing:12px;
+  text-shadow:0 0 26px #c9a227aa, 0 4px 0 #6b4d12; transition:transform .4s cubic-bezier(.3,1.6,.6,1);}
+#cutscene.go .cs-title{transform:translate(-50%,0) scale(1);}
+.cs-port{position:absolute; top:26%; width:min(200px,26vw);
+  transition:left .55s cubic-bezier(.2,.9,.4,1), right .55s cubic-bezier(.2,.9,.4,1);}
+.cs-port svg,.cs-port .portrait-art{width:100%; border:1px solid #f0d878; border-radius:18px; background:#111; box-shadow:0 14px 34px #000, 0 0 0 4px #7a5c22;}
+.cs-port .portrait-art{display:block; aspect-ratio:5/6; object-fit:cover; object-position:center 20%;}
+.cs-name{text-align:center; color:#f0e2bb; font-weight:900; font-size:clamp(15px,2.4vw,22px); letter-spacing:4px; margin-top:8px; text-shadow:0 2px 4px #000;}
+.cs-spark{position:absolute; left:50%; top:40%; transform:translate(-50%,-50%) scale(0); font-size:clamp(60px,10vw,100px); z-index:5;}
+#cutscene.clash .cs-spark{animation:sparkPop .6s ease-out forwards;}
+@keyframes sparkPop{0%{transform:translate(-50%,-50%) scale(.2);opacity:0}30%{transform:translate(-50%,-50%) scale(1.7);opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
+#cutscene.shakeit{animation:scrShake .4s;}
+.cs-unit{position:absolute; font-size:clamp(26px,4.5vw,40px); filter:drop-shadow(0 4px 4px #000); will-change:left,right;}
+.cs-boom{position:absolute; font-size:44px; animation:boomPop .7s ease-out forwards; z-index:4;}
+.cs-dust{position:absolute; font-size:38px; opacity:0; animation:dustUp 1.4s ease-out forwards;}
+@keyframes dustUp{0%{opacity:0;transform:translateY(10px) scale(.6)}30%{opacity:.9}100%{opacity:0;transform:translateY(-32px) scale(1.6)}}
+
+/* v3 受擊/入場/煙火 */
+.pbox.hitp{animation:pboxHit .45s;}
+@keyframes pboxHit{0%,100%{transform:translate(0,0) rotate(0)}30%{transform:translate(-6px,3px) rotate(-2deg)}60%{transform:translate(5px,-2px) rotate(1.5deg)}}
+.pbox.enter{animation:pboxEnter .55s cubic-bezier(.3,1.4,.6,1);}
+@keyframes pboxEnter{0%{transform:translateX(70px) scale(.6);opacity:0}100%{transform:translateX(0) scale(1);opacity:1}}
+.fw{position:fixed; z-index:95; font-size:46px; pointer-events:none; animation:boomPop 1.3s ease-out forwards;}
+
 @media (max-width:720px){
   .battle-arena .fighter{width:31vw;}
   .vs-mid{min-width:70px;}
   .opt-grid{grid-template-columns:1fr;}
   .force-card{width:150px;}
+  #battlefield{height:64px;}
+  .bf-unit{font-size:18px;}
+  .bf-deco{font-size:22px;}
+}
+@media (max-height:700px){
+  #battlefield{height:56px;}
+  .bf-unit{font-size:17px;}
 }
 </style>
 </head>
@@ -208,6 +287,8 @@ body{
   <div class="title-links">
     <button class="btn ghost" onclick="openGallery(true)">武將圖鑑</button>
     <button class="btn ghost" onclick="openDict(true)">生字簿</button>
+    <button class="btn ghost btn-bgm" onclick="toggleAudio()">🎵 音樂:開</button>
+    <button class="btn ghost btn-voice" onclick="toggleVoice()">🗣️ 配音:開</button>
     <button class="btn ghost" id="btn-continue" style="display:none" onclick="loadGame()">繼續上次戰役</button>
   </div>
   <div class="title-note">答對國字題,武將就會出擊!佔領所有城池,一統天下。<br>城池等級越高,考的生字年級越高(一~四年級)。</div>
@@ -222,6 +303,8 @@ body{
     <span class="tb-stat" id="tb-wnum">武將 5</span>
     <span class="tb-stat" id="tb-learn">已學生字 0</span>
     <span class="spacer"></span>
+    <button class="btn ghost btn-bgm" onclick="toggleAudio()">🎵 音樂:開</button>
+    <button class="btn ghost btn-voice" onclick="toggleVoice()">🗣️ 配音:開</button>
     <button class="btn ghost" onclick="restTurn()">休整補血</button>
     <button class="btn ghost" onclick="openGallery(false)">武將</button>
     <button class="btn ghost" onclick="openDict(false)">生字簿</button>
@@ -250,13 +333,18 @@ body{
       <div class="hpbar enemy"><i id="bt-enhp"></i></div><div class="hp-num" id="bt-enhpn"></div>
     </div>
   </div>
+  <div id="battlefield"></div>
   <div class="q-panel">
     <div class="q-type" id="q-type"></div>
     <div class="q-text" id="q-text"></div>
     <div class="opt-grid" id="q-opts"></div>
     <div class="q-feedback" id="q-fb"></div>
   </div>
-  <div class="battle-foot"><button class="btn red" onclick="fleeBattle()">撤退</button></div>
+  <div class="battle-foot">
+    <button class="btn ghost btn-bgm" onclick="toggleAudio()">🎵 音樂:開</button>
+    <button class="btn ghost btn-voice" onclick="toggleVoice()">🗣️ 配音:開</button>
+    <button class="btn red" onclick="fleeBattle()">撤退</button>
+  </div>
 </div>
 
 <!-- 圖鑑 -->
@@ -315,6 +403,11 @@ body{
   <div class="opt-grid" id="rq-opts"></div>
   <div class="q-feedback" id="rq-fb"></div>
 </div></div>
+
+<!-- v2 佔領城池動畫 -->
+<div id="occupy"></div>
+<!-- v3 戰前過場動畫 -->
+<div id="cutscene"></div>
 
 <script>
 /* ===== 生字資料庫:一至四年級(依台灣國小常用生字彙編) c字 z注音 r部首 w造詞 g年級 ===== */
@@ -914,6 +1007,7 @@ const FBG = {
  "蜀":["#2a4a33","#0e1a12"], "魏":["#243450","#0c1220"],
  "吳":["#4a251d","#1c0d0a"], "群":["#3a3046","#171226"]
 };
+let _pid = 0;
 const PORTRAIT_FILES = {
  "劉備":"assets/sanguo-portraits/liu-bei.webp",
  "關羽":"assets/sanguo-portraits/guan-yu.webp",
@@ -976,7 +1070,6 @@ const PORTRAIT_FILES = {
  "貂蟬":"assets/sanguo-portraits/diao-chan.webp",
  "祝融夫人":"assets/sanguo-portraits/zhu-rong.webp"
 };
-let _pid = 0;
 function drawPortrait(w, size){
   const src = PORTRAIT_FILES[w.n];
   if(src){
@@ -1273,6 +1366,16 @@ function headgear(uid, p, cx, cy, rx, ry){
            <path d="M${cx-rx} ${top+14} Q${cx} ${top-8} ${cx+rx} ${top+14} M${cx-rx+6} ${top+2} Q${cx} ${top-16} ${cx+rx-6} ${top+2}" stroke="${hd}" stroke-width="1.6" fill="none" opacity=".7"/>
            <path d="M${cx+rx-4} ${top+22} q12 4 14 18" stroke="${hc}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
       break;
+    case "bun": /* 女性雙髻髮飾 */
+      s = `<path d="M${cx-rx-1} ${top+22} Q${cx} ${top-8} ${cx+rx+1} ${top+22} L${cx+rx+1} ${top+30} Q${cx} ${top+6} ${cx-rx-1} ${top+30} Z" fill="#1a1208"/>
+           <ellipse cx="${cx-21}" cy="${top-11}" rx="12" ry="11" fill="#1a1208"/>
+           <ellipse cx="${cx+21}" cy="${top-11}" rx="12" ry="11" fill="#1a1208"/>
+           <circle cx="${cx-21}" cy="${top-11}" r="4" fill="${hl}"/>
+           <circle cx="${cx+21}" cy="${top-11}" r="4" fill="${hl}"/>
+           <path d="M${cx+5} ${top+2} L${cx+34} ${top-19}" stroke="${hl}" stroke-width="3" stroke-linecap="round"/>
+           <circle cx="${cx+34}" cy="${top-19}" r="4.5" fill="#d84335"/>
+           <path d="M${cx-30} ${top+6} q-6 -8 2 -13 q7 -3 9 5 q1 8 -11 8" fill="#e88aa0" stroke="#b8485a" stroke-width="1"/>`;
+      break;
     default: /* topknot 露髻 */
       s = `<path d="M${cx-rx-1} ${top+24} Q${cx} ${top-10} ${cx+rx+1} ${top+24} L${cx+rx+1} ${top+32} Q${cx} ${top+8} ${cx-rx-1} ${top+32} Z" fill="#221609"/>
            <path d="M${cx} ${top-18} Q${cx-13} ${top-14} ${cx-10} ${top+2} L${cx+10} ${top+2} Q${cx+13} ${top-14} ${cx} ${top-18}" fill="#221609"/>`;
@@ -1344,6 +1447,7 @@ function startGame(f){
 function show(id){
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("on"));
   $(id).classList.add("on");
+  bgmFor(id);
 }
 function backTitle(){ if(G) saveGame(false); show("scr-title"); initTitle(); }
 function closeModal(id){ $(id).classList.remove("on"); }
@@ -1400,6 +1504,13 @@ function renderMap(){
     if(!mine) s += `<text x="${c.x}" y="${c.y-30}" text-anchor="middle" font-size="11.5" fill="#d8c69a" style="pointer-events:none">守將${c.defs.length}名</text>`;
     s += `</g>`;
   });
+  if(_pulseCity){
+    const pc = cityById(_pulseCity);
+    if(pc) s += `<circle cx="${pc.x}" cy="${pc.y}" r="24" fill="none" stroke="#ffe9a8" stroke-width="4" style="pointer-events:none">
+      <animate attributeName="r" values="22;50" dur="1s" repeatCount="3"/>
+      <animate attributeName="opacity" values="1;0" dur="1s" repeatCount="3"/></circle>`;
+    _pulseCity = null;
+  }
   $("map-svg").innerHTML = s;
   checkVictory();
 }
@@ -1438,7 +1549,8 @@ function startBattle(cityId, wname){
         defs:c.defs.map(n => { const w = wByName(n); return {n:n, hp:60 + w.ld, mx:60 + w.ld}; }),
         newChars:[], practice:false };
   $("bt-city").textContent = "進攻 " + c.n + "(" + GTITLE[c.tier] + "生字)";
-  show("scr-battle"); setupWave(); updateBars(); askQuestion();
+  show("scr-battle"); setupWave(); updateBars();
+  playCutscene(wByName(B.me.n), wByName(B.defs[0].n), askQuestion);
 }
 function setupWave(){
   const d = B.defs[B.wave], w = wByName(d.n), me = wByName(B.me.n);
@@ -1446,6 +1558,10 @@ function setupWave(){
   $("bt-mep").innerHTML = drawPortrait(me); $("bt-men").textContent = me.n; $("bt-met").textContent = me.t;
   $("bt-enp").innerHTML = drawPortrait(w);  $("bt-enn").textContent = w.n;  $("bt-ent").textContent = w.t;
   log(B.practice ? "自由練習,答錯不扣血!" : d.n + "出城迎戰!答對國字就能發動攻擊!");
+  renderArmies();
+  const eb = $("bt-enp");
+  eb.classList.remove("enter"); void eb.offsetWidth; eb.classList.add("enter");
+  if(!B.practice) speak(d.n + "在此!" + pickA(TAUNT_OPEN), "enemy");
 }
 function updateBars(){
   const d = B.defs[B.wave];
@@ -1518,6 +1634,8 @@ function askQuestion(){
     b.onclick = () => answer(b, o);
     box.appendChild(b);
   });
+  const asker = (B && !B.practice && B.defs) ? wByName(B.defs[B.wave].n).n + "問:" : "";
+  speak(asker + plainQ(curQ.html), "enemy", true);
 }
 function answer(btn, val){
   document.querySelectorAll("#q-opts .opt").forEach(b => { b.disabled = true;
@@ -1538,11 +1656,17 @@ function answer(btn, val){
     const dmg = 18 + Math.round(me.wu/6) + Math.min(B.combo,5)*4;
     d.hp -= dmg;
     log(me.n + "發動攻擊,造成 " + dmg + " 點傷害!");
+    playAttack(true); dmgFloat(true, "-" + dmg);
+    setTimeout(()=>hitPbox("bt-enp"), 500);
+    speak(pickA(OUR_CRY), "me");
   }else{
     B.combo = 0;
     const dmg = 12 + Math.round(en.wu/8);
     B.me.hp -= dmg;
     log(en.n + "趁機反擊,我方損失 " + dmg + " 點體力!");
+    playAttack(false); dmgFloat(false, "-" + dmg);
+    setTimeout(()=>hitPbox("bt-mep"), 500);
+    speak(pickA(TAUNT_WRONG), "enemy");
   }
   updateBars();
   setTimeout(() => {
@@ -1554,6 +1678,8 @@ function answer(btn, val){
 function waveDown(){
   const d = B.defs[B.wave];
   log("擊敗守將" + d.n + "!");
+  speak(pickA(TAUNT_LOSE), "enemy");
+  document.querySelectorAll("#battlefield .bf-unit.enemy").forEach((u,i)=>setTimeout(()=>u.classList.add("dead"), i*90));
   if(B.wave < B.defs.length - 1){
     B.wave++;
     setTimeout(() => { setupWave(); updateBars(); askQuestion(); }, 1200);
@@ -1588,10 +1714,12 @@ function fleeBattle(){
 }
 function battleWon(){
   G.owner[B.city.id] = "我";
-  endBattle(true);
+  _pulseCity = B.city.id;
+  playOccupy(B.city.n, () => endBattle(true));
 }
 function endBattle(won, fled){
   G.turn++;
+  if(!won) sfxLose();
   G.roster.forEach(r => { if(r.hp <= 0) r.hp = Math.round(r.mx * 0.4); });
   let html = "";
   if(won){
@@ -1629,6 +1757,7 @@ function openRecruit(name, tier){
   $("rq-type").textContent = q.label + "・挑戰題(" + GTITLE[tier] + ")";
   $("rq-text").innerHTML = q.html;
   $("rq-fb").textContent = "";
+  speak(name + "考驗你:" + plainQ(q.html), "enemy");
   const box = $("rq-opts"); box.innerHTML = "";
   q.opts.forEach(o => {
     const b = document.createElement("button");
@@ -1661,6 +1790,8 @@ function restTurn(){
 }
 function checkVictory(){
   if(G && CITIES.every(c => G.owner[c.id] === "我")){
+    fireworks(14); sfxWin();
+    speak("恭喜!你一統天下了!", "me");
     $("res-title").textContent = "一統天下!";
     $("res-title").style.color = "#c9a227";
     $("res-body").innerHTML = `恭喜!${G.f}軍佔領了全部 ${CITIES.length} 座城池!<br>
@@ -1774,6 +1905,347 @@ function endPractice(){
     else { show("scr-dict"); renderDict(dictTab); saveGame(false); }
   };
   $("modal-result").classList.add("on");
+}
+
+/* ============================================================
+   v2 加強:背景配樂 / 敵將配音 / 兩軍對戰動畫 / 佔領城池動畫
+   ============================================================ */
+let audioOn = true, voiceOn = true;
+let AC2 = null, masterG = null, bgmTimer = null, bgmStep = 0, bgmMode = "calm", _booted = false;
+let _pulseCity = null;
+const pickA = a => a[Math.floor(Math.random()*a.length)];
+
+/* ---- WebAudio 引擎(音量刻意壓低) ---- */
+function actx(){
+  if(!AC2){
+    AC2 = new (window.AudioContext||window.webkitAudioContext)();
+    masterG = AC2.createGain(); masterG.gain.value = .5;
+    masterG.connect(AC2.destination);
+  }
+  return AC2;
+}
+function nt(f, at, dur, type, vol, slide){
+  try{
+    const a = actx(), o = a.createOscillator(), g = a.createGain();
+    o.type = type||"sine"; o.frequency.setValueAtTime(f, a.currentTime+at);
+    if(slide) o.frequency.exponentialRampToValueAtTime(slide, a.currentTime+at+dur);
+    g.gain.setValueAtTime(0, a.currentTime+at);
+    g.gain.linearRampToValueAtTime(vol||.05, a.currentTime+at+.02);
+    g.gain.exponentialRampToValueAtTime(.0008, a.currentTime+at+dur);
+    o.connect(g); g.connect(masterG);
+    o.start(a.currentTime+at); o.stop(a.currentTime+at+dur+.05);
+  }catch(e){}
+}
+function drum(at, vol){
+  try{
+    const a = actx(), len = a.sampleRate*.12, b = a.createBuffer(1,len,a.sampleRate), d = b.getChannelData(0);
+    for(let i=0;i<len;i++) d[i] = (Math.random()*2-1)*(1-i/len);
+    const s = a.createBufferSource(); s.buffer = b;
+    const f = a.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 180;
+    const g = a.createGain(); g.gain.value = vol||.2;
+    s.connect(f); f.connect(g); g.connect(masterG); s.start(a.currentTime+at);
+  }catch(e){}
+}
+/* 五聲音階(宮商角徵羽) */
+const SCALE5 = [261.63, 293.66, 329.63, 392, 440, 523.25, 587.33, 659.26];
+function bgmTick(){
+  if(!audioOn) return;
+  const battle = bgmMode === "battle";
+  if(Math.random() < (battle? .9 : .72)){
+    nt(pickA(SCALE5), 0, battle? .5 : 1.5, "triangle", battle? .045 : .04);
+  }
+  if(battle){
+    drum(0, .18);
+    if(bgmStep%2) drum(.21, .08);
+    if(bgmStep%4===0) nt(65.4, 0, .9, "sine", .06);
+  }else{
+    if(bgmStep%4===0) nt(130.8, 0, 2.8, "sine", .03);
+    if(bgmStep%8===4) drum(0, .06);
+  }
+  bgmStep++;
+}
+function startBgm(mode){
+  bgmMode = mode;
+  if(bgmTimer){ clearInterval(bgmTimer); bgmTimer = null; }
+  if(!audioOn || !_booted) return;
+  actx(); if(AC2.state==="suspended") AC2.resume();
+  bgmTimer = setInterval(bgmTick, mode==="battle"? 420 : 800);
+}
+function bgmFor(id){
+  const m = id==="scr-battle" ? "battle" : "calm";
+  if(m !== bgmMode || !bgmTimer) startBgm(m); else bgmMode = m;
+}
+document.addEventListener("pointerdown", () => {
+  if(!_booted){ _booted = true; startBgm(bgmMode); }
+  if(AC2 && AC2.state==="suspended") AC2.resume();
+});
+function toggleAudio(){
+  audioOn = !audioOn;
+  if(!audioOn && bgmTimer){ clearInterval(bgmTimer); bgmTimer = null; }
+  else if(audioOn) startBgm($("scr-battle").classList.contains("on")? "battle":"calm");
+  document.querySelectorAll(".btn-bgm").forEach(b => b.textContent = audioOn? "🎵 音樂:開":"🎵 音樂:關");
+}
+/* ---- 音效 ---- */
+function sfxHit(){ if(!audioOn)return; drum(0,.26); nt(160,0,.18,"square",.05,70); }
+function sfxArrow(){ if(!audioOn)return; nt(1400,0,.18,"sawtooth",.02,500); nt(1200,.08,.18,"sawtooth",.018,400); }
+function sfxCharge(){ if(!audioOn)return; drum(0,.18); drum(.12,.13); nt(392,0,.2,"triangle",.035); }
+function sfxStomp(){ if(!audioOn)return; drum(0,.24); drum(.35,.24); drum(.7,.28); nt(80,.7,.4,"sine",.07,50); }
+function sfxWin(){ if(!audioOn)return; [523.25,659.26,783.99,1046.5].forEach((f,i)=>nt(f,i*.16,.34,"triangle",.06)); }
+function sfxLose(){ if(!audioOn)return; nt(330,0,.5,"triangle",.05,160); nt(220,.3,.7,"triangle",.05,110); }
+
+/* ---- 配音(敵將低沉、我軍高亢) ---- */
+function speak(t, who, append){
+  if(!voiceOn || !window.speechSynthesis) return;
+  try{
+    if(!append) speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(t);
+    u.lang = "zh-TW";
+    if(who==="enemy"){ u.pitch = .5; u.rate = .95; }
+    else if(who==="me"){ u.pitch = 1.25; u.rate = 1.1; }
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function toggleVoice(){
+  voiceOn = !voiceOn;
+  if(!voiceOn){ try{ speechSynthesis.cancel(); }catch(e){} }
+  document.querySelectorAll(".btn-voice").forEach(b => b.textContent = voiceOn? "🗣️ 配音:開":"🗣️ 配音:關");
+}
+function plainQ(html){
+  const d = document.createElement("div"); d.innerHTML = html;
+  let t = d.textContent || "";
+  return t.replace(/[ㄅ-ㄩˊˇˋ˙]+/g,"").replace(/「」/g,"").replace(/▢/g,"空格").replace(/\s+/g,"");
+}
+const TAUNT_OPEN = ["想攻下此城,先過我這一關!","來得正好,接我一題!","哼,也敢來攻城?","吾在此恭候多時了!","且慢!先答對我的問題!"];
+const TAUNT_WRONG = ["哈哈哈,就這點本事?","破綻百出,看我反擊!","太天真了!","再想清楚吧!","此字你還不熟啊!"];
+const TAUNT_LOSE = ["罷了……是我輸了!","好厲害的學問……","勝敗乃兵家常事……","服了,服了!","撤!快撤!"];
+const OUR_CRY = ["殺啊!","全軍突擊!","放箭!","衝啊!","進攻!"];
+
+/* ---- 兩軍對戰動畫 ---- */
+const UNITS_ME = ["⚔️","🏹","🐎","🛡️","⚔️"], UNITS_EN = ["⚔️","🛡️","🏹","⚔️","🐎"];
+function renderArmies(){
+  const bf = $("battlefield"); if(!bf) return;
+  bf.innerHTML = '<div class="ground"></div>'
+    + '<span class="bf-deco" style="left:6px">⛺</span>'
+    + '<span class="bf-deco" style="right:6px">🏯</span>';
+  UNITS_ME.forEach((u,i)=>{
+    bf.insertAdjacentHTML("beforeend",
+      `<span class="bf-unit me" style="left:${9+i*6.5}%; animation-delay:${(i*.13).toFixed(2)}s">${u}</span>`);
+  });
+  UNITS_EN.forEach((u,i)=>{
+    bf.insertAdjacentHTML("beforeend",
+      `<span class="bf-unit enemy" style="right:${9+i*6.5}%; animation-delay:${(i*.11).toFixed(2)}s">${u}</span>`);
+  });
+}
+function bfSpawn(cls, html, leftPct, bottomPx){
+  const bf = $("battlefield");
+  const s = document.createElement("span");
+  s.className = "bf-proj " + cls; s.innerHTML = html;
+  s.style.left = leftPct + "%"; s.style.bottom = (bottomPx||14) + "px";
+  bf.appendChild(s); return s;
+}
+function bfImpact(mine){
+  const bf = $("battlefield"); if(!bf) return;
+  const s = document.createElement("span");
+  s.className = "bf-boom"; s.style.left = (mine? 70 : 14) + "%"; s.textContent = "💥";
+  bf.appendChild(s); setTimeout(()=>s.remove(), 700);
+  const scr = $("scr-battle");
+  scr.classList.remove("shake"); void scr.offsetWidth; scr.classList.add("shake");
+  bf.querySelectorAll(mine? ".bf-unit.enemy" : ".bf-unit.me").forEach((u,i)=>{
+    setTimeout(()=>{ u.classList.add("hit"); setTimeout(()=>u.classList.remove("hit"), 520); }, i*60);
+  });
+  sfxHit();
+}
+function animArrows(mine){
+  sfxArrow();
+  for(let i=0;i<4;i++){
+    setTimeout(()=>{
+      const s = bfSpawn("arrowp",
+        mine? "➤" : "<span style='display:inline-block;transform:scaleX(-1)'>➤</span>",
+        mine? 15 : 80, 30 + Math.random()*20);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        s.style.left = (mine? 74 : 13) + "%"; s.style.bottom = "14px";
+      }));
+      setTimeout(()=>s.remove(), 750);
+    }, i*110);
+  }
+  setTimeout(()=>bfImpact(mine), 660);
+}
+function animCharge(mine){
+  sfxCharge();
+  const sel = mine? ".bf-unit.me" : ".bf-unit.enemy", prop = mine? "left" : "right";
+  document.querySelectorAll(sel).forEach((u,i)=>{
+    const orig = u.style[prop];
+    setTimeout(()=>{
+      u.style.transition = prop + " .42s cubic-bezier(.3,1.3,.7,1)";
+      u.style[prop] = (parseFloat(orig) + 36) + "%";
+      setTimeout(()=>{ u.style[prop] = orig; setTimeout(()=>u.style.transition = "", 500); }, 560);
+    }, i*70);
+  });
+  setTimeout(()=>bfImpact(mine), 480);
+}
+function animBoulder(mine){
+  nt(220,0,.9,"sine",.03,90);
+  const s = bfSpawn("rock", "🪨", mine? 10 : 84, 16);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ s.style.left = (mine? 70 : 14) + "%"; }));
+  setTimeout(()=>{ bfImpact(mine); s.remove(); }, 1000);
+}
+function animElephant(mine){
+  sfxStomp();
+  const s = bfSpawn("eleph",
+    mine? "<span style='display:inline-block;transform:scaleX(-1)'>🐘</span>" : "🐘",
+    mine? 3 : 90, 10);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ s.style.left = (mine? 62 : 22) + "%"; }));
+  setTimeout(()=>bfImpact(mine), 1050);
+  setTimeout(()=>{ s.style.opacity = 0; setTimeout(()=>s.remove(), 400); }, 1500);
+}
+function playAttack(mine){
+  if(!$("battlefield")) return;
+  const type = pickA(["arrow","arrow","charge","charge","boulder","elephant"]);
+  if(type==="arrow") animArrows(mine);
+  else if(type==="charge") animCharge(mine);
+  else if(type==="boulder") animBoulder(mine);
+  else animElephant(mine);
+  /* 連擊3以上:附加火攻 */
+  if(mine && B && !B.practice && B.combo >= 3){
+    for(let i=0;i<3;i++){
+      setTimeout(()=>{
+        const s = bfSpawn("arrowp", "🔥", 16, 24 + i*9);
+        requestAnimationFrame(()=>requestAnimationFrame(()=>{ s.style.left = "72%"; s.style.bottom = "14px"; }));
+        setTimeout(()=>s.remove(), 760);
+      }, 160 + i*130);
+    }
+    setTimeout(()=>bfImpact(true), 950);
+  }
+}
+function hitPbox(id){
+  const e = $(id); if(!e) return;
+  e.classList.remove("hitp"); void e.offsetWidth; e.classList.add("hitp");
+}
+function fireworks(n){
+  for(let i=0;i<(n||12);i++){
+    setTimeout(()=>{
+      const s = document.createElement("span");
+      s.className = "fw"; s.textContent = pickA(["🎆","🎇","✨"]);
+      s.style.left = (5+Math.random()*85) + "vw";
+      s.style.top = (5+Math.random()*70) + "vh";
+      document.body.appendChild(s);
+      setTimeout(()=>s.remove(), 1300);
+    }, i*180);
+  }
+}
+
+/* ---- v3 戰前過場:單挑 / 兩軍廝殺 ---- */
+let _csT = [];
+function csT(fn, t){ _csT.push(setTimeout(fn, t)); }
+function playCutscene(meW, enW, cb){
+  const ov = $("cutscene");
+  if(!ov){ cb(); return; }
+  let done = false;
+  const finish = () => {
+    if(done) return; done = true;
+    _csT.forEach(clearTimeout); _csT = [];
+    ov.classList.remove("on","go","clash","shakeit");
+    ov.innerHTML = ""; ov.onclick = null;
+    cb();
+  };
+  ov.onclick = finish;
+  ov.classList.add("on");
+  if(Math.random() < .55 && meW && enW) csDuel(ov, meW, enW);
+  else csMelee(ov);
+  csT(finish, 3400);
+}
+function csDuel(ov, meW, enW){
+  ov.innerHTML = `<div class="cs-title">武將單挑</div>
+    <div class="cs-port" id="cs-l" style="left:-30vw">${drawPortrait(meW)}<div class="cs-name">${meW.n}</div></div>
+    <div class="cs-port" id="cs-r" style="right:-30vw">${drawPortrait(enW)}<div class="cs-name">${enW.n}</div></div>
+    <div class="cs-spark">⚔️</div>
+    <div class="cs-hint">點一下跳過</div>`;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    ov.classList.add("go");
+    $("cs-l").style.left = "14%"; $("cs-r").style.right = "14%";
+  }));
+  sfxCharge();
+  csT(()=>{ $("cs-l").style.left = "31%"; $("cs-r").style.right = "31%"; drum(0,.2); }, 1250);
+  csT(()=>{
+    ov.classList.add("clash","shakeit"); sfxHit();
+    if(audioOn){ nt(1200,0,.25,"square",.035,300); nt(900,.1,.3,"square",.035,200); }
+  }, 1600);
+  csT(()=>{
+    ov.classList.remove("shakeit","clash"); void ov.offsetWidth;
+    ov.classList.add("clash","shakeit"); sfxHit();
+  }, 2250);
+  csT(()=>ov.classList.remove("shakeit"), 2700);
+}
+function csMelee(ov){
+  ov.innerHTML = `<div class="cs-title">兩軍交鋒</div><div class="cs-hint">點一下跳過</div>`;
+  requestAnimationFrame(()=>ov.classList.add("go"));
+  sfxStomp();
+  const UN = ["⚔️","🐎","🏹","🛡️","⚔️","🐎"];
+  for(let i=0;i<7;i++){
+    const l = document.createElement("span");
+    l.className = "cs-unit";
+    l.innerHTML = `<span style="display:inline-block;transform:scaleX(-1)">${pickA(UN)}</span>`;
+    l.style.top = (28+Math.random()*48) + "%"; l.style.left = "-60px";
+    l.style.transition = "left " + (0.8+Math.random()*.6) + "s ease-in";
+    ov.appendChild(l);
+    const r = document.createElement("span");
+    r.className = "cs-unit"; r.textContent = pickA(UN);
+    r.style.top = (28+Math.random()*48) + "%"; r.style.right = "-60px";
+    r.style.transition = "right " + (0.8+Math.random()*.6) + "s ease-in";
+    ov.appendChild(r);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      l.style.left = (34+Math.random()*10) + "%";
+      r.style.right = (34+Math.random()*10) + "%";
+    }));
+  }
+  for(let i=0;i<6;i++){
+    csT(()=>{
+      const b = document.createElement("span");
+      b.className = "cs-boom"; b.textContent = pickA(["💥","⚔️","💢"]);
+      b.style.left = (38+Math.random()*20) + "%"; b.style.top = (30+Math.random()*40) + "%";
+      ov.appendChild(b); sfxHit();
+      const d = document.createElement("span");
+      d.className = "cs-dust"; d.textContent = "💨";
+      d.style.left = (36+Math.random()*24) + "%"; d.style.top = (35+Math.random()*35) + "%";
+      ov.appendChild(d);
+    }, 900 + i*280);
+  }
+  csT(()=>ov.classList.add("shakeit"), 1000);
+  csT(()=>ov.classList.remove("shakeit"), 1500);
+}
+function dmgFloat(hitEnemy, txt){
+  const box = $(hitEnemy? "bt-enp" : "bt-mep");
+  if(!box || !box.parentElement) return;
+  const s = document.createElement("span");
+  s.className = "dmgfloat"; s.style.color = hitEnemy? "#ffd76e" : "#ff8a7a"; s.textContent = txt;
+  box.parentElement.appendChild(s);
+  setTimeout(()=>s.remove(), 1100);
+}
+
+/* ---- 佔領城池動畫 ---- */
+function playOccupy(cityName, cb){
+  const ov = $("occupy");
+  ov.innerHTML = `<div id="oc-castle">🏯</div>
+    <div id="oc-flag-old">⚑</div>
+    <div id="oc-flag-new">🚩</div>
+    <div id="oc-title">攻克 ${cityName}!</div>`;
+  ov.classList.remove("captured");
+  ov.classList.add("on");
+  if(audioOn) for(let i=0;i<8;i++) drum(i*.3, .15);
+  for(let i=0;i<8;i++){
+    const t = document.createElement("span");
+    t.className = "oc-troop"; t.textContent = pickA(["⚔️","🐎","🏹","🛡️"]);
+    t.style.bottom = (16 + (i%3)*8) + "%";
+    t.style.animationDuration = (1.5 + Math.random()*.8) + "s";
+    t.style.animationDelay = (i*.15) + "s";
+    ov.appendChild(t);
+  }
+  setTimeout(()=>{
+    ov.classList.add("captured");
+    sfxWin(); fireworks(6);
+    speak("攻克" + cityName + "!全軍進城!", "me");
+  }, 1900);
+  setTimeout(()=>{ ov.classList.remove("on","captured"); ov.innerHTML=""; cb(); }, 3800);
 }
 
 /* ===== 啟動 ===== */
