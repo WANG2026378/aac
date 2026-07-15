@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>哆啦A夢數學大冒險</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif; }
+  body {
+    min-height:100vh;
+    background: linear-gradient(180deg,#87CEEB 0%,#b8e6f5 60%,#e8f7fc 100%);
+    display:flex; flex-direction:column; align-items:center;
+    padding:12px; color:#1a3b5d;
+  }
+  .cloud { position:fixed; background:#fff; border-radius:50px; opacity:.8; z-index:0; }
+  .c1{width:120px;height:40px;top:40px;left:8%;} .c2{width:90px;height:32px;top:100px;right:12%;} .c3{width:150px;height:45px;bottom:80px;left:15%;opacity:.5;}
+  #app { position:relative; z-index:1; width:100%; max-width:660px; }
+
+  header { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+  h1 { font-size:1.4em; color:#0b5ea8; text-shadow:1px 1px 0 #fff; }
+  .stats { display:flex; gap:8px; }
+  .stat { background:#fff; border:2px solid #0b5ea8; border-radius:20px; padding:4px 12px; font-weight:bold; font-size:.9em; }
+
+  .card {
+    background:#fff; border-radius:20px; padding:20px;
+    box-shadow:0 6px 20px rgba(11,94,168,.25); margin-bottom:12px;
+  }
+  .hidden { display:none !important; }
+
+  .dora-wrap { text-align:center; }
+  .bubble {
+    display:inline-block; background:#fffbe6; border:2px solid #f5c518;
+    border-radius:16px; padding:10px 16px; margin-bottom:8px; font-weight:bold;
+    max-width:92%; font-size:1.05em; line-height:1.5;
+  }
+
+  button { cursor:pointer; border:none; font-family:inherit; }
+  .btn {
+    background:#0b5ea8; color:#fff; border-radius:14px; padding:12px 22px;
+    font-size:1.1em; font-weight:bold; box-shadow:0 4px 0 #073e70;
+    transition:transform .1s;
+  }
+  .btn:active { transform:translateY(3px); box-shadow:0 1px 0 #073e70; }
+  .btn.red { background:#e0332c; box-shadow:0 4px 0 #9c1f1a; }
+  .btn.yellow { background:#f5c518; color:#5a4500; box-shadow:0 4px 0 #b8940e; }
+  .btn.green { background:#2e9e3f; box-shadow:0 4px 0 #1d6b2a; }
+
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .select-btn {
+    background:#eaf5ff; border:3px solid #9cc9ee; border-radius:14px;
+    padding:14px 8px; font-size:1.05em; font-weight:bold; color:#1a3b5d;
+  }
+  .select-btn.sel { background:#0b5ea8; color:#fff; border-color:#073e70; }
+  .section-title { font-weight:bold; margin:12px 0 8px; color:#0b5ea8; font-size:1.1em; }
+
+  /* map */
+  .map-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .lv-card {
+    border:3px solid #9cc9ee; border-radius:16px; padding:14px 10px; text-align:center;
+    background:#eaf5ff; position:relative;
+  }
+  .lv-card.done { background:#e6f9e6; border-color:#2e9e3f; }
+  .lv-card.cur { border-color:#e0332c; background:#fff4e6; box-shadow:0 0 12px rgba(224,51,44,.4); }
+  .lv-card.lock { filter:grayscale(.7); opacity:.55; }
+  .lv-em { font-size:2.2em; }
+  .lv-name { font-weight:bold; margin:4px 0; }
+  .lv-friend { font-size:1.6em; }
+  .lv-status { font-size:.85em; font-weight:bold; }
+
+  /* game */
+  #progressBar { height:14px; background:#dceefb; border-radius:7px; overflow:hidden; margin-bottom:10px; }
+  #progressFill { height:100%; width:0%; background:linear-gradient(90deg,#4aa3e0,#0b5ea8); transition:width .3s; }
+  #levelHead { text-align:center; font-weight:bold; color:#0b5ea8; font-size:1.1em; margin-bottom:4px; }
+  #qMeta { text-align:center; font-weight:bold; color:#4aa3e0; }
+  #question { font-size:1.3em; font-weight:bold; text-align:center; margin:12px 0; line-height:1.6; min-height:2.2em; }
+  #clockBox { text-align:center; margin-bottom:6px; }
+  #hintBox {
+    background:#fffbe6; border:2px dashed #f5c518; border-radius:12px;
+    padding:10px 14px; margin:0 0 10px; font-weight:bold; color:#8a6d00; text-align:center;
+  }
+  #choices { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .choice {
+    background:#fff; border:3px solid #4aa3e0; border-radius:14px;
+    padding:16px 8px; font-size:1.25em; font-weight:bold; color:#1a3b5d;
+    transition:transform .1s;
+  }
+  .choice:hover:not(:disabled) { transform:scale(1.03); background:#eaf5ff; }
+  .choice.correct { background:#c8f7c5; border-color:#2e9e3f; }
+  .choice.wrong { background:#ffd6d4; border-color:#e0332c; }
+  .choice.faded { opacity:.25; }
+  .choice:disabled { cursor:default; }
+  #feedback { text-align:center; font-size:1.15em; font-weight:bold; min-height:1.8em; margin-top:12px; }
+  #feedback.good { color:#2e9e3f; } #feedback.bad { color:#e0332c; }
+
+  /* item bar */
+  #itemBar { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px; }
+  .item-btn {
+    background:#f0e6ff; border:2px solid #9b7fd4; border-radius:12px;
+    padding:8px 4px; font-size:.85em; font-weight:bold; color:#4a2d8a; line-height:1.4;
+  }
+  .item-btn:disabled { opacity:.35; cursor:default; }
+  .item-btn .big { font-size:1.5em; display:block; }
+  #shieldRow { text-align:center; margin-top:10px; }
+
+  .energyRow { display:flex; align-items:center; justify-content:center; gap:10px; margin-top:12px; flex-wrap:wrap; }
+  .dot { width:22px; height:22px; border-radius:50%; background:#dceefb; border:2px solid #9cc9ee; }
+  .dot.on { background:#f5c518; border-color:#b8940e; box-shadow:0 0 8px #f5c518; }
+
+  /* modal */
+  .modal {
+    position:fixed; inset:0; background:rgba(10,40,70,.75); z-index:10;
+    display:flex; align-items:center; justify-content:center; padding:16px;
+  }
+  .modal-card {
+    background:#fff; border-radius:24px; padding:28px 22px; text-align:center;
+    max-width:420px; width:100%; animation:pop .4s; max-height:90vh; overflow-y:auto;
+  }
+  @keyframes pop { 0%{transform:scale(.5);opacity:0;} 100%{transform:scale(1);opacity:1;} }
+  .gadget-emoji { font-size:4.5em; margin:12px 0; display:inline-block; animation:bounce .8s infinite alternate; }
+  @keyframes bounce { from{transform:translateY(0);} to{transform:translateY(-12px);} }
+  .gadget-name { font-size:1.5em; font-weight:bold; color:#0b5ea8; }
+  .gadget-desc { color:#555; margin:8px 0 6px; line-height:1.5; }
+  .gadget-fx {
+    background:#f0e6ff; border-radius:10px; padding:8px; margin:8px 0 16px;
+    font-weight:bold; color:#4a2d8a;
+  }
+
+  .coll-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+  .coll-item {
+    background:#eaf5ff; border-radius:12px; padding:8px 4px; text-align:center;
+    font-size:.72em; border:2px solid #9cc9ee;
+  }
+  .coll-item .em { font-size:1.9em; display:block; }
+  .coll-item.locked { filter:grayscale(1); opacity:.4; }
+  .inv-row { display:flex; justify-content:center; gap:14px; margin-top:12px; font-weight:bold; flex-wrap:wrap; }
+
+  .stars { font-size:2.4em; text-align:center; margin:10px 0; letter-spacing:6px; }
+  .result-num { text-align:center; font-size:1.2em; margin-bottom:14px; }
+  .center { text-align:center; }
+  .row-btns { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
+  .friends-row { text-align:center; font-size:3em; letter-spacing:8px; margin:10px 0; }
+  @keyframes party { 0%,100%{transform:rotate(-8deg);} 50%{transform:rotate(8deg);} }
+  .party span { display:inline-block; animation:party 1s infinite; }
+  footer { font-size:.75em; color:#5b7f9e; margin-top:8px; text-align:center; }
+</style>
+</head>
+<body>
+<div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+<div id="app">
+  <header>
+    <h1>🔔 哆啦A夢數學大冒險</h1>
+    <div class="stats">
+      <div class="stat">⭐ <span id="scoreTxt">0</span> 分</div>
+      <button class="stat" id="collBtn" style="cursor:pointer">🎒 法寶 <span id="collCount">0</span>/12</button>
+    </div>
+  </header>
+
+  <!-- HOME -->
+  <div id="homeScreen" class="card">
+    <div class="dora-wrap">
+      <div class="bubble" id="homeBubble">糟糕!大雄、靜香、小夫、胖虎被「迷霧魔王」抓走了!😱<br>快答對題目收集法寶,用法寶闖過四大關卡,救出同伴!</div>
+      <div id="doraHome"></div>
+    </div>
+    <div class="section-title">1️⃣ 選擇年級</div>
+    <div class="grid2" id="gradeBtns">
+      <button class="select-btn" data-g="1">一年級</button>
+      <button class="select-btn" data-g="2">二年級</button>
+      <button class="select-btn" data-g="3">三年級</button>
+      <button class="select-btn" data-g="4">四年級</button>
+    </div>
+    <div class="section-title">2️⃣ 選擇模式</div>
+    <div class="grid2">
+      <button class="select-btn sel" id="modeStory" style="grid-column:1/3">🏰 冒險模式 — 救出同伴!</button>
+    </div>
+    <div class="grid2" id="unitBtns" style="margin-top:8px">
+      <button class="select-btn" data-u="add">➕ 加法練習</button>
+      <button class="select-btn" data-u="sub">➖ 減法練習</button>
+      <button class="select-btn" data-u="time">🕐 時間練習</button>
+      <button class="select-btn" data-u="date">📅 日期練習</button>
+    </div>
+    <div class="center" style="margin-top:18px">
+      <button class="btn red" id="startBtn" style="font-size:1.25em">🚀 出發!</button>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div id="mapScreen" class="card hidden">
+    <div class="dora-wrap"><div class="bubble" id="mapBubble"></div></div>
+    <div class="map-grid" id="mapGrid"></div>
+    <div class="row-btns">
+      <button class="btn red" id="mapGoBtn"></button>
+      <button class="btn yellow" id="mapHomeBtn">🏠 回主畫面</button>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <div id="gameScreen" class="card hidden">
+    <div id="progressBar"><div id="progressFill"></div></div>
+    <div id="levelHead"></div>
+    <div id="qMeta"></div>
+    <div id="clockBox"></div>
+    <div id="question"></div>
+    <div id="hintBox" class="hidden"></div>
+    <div id="choices"></div>
+    <div id="feedback"></div>
+    <div id="shieldRow" class="hidden">
+      <button class="btn green" id="shieldBtn"></button>
+      <button class="btn yellow" id="giveUpBtn">放棄此題 ➡️</button>
+    </div>
+    <div id="itemBar">
+      <button class="item-btn" id="itFifty"><span class="big">🔦</span>縮小燈<br>刪2個錯誤選項 ×<span id="nFifty">0</span></button>
+      <button class="item-btn" id="itHint"><span class="big">🍞</span>記憶吐司<br>看解題提示 ×<span id="nHint">0</span></button>
+      <button class="item-btn" id="itSkip"><span class="big">🚪</span>任意門<br>直接通過此題 ×<span id="nSkip">0</span></button>
+    </div>
+    <div class="energyRow">
+      <span style="font-weight:bold">口袋能量:</span>
+      <div class="dot" id="d0"></div><div class="dot" id="d1"></div><div class="dot" id="d2"></div>
+      <span style="font-size:.85em">(集滿3格抽新法寶!)</span>
+      <span class="stat" style="font-size:.8em">🚁 護身法寶 ×<span id="nShield">0</span></span>
+    </div>
+    <div class="center" style="margin-top:12px">
+      <button class="btn hidden" id="nextBtn">下一題 ➡️</button>
+    </div>
+  </div>
+
+  <!-- LEVEL RESULT -->
+  <div id="levelResultScreen" class="card hidden">
+    <div class="dora-wrap"><div class="bubble" id="lvBubble"></div><div id="lvArt" style="font-size:4em;margin:10px 0"></div></div>
+    <div class="result-num" id="lvNum"></div>
+    <div class="row-btns" id="lvBtns"></div>
+  </div>
+
+  <!-- VICTORY -->
+  <div id="victoryScreen" class="card hidden">
+    <div class="center" style="font-size:1.5em;font-weight:bold;color:#e0332c">🎆 大成功!同伴全部獲救! 🎆</div>
+    <div class="friends-row party"><span>🤓</span><span>👧</span><span>😼</span><span>💪</span></div>
+    <div class="dora-wrap">
+      <div class="bubble">謝謝你!你用數學的力量打敗了迷霧魔王!<br>大雄他們都平安回家了!你是最棒的數學勇者!🏆</div>
+      <div id="doraVictory"></div>
+    </div>
+    <div class="result-num">總分:<b style="color:#e0332c;font-size:1.3em" id="vScore"></b> 分</div>
+    <div class="row-btns">
+      <button class="btn" id="vAgainBtn">🔁 再冒險一次</button>
+      <button class="btn yellow" id="vHomeBtn">🏠 回主畫面</button>
+    </div>
+  </div>
+
+  <!-- PRACTICE RESULT -->
+  <div id="resultScreen" class="card hidden">
+    <div class="dora-wrap"><div class="bubble" id="resultBubble"></div><div id="doraResult"></div></div>
+    <div class="stars" id="starsTxt"></div>
+    <div class="result-num" id="resultNum"></div>
+    <div class="row-btns">
+      <button class="btn" id="againBtn">🔁 再玩一輪</button>
+      <button class="btn yellow" id="homeBtn">🏠 回主畫面</button>
+    </div>
+  </div>
+
+  <footer>適用國小一~四年級 • 加減法/時間/日期單元複習</footer>
+</div>
+
+<!-- GACHA MODAL -->
+<div class="modal hidden" id="gachaModal">
+  <div class="modal-card">
+    <div style="font-size:1.2em;font-weight:bold;color:#0b5ea8">✨ 四次元口袋打開了! ✨</div>
+    <div class="gadget-emoji" id="gadgetEmoji">❓</div>
+    <div class="gadget-name" id="gadgetName"></div>
+    <div class="gadget-desc" id="gadgetDesc"></div>
+    <div class="gadget-fx" id="gadgetFx"></div>
+    <button class="btn red" id="gachaOk">收下法寶!🎉</button>
+  </div>
+</div>
+
+<!-- COLLECTION MODAL -->
+<div class="modal hidden" id="collModal">
+  <div class="modal-card" style="max-width:500px">
+    <div style="font-size:1.2em;font-weight:bold;color:#0b5ea8;margin-bottom:12px">🎒 我的法寶收藏</div>
+    <div class="coll-grid" id="collGrid"></div>
+    <div class="inv-row">
+      <span>🔦 ×<span id="cFifty">0</span></span>
+      <span>🍞 ×<span id="cHint">0</span></span>
+      <span>🚪 ×<span id="cSkip">0</span></span>
+      <span>🚁 ×<span id="cShield">0</span></span>
+    </div>
+    <div style="font-size:.85em;color:#666;margin-top:6px">🔦刪選項 🍞提示 🚪跳關 🚁答錯重來</div>
+    <div id="doraCakeTxt" style="margin-top:8px;font-weight:bold"></div>
+    <button class="btn" id="collClose" style="margin-top:12px">關閉</button>
+  </div>
+</div>
+
+<script>
+/* ================= 資料 ================= */
+/* fx: fifty=刪2錯誤選項 hint=提示 skip=跳過 shield=答錯重答 */
+const GADGETS = [
+  {e:"🚪", n:"任意門",     fx:"skip",   d:"打開門就能到任何地方!"},
+  {e:"🚁", n:"竹蜻蜓",     fx:"shield", d:"戴在頭上就能飛,危機時救你一命!"},
+  {e:"🛸", n:"時光機",     fx:"skip",   d:"穿越時空,直接跳到下一題!"},
+  {e:"🔦", n:"縮小燈",     fx:"fifty",  d:"把錯誤的選項縮小到看不見!"},
+  {e:"🍞", n:"記憶吐司",   fx:"hint",   d:"吃下去就想起解題方法!"},
+  {e:"🍮", n:"翻譯蒟蒻",   fx:"hint",   d:"把難懂的題目翻譯成簡單的提示!"},
+  {e:"💥", n:"空氣砲",     fx:"fifty",  d:"「砰」!把錯誤答案打飛兩個!"},
+  {e:"🧣", n:"時光包巾",   fx:"shield", d:"把答錯的時間包起來,重新再來!"},
+  {e:"⭕", n:"穿透環",     fx:"skip",   d:"穿過難題的牆壁,直接通關!"},
+  {e:"👒", n:"石頭帽",     fx:"shield", d:"戴上帽子,錯誤就當作沒發生!"},
+  {e:"🪄", n:"換身棒",     fx:"hint",   d:"和數學小老師交換腦袋,獲得提示!"},
+  {e:"🍙", n:"桃太郎飯糰", fx:"shield", d:"吃了變勇敢,失敗了也不怕再試!"},
+];
+const FX_NAME = {
+  fifty:"🔦 刪去兩個錯誤選項 ×1",
+  hint:"🍞 顯示解題提示 ×1",
+  skip:"🚪 直接通過一題 ×1",
+  shield:"🚁 答錯後可再答一次 ×1",
+};
+const LEVELS = [
+  {name:"加法森林", em:"🌲", unit:"add",  friend:"大雄", fem:"🤓"},
+  {name:"減法山洞", em:"⛰️", unit:"sub",  friend:"靜香", fem:"👧"},
+  {name:"時間之塔", em:"🗼", unit:"time", friend:"小夫", fem:"😼"},
+  {name:"日期迷宮", em:"🌀", unit:"date", friend:"胖虎", fem:"💪"},
+];
+const QS_PER_LEVEL = 6, PASS_NEED = 4, QS_PRACTICE = 10;
+const WD = ["日","一","二","三","四","五","六"];
+const MDAYS = {1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31};
+const UNIT_NAME = {add:"➕加法", sub:"➖減法", time:"🕐時間", date:"📅日期"};
+const PRAISE = ["太棒了!", "答對了,好厲害!", "你是數學小天才!", "哆啦A夢為你歡呼!", "完全正確!"];
+
+/* ================= 狀態 ================= */
+let grade = null, mode = "story", unit = null;
+let level = 1, qIdx = 0, qTotal = QS_PER_LEVEL, correctCount = 0, score = 0, energy = 0;
+let inv = { fifty:1, hint:1, skip:0, shield:1 };
+let collected = new Set(), doraCakes = 0;
+let rescued = [false,false,false,false];
+let curQ = null, answered = false, usedFifty = false, usedHint = false, usedShieldQ = false;
+
+/* ================= 工具 ================= */
+const $ = id => document.getElementById(id);
+const rand = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+const pick = arr => arr[rand(0,arr.length-1)];
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=rand(0,i);[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+/* 音效 */
+let AC = null;
+function tone(f, t, dur, type="sine", vol=.2){
+  try{
+    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type=type; o.frequency.value=f; g.gain.value=vol;
+    o.connect(g); g.connect(AC.destination);
+    o.start(AC.currentTime+t); o.stop(AC.currentTime+t+dur);
+    g.gain.setValueAtTime(vol,AC.currentTime+t);
+    g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+t+dur);
+  }catch(e){}
+}
+const sndGood = ()=>{ tone(660,0,.12); tone(880,.12,.2); };
+const sndBad  = ()=>{ tone(220,0,.3,"square",.12); };
+const sndGacha= ()=>{ [523,659,784,1047].forEach((f,i)=>tone(f,i*.12,.15)); };
+const sndWin  = ()=>{ [523,659,784,880,1047,1319].forEach((f,i)=>tone(f,i*.15,.25)); };
+const sndItem = ()=>{ tone(880,0,.1); tone(1175,.1,.15); };
+
+/* 哆啦A夢 SVG */
+function doraSVG(size=130, mood="happy"){
+  const mouth = mood==="happy"
+    ? '<path d="M38 72 Q65 96 92 72" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>'
+    : '<path d="M45 86 Q65 74 85 86" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>';
+  return `<svg width="${size}" height="${size}" viewBox="0 0 130 150">
+    <circle cx="65" cy="60" r="55" fill="#1e90d6"/>
+    <ellipse cx="65" cy="68" rx="45" ry="42" fill="#fff"/>
+    <ellipse cx="53" cy="40" rx="13" ry="16" fill="#fff" stroke="#333" stroke-width="2"/>
+    <ellipse cx="77" cy="40" rx="13" ry="16" fill="#fff" stroke="#333" stroke-width="2"/>
+    <circle cx="57" cy="44" r="4" fill="#333"/><circle cx="73" cy="44" r="4" fill="#333"/>
+    <circle cx="65" cy="57" r="7" fill="#e0332c"/>
+    <line x1="65" y1="64" x2="65" y2="80" stroke="#333" stroke-width="2"/>
+    <line x1="20" y1="58" x2="45" y2="62" stroke="#333" stroke-width="2"/>
+    <line x1="18" y1="70" x2="44" y2="70" stroke="#333" stroke-width="2"/>
+    <line x1="20" y1="82" x2="45" y2="78" stroke="#333" stroke-width="2"/>
+    <line x1="110" y1="58" x2="85" y2="62" stroke="#333" stroke-width="2"/>
+    <line x1="112" y1="70" x2="86" y2="70" stroke="#333" stroke-width="2"/>
+    <line x1="110" y1="82" x2="85" y2="78" stroke="#333" stroke-width="2"/>
+    ${mouth}
+    <rect x="30" y="110" width="70" height="10" rx="5" fill="#e0332c"/>
+    <circle cx="65" cy="126" r="9" fill="#f5c518" stroke="#b8940e" stroke-width="2"/>
+    <line x1="56" y1="126" x2="74" y2="126" stroke="#b8940e" stroke-width="2"/>
+    <circle cx="65" cy="130" r="2" fill="#b8940e"/>
+  </svg>`;
+}
+
+/* 時鐘 SVG */
+function clockSVG(h, m){
+  const hAng = ((h%12)*30 + m*0.5 - 90) * Math.PI/180;
+  const mAng = (m*6 - 90) * Math.PI/180;
+  let nums = "", ticks = "";
+  for(let i=1;i<=12;i++){
+    const a=(i*30-90)*Math.PI/180;
+    nums += `<text x="${100+78*Math.cos(a)}" y="${100+78*Math.sin(a)+7}" text-anchor="middle" font-size="20" font-weight="bold" fill="#1a3b5d">${i}</text>`;
+  }
+  for(let i=0;i<60;i++){
+    const a=(i*6-90)*Math.PI/180, big=i%5===0;
+    ticks += `<line x1="${100+(big?88:92)*Math.cos(a)}" y1="${100+(big?88:92)*Math.sin(a)}" x2="${100+95*Math.cos(a)}" y2="${100+95*Math.sin(a)}" stroke="#1a3b5d" stroke-width="${big?3:1}"/>`;
+  }
+  return `<svg width="180" height="180" viewBox="0 0 200 200">
+    <circle cx="100" cy="100" r="98" fill="#fffbe6" stroke="#0b5ea8" stroke-width="4"/>
+    ${ticks}${nums}
+    <line x1="100" y1="100" x2="${100+45*Math.cos(hAng)}" y2="${100+45*Math.sin(hAng)}" stroke="#e0332c" stroke-width="7" stroke-linecap="round"/>
+    <line x1="100" y1="100" x2="${100+68*Math.cos(mAng)}" y2="${100+68*Math.sin(mAng)}" stroke="#0b5ea8" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="100" cy="100" r="6" fill="#333"/>
+  </svg>`;
+}
+
+/* ================= 出題 ================= */
+function numOptions(ans, spread){
+  const opts = new Set([ans]);
+  const deltas = [1,-1,2,-2,10,-10,spread,-spread,spread+1];
+  let i=0;
+  while(opts.size<4 && i<50){
+    const v = ans + (i<9 ? deltas[i%deltas.length] : rand(-spread,spread));
+    if(v>=0 && v!==ans) opts.add(v);
+    i++;
+  }
+  while(opts.size<4) opts.add(ans + opts.size + rand(1,5));
+  return shuffle([...opts]).map(String);
+}
+function timeStr(h,m){ return m===0 ? `${h}點` : (m===30 && grade===1 ? `${h}點半` : `${h}點${m}分`); }
+
+function genAdd(g){
+  let a,b;
+  if(g===1){ a=rand(1,10); b=rand(1,20-a); }
+  else if(g===2){ a=rand(11,88); b=rand(11,99-a); }
+  else if(g===3){ a=rand(100,850); b=rand(100,999-a); }
+  else { a=rand(1000,8500); b=rand(500,9999-a); }
+  const ans=a+b;
+  const word = Math.random()<0.35;
+  const q = word
+    ? pick([`大雄有 ${a} 顆銅鑼燒,哆啦A夢又給他 ${b} 顆,大雄現在共有幾顆銅鑼燒?`,
+            `靜香摺了 ${a} 隻紙鶴,又摺了 ${b} 隻,一共摺了幾隻?`,
+            `胖虎收集了 ${a} 張卡片,小夫送他 ${b} 張,共有幾張卡片?`])
+    : `${a} + ${b} = ?`;
+  const hint = word ? `這題要用「加法」:${a} + ${b} = ?`
+    : (g===1 ? `從 ${a} 開始,往上數 ${b} 個!也可以用手指幫忙數` : `小技巧:先加大的位數,再加小的位數。例如先算百位、十位,最後算個位!`);
+  return { q, ans:String(ans), opts:numOptions(ans, g<3?10:100), unit:"add", hint };
+}
+function genSub(g){
+  let a,b;
+  if(g===1){ a=rand(5,20); b=rand(1,a-1); }
+  else if(g===2){ a=rand(30,99); b=rand(11,a-5); }
+  else if(g===3){ a=rand(300,999); b=rand(100,a-50); }
+  else { a=rand(2000,9999); b=rand(500,a-500); }
+  const ans=a-b;
+  const word = Math.random()<0.35;
+  const q = word
+    ? pick([`哆啦A夢有 ${a} 個銅鑼燒,吃掉了 ${b} 個,還剩下幾個?`,
+            `書架上有 ${a} 本漫畫,大雄借走 ${b} 本,書架上還有幾本?`,
+            `小夫有 ${a} 元,買玩具花了 ${b} 元,還剩幾元?`])
+    : `${a} − ${b} = ?`;
+  const hint = word ? `這題要用「減法」:${a} − ${b} = ?`
+    : (g===1 ? `從 ${a} 開始,往回數 ${b} 個!` : `小技巧:從大的位數開始減,不夠減的時候要跟前一位「借1」(退位)!`);
+  return { q, ans:String(ans), opts:numOptions(ans, g<3?10:100), unit:"sub", hint };
+}
+function genTime(g){
+  if(g===1){
+    const h=rand(1,12), m=pick([0,30]);
+    const ans=timeStr(h,m);
+    const opts=new Set([ans]);
+    while(opts.size<4){ const hh=rand(1,12), mm=pick([0,30]); opts.add(timeStr(hh,mm)); }
+    return { q:"看看時鐘,現在是幾點?", ans, opts:shuffle([...opts]), clock:[h,m], unit:"time",
+      hint:"短短的紅針指「幾點」;藍色長針指12是整點,指6是「半」!" };
+  }
+  if(g===2){
+    const h=rand(1,12), m=rand(1,11)*5;
+    const ans=`${h}點${m}分`;
+    const opts=new Set([ans]);
+    while(opts.size<4){ opts.add(`${rand(1,12)}點${rand(1,11)*5}分`); }
+    return { q:"看看時鐘,現在是幾點幾分?", ans, opts:shuffle([...opts]), clock:[h,m], unit:"time",
+      hint:"長針指的數字 ×5 就是「分」!例如指到3就是15分" };
+  }
+  if(g===3){
+    const h=rand(1,10), m=rand(0,5)*10, dur=rand(2,9)*10;
+    let eh=h, em=m+dur;
+    if(em>=60){ eh++; em-=60; }
+    const ans=`${eh}點${em}分`;
+    const opts=new Set([ans]);
+    while(opts.size<4){
+      let xh=eh+rand(-1,1), xm=pick([0,10,20,30,40,50]);
+      if(xh<1)xh+=12; opts.add(`${xh}點${xm}分`);
+    }
+    return { q:`哆啦A夢 ${h}點${m===0?"":m+"分"} 開始吃銅鑼燒,吃了 ${dur} 分鐘,吃完時是幾點幾分?`, ans, opts:shuffle([...opts]), unit:"time",
+      hint:`把分鐘加起來:${m}分 + ${dur}分,滿60分就進位成1小時!` };
+  }
+  const type=rand(1,3);
+  if(type===1){
+    const h=rand(1,11);
+    const ans=`${h+12}時`;
+    const opts=new Set([ans]);
+    while(opts.size<4){ opts.add(`${rand(13,23)}時`); }
+    return { q:`下午 ${h} 時,用24時制表示是幾時?`, ans, opts:shuffle([...opts]), unit:"time",
+      hint:"24時制:下午的時間要 +12!例如下午1時=13時" };
+  }
+  if(type===2){
+    const mm=rand(1,5), ss=pick([0,10,20,30,40,50]);
+    const ans=String(mm*60+ss);
+    return { q:`${mm}分${ss===0?"":ss+"秒"} = 幾秒?`, ans, opts:numOptions(mm*60+ss,30).map(String), unit:"time",
+      hint:`1分=60秒!先算 ${mm}×60,再加上剩下的 ${ss} 秒` };
+  }
+  const h1=rand(7,10), m1=pick([0,15,30,45]);
+  const durH=rand(1,3), durM=pick([15,30,45]);
+  let h2=h1+durH, m2=m1+durM;
+  if(m2>=60){ h2++; m2-=60; }
+  const ans=`${durH}小時${durM}分`;
+  const opts=new Set([ans]);
+  while(opts.size<4){ opts.add(`${rand(1,4)}小時${pick([15,30,45])}分`); }
+  return { q:`電影從 ${h1}:${String(m1).padStart(2,"0")} 播到 ${h2}:${String(m2).padStart(2,"0")},一共播了多久?`, ans, opts:shuffle([...opts]), unit:"time",
+    hint:"用「結束時間 − 開始時間」!先算小時的差,再算分鐘的差" };
+}
+function isLeap(y){ return (y%4===0 && y%100!==0) || y%400===0; }
+function genDate(g){
+  if(g===1){
+    const w=rand(0,6), dir=rand(0,1);
+    const ans=`星期${WD[(w+(dir?1:6))%7]}`;
+    const opts=new Set([ans]);
+    while(opts.size<4) opts.add(`星期${WD[rand(0,6)]}`);
+    return { q:`今天是星期${WD[w]},${dir?"明天":"昨天"}是星期幾?`, ans, opts:shuffle([...opts]), unit:"date",
+      hint:"星期的順序:日→一→二→三→四→五→六,然後又回到日!" };
+  }
+  if(g===2){
+    const type=rand(1,3);
+    if(type===1){ const mo=pick([1,3,4,5,6,7,8,9,10,11,12]);
+      return { q:`${mo}月有幾天?`, ans:String(MDAYS[mo]), opts:shuffle([...new Set([String(MDAYS[mo]),"28","29","30","31","27"])].slice(0,4)), unit:"date",
+        hint:"口訣:1、3、5、7、8、10、12月是31天,4、6、9、11月是30天!" }; }
+    if(type===2) return { q:"一個星期有幾天?", ans:"7", opts:shuffle(["5","6","7","8"]), unit:"date", hint:"想想看:週一到週五上學,加上週六、週日!" };
+    return { q:"一年有幾個月?", ans:"12", opts:shuffle(["10","11","12","13"]), unit:"date", hint:"從1月開始數到最後一個月:…10月、11月、12月!" };
+  }
+  if(g===3){
+    const type=rand(1,2);
+    if(type===1){
+      const w=rand(0,6), n=rand(4,13);
+      const ans=`星期${WD[(w+n)%7]}`;
+      const opts=new Set([ans]);
+      while(opts.size<4) opts.add(`星期${WD[rand(0,6)]}`);
+      return { q:`今天是星期${WD[w]},再過 ${n} 天是星期幾?`, ans, opts:shuffle([...opts]), unit:"date",
+        hint:`每過7天又是同一個星期!先算 ${n}÷7 的餘數,再從星期${WD[w]}往後數餘數天` };
+    }
+    const mo=rand(1,12), maxD=MDAYS[mo];
+    const d=rand(1,maxD-10), n=rand(3,9);
+    const ans=`${mo}月${d+n}日`;
+    const opts=new Set([ans]);
+    while(opts.size<4) opts.add(`${mo}月${rand(Math.max(1,d+n-4),Math.min(maxD,d+n+4))}日`);
+    return { q:`今天是 ${mo}月${d}日,再過 ${n} 天是幾月幾日?`, ans, opts:shuffle([...opts]), unit:"date",
+      hint:`直接把日期相加:${d} + ${n} = ?` };
+  }
+  const type=rand(1,2);
+  if(type===1){
+    const y=pick([2000,2020,2023,2024,2025,2026,2028,1900]);
+    const ans=isLeap(y)?"29天":"28天";
+    return { q:`${y}年是${isLeap(y)?"閏年":"平年"},這一年的2月有幾天?`, ans, opts:shuffle(["28天","29天","30天","31天"]), unit:"date",
+      hint:"閏年的2月有29天,平年的2月只有28天!" };
+  }
+  const mo=rand(1,12), maxD=MDAYS[mo];
+  const d1=rand(1,maxD-15), d2=d1+rand(5,14);
+  const ans=String(d2-d1);
+  return { q:`從 ${mo}月${d1}日 到 ${mo}月${d2}日,相隔幾天?`, ans, opts:numOptions(d2-d1,4), unit:"date",
+    hint:`用「後面的日期 − 前面的日期」:${d2} − ${d1} = ?` };
+}
+function genQuestion(u){
+  if(u==="add") return genAdd(grade);
+  if(u==="sub") return genSub(grade);
+  if(u==="time") return genTime(grade);
+  if(u==="date") return genDate(grade);
+  return genQuestion(pick(["add","sub","time","date"]));
+}
+
+/* ================= 畫面流程 ================= */
+const SCREENS = ["homeScreen","mapScreen","gameScreen","levelResultScreen","victoryScreen","resultScreen"];
+function show(id){ SCREENS.forEach(s=>$(s).classList.add("hidden")); $(id).classList.remove("hidden"); }
+function updateHUD(){
+  $("scoreTxt").textContent = score;
+  $("collCount").textContent = collected.size;
+  for(let i=0;i<3;i++) $("d"+i).classList.toggle("on", i<energy);
+  $("nFifty").textContent=inv.fifty; $("nHint").textContent=inv.hint;
+  $("nSkip").textContent=inv.skip; $("nShield").textContent=inv.shield;
+  $("itFifty").disabled = answered || usedFifty || inv.fifty<1;
+  $("itHint").disabled = answered || usedHint || inv.hint<1;
+  $("itSkip").disabled = answered || inv.skip<1;
+}
+
+/* ---- 地圖 ---- */
+function curLevel(){ const i=rescued.findIndex(r=>!r); return i===-1?5:i+1; }
+function showMap(){
+  level = curLevel();
+  const grid=$("mapGrid"); grid.innerHTML="";
+  LEVELS.forEach((lv,i)=>{
+    const st = rescued[i] ? "done" : (i+1===level ? "cur" : "lock");
+    const div=document.createElement("div");
+    div.className="lv-card "+st;
+    div.innerHTML=`<div class="lv-em">${lv.em}</div><div class="lv-name">第${i+1}關 ${lv.name}</div>
+      <div class="lv-friend">${rescued[i]?lv.fem+"🎉":"⛓️"+lv.fem+"⛓️"}</div>
+      <div class="lv-status">${rescued[i]?"✅ 已救出"+lv.friend:(i+1===level?"👉 現在挑戰!":"🔒 尚未解鎖")}</div>`;
+    grid.appendChild(div);
+  });
+  const lv=LEVELS[level-1];
+  $("mapBubble").textContent = `${lv.friend}被關在「${lv.name}」!答對 ${QS_PER_LEVEL} 題中的 ${PASS_NEED} 題,就能打開牢籠!善用你的法寶道具喔!`;
+  $("mapGoBtn").textContent = `⚔️ 挑戰第${level}關 ${lv.em}`;
+  show("mapScreen");
+}
+
+/* ---- 開始關卡 / 練習 ---- */
+function startLevel(){
+  mode="story"; qIdx=0; correctCount=0; qTotal=QS_PER_LEVEL;
+  show("gameScreen"); nextQuestion();
+}
+function startPractice(){
+  mode="practice"; qIdx=0; correctCount=0; qTotal=QS_PRACTICE;
+  show("gameScreen"); nextQuestion();
+}
+function nextQuestion(){
+  qIdx++;
+  if(qIdx>qTotal) return (mode==="story"? endLevel() : endPractice());
+  const u = mode==="story" ? LEVELS[level-1].unit : unit;
+  curQ = genQuestion(u);
+  answered=false; usedFifty=false; usedHint=false; usedShieldQ=false;
+  if(mode==="story"){
+    const lv=LEVELS[level-1];
+    $("levelHead").textContent = `${lv.em} 第${level}關 ${lv.name} — 救出${lv.friend}!`;
+  } else $("levelHead").textContent = "📖 練習模式";
+  $("qMeta").textContent = `第 ${qIdx} / ${qTotal} 題 | ${UNIT_NAME[curQ.unit]} | 已答對 ${correctCount} 題`;
+  $("progressFill").style.width = ((qIdx-1)/qTotal*100)+"%";
+  $("question").textContent = curQ.q;
+  $("clockBox").innerHTML = curQ.clock ? clockSVG(curQ.clock[0], curQ.clock[1]) : "";
+  $("hintBox").classList.add("hidden");
+  $("feedback").textContent=""; $("feedback").className="";
+  $("nextBtn").classList.add("hidden");
+  $("shieldRow").classList.add("hidden");
+  const box=$("choices"); box.innerHTML="";
+  curQ.opts.forEach(o=>{
+    const b=document.createElement("button");
+    b.className="choice"; b.textContent=o;
+    b.onclick=()=>answer(b,o);
+    box.appendChild(b);
+  });
+  updateHUD();
+}
+function revealAnswer(){
+  document.querySelectorAll(".choice").forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===String(curQ.ans)) b.classList.add("correct");
+  });
+}
+function markCorrect(msg){
+  correctCount++; score+=10; energy++;
+  const fb=$("feedback");
+  fb.textContent = msg; fb.className="good";
+  $("qMeta").textContent = `第 ${qIdx} / ${qTotal} 題 | ${UNIT_NAME[curQ.unit]} | 已答對 ${correctCount} 題`;
+  if(energy>=3){ energy=0; setTimeout(openGacha, 700); }
+  $("progressFill").style.width = (qIdx/qTotal*100)+"%";
+  $("nextBtn").classList.remove("hidden");
+  updateHUD();
+}
+function answer(btn, val){
+  if(answered) return;
+  answered=true;
+  const ok = String(val)===String(curQ.ans);
+  if(ok){
+    revealAnswer();
+    btn.classList.add("correct");
+    sndGood();
+    markCorrect("🎉 " + pick(PRAISE) + " +10分");
+    return;
+  }
+  sndBad();
+  btn.classList.add("wrong");
+  document.querySelectorAll(".choice").forEach(b=>b.disabled=true);
+  const fb=$("feedback");
+  if(inv.shield>0 && !usedShieldQ){
+    fb.textContent = "💦 答錯了!要用護身法寶再試一次嗎?";
+    fb.className="bad";
+    $("shieldBtn").textContent = `🚁 用護身法寶再答一次 (剩${inv.shield}個)`;
+    $("shieldRow").classList.remove("hidden");
+  } else {
+    fb.textContent = `💦 別灰心!正確答案是「${curQ.ans}」`;
+    fb.className="bad";
+    revealAnswer();
+    $("progressFill").style.width = (qIdx/qTotal*100)+"%";
+    $("nextBtn").classList.remove("hidden");
+  }
+  updateHUD();
+}
+$("shieldBtn").onclick=()=>{
+  inv.shield--; usedShieldQ=true; answered=false;
+  sndItem();
+  $("shieldRow").classList.add("hidden");
+  document.querySelectorAll(".choice").forEach(b=>{
+    if(!b.classList.contains("wrong") && !b.classList.contains("faded")) b.disabled=false;
+  });
+  const fb=$("feedback");
+  fb.textContent="🚁 竹蜻蜓出動!加油,再選一次!"; fb.className="good";
+  updateHUD();
+};
+$("giveUpBtn").onclick=()=>{
+  $("shieldRow").classList.add("hidden");
+  revealAnswer();
+  const fb=$("feedback");
+  fb.textContent = `正確答案是「${curQ.ans}」,下次一定行!`; fb.className="bad";
+  $("progressFill").style.width = (qIdx/qTotal*100)+"%";
+  $("nextBtn").classList.remove("hidden");
+};
+
+/* ---- 道具 ---- */
+$("itFifty").onclick=()=>{
+  if(answered||usedFifty||inv.fifty<1) return;
+  inv.fifty--; usedFifty=true; sndItem();
+  const wrongs = [...document.querySelectorAll(".choice")].filter(b=>b.textContent!==String(curQ.ans) && !b.disabled && !b.classList.contains("faded"));
+  shuffle(wrongs).slice(0,2).forEach(b=>{ b.classList.add("faded"); b.disabled=true; });
+  $("feedback").textContent="🔦 縮小燈!兩個錯誤選項消失了!"; $("feedback").className="good";
+  updateHUD();
+};
+$("itHint").onclick=()=>{
+  if(answered||usedHint||inv.hint<1) return;
+  inv.hint--; usedHint=true; sndItem();
+  $("hintBox").textContent = "🍞 " + curQ.hint;
+  $("hintBox").classList.remove("hidden");
+  updateHUD();
+};
+$("itSkip").onclick=()=>{
+  if(answered||inv.skip<1) return;
+  inv.skip--; answered=true; sndItem();
+  revealAnswer();
+  markCorrect(`🚪 任意門開啟!直接通過!(答案是「${curQ.ans}」)`);
+};
+
+/* ---- 關卡結算 ---- */
+function endLevel(){
+  const lv=LEVELS[level-1];
+  const pass = correctCount>=PASS_NEED;
+  $("lvNum").innerHTML = `答對 <b style="color:#e0332c;font-size:1.3em">${correctCount}</b> / ${QS_PER_LEVEL} 題 (需要 ${PASS_NEED} 題)`;
+  const btns=$("lvBtns"); btns.innerHTML="";
+  if(pass){
+    rescued[level-1]=true;
+    sndWin();
+    $("lvArt").innerHTML = `${lv.fem}<span style="font-size:.6em">🎉</span>`;
+    const allDone = rescued.every(r=>r);
+    $("lvBubble").textContent = `太棒了!牢籠打開,${lv.friend}獲救了!${lv.friend}:「謝謝你!你的數學好厲害!」`;
+    const b=document.createElement("button");
+    b.className="btn red";
+    b.textContent = allDone ? "🏆 看看大結局!" : "➡️ 前往下一關!";
+    b.onclick = allDone ? showVictory : showMap;
+    btns.appendChild(b);
+  } else {
+    $("lvArt").textContent = "⛓️" + lv.fem;
+    $("lvBubble").textContent = `差一點點!${lv.friend}還被關著…別放棄,再挑戰一次!記得可以用🔦縮小燈和🍞記憶吐司幫忙喔!`;
+    const b=document.createElement("button");
+    b.className="btn red"; b.textContent="🔁 再挑戰一次!";
+    b.onclick=startLevel;
+    btns.appendChild(b);
+  }
+  const h=document.createElement("button");
+  h.className="btn yellow"; h.textContent="🗺️ 回地圖";
+  h.onclick=showMap;
+  btns.appendChild(h);
+  show("levelResultScreen");
+}
+function showVictory(){
+  sndWin();
+  $("vScore").textContent = score;
+  $("doraVictory").innerHTML = doraSVG(140);
+  show("victoryScreen");
+}
+function endPractice(){
+  show("resultScreen");
+  const stars = correctCount>=9?3 : correctCount>=6?2 : correctCount>=3?1:0;
+  $("starsTxt").textContent = "⭐".repeat(stars) + "☆".repeat(3-stars);
+  $("resultNum").innerHTML = `答對 <b style="color:#e0332c;font-size:1.3em">${correctCount}</b> / ${QS_PRACTICE} 題`;
+  const msg = stars===3 ? "太完美了!你比哆啦A夢還聰明!"
+    : stars===2 ? "很棒喔!再努力一點就滿分了!"
+    : stars===1 ? "不錯的開始!多練習會更厲害!"
+    : "沒關係,哆啦A夢陪你再挑戰一次!";
+  $("resultBubble").textContent = msg;
+  $("doraResult").innerHTML = doraSVG(120, stars>=2?"happy":"sad");
+}
+
+/* ================= 法寶抽獎 ================= */
+function openGacha(){
+  sndGacha();
+  const locked = GADGETS.filter((g,i)=>!collected.has(i));
+  let g;
+  if(locked.length){ g = pick(locked); collected.add(GADGETS.indexOf(g)); }
+  else { g = pick(GADGETS); doraCakes++; }
+  inv[g.fx]++;
+  $("gadgetEmoji").textContent=g.e;
+  $("gadgetName").textContent=g.n;
+  $("gadgetDesc").textContent=g.d;
+  $("gadgetFx").textContent="獲得道具:" + FX_NAME[g.fx];
+  $("gachaModal").classList.remove("hidden");
+  updateHUD();
+}
+function renderCollection(){
+  const grid=$("collGrid"); grid.innerHTML="";
+  GADGETS.forEach((g,i)=>{
+    const has=collected.has(i);
+    const div=document.createElement("div");
+    div.className="coll-item"+(has?"":" locked");
+    div.innerHTML=`<span class="em">${has?g.e:"❓"}</span>${has?g.n:"???"}`;
+    grid.appendChild(div);
+  });
+  $("cFifty").textContent=inv.fifty; $("cHint").textContent=inv.hint;
+  $("cSkip").textContent=inv.skip; $("cShield").textContent=inv.shield;
+  $("doraCakeTxt").textContent = collected.size===12 ? "🏆 全部收集完成!你是法寶大師!" : "";
+}
+
+/* ================= 事件 ================= */
+document.querySelectorAll("#gradeBtns .select-btn").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll("#gradeBtns .select-btn").forEach(x=>x.classList.remove("sel"));
+    b.classList.add("sel"); grade=+b.dataset.g;
+  };
+});
+$("modeStory").onclick=()=>{
+  document.querySelectorAll("#unitBtns .select-btn").forEach(x=>x.classList.remove("sel"));
+  $("modeStory").classList.add("sel"); mode="story"; unit=null;
+};
+document.querySelectorAll("#unitBtns .select-btn").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll("#unitBtns .select-btn").forEach(x=>x.classList.remove("sel"));
+    $("modeStory").classList.remove("sel");
+    b.classList.add("sel"); mode="practice"; unit=b.dataset.u;
+  };
+});
+$("startBtn").onclick=()=>{
+  if(!grade){ $("homeBubble").innerHTML="要先選年級喔!你是幾年級呢?😊"; return; }
+  if(mode==="story") showMap(); else startPractice();
+};
+$("nextBtn").onclick=nextQuestion;
+$("mapGoBtn").onclick=startLevel;
+$("mapHomeBtn").onclick=()=>show("homeScreen");
+$("againBtn").onclick=startPractice;
+$("homeBtn").onclick=()=>show("homeScreen");
+$("vAgainBtn").onclick=()=>{ rescued=[false,false,false,false]; showMap(); };
+$("vHomeBtn").onclick=()=>show("homeScreen");
+$("gachaOk").onclick=()=>$("gachaModal").classList.add("hidden");
+$("collBtn").onclick=()=>{ renderCollection(); $("collModal").classList.remove("hidden"); };
+$("collClose").onclick=()=>$("collModal").classList.add("hidden");
+
+$("doraHome").innerHTML = doraSVG(140);
+updateHUD();
+</script>
+</body>
+</html>
