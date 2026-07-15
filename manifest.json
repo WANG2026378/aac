@@ -1,28 +1,30 @@
 {
-  "name": "永芳特教 溝通版",
-  "short_name": "溝通",
-  "description": "iPad AAC 輔助溝通系統",
-  "start_url": "./",
+  "id": "/aac/",
+  "name": "永芳特教教學分享網",
+  "short_name": "教學網",
+  "description": "iPad 可加入主畫面的離線教學工具平台",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#FAFAFA",
-  "theme_color": "#42A5F5",
+  "background_color": "#F8FAFC",
+  "theme_color": "#FF6B6B",
   "lang": "zh-TW",
   "icons": [
     {
-      "src": "icons/icon-180.png",
+      "src": "icons/portal-180.png",
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "icons/portal-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-1024.png",
+      "src": "icons/portal-1024.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"

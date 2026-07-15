@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+<link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -533,7 +534,7 @@ body {
 </div>
 
 <!-- HanziWriter library -->
-<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+<script src="vendor/hanzi-writer.min.js"></script>
 
 <script>
 // ============ DATA: 國小一下 30 個常用生字（5 主題） ============
@@ -745,6 +746,15 @@ function initWriter(char) {
 
   try {
     writer = HanziWriter.create('writerTarget', char, {
+      charDataLoader: function(ch, onLoad, onError) {
+        fetch('vendor/hanzi-writer-data/' + encodeURIComponent(ch) + '.json')
+          .then(res => {
+            if (!res.ok) throw new Error('missing local stroke data');
+            return res.json();
+          })
+          .then(onLoad)
+          .catch(onError);
+      },
       width: target.clientWidth || 360,
       height: target.clientHeight || 360,
       padding: 8,
@@ -762,7 +772,7 @@ function initWriter(char) {
     showMsg('點「看筆順」播放動畫', '');
   } catch(e) {
     target.innerHTML = `<div style="font-size:180px;color:#FCE7F3;font-family:'標楷體',serif;">${char}</div>`;
-    showMsg('⚠️ 筆順資料載入中（需要網路）', 'error');
+    showMsg('⚠️ 筆順資料暫時載入失敗，請重新開啟一次', 'error');
   }
 }
 
@@ -928,5 +938,6 @@ window.addEventListener('load', () => {
 .portal-home-link{position:fixed;top:calc(10px + env(safe-area-inset-top));left:calc(10px + env(safe-area-inset-left));z-index:2147483000;display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border-radius:999px;background:rgba(255,255,255,.94);color:#1f2937;text-decoration:none;font:700 14px/1.2 "PingFang TC","Microsoft JhengHei",sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.18);border:2px solid rgba(255,107,107,.28);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);user-select:none;touch-action:manipulation}.portal-home-link:active{transform:translateY(1px)}@media(max-width:640px){.portal-home-link{font-size:13px;padding:8px 11px}}
 </style>
 <a class="portal-home-link" href="index.html" aria-label="回教學首頁">🏠 回教學首頁</a>
+<script src="offline-register.js" defer></script>
 </body>
 </html>
