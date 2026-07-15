@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自然探索家 — 動物・昆蟲・植物</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;}
+  body{min-height:100vh;background:linear-gradient(180deg,#a8e063 0%,#dbf5c0 40%,#e8f9ff 100%);color:#234a2e;padding:14px;}
+  #app{max-width:900px;margin:0 auto;}
+  header{text-align:center;margin-bottom:10px;}
+  h1{font-size:1.8em;color:#1f6b34;text-shadow:1px 1px 0 #fff;}
+  .subtitle{color:#3c7a4a;font-weight:bold;margin-top:4px;}
+
+  .tabs{display:flex;gap:8px;justify-content:center;margin:16px 0 6px;flex-wrap:wrap;}
+  .tab{background:#fff;border:3px solid #7cc36a;border-radius:30px;padding:10px 20px;font-size:1.05em;font-weight:bold;color:#2e6b3a;cursor:pointer;transition:transform .1s;}
+  .tab:active{transform:scale(.96);}
+  .tab.active{background:#2e9e3f;color:#fff;border-color:#1d6b2a;}
+  .count-note{text-align:center;color:#4a7a55;font-size:.85em;margin-bottom:12px;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:14px;}
+  .species-card{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 6px 18px rgba(30,107,52,.2);cursor:pointer;transition:transform .15s,box-shadow .15s;}
+  .species-card:hover{transform:translateY(-5px);box-shadow:0 12px 26px rgba(30,107,52,.32);}
+  .stage{height:170px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:#dfeecb;}
+  .stage img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;}
+  .card-body{padding:12px 14px;}
+  .card-name{font-size:1.2em;font-weight:bold;color:#1f6b34;}
+  .card-en{font-size:.78em;color:#7a9a82;font-style:italic;}
+  .card-tag{display:inline-block;background:#eafbe4;border-radius:12px;padding:2px 10px;font-size:.76em;font-weight:bold;color:#2e9e3f;margin-top:6px;}
+
+  .modal{position:fixed;inset:0;background:rgba(20,50,25,.72);z-index:20;display:flex;align-items:center;justify-content:center;padding:14px;}
+  .modal.hidden{display:none;}
+  .detail{background:#fff;border-radius:24px;max-width:660px;width:100%;max-height:92vh;overflow-y:auto;animation:pop .35s;}
+  @keyframes pop{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .detail-stage{height:280px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border-radius:24px 24px 0 0;background:#dfeecb;}
+  .detail-stage img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;}
+  .photo-credit{font-size:.74em;color:#7a9a82;margin:6px 0 2px;}
+  .photo-credit a{color:#4a7aa0;}
+  .illus-box{margin:14px 0;border-radius:16px;overflow:hidden;border:2px solid #cfe6bf;}
+  .illus-head{background:#eafbe4;color:#2e7b3a;font-weight:bold;font-size:.92em;padding:7px 12px;}
+  .illus-stage{height:180px;display:flex;align-items:center;justify-content:center;}
+  .detail-body{padding:20px 22px;}
+  .detail-name{font-size:1.6em;font-weight:bold;color:#1f6b34;}
+  .detail-en{color:#7a9a82;font-style:italic;margin-bottom:6px;}
+
+  .voice-bar{display:flex;gap:8px;align-items:center;background:#eef6ff;border:2px solid #9cc9ee;border-radius:14px;padding:8px 12px;margin:12px 0;flex-wrap:wrap;}
+  .voice-bar .vlabel{font-weight:bold;color:#0b5ea8;font-size:.9em;}
+  .vbtn{border:none;border-radius:12px;padding:8px 14px;font-weight:bold;cursor:pointer;font-family:inherit;font-size:.92em;}
+  .vplay{background:#2e9e3f;color:#fff;} .vpause{background:#f5a623;color:#4a3000;} .vstop{background:#e0332c;color:#fff;}
+  .vstatus{font-size:.82em;color:#4a7a55;}
+
+  .info-row{display:flex;gap:10px;margin:14px 0;flex-wrap:wrap;}
+  .info-pill{background:#f0faec;border-radius:14px;padding:8px 12px;font-size:.9em;flex:1;min-width:130px;}
+  .info-pill b{color:#2e9e3f;display:block;font-size:.8em;margin-bottom:2px;}
+  .sec-title{font-weight:bold;color:#1f6b34;margin:16px 0 6px;font-size:1.1em;}
+  .sec-body{line-height:1.7;color:#33503a;}
+  .fun-list{list-style:none;}
+  .fun-list li{background:#fffbe8;border-left:4px solid #f5c518;border-radius:8px;padding:8px 12px;margin-bottom:8px;line-height:1.6;}
+  .food-chain{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;background:#eafbf0;border-radius:14px;padding:12px;font-weight:bold;}
+  .food-chain .arrow{color:#2e9e3f;font-size:1.3em;}
+  .chain-item{background:#fff;border:2px solid #7cc36a;border-radius:20px;padding:6px 12px;font-size:.9em;}
+
+  .btn{border:none;border-radius:14px;padding:12px 20px;font-size:1.05em;font-weight:bold;cursor:pointer;font-family:inherit;}
+  .yt-btn{background:#ff0000;color:#fff;box-shadow:0 4px 0 #b30000;display:inline-flex;align-items:center;gap:8px;text-decoration:none;transition:transform .1s;}
+  .yt-btn:active{transform:translateY(3px);box-shadow:0 1px 0 #b30000;}
+  .close-btn{background:#2e9e3f;color:#fff;box-shadow:0 4px 0 #1d6b2a;}
+  .btn-row{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+
+  .quiz-box{background:#f0faec;border-radius:16px;padding:16px;margin-top:16px;}
+  .quiz-q{font-weight:bold;margin-bottom:10px;}
+  .quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .quiz-opt{background:#fff;border:2px solid #7cc36a;border-radius:12px;padding:10px;font-weight:bold;cursor:pointer;color:#2e6b3a;}
+  .quiz-opt.correct{background:#c8f7c5;border-color:#2e9e3f;}
+  .quiz-opt.wrong{background:#ffd6d4;border-color:#e0332c;}
+  .quiz-fb{text-align:center;font-weight:bold;margin-top:8px;min-height:1.4em;}
+
+  footer{text-align:center;font-size:.78em;color:#4a7a55;margin-top:20px;}
+
+  @keyframes flap{0%,100%{transform:rotate(-18deg);}50%{transform:rotate(18deg);}}
+  @keyframes sway{0%,100%{transform:rotate(-4deg);}50%{transform:rotate(4deg);}}
+  @keyframes bobUp{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+  @keyframes swim{0%{transform:translateX(-30px);}100%{transform:translateX(30px);}}
+  @keyframes glow{0%,100%{opacity:.3;}50%{opacity:1;}}
+  @keyframes crawl{0%{transform:translateX(-18px);}100%{transform:translateX(18px);}}
+  @keyframes spin{from{transform:rotate(0);}to{transform:rotate(360deg);}}
+  @keyframes wob{0%,100%{transform:rotate(-8deg);}50%{transform:rotate(8deg);}}
+  @keyframes drift{0%{transform:translate(-10px,0);}100%{transform:translate(14px,-10px);}}
+  .anim-flap{transform-origin:right center;animation:flap .5s infinite;}
+  .anim-flap2{transform-origin:left center;animation:flap .5s infinite;}
+  .anim-sway{transform-origin:bottom center;animation:sway 2.5s ease-in-out infinite;}
+  .anim-bob{animation:bobUp 2s ease-in-out infinite;}
+  .anim-swim{animation:swim 2.5s ease-in-out infinite alternate;}
+  .anim-glow{animation:glow 1.5s ease-in-out infinite;}
+  .anim-crawl{animation:crawl 3s ease-in-out infinite alternate;}
+  .anim-spin{animation:spin 9s linear infinite;}
+  .anim-wob{transform-origin:bottom center;animation:wob 2s ease-in-out infinite;}
+  .anim-drift{animation:drift 3s ease-in-out infinite alternate;}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>🌿 自然探索家 🔍</h1>
+    <div class="subtitle">動物・昆蟲・植物 — 生態與趣聞大發現!</div>
+  </header>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-c="animal">🐾 動物</button>
+    <button class="tab" data-c="insect">🐛 昆蟲</button>
+    <button class="tab" data-c="plant">🌱 植物</button>
+  </div>
+  <div class="count-note" id="countNote"></div>
+  <div class="grid" id="grid"></div>
+  <footer>適用國小中年級 • 點選卡片看詳細介紹、聽語音朗讀與看影片 • 每種生物都有小測驗</footer>
+</div>
+
+<div class="modal hidden" id="modal"><div class="detail" id="detail"></div></div>
+
+<script>
+/* ========== 資料庫(每類6種,共18種) ========== */
+const DATA = {
+  animal: [
+    {id:"leopardcat",name:"石虎",en:"Leopard Cat",tag:"🇹🇼 台灣瀕危",bg:"linear-gradient(135deg,#c9a227,#8a6d1a)",
+     habitat:"台灣淺山、草叢與森林邊緣",diet:"老鼠、鳥、昆蟲、蛙(肉食)",size:"約 55~65 公分",status:"瀕臨絕種(保育類)",
+     ecology:"石虎是台灣目前唯一的野生貓科動物,主要住在苗栗、台中、南投一帶的淺山。牠是夜行性動物,白天躲起來睡覺,晚上才出來獵食。石虎會幫忙控制老鼠的數量,是淺山生態系的重要成員。因為棲地被開發、路殺和農藥,石虎越來越少,全台估計只剩不到七百隻。",
+     fun:["石虎耳朵後面有一塊白色斑點,像一雙假眼睛,可以嚇退後方的敵人!","石虎額頭有兩條白色縱帶,是分辨牠和家貓最簡單的方法。","石虎很會爬樹和游泳,是淺山裡的運動高手!"],
+     chain:["植物種子","老鼠","石虎"],quiz:{q:"石虎耳朵後面的白色斑點有什麼用?",opts:["假裝成眼睛嚇敵人","儲存食物","發光照路","吸引蝴蝶"],a:0},yt:"石虎 生態 台灣",
+     svg:`<svg viewBox="0 0 200 150" width="180"><ellipse cx="100" cy="110" rx="55" ry="30" fill="#c9922b"/><circle cx="100" cy="70" r="34" fill="#d4a63c"/><polygon points="72,48 66,20 90,42" fill="#d4a63c"/><polygon points="128,48 134,20 110,42" fill="#d4a63c"/><circle cx="76" cy="22" r="5" fill="#fff"/><circle cx="124" cy="22" r="5" fill="#fff"/><circle cx="88" cy="68" r="5" fill="#2a2a2a"/><circle cx="112" cy="68" r="5" fill="#2a2a2a"/><path d="M92 82 Q100 90 108 82" fill="none" stroke="#5a3a1a" stroke-width="2"/><line x1="100" y1="78" x2="100" y2="84" stroke="#5a3a1a" stroke-width="2"/><line x1="60" y1="66" x2="82" y2="70" stroke="#fff" stroke-width="1.5"/><line x1="60" y1="74" x2="82" y2="74" stroke="#fff" stroke-width="1.5"/><line x1="140" y1="66" x2="118" y2="70" stroke="#fff" stroke-width="1.5"/><line x1="140" y1="74" x2="118" y2="74" stroke="#fff" stroke-width="1.5"/><circle cx="88" cy="58" r="3" fill="#7a5320"/><circle cx="112" cy="58" r="3" fill="#7a5320"/><path class="anim-sway" d="M152 108 Q180 100 172 130" fill="none" stroke="#c9922b" stroke-width="9" stroke-linecap="round"/></svg>`},
+    {id:"dolphin",name:"海豚",en:"Dolphin",tag:"🌊 聰明海洋哺乳類",bg:"linear-gradient(135deg,#2f8fd6,#125a9c)",
+     habitat:"溫暖的海洋,常成群活動",diet:"魚、烏賊(肉食)",size:"約 2~4 公尺",status:"多數穩定,部分受威脅",
+     ecology:"海豚雖然住在海裡,卻是哺乳類動物,和人類一樣用肺呼吸,所以要常常浮出水面換氣。牠們非常聰明,會用回聲定位——發出聲音再聽回音,就能知道前方有沒有食物或障礙物,就像蝙蝠一樣。海豚喜歡群體生活,一群可能有十幾隻到上百隻,會互相合作圍捕魚群。",
+     fun:["海豚睡覺時,只有一半的大腦在休息,另一半保持清醒才能記得浮上來呼吸!","海豚會用專屬的哨聲互相呼叫,就像有自己的名字!","有些海豚會把海綿套在嘴上保護自己,是少數會用工具的動物。"],
+     chain:["浮游生物","小魚","海豚"],quiz:{q:"海豚在黑暗的海裡靠什麼找食物?",opts:["回聲定位","嗅覺","發光","觸角"],a:0},yt:"海豚 生態 回聲定位",
+     svg:`<svg viewBox="0 0 220 150" width="200"><g class="anim-swim"><path d="M30 80 Q100 40 180 78 Q150 100 100 98 Q60 96 30 80" fill="#4aa3e0"/><path d="M30 80 Q100 60 180 78 Q150 92 100 92 Q60 90 30 80" fill="#bfe3f7"/><path d="M175 78 L205 60 L200 92 Z" fill="#4aa3e0"/><path d="M90 44 L100 20 L112 48 Z" fill="#3d8fc9"/><circle cx="52" cy="76" r="4" fill="#1a3b5d"/></g><circle cx="150" cy="40" r="4" fill="#fff" opacity=".7"/><circle cx="165" cy="30" r="3" fill="#fff" opacity=".6"/></svg>`},
+    {id:"owl",name:"貓頭鷹",en:"Owl",tag:"🌙 夜間獵人",bg:"linear-gradient(135deg,#5a4a7a,#2e2340)",
+     habitat:"森林、農田、甚至城市",diet:"老鼠、小鳥、昆蟲(肉食)",size:"約 15~70 公分",status:"多數穩定",
+     ecology:"貓頭鷹是夜行性的猛禽,擁有超級敏銳的聽力和大大的眼睛,能在幾乎全黑的夜裡發現獵物。牠的羽毛邊緣有特殊構造,飛行時幾乎沒有聲音,可以悄悄接近老鼠。貓頭鷹是農田的好幫手,一隻貓頭鷹一年可以吃掉上千隻老鼠,幫農夫保護稻米。",
+     fun:["貓頭鷹的眼睛不能轉動,所以牠的脖子可以旋轉將近二百七十度來看四周!","貓頭鷹兩隻耳朵一高一低,能更精準判斷聲音來自哪裡。","牠們會把吃不下的骨頭和毛吐成一顆食繭。"],
+     chain:["稻米","老鼠","貓頭鷹"],quiz:{q:"貓頭鷹為什麼要把脖子轉那麼大的角度?",opts:["因為眼睛不能轉動","為了跳舞","為了保暖","為了曬太陽"],a:0},yt:"貓頭鷹 生態 夜行",
+     svg:`<svg viewBox="0 0 200 150" width="170"><ellipse cx="100" cy="95" rx="46" ry="52" fill="#8a6d4a"/><ellipse cx="100" cy="100" rx="30" ry="38" fill="#c9a878"/><polygon points="66,52 78,32 90,54" fill="#8a6d4a"/><polygon points="134,52 122,32 110,54" fill="#8a6d4a"/><circle cx="82" cy="78" r="18" fill="#fff"/><circle cx="118" cy="78" r="18" fill="#fff"/><circle class="anim-glow" cx="82" cy="78" r="10" fill="#f5a623"/><circle class="anim-glow" cx="118" cy="78" r="10" fill="#f5a623"/><circle cx="82" cy="78" r="5" fill="#2a2a2a"/><circle cx="118" cy="78" r="5" fill="#2a2a2a"/><polygon points="94,88 106,88 100,102" fill="#e0902b"/><path d="M70 120 Q100 135 130 120" fill="none" stroke="#6a5238" stroke-width="2"/></svg>`},
+    {id:"blackbear",name:"台灣黑熊",en:"Formosan Black Bear",tag:"🇹🇼 台灣最大陸生動物",bg:"linear-gradient(135deg,#3a2f28,#161210)",
+     habitat:"台灣中高海拔的森林",diet:"果實、嫩葉、蜂蜜、小動物(雜食)",size:"約 1.2~1.8 公尺",status:"瀕臨絕種(保育類)",
+     ecology:"台灣黑熊是台灣特有的亞種,也是台灣最大的陸地野生動物。牠的胸前有一道明顯的黃白色V字形斑紋,像戴了圍兜。黑熊是雜食性,會爬樹找果實,也會幫植物散播種子,是森林生態的『園丁』。因為棲地縮小和被獵捕,野外的台灣黑熊數量非常稀少。",
+     fun:["台灣黑熊胸前的白色V字紋,每一隻的形狀都不一樣,就像人類的指紋!","黑熊的嗅覺非常靈敏,能聞到好幾公里外的食物味道。","牠們是爬樹高手,會在樹上折樹枝做成『熊床』休息。"],
+     chain:["森林果實","台灣黑熊","(頂級消費者)"],quiz:{q:"要怎麼分辨台灣黑熊?",opts:["胸前的白色V字紋","身上的斑點","長長的尾巴","彩色的毛"],a:0},yt:"台灣黑熊 生態 保育",
+     svg:`<svg viewBox="0 0 200 150" width="180"><g class="anim-bob"><ellipse cx="100" cy="105" rx="50" ry="34" fill="#2a221c"/><circle cx="100" cy="62" r="32" fill="#332a22"/><circle cx="72" cy="38" r="12" fill="#2a221c"/><circle cx="128" cy="38" r="12" fill="#2a221c"/><circle cx="88" cy="60" r="4" fill="#fff"/><circle cx="112" cy="60" r="4" fill="#fff"/><ellipse cx="100" cy="74" rx="9" ry="7" fill="#5a4a3a"/><circle cx="100" cy="72" r="3" fill="#111"/><path d="M88 96 Q100 82 112 96 L100 120 Z" fill="#f2e6c0"/></g></svg>`},
+    {id:"seaturtle",name:"綠蠵龜",en:"Green Sea Turtle",tag:"🐢 大海旅行家",bg:"linear-gradient(135deg,#2f9c8a,#12665a)",
+     habitat:"溫暖的海洋與珊瑚礁",diet:"海草、海藻(成龜幾乎吃素)",size:"殼長約 1~1.2 公尺",status:"瀕危(保育類)",
+     ecology:"綠蠵龜是一種大型的海龜,可以活到八十歲以上。母龜長大後,會游過幾千公里的大海,回到自己出生的沙灘產卵,這種本領叫做『洄游』。牠們吃海草,幫助海底草原保持健康。綠蠵龜很容易被海洋垃圾傷害,常把塑膠袋當成水母誤食,所以保持海洋乾淨對牠們很重要。",
+     fun:["海龜寶寶是公是母,是由沙子的溫度決定的——沙子越熱,母龜越多!","綠蠵龜會回到自己出生的那片沙灘產卵,就像認得回家的路。","牠沒辦法把頭和腳縮進殼裡,和陸地上的烏龜不一樣。"],
+     chain:["海草","綠蠵龜","鯊魚"],quiz:{q:"綠蠵龜寶寶的性別是由什麼決定的?",opts:["沙子的溫度","蛋的顏色","媽媽的心情","海水深度"],a:0},yt:"綠蠵龜 生態 洄游 產卵",
+     svg:`<svg viewBox="0 0 200 150" width="185"><g class="anim-swim"><ellipse cx="100" cy="85" rx="46" ry="34" fill="#2e8a6a"/><path d="M100 55 L118 70 L112 92 L88 92 L82 70 Z" fill="#3fae86"/><path d="M100 55 L100 92 M82 70 L118 70 M88 92 L112 92" stroke="#1d6b52" stroke-width="1.5"/><circle cx="150" cy="80" r="13" fill="#2e8a6a"/><circle cx="156" cy="77" r="3" fill="#111"/><ellipse cx="64" cy="62" rx="16" ry="8" fill="#2e8a6a" transform="rotate(-30 64 62)"/><ellipse cx="64" cy="108" rx="16" ry="8" fill="#2e8a6a" transform="rotate(30 64 108)"/></g></svg>`},
+    {id:"bat",name:"蝙蝠",en:"Bat",tag:"🦇 唯一會飛的哺乳類",bg:"linear-gradient(135deg,#4a3a5a,#1e1526)",
+     habitat:"洞穴、樹洞、老房子屋簷",diet:"多數吃昆蟲,有些吃果實花蜜",size:"展翅約 20~40 公分",status:"多數穩定",
+     ecology:"蝙蝠是世界上唯一會真正飛行的哺乳類動物,牠的翅膀其實是又薄又長的手指撐開皮膜形成的。多數蝙蝠在夜裡用回聲定位捕捉飛蟲,一個晚上能吃掉上千隻蚊子,是天然的除蟲高手。也有吃花蜜和果實的蝙蝠,會幫植物授粉和散播種子。白天牠們喜歡倒掛著休息睡覺。",
+     fun:["蝙蝠是倒掛著睡覺的,牠的腳有特殊構造,不用出力就能勾住,睡著也不會掉下來!","一隻小蝙蝠一個晚上可以吃掉上千隻蚊子。","蝙蝠不是鳥,牠沒有羽毛,而且是用乳汁哺育寶寶的哺乳類。"],
+     chain:["蚊子等昆蟲","蝙蝠","貓頭鷹"],quiz:{q:"蝙蝠特別的地方是什麼?",opts:["唯一會飛的哺乳類","羽毛最漂亮的鳥","跑最快的動物","最大的昆蟲"],a:0},yt:"蝙蝠 生態 回聲定位",
+     svg:`<svg viewBox="0 0 200 150" width="185"><g class="anim-bob"><path class="anim-flap2" d="M100 70 Q50 40 20 70 Q45 66 40 84 Q60 74 70 88 Q78 78 100 82 Z" fill="#3a2f4a"/><path class="anim-flap" d="M100 70 Q150 40 180 70 Q155 66 160 84 Q140 74 130 88 Q122 78 100 82 Z" fill="#3a2f4a"/><ellipse cx="100" cy="78" rx="16" ry="20" fill="#2a2136"/><circle cx="100" cy="60" r="12" fill="#332a42"/><polygon points="92,50 88,38 98,48" fill="#2a2136"/><polygon points="108,50 112,38 102,48" fill="#2a2136"/><circle cx="95" cy="60" r="2.5" fill="#f5a623"/><circle cx="105" cy="60" r="2.5" fill="#f5a623"/></g></svg>`}
+  ],
+  insect: [
+    {id:"beetle",name:"獨角仙",en:"Rhinoceros Beetle",tag:"🦏 昆蟲大力士",bg:"linear-gradient(135deg,#6b4423,#3a2412)",
+     habitat:"低海拔森林,喜歡光蠟樹",diet:"樹液、成熟水果(幼蟲吃腐植質)",size:"約 3~8 公分",status:"常見",
+     ecology:"獨角仙是台灣夏天最受歡迎的甲蟲之一。公獨角仙頭上有一支大大的角,用來和其他公蟲打架、搶奪樹液和母蟲。牠的一生要經過完全變態:卵、幼蟲、蛹、成蟲。幼蟲住在腐爛的木頭或土裡,吃腐植質長大,成蟲壽命只有短短的兩三個月。",
+     fun:["獨角仙可以舉起自己體重八百五十倍的東西,相當於一個人舉起兩台大卡車!","牠頭上的角其實不是嘴巴,而是外骨骼延伸出來的武器。","獨角仙的幼蟲叫做雞母蟲,白白胖胖的,是分解落葉的小幫手。"],
+     chain:["樹液","獨角仙","貓頭鷹"],quiz:{q:"獨角仙的成長過程屬於哪一種?",opts:["完全變態","不完全變態","不會長大","只換皮"],a:0},yt:"獨角仙 生態 生活史",
+     svg:`<svg viewBox="0 0 200 150" width="180"><g class="anim-bob"><ellipse cx="100" cy="95" rx="42" ry="34" fill="#4a2f16"/><ellipse cx="100" cy="90" rx="38" ry="28" fill="#6b4423"/><line x1="100" y1="64" x2="100" y2="118" stroke="#3a2412" stroke-width="2"/><ellipse cx="100" cy="58" rx="18" ry="14" fill="#4a2f16"/><path d="M100 48 Q94 20 88 26 Q96 30 92 40 Z" fill="#3a2412"/><path d="M100 48 Q106 20 112 26 Q104 30 108 40 Z" fill="#3a2412"/><line x1="62" y1="86" x2="40" y2="76" stroke="#2a1a0c" stroke-width="3"/><line x1="62" y1="96" x2="38" y2="98" stroke="#2a1a0c" stroke-width="3"/><line x1="62" y1="106" x2="42" y2="118" stroke="#2a1a0c" stroke-width="3"/><line x1="138" y1="86" x2="160" y2="76" stroke="#2a1a0c" stroke-width="3"/><line x1="138" y1="96" x2="162" y2="98" stroke="#2a1a0c" stroke-width="3"/><line x1="138" y1="106" x2="158" y2="118" stroke="#2a1a0c" stroke-width="3"/></g></svg>`},
+    {id:"bee",name:"蜜蜂",en:"Honey Bee",tag:"🍯 勤勞授粉者",bg:"linear-gradient(135deg,#f5c518,#c99a0a)",
+     habitat:"花朵多的地方,住在蜂巢",diet:"花蜜、花粉",size:"約 1~2 公分",status:"部分族群減少中",
+     ecology:"蜜蜂是團體生活的昆蟲,一個蜂巢有蜂后、工蜂和雄蜂。工蜂會飛到花朵採集花蜜和花粉,回巢做成蜂蜜。更重要的是,蜜蜂在採蜜時會幫花朵授粉,讓植物結果實。我們吃的很多水果和蔬菜,都靠蜜蜂幫忙授粉,如果沒有蜜蜂,人類的食物會少掉一大半!",
+     fun:["蜜蜂會跳八字舞告訴同伴花蜜在哪個方向、有多遠!","一隻工蜂一生只能做出約四分之一小匙的蜂蜜。","蜜蜂有五隻眼睛,三隻小的加兩隻大的複眼!"],
+     chain:["花朵","蜜蜂","青蛙"],quiz:{q:"蜜蜂用什麼方式告訴同伴花蜜的位置?",opts:["跳八字舞","唱歌","發光","留下腳印"],a:0},yt:"蜜蜂 授粉 八字舞",
+     svg:`<svg viewBox="0 0 200 150" width="180"><g class="anim-bob"><ellipse cx="100" cy="90" rx="34" ry="26" fill="#f5c518"/><rect x="78" y="72" width="10" height="36" rx="3" fill="#3a2a10"/><rect x="98" y="66" width="10" height="46" rx="3" fill="#3a2a10"/><rect x="118" y="72" width="8" height="36" rx="3" fill="#3a2a10"/><circle cx="66" cy="88" r="16" fill="#2a1e0a"/><circle cx="60" cy="84" r="4" fill="#fff"/><line x1="58" y1="72" x2="50" y2="60" stroke="#2a1e0a" stroke-width="2"/><line x1="66" y1="72" x2="64" y2="58" stroke="#2a1e0a" stroke-width="2"/><ellipse class="anim-flap2" cx="95" cy="66" rx="24" ry="12" fill="#cfeffc" opacity=".8"/><ellipse class="anim-flap" cx="112" cy="66" rx="24" ry="12" fill="#cfeffc" opacity=".8"/></g></svg>`},
+    {id:"firefly",name:"螢火蟲",en:"Firefly",tag:"✨ 會發光的甲蟲",bg:"linear-gradient(135deg,#1a2e1a,#0a1a0a)",
+     habitat:"乾淨的溪流、草叢邊",diet:"幼蟲吃蝸牛;多數成蟲只喝露水",size:"約 0.5~2 公分",status:"對環境敏感,需乾淨棲地",
+     ecology:"螢火蟲其實是一種甲蟲!牠們尾部的發光器官能發出一閃一閃的黃綠色光,這是牠們在夜裡尋找伴侶的燈語。不同種類的螢火蟲有不同的閃爍節奏。螢火蟲對環境非常敏感,只住在乾淨、沒有光害的地方,所以看到螢火蟲代表那裡的生態很健康,牠是很好的環境指標生物。",
+     fun:["螢火蟲發出的光幾乎不會產生熱,是效率超高的冷光!","牠們發光是靠身體裡的螢光素和氧氣產生化學反應。","螢火蟲的幼蟲也會發光,連卵有時候都會微微發亮!"],
+     chain:["蝸牛","螢火蟲幼蟲","青蛙"],quiz:{q:"為什麼看到很多螢火蟲代表環境很好?",opts:["牠們只住在乾淨的地方","牠們喜歡髒水","牠們怕乾淨","牠們愛路燈"],a:0},yt:"螢火蟲 生態 發光",
+     svg:`<svg viewBox="0 0 200 150" width="180"><circle class="anim-glow" cx="150" cy="40" r="6" fill="#c8f560"/><circle class="anim-glow" cx="40" cy="60" r="5" fill="#c8f560"/><circle class="anim-glow" cx="170" cy="90" r="4" fill="#c8f560"/><g class="anim-bob"><ellipse cx="100" cy="80" rx="16" ry="30" fill="#3a3020"/><ellipse cx="100" cy="100" rx="14" ry="16" fill="#c8f560"/><ellipse class="anim-glow" cx="100" cy="102" rx="20" ry="20" fill="#c8f560" opacity=".4"/><circle cx="100" cy="52" r="12" fill="#2a2418"/><line x1="94" y1="42" x2="86" y2="30" stroke="#2a2418" stroke-width="2"/><line x1="106" y1="42" x2="114" y2="30" stroke="#2a2418" stroke-width="2"/><ellipse class="anim-flap2" cx="86" cy="72" rx="14" ry="26" fill="#5a4a30" opacity=".7"/><ellipse class="anim-flap" cx="114" cy="72" rx="14" ry="26" fill="#5a4a30" opacity=".7"/></g></svg>`},
+    {id:"ant",name:"螞蟻",en:"Ant",tag:"🐜 團結小巨人",bg:"linear-gradient(135deg,#8a5a2a,#4a2f14)",
+     habitat:"幾乎到處都有,住在地底蟻巢",diet:"種子、昆蟲、甜甜的蜜露(雜食)",size:"約 0.2~1 公分",status:"非常常見",
+     ecology:"螞蟻是社會性昆蟲,一個蟻巢就像一座分工合作的城市,有蟻后負責生蛋,工蟻負責找食物、照顧幼蟲和保護家園。螞蟻找到食物時,會沿路留下叫做費洛蒙的氣味,讓同伴照著味道排成長長的隊伍搬運食物。牠們翻鬆土壤、清除死掉的小蟲,是生態系裡重要的清道夫。",
+     fun:["螞蟻可以搬起比自己重五十倍的東西,力氣超級大!","螞蟻是靠氣味走路的,牠們沿路留下費洛蒙讓同伴跟著走。","有些螞蟻會『養』蚜蟲,像人類養牛一樣,收集牠們分泌的甜蜜露。"],
+     chain:["種子與小蟲","螞蟻","食蟻的鳥"],quiz:{q:"螞蟻排成長長的隊伍,是靠什麼找到路?",opts:["沿路的氣味(費洛蒙)","眼睛看地圖","聽聲音","跟著太陽"],a:0},yt:"螞蟻 生態 分工 費洛蒙",
+     svg:`<svg viewBox="0 0 200 150" width="180"><g class="anim-crawl"><circle cx="70" cy="80" r="14" fill="#5a3a1a"/><circle cx="100" cy="80" r="11" fill="#6b4423"/><circle cx="132" cy="80" r="17" fill="#5a3a1a"/><line x1="64" y1="70" x2="54" y2="52" stroke="#3a2412" stroke-width="2"/><line x1="72" y1="70" x2="70" y2="50" stroke="#3a2412" stroke-width="2"/><circle cx="54" cy="52" r="2" fill="#3a2412"/><circle cx="70" cy="50" r="2" fill="#3a2412"/><circle cx="66" cy="78" r="2" fill="#fff"/><line x1="100" y1="86" x2="90" y2="104" stroke="#3a2412" stroke-width="2"/><line x1="100" y1="86" x2="100" y2="106" stroke="#3a2412" stroke-width="2"/><line x1="100" y1="86" x2="110" y2="104" stroke="#3a2412" stroke-width="2"/><line x1="104" y1="74" x2="120" y2="60" stroke="#3a2412" stroke-width="2"/></g></svg>`},
+    {id:"butterfly",name:"鳳蝶",en:"Swallowtail Butterfly",tag:"🦋 完全變態的魔術",bg:"linear-gradient(135deg,#f28fc0,#8a4aad)",
+     habitat:"花園、林間、有幼蟲食草的地方",diet:"成蝶吸花蜜;毛毛蟲吃葉子",size:"展翅約 7~12 公分",status:"多數常見",
+     ecology:"蝴蝶最神奇的地方是牠的『完全變態』:一顆卵先孵成毛毛蟲,毛毛蟲拼命吃葉子長大,再結成蛹,最後羽化變成美麗的蝴蝶,前後判若兩個生物。成蝶用像吸管一樣的口器吸花蜜,同時幫花朵授粉。蝴蝶對環境變化很敏感,是判斷棲地好壞的指標。",
+     fun:["蝴蝶是用腳來『嚐味道』的,一站到葉子上就知道適不適合產卵!","毛毛蟲和蝴蝶看起來完全不同,卻是同一隻生物的不同階段。","有些鳳蝶的翅膀有假眼睛的花紋,可以嚇退想吃牠的鳥。"],
+     chain:["花朵/葉子","蝴蝶","小鳥"],quiz:{q:"蝴蝶的一生會經歷哪四個階段?",opts:["卵→毛毛蟲→蛹→蝴蝶","蛋→小鳥→大鳥","種子→花→果實","小魚→大魚"],a:0},yt:"鳳蝶 蝴蝶 完全變態 生活史",
+     svg:`<svg viewBox="0 0 200 150" width="185"><g class="anim-bob"><ellipse cx="100" cy="80" rx="6" ry="30" fill="#3a2a3a"/><path class="anim-flap2" d="M97 70 Q50 40 46 70 Q40 96 96 90 Z" fill="#e87fb0"/><path class="anim-flap2" d="M97 84 Q60 100 58 120 Q88 118 97 92 Z" fill="#c95a95"/><path class="anim-flap" d="M103 70 Q150 40 154 70 Q160 96 104 90 Z" fill="#e87fb0"/><path class="anim-flap" d="M103 84 Q140 100 142 120 Q112 118 103 92 Z" fill="#c95a95"/><circle cx="70" cy="66" r="5" fill="#8a4aad"/><circle cx="130" cy="66" r="5" fill="#8a4aad"/><circle cx="100" cy="54" r="6" fill="#2a1e2a"/><line x1="97" y1="48" x2="90" y2="36" stroke="#2a1e2a" stroke-width="2"/><line x1="103" y1="48" x2="110" y2="36" stroke="#2a1e2a" stroke-width="2"/></g></svg>`},
+    {id:"cicada",name:"蟬",en:"Cicada",tag:"🎵 夏天的歌手",bg:"linear-gradient(135deg,#5a7a3a,#2e4a1a)",
+     habitat:"樹上,幼蟲住在地底",diet:"吸食植物汁液",size:"約 3~6 公分",status:"常見",
+     ecology:"蟬是夏天樹上大聲鳴叫的歌手,但唱歌的其實只有公蟬,牠靠腹部的發音器發出聲音來吸引母蟬。蟬的一生大部分時間都躲在地底下,幼蟲吸食樹根的汁液,可能要在土裡待好幾年,才爬到樹上羽化成蟲。羽化後成蟲只能活短短幾個星期,把握時間唱歌、繁殖後代。",
+     fun:["蟬的幼蟲會在地底待上好幾年,國外有一種蟬甚至要等十七年才出土!","公蟬才會唱歌,牠是靠腹部的發音膜振動發出聲音,不是用嘴巴。","我們在樹幹上看到的『蟬蛻』,是蟬羽化後留下的空殼。"],
+     chain:["樹的汁液","蟬","螳螂/鳥"],quiz:{q:"蟬的幼蟲大部分時間住在哪裡?",opts:["地底下","水裡","雲上","花朵裡"],a:0},yt:"蟬 羽化 生活史 鳴叫",
+     svg:`<svg viewBox="0 0 200 150" width="175"><g class="anim-bob"><ellipse cx="100" cy="88" rx="18" ry="34" fill="#3a4a2a"/><circle cx="100" cy="54" r="15" fill="#2e3a20"/><circle cx="91" cy="52" r="4" fill="#c0302a"/><circle cx="109" cy="52" r="4" fill="#c0302a"/><path class="anim-flap2" d="M92 66 Q50 60 46 96 Q78 96 94 84 Z" fill="#cfe0c0" opacity=".8"/><path class="anim-flap" d="M108 66 Q150 60 154 96 Q122 96 106 84 Z" fill="#cfe0c0" opacity=".8"/><line x1="92" y1="66 " x2="60" y2="70" stroke="#2e3a20" stroke-width="1"/><path d="M96 118 Q100 124 104 118" stroke="#2e3a20" stroke-width="2" fill="none"/></g></svg>`}
+  ],
+  plant: [
+    {id:"sunflower",name:"向日葵",en:"Sunflower",tag:"☀️ 追著太陽轉",bg:"linear-gradient(135deg,#87ceeb,#4aa3e0)",
+     habitat:"陽光充足的田野",diet:"行光合作用自己製造養分",size:"可長到 1~3 公尺高",status:"常見栽培",
+     ecology:"向日葵最有名的就是向陽性——年輕的向日葵花會跟著太陽的方向轉動,早上朝東、傍晚朝西,這樣可以吸收最多的陽光來行光合作用長大。等花完全成熟後,就會固定朝向東方。向日葵的花盤其實是由成百上千朵小花組成的,授粉後會變成我們愛吃的葵瓜子。",
+     fun:["向日葵的種子在花盤上排成漂亮的螺旋,這種排列藏著數學裡的費氏數列!","一大朵向日葵其實是由一兩千朵小花組成的花序。","向日葵可以吸收土壤裡的有害物質,曾被用來清理受汙染的土地。"],
+     chain:["陽光","向日葵","蜜蜂"],quiz:{q:"年輕的向日葵為什麼會跟著太陽轉?",opts:["吸收最多陽光","害怕黑暗","想睡覺","躲避風"],a:0},yt:"向日葵 向陽性 生長",
+     svg:`<svg viewBox="0 0 200 160" width="170"><rect x="96" y="90" width="8" height="60" fill="#3a8a3a"/><path class="anim-sway" d="M100 120 Q70 110 60 128 Q85 128 100 120" fill="#4aa03a"/><path class="anim-sway" d="M100 105 Q130 95 140 113 Q115 113 100 105" fill="#4aa03a"/><g class="anim-spin" style="transform-origin:100px 70px"><ellipse cx="100" cy="38" rx="9" ry="22" fill="#f5c518"/><ellipse cx="100" cy="102" rx="9" ry="22" fill="#f5c518"/><ellipse cx="68" cy="70" rx="22" ry="9" fill="#f5c518"/><ellipse cx="132" cy="70" rx="22" ry="9" fill="#f5c518"/><ellipse cx="78" cy="48" rx="9" ry="20" fill="#f5c518" transform="rotate(-45 78 48)"/><ellipse cx="122" cy="48" rx="9" ry="20" fill="#f5c518" transform="rotate(45 122 48)"/><ellipse cx="78" cy="92" rx="9" ry="20" fill="#f5c518" transform="rotate(45 78 92)"/><ellipse cx="122" cy="92" rx="9" ry="20" fill="#f5c518" transform="rotate(-45 122 92)"/></g><circle cx="100" cy="70" r="24" fill="#6b4423"/><circle cx="100" cy="70" r="18" fill="#4a2f16"/></svg>`},
+    {id:"venus",name:"捕蠅草",en:"Venus Flytrap",tag:"🪤 會吃蟲的植物",bg:"linear-gradient(135deg,#3a8a3a,#1d5a1d)",
+     habitat:"原生於美國潮濕貧瘠的沼澤",diet:"光合作用 + 捕食小昆蟲補充養分",size:"葉片約 3~10 公分",status:"野外原生地受威脅",
+     ecology:"捕蠅草是最有名的食蟲植物。因為牠原本住在養分很少的沼澤地,土裡缺少氮,所以演化出會夾住昆蟲的葉子,靠消化蟲子來補充養分。牠的葉子像一個張開的夾子,邊緣有刺毛,裡面有敏感的感覺毛。當昆蟲碰到感覺毛,夾子就會快速合起來把蟲抓住,再慢慢消化。",
+     fun:["捕蠅草很聰明:昆蟲要在二十秒內碰到感覺毛兩次,牠才會合起來,避免被雨滴或落葉騙到!","夾子合起來只要不到一秒,是植物界最快的動作之一。","消化一隻昆蟲大約要花五到十二天,之後夾子才會重新張開。"],
+     chain:["土壤養分不足","捕蠅草捕蟲","補充氮"],quiz:{q:"捕蠅草為什麼要吃昆蟲?",opts:["補充土裡缺少的養分","因為肚子餓","為了長高","為了開花"],a:0},yt:"捕蠅草 食蟲植物 捕食",
+     svg:`<svg viewBox="0 0 200 160" width="170"><rect x="96" y="110" width="8" height="40" fill="#2e6b2e"/><g class="anim-bob"><path d="M100 110 Q70 100 60 60 Q80 55 100 100 Z" fill="#3a9a3a"/><path d="M60 60 Q55 45 68 44 M60 62 Q56 50 66 50 M62 66 Q58 54 70 55" stroke="#c93a3a" stroke-width="2" fill="none"/><path d="M100 110 Q130 100 140 60 Q120 55 100 100 Z" fill="#4aad4a"/><path d="M140 60 Q145 45 132 44 M140 62 Q144 50 134 50 M138 66 Q142 54 130 55" stroke="#c93a3a" stroke-width="2" fill="none"/><ellipse cx="62" cy="58" rx="10" ry="16" fill="#c94a4a" opacity=".5"/><ellipse cx="138" cy="58" rx="10" ry="16" fill="#c94a4a" opacity=".5"/></g><circle class="anim-crawl" cx="100" cy="40" r="4" fill="#333"/></svg>`},
+    {id:"mimosa",name:"含羞草",en:"Mimosa",tag:"🙈 一碰就害羞",bg:"linear-gradient(135deg,#9acd6a,#5a8a3a)",
+     habitat:"路邊、草地(原產南美)",diet:"光合作用自己製造養分",size:"約 30~100 公分",status:"常見(部分地區為外來種)",
+     ecology:"含羞草最特別的地方,就是你一碰牠的葉子,葉子就會馬上合起來、垂下去,好像很害羞。這其實是牠的一種自我保護:當被動物碰到時快速合葉,可以嚇跑吃葉子的昆蟲,或讓自己看起來變小、變不好吃。過一段時間沒有干擾,葉子又會慢慢張開。含羞草到了晚上也會自己把葉子合起來睡覺。",
+     fun:["含羞草合葉的祕密是葉柄基部的葉枕快速排出水分,讓葉子瞬間垂下來!","它不只怕碰,連強風、下雨、太熱也會合葉保護自己。","含羞草會開出粉紅色像小絨球一樣的可愛花朵。"],
+     chain:["陽光","含羞草","草食昆蟲"],quiz:{q:"含羞草被碰到就合葉,主要是為了什麼?",opts:["保護自己嚇跑敵人","跟人玩","製造花蜜","吸引陽光"],a:0},yt:"含羞草 葉子 閉合原理",
+     svg:`<svg viewBox="0 0 200 160" width="170"><path d="M100 150 Q90 100 100 60" stroke="#4a7a2a" stroke-width="6" fill="none"/><g class="anim-sway"><line x1="100" y1="80" x2="55" y2="60" stroke="#4a7a2a" stroke-width="3"/><line x1="100" y1="80" x2="145" y2="60" stroke="#4a7a2a" stroke-width="3"/><g fill="#6aad4a"><ellipse cx="50" cy="58" rx="5" ry="2.5"/><ellipse cx="62" cy="55" rx="5" ry="2.5"/><ellipse cx="74" cy="55" rx="5" ry="2.5"/><ellipse cx="86" cy="58" rx="5" ry="2.5"/><ellipse cx="50" cy="63" rx="5" ry="2.5"/><ellipse cx="62" cy="61" rx="5" ry="2.5"/><ellipse cx="74" cy="61" rx="5" ry="2.5"/><ellipse cx="86" cy="63" rx="5" ry="2.5"/><ellipse cx="114" cy="58" rx="5" ry="2.5"/><ellipse cx="126" cy="55" rx="5" ry="2.5"/><ellipse cx="138" cy="55" rx="5" ry="2.5"/><ellipse cx="150" cy="58" rx="5" ry="2.5"/><ellipse cx="114" cy="63" rx="5" ry="2.5"/><ellipse cx="126" cy="61" rx="5" ry="2.5"/><ellipse cx="138" cy="61" rx="5" ry="2.5"/><ellipse cx="150" cy="63" rx="5" ry="2.5"/></g></g><circle class="anim-bob" cx="100" cy="48" r="12" fill="#e87fb0" opacity=".85"/></svg>`},
+    {id:"lotus",name:"荷花",en:"Lotus",tag:"🌸 出淤泥而不染",bg:"linear-gradient(135deg,#8fd0e8,#3a9ac0)",
+     habitat:"池塘、湖泊等淺水區",diet:"行光合作用自己製造養分",size:"花直徑約 10~25 公分",status:"常見栽培",
+     ecology:"荷花長在池塘的爛泥裡,卻能開出乾淨漂亮的花,所以古人用『出淤泥而不染』來形容它。荷葉表面有非常細小的絨毛和蠟,水滴掉上去會變成圓圓的水珠滾走,把灰塵一起帶走,葉子永遠保持乾淨,這叫做『荷葉效應』。荷花的根莖是我們吃的蓮藕,種子是蓮子,全身都有用處。",
+     fun:["水滴在荷葉上會變成圓珠滾來滾去,科學家模仿這個原理發明了防水又防髒的衣服和油漆!","荷花能自己產生熱量,讓花朵保持溫暖來吸引昆蟲來授粉。","荷花的種子生命力驚人,曾有埋在土裡上千年的蓮子還能發芽!"],
+     chain:["陽光","荷花","採蜜昆蟲"],quiz:{q:"為什麼荷葉上的水會變成水珠滾走、葉子不沾灰塵?",opts:["葉面有細絨毛和蠟(荷葉效應)","葉子會吸水","有人幫忙擦","葉子會發熱"],a:0},yt:"荷花 荷葉效應 生態",
+     svg:`<svg viewBox="0 0 200 160" width="180"><ellipse cx="100" cy="135" rx="80" ry="14" fill="#3a9ac0" opacity=".5"/><ellipse cx="55" cy="120" rx="34" ry="12" fill="#3a8a5a"/><path d="M55 120 L55 108" stroke="#2e6b4a" stroke-width="2"/><g class="anim-bob"><ellipse cx="120" cy="70" rx="7" ry="20" fill="#f2a0c0"/><ellipse cx="120" cy="70" rx="7" ry="20" fill="#f2a0c0" transform="rotate(40 120 70)"/><ellipse cx="120" cy="70" rx="7" ry="20" fill="#f2a0c0" transform="rotate(-40 120 70)"/><ellipse cx="120" cy="70" rx="7" ry="20" fill="#f6b8d2" transform="rotate(75 120 70)"/><ellipse cx="120" cy="70" rx="7" ry="20" fill="#f6b8d2" transform="rotate(-75 120 70)"/><circle cx="120" cy="70" r="9" fill="#f5d000"/></g><rect x="117" y="82" width="5" height="40" fill="#2e6b4a"/><ellipse cx="60" cy="122" rx="9" ry="4" fill="#cfeaff" class="anim-drift"/></svg>`},
+    {id:"bamboo",name:"竹子",en:"Bamboo",tag:"🎋 生長最快的植物",bg:"linear-gradient(135deg,#a8d86a,#4a8a2e)",
+     habitat:"山坡、竹林,溫暖潮濕的地方",diet:"行光合作用自己製造養分",size:"可高達 10~30 公尺",status:"常見",
+     ecology:"竹子雖然又高又硬,但它其實是一種草,不是樹!竹子是世界上長最快的植物之一,有些種類一天可以長高將近一公尺。它靠地下相連的莖不斷冒出新芽,也就是我們吃的竹筍。竹林能抓住土壤、防止山坡崩塌,也是可愛的貓熊最愛的食物。神奇的是,同一片竹林會很多年才一起開一次花,而且開花後往往整片竹子就會枯死。",
+     fun:["竹子一天最多可以長高將近一公尺,是長最快的植物之一!","竹子是草不是樹,它中間是空心的,又輕又堅固。","同一種竹子會好幾十年才一起開一次花,開完花整片竹林常常會枯死。"],
+     chain:["陽光","竹子","貓熊"],quiz:{q:"關於竹子,下列哪一個是對的?",opts:["它其實是一種草","它是最矮的植物","它不需要陽光","它每天都開花"],a:0},yt:"竹子 生長 竹筍 生態",
+     svg:`<svg viewBox="0 0 200 160" width="150"><g class="anim-sway"><rect x="78" y="20" width="16" height="130" rx="3" fill="#6aad3a"/><line x1="78" y1="55" x2="94" y2="55" stroke="#3a6b1a" stroke-width="3"/><line x1="78" y1="90" x2="94" y2="90" stroke="#3a6b1a" stroke-width="3"/><line x1="78" y1="125" x2="94" y2="125" stroke="#3a6b1a" stroke-width="3"/><rect x="108" y="45" width="13" height="105" rx="3" fill="#7cc34a"/><line x1="108" y1="80" x2="121" y2="80" stroke="#3a6b1a" stroke-width="2"/><line x1="108" y1="115" x2="121" y2="115" stroke="#3a6b1a" stroke-width="2"/><path d="M94 50 Q120 40 135 48" stroke="#4a8a2e" stroke-width="2" fill="none"/><ellipse cx="138" cy="46" rx="12" ry="4" fill="#5aa32e" transform="rotate(-20 138 46)"/><ellipse cx="60" cy="60" rx="12" ry="4" fill="#5aa32e" transform="rotate(20 60 60)"/><path d="M78 62 Q56 54 48 60" stroke="#4a8a2e" stroke-width="2" fill="none"/></g></svg>`},
+    {id:"dandelion",name:"蒲公英",en:"Dandelion",tag:"🌬️ 乘風旅行的種子",bg:"linear-gradient(135deg,#cfe8a0,#7cb04a)",
+     habitat:"草地、路邊、空地",diet:"行光合作用自己製造養分",size:"約 10~30 公分",status:"非常常見",
+     ecology:"蒲公英開的是黃色的小花,花謝之後會變成一顆白白蓬鬆的球,那其實是一粒粒帶著小降落傘的種子。當風一吹,種子就會像小傘一樣飄到很遠的地方,落地後長出新的蒲公英,這是植物『傳播種子』最聰明的方法之一。蒲公英生命力很強,連石頭縫都能生長,是春天很常見的野花。",
+     fun:["蒲公英的每一根白色絨毛下面,都掛著一粒種子,像一把小降落傘!","一朵蒲公英可以放出上百顆種子,隨風飄到很遠的地方安家。","蒲公英的葉子和花其實可以吃,在很多地方被當成野菜或做成茶。"],
+     chain:["陽光","蒲公英","草食昆蟲"],quiz:{q:"蒲公英的種子是靠什麼傳播到遠方的?",opts:["風","河水","地震","自己走路"],a:0},yt:"蒲公英 種子 傳播 生態",
+     svg:`<svg viewBox="0 0 200 160" width="160"><path class="anim-sway" d="M100 150 Q94 100 100 66" stroke="#4a8a2e" stroke-width="5" fill="none"/><g class="anim-bob"><circle cx="100" cy="60" r="6" fill="#e0c040"/><g stroke="#eaf3d8" stroke-width="1.2"><line x1="100" y1="60" x2="100" y2="24"/><line x1="100" y1="60" x2="124" y2="30"/><line x1="100" y1="60" x2="138" y2="52"/><line x1="100" y1="60" x2="132" y2="80"/><line x1="100" y1="60" x2="120" y2="92"/><line x1="100" y1="60" x2="80" y2="92"/><line x1="100" y1="60" x2="68" y2="80"/><line x1="100" y1="60" x2="62" y2="52"/><line x1="100" y1="60" x2="76" y2="30"/></g><g fill="#f2f8e8"><circle cx="100" cy="22" r="5"/><circle cx="126" cy="28" r="5"/><circle cx="140" cy="52" r="5"/><circle cx="133" cy="82" r="5"/><circle cx="120" cy="94" r="5"/><circle cx="80" cy="94" r="5"/><circle cx="67" cy="82" r="5"/><circle cx="60" cy="52" r="5"/><circle cx="74" cy="28" r="5"/></g></g><g class="anim-drift"><line x1="155" y1="40" x2="162" y2="34" stroke="#dceec0" stroke-width="1"/><circle cx="163" cy="33" r="4" fill="#f2f8e8"/></g></svg>`}
+  ]
+};
+
+/* ========== 真實照片(維基共享,自由授權) ========== */
+const PHOTOS = {
+  leopardcat:"Close-up_of_a_Leopard_Cat_in_Sundarban.jpg",
+  dolphin:"Tursiops_truncatus_01.jpg",
+  owl:"Bubo_bubo_1_(Martin_Mecnarowski).jpg",
+  blackbear:"Formosan_Black_Bear.JPG",
+  seaturtle:"Green_turtle_swimming_over_coral_reefs_in_Kona.jpg",
+  bat:"Lesser_short-nosed_fruit_bat_(Cynopterus_brachyotis).jpg",
+  beetle:"Japanese_rhinoceros_beetle_(Trypoxylus_dichotomus)_(20492490700).jpg",
+  bee:"Apis_mellifera_Western_honey_bee.jpg",
+  firefly:"Firefly_-_Photinus_pyralis,_Woodbridge,_Virginia.jpg",
+  ant:"Wood_Ants_-_formica_rufa_-_geograph.org.uk_-_1381268.jpg",
+  butterfly:"Papilio_machaon_(Old_World_swallowtail).jpg",
+  cicada:"Green-eyed_Cicada_(Megapomponia_imperatoria)_(8693270250).jpg",
+  sunflower:"A_Sunflower.jpg",
+  venus:"Venus_Flytrap_showing_trigger_hairs.jpg",
+  mimosa:"Mimosa_pudica_L._(Touch_me_not_plant)_-_Flickr_-_lalithamba.jpg",
+  lotus:"Lotus_flower_nelumbo_nucifera.jpg",
+  bamboo:"Arashiyama_Bamboo_Grove_(Unsplash).jpg",
+  dandelion:"Dandelion_seed_head_(Taraxacum_officinale).jpg"
+};
+function photoSrc(id, w){ return "https://commons.wikimedia.org/wiki/Special:FilePath/"+encodeURIComponent(PHOTOS[id])+"?width="+(w||600); }
+function photoPage(id){ return "https://commons.wikimedia.org/wiki/File:"+encodeURIComponent(PHOTOS[id]); }
+
+/* ========== 語音朗讀 ========== */
+const synth = window.speechSynthesis;
+let zhVoice = null;
+function loadVoice(){
+  const vs = synth ? synth.getVoices() : [];
+  zhVoice = vs.find(v=>/zh[-_]?(TW|Hant)/i.test(v.lang)) || vs.find(v=>v.lang && v.lang.toLowerCase().startsWith("zh")) || null;
+}
+if(synth){ loadVoice(); synth.onvoiceschanged = loadVoice; }
+function narrationText(s){
+  return `${s.name}。${s.ecology} 有趣的是,${s.fun.join(" ")}`;
+}
+function speak(text, onEnd){
+  if(!synth){ return false; }
+  synth.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "zh-TW"; u.rate = 0.95; u.pitch = 1.0;
+  if(zhVoice) u.voice = zhVoice;
+  if(onEnd) u.onend = onEnd;
+  synth.speak(u);
+  return true;
+}
+
+/* ========== 渲染 ========== */
+const $ = id=>document.getElementById(id);
+let curCat = "animal";
+const CAT_NAME = {animal:"動物",insect:"昆蟲",plant:"植物"};
+
+function renderGrid(){
+  const grid=$("grid"); grid.innerHTML="";
+  $("countNote").textContent = `目前「${CAT_NAME[curCat]}」共 ${DATA[curCat].length} 種 ・ 全部合計 18 種生物`;
+  DATA[curCat].forEach(s=>{
+    const card=document.createElement("div");
+    card.className="species-card";
+    card.innerHTML=`<div class="stage" style="background:${s.bg}"><img loading="lazy" alt="${s.name}" src="${photoSrc(s.id,500)}"></div>
+      <div class="card-body"><div class="card-name">${s.name}</div>
+      <div class="card-en">${s.en}</div><span class="card-tag">${s.tag}</span></div>`;
+    const stage=card.querySelector(".stage");
+    stage.querySelector("img").onerror=function(){ stage.style.background=s.bg; stage.innerHTML=s.svg; };
+    card.onclick=()=>openDetail(s);
+    grid.appendChild(card);
+  });
+}
+function ytUrl(q){ return "https://www.youtube.com/results?search_query="+encodeURIComponent(q); }
+
+function openDetail(s){
+  synth && synth.cancel();
+  const chain = s.chain.map((c,i)=>`<span class="chain-item">${c}</span>${i<s.chain.length-1?'<span class="arrow">→</span>':''}`).join("");
+  const funs = s.fun.map(f=>`<li>💡 ${f}</li>`).join("");
+  const voiceSupported = !!synth;
+  $("detail").innerHTML = `
+    <div class="detail-stage" id="detailStage" style="background:${s.bg}"><img alt="${s.name}" src="${photoSrc(s.id,700)}"></div>
+    <div class="detail-body">
+      <div class="detail-name">${s.name} <span style="font-size:.6em">${s.tag}</span></div>
+      <div class="detail-en">${s.en}</div>
+      <div class="photo-credit">📷 照片來源:<a href="${photoPage(s.id)}" target="_blank" rel="noopener">Wikimedia Commons</a>(自由授權)</div>
+      <div class="voice-bar">
+        <span class="vlabel">🔊 語音朗讀</span>
+        ${voiceSupported ? `
+          <button class="vbtn vplay" id="vPlay">▶️ 播放</button>
+          <button class="vbtn vpause" id="vPause">⏸️ 暫停</button>
+          <button class="vbtn vstop" id="vStop">⏹️ 停止</button>
+          <span class="vstatus" id="vStatus">點播放,聽哆啦老師介紹!</span>
+        ` : `<span class="vstatus">這個瀏覽器不支援語音,建議用 Chrome 或 Edge 開啟。</span>`}
+      </div>
+      <div class="info-row">
+        <div class="info-pill"><b>🏠 棲息地</b>${s.habitat}</div>
+        <div class="info-pill"><b>🍽️ 食物</b>${s.diet}</div>
+        <div class="info-pill"><b>📏 大小</b>${s.size}</div>
+        <div class="info-pill"><b>⚠️ 現況</b>${s.status}</div>
+      </div>
+      <div class="sec-title">🌍 生態小百科</div>
+      <div class="sec-body">${s.ecology}</div>
+      <div class="illus-box"><div class="illus-head">🎨 動態插圖</div><div class="illus-stage" style="background:${s.bg}">${s.svg}</div></div>
+      <div class="sec-title">🔗 牠在食物鏈的位置</div>
+      <div class="food-chain">${chain}</div>
+      <div class="sec-title">✨ 有趣的冷知識</div>
+      <ul class="fun-list">${funs}</ul>
+      <div class="quiz-box"><div class="quiz-q">🧠 小測驗:${s.quiz.q}</div>
+        <div class="quiz-opts" id="quizOpts"></div><div class="quiz-fb" id="quizFb"></div></div>
+      <div class="btn-row">
+        <a class="btn yt-btn" href="${ytUrl(s.yt)}" target="_blank" rel="noopener">▶️ 看「${s.name}」影片</a>
+        <button class="btn close-btn" id="closeBtn">關閉</button>
+      </div>
+    </div>`;
+
+  const hero=$("detailStage"), heroImg=hero.querySelector("img");
+  if(heroImg) heroImg.onerror=function(){ hero.style.background=s.bg; hero.innerHTML=s.svg; };
+
+  if(voiceSupported){
+    $("vPlay").onclick=()=>{
+      if(synth.paused){ synth.resume(); $("vStatus").textContent="朗讀中…🔊"; return; }
+      $("vStatus").textContent="朗讀中…🔊";
+      speak(narrationText(s), ()=>{ $("vStatus").textContent="朗讀完畢!👏"; });
+    };
+    $("vPause").onclick=()=>{ if(synth.speaking && !synth.paused){ synth.pause(); $("vStatus").textContent="已暫停 ⏸️"; } };
+    $("vStop").onclick=()=>{ synth.cancel(); $("vStatus").textContent="已停止 ⏹️"; };
+  }
+
+  const opts=$("quizOpts");
+  s.quiz.opts.forEach((o,i)=>{
+    const b=document.createElement("button");
+    b.className="quiz-opt"; b.textContent=o;
+    b.onclick=()=>{
+      if(opts.dataset.done) return;
+      opts.dataset.done="1";
+      [...opts.children].forEach((x,j)=>{ if(j===s.quiz.a)x.classList.add("correct"); });
+      if(i===s.quiz.a){ b.classList.add("correct"); $("quizFb").textContent="🎉 答對了!你真是自然小達人!"; $("quizFb").style.color="#2e9e3f"; }
+      else { b.classList.add("wrong"); $("quizFb").textContent="再看看上面的介紹吧!正確答案已標示綠色。"; $("quizFb").style.color="#e0332c"; }
+    };
+    opts.appendChild(b);
+  });
+  $("closeBtn").onclick=closeModal;
+  $("modal").classList.remove("hidden");
+}
+function closeModal(){ synth && synth.cancel(); $("modal").classList.add("hidden"); }
+
+$("tabs").querySelectorAll(".tab").forEach(t=>{
+  t.onclick=()=>{
+    synth && synth.cancel();
+    $("tabs").querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active"); curCat=t.dataset.c; renderGrid();
+  };
+});
+$("modal").onclick=e=>{ if(e.target===$("modal")) closeModal(); };
+renderGrid();
+</script>
+</body>
+</html>
