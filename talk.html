@@ -1324,5 +1324,10 @@ document.body.addEventListener('touchend', function unlock() {
   document.body.removeEventListener('touchend', unlock);
 }, { once: true });
 </script>
+
+<style id="portal-home-style">
+.portal-home-link{position:fixed;top:calc(10px + env(safe-area-inset-top));left:calc(10px + env(safe-area-inset-left));z-index:2147483000;display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border-radius:999px;background:rgba(255,255,255,.94);color:#1f2937;text-decoration:none;font:700 14px/1.2 "PingFang TC","Microsoft JhengHei",sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.18);border:2px solid rgba(255,107,107,.28);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);user-select:none;touch-action:manipulation}.portal-home-link:active{transform:translateY(1px)}@media(max-width:640px){.portal-home-link{font-size:13px;padding:8px 11px}}
+</style>
+<a class="portal-home-link" href="index.html" aria-label="回教學首頁">🏠 回教學首頁</a>
 </body>
 </html>
