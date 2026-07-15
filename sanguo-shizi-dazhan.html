@@ -86,7 +86,8 @@ body{
 .fighter .pbox{border-radius:18px; overflow:hidden; border:1px solid #f0d878; padding:4px;
   box-shadow:0 12px 28px rgba(0,0,0,.65), inset 0 0 0 1px rgba(255,245,205,.25);
   background:linear-gradient(145deg,#f0d878,#7a5c22 38%,#160e06 72%);}
-.fighter .pbox svg{display:block; width:100%; height:auto; border-radius:13px; box-shadow:0 0 0 1px rgba(0,0,0,.55);}
+.fighter .pbox svg,.fighter .pbox .portrait-art{display:block; width:100%; height:auto; border-radius:13px; box-shadow:0 0 0 1px rgba(0,0,0,.55);}
+.fighter .pbox .portrait-art{aspect-ratio:5/6; object-fit:cover; object-position:center 20%; background:#111;}
 .fighter .fname{font-size:18px; font-weight:900; margin-top:6px; letter-spacing:2px;}
 .fighter .ftitle{font-size:12px; color:#cdb98c;}
 .hpbar{height:14px; background:#00000070; border-radius:8px; margin-top:6px; border:1px solid #00000090; overflow:hidden;}
@@ -130,7 +131,8 @@ body{
   overflow:hidden; cursor:pointer; text-align:center; padding:6px 6px 10px; transition:transform .12s, box-shadow .12s;
   box-shadow:0 8px 18px rgba(0,0,0,.36), inset 0 0 0 1px rgba(255,255,255,.42);}
 .gal-card:hover{transform:translateY(-5px); box-shadow:0 12px 24px rgba(0,0,0,.42), 0 0 0 2px rgba(232,201,106,.42);}
-.gal-card svg{display:block; width:100%; height:auto; background:#111; border-radius:10px; box-shadow:0 0 0 1px rgba(56,35,10,.45);}
+.gal-card svg,.gal-card .portrait-art{display:block; width:100%; height:auto; background:#111; border-radius:10px; box-shadow:0 0 0 1px rgba(56,35,10,.45);}
+.gal-card .portrait-art{aspect-ratio:5/6; object-fit:cover; object-position:center 20%;}
 .gal-card .gname{font-weight:900; font-size:16.5px; margin-top:6px; letter-spacing:2px;}
 .gal-card .gtitle{font-size:11.5px; color:#6b5220;}
 .gal-card.locked{filter:grayscale(1) brightness(.55);}
@@ -154,8 +156,9 @@ body{
   background:none; border:none; font-weight:900; font-family:inherit;}
 .w-detail{display:flex; gap:20px; flex-wrap:wrap;}
 .w-detail .wd-left{width:220px; flex-shrink:0;}
-.w-detail .wd-left svg{width:100%; height:auto; border-radius:16px; border:1px solid #f0d878; background:#111; display:block;
+.w-detail .wd-left svg,.w-detail .wd-left .portrait-art{width:100%; height:auto; border-radius:16px; border:1px solid #f0d878; background:#111; display:block;
   box-shadow:0 12px 26px rgba(0,0,0,.4), 0 0 0 4px #7a5c22;}
+.w-detail .wd-left .portrait-art{aspect-ratio:5/6; object-fit:cover; object-position:center 20%;}
 .w-detail .wd-right{flex:1; min-width:260px;}
 .wd-name{font-size:30px; font-weight:900; letter-spacing:3px;}
 .wd-zi{font-size:15px; color:#6b5220; margin-left:10px;}
@@ -863,6 +866,47 @@ const WARRIORS = [
  intro:"遼西令支人,鎮守北疆,專挑白馬組成「白馬義從」騎兵,塞外胡人聞之喪膽,互相告誡「避白馬長史」。他是劉備的同窗好友,趙雲最早也在他麾下。後與袁紹爭奪河北,兵敗於易京。",
  look:"史載他「有姿儀,大音聲」,白馬銀鞍,英武非凡。",
  p:{sk:"#e8c398",ey:"sharp",br:"flat",bd:"mo",bc:"#26190d",ht:"helm",hc:"#cfd4de",ac:"#c8ccd8",at:"armor",ex:[]}},
+/* ---------- v3 巾幗英雄(女性武將) ---------- */
+{n:"黃月英",f:"蜀",z:"月英",t:"臥龍之妻・機關巧手",wp:"羽扇・機關",wu:45,zh:96,ld:84,
+ intro:"荊州沔南人,諸葛亮的妻子。傳說她發明了會自己推磨的木人和運糧的木牛流馬,是三國第一發明家。諸葛亮的許多妙計,背後都有她的巧思幫忙。",
+ look:"民間傳說她相貌平凡卻才華蓋世,諸葛亮聽說她的才學後立刻上門求親。",
+ p:{sk:"#f0d0aa",ey:"calm",br:"thin",bd:"none",bc:"#2a1c10",ht:"bun",hc:"#5a8a6b",ac:"#4f7a5f",at:"robe",ex:["fem"]}},
+{n:"關銀屏",f:"蜀",z:"銀屏",t:"虎女・關家刀法",wp:"雙刀",wu:84,zh:70,ld:78,
+ intro:"關羽的女兒,自小跟著父親練武,一手關家刀法虎虎生風,人稱「關三小姐」。傳說她隨諸葛亮南征,平定南方立下戰功,巾幗不讓鬚眉。",
+ look:"英姿颯爽,眉宇之間有父親關羽的英氣,雙刀在手千軍難擋。",
+ p:{sk:"#eec89e",ey:"sharp",br:"thin",bd:"none",bc:"#1d150c",ht:"band",hc:"#2f7d4f",ac:"#2f7d4f",at:"armor",ex:["fem"]}},
+{n:"甄宓",f:"魏",z:"洛神",t:"賢德才女",wp:"詩賦",wu:30,zh:84,ld:88,
+ intro:"中山無極人,三國著名的才女與美人。她心地善良,荒年時勸家人開倉救濟鄉親。曹植為她寫下千古名篇《洛神賦》,「翩若驚鴻,婉若游龍」說的就是她。",
+ look:"傳說她「顧盼生輝,撥雲見月」,溫柔嫻靜,如洛水女神。",
+ p:{sk:"#f6ddb8",ey:"gentle",br:"thin",bd:"none",bc:"#241a10",ht:"bun",hc:"#8a9ab8",ac:"#6b7a9a",at:"robe",ex:["fem"]}},
+{n:"王異",f:"魏",z:"異娘",t:"堅毅巾幗",wp:"長劍",wu:76,zh:85,ld:80,
+ intro:"涼州冀城人,三國少見親自上陣的女豪傑。馬超攻打冀城時,她穿上鎧甲登上城牆,協助守軍死守孤城,連鬚眉男子都自嘆不如。",
+ look:"目光堅定如鐵,亂世之中撐起一座城的女中丈夫。",
+ p:{sk:"#eecfa4",ey:"sharp",br:"thin",bd:"none",bc:"#26190d",ht:"helm",hc:"#5a6b8a",ac:"#5a6b8a",at:"armor",ex:["fem"]}},
+{n:"張春華",f:"魏",z:"春華",t:"沉著機智・司馬懿之妻",wp:"謀略",wu:40,zh:92,ld:82,
+ intro:"河內平皋人,司馬懿的妻子,年輕時就以聰明果斷聞名。司馬懿裝病騙曹操時差點被撞破,她當機立斷保住了全家的祕密,是深藏不露的智者。",
+ look:"外表溫婉,眼神卻藏著洞悉一切的鋒芒。",
+ p:{sk:"#f2d4ae",ey:"narrow",br:"thin",bd:"none",bc:"#241a10",ht:"bun",hc:"#7a6b9a",ac:"#6b5b95",at:"robe",ex:["fem"]}},
+{n:"孫尚香",f:"吳",z:"弓腰姬",t:"梟姬・文武雙全",wp:"弓・雙劍",wu:86,zh:72,ld:85,
+ intro:"孫堅之女、孫權之妹,自幼喜好武藝,房裡的侍女個個持刀站崗,人稱「弓腰姬」。後來嫁給劉備,連趙雲都對她的英氣敬畏三分。",
+ look:"演義中她「才捷剛猛,有諸兄之風」,紅妝之下是一身好武藝。",
+ p:{sk:"#f2cfa2",ey:"round",br:"thin",bd:"none",bc:"#1d150c",ht:"bun",hc:"#c9a227",ac:"#a33b2e",at:"armor",ex:["fem"]}},
+{n:"大喬",f:"吳",z:"喬家長女",t:"江東二喬・姊",wp:"古琴",wu:26,zh:78,ld:84,
+ intro:"廬江皖縣人,江東著名的美人,孫策的夫人。她與妹妹小喬並稱「二喬」,曹操建銅雀台時,傳說就是想著「攬二喬於東南兮」。",
+ look:"氣質沉靜如深潭映月,琴聲能撫平將士的思鄉之情。",
+ p:{sk:"#f6ddb8",ey:"gentle",br:"thin",bd:"none",bc:"#241a10",ht:"bun",hc:"#a86b8a",ac:"#8a5a7a",at:"robe",ex:["fem"]}},
+{n:"小喬",f:"吳",z:"喬家次女",t:"江東二喬・妹",wp:"舞扇",wu:28,zh:80,ld:85,
+ intro:"周瑜的夫人,與姊姊大喬並稱江東二喬。蘇軾的名句「遙想公瑾當年,小喬初嫁了,雄姿英發」,寫的就是她與周瑜的佳話。",
+ look:"靈動俏麗,笑起來連赤壁的江風都變得溫柔。",
+ p:{sk:"#f8e0bc",ey:"round",br:"thin",bd:"none",bc:"#2a1c10",ht:"bun",hc:"#d88a9a",ac:"#a33b2e",at:"robe",ex:["fem"]}},
+{n:"貂蟬",f:"群",z:"閉月",t:"連環計・四大美人",wp:"歌舞",wu:34,zh:94,ld:92,
+ intro:"司徒王允的義女,四大美人之一,「閉月」說的就是她。她孤身用連環計離間董卓與呂布,讓兩大惡人反目,一位弱女子做到了千軍萬馬做不到的事。",
+ look:"演義中她「色伎俱佳,能歌善舞」,一支歌舞便能扭轉天下大勢。",
+ p:{sk:"#f8e0bc",ey:"gentle",br:"thin",bd:"none",bc:"#1a1208",ht:"bun",hc:"#c9a227",ac:"#8a3b5a",at:"robe",ex:["fem"]}},
+{n:"祝融夫人",f:"群",z:"火神後裔",t:"南蠻女王・飛刀絕技",wp:"飛刀",wu:90,zh:60,ld:83,
+ intro:"南蠻王孟獲的妻子,自稱火神祝融的後代,是演義中唯一真正上陣廝殺的女將。她背插五口飛刀,百發百中,曾一口氣生擒蜀軍兩員大將!",
+ look:"跨象提刀,英風凜凜,南中軍民都敬她三分。",
+ p:{sk:"#d9a06b",ey:"sharp",br:"angry",bd:"none",bc:"#160f08",ht:"goldhelm",hc:"#b85a2a",ac:"#8a4a2a",at:"scale",ex:["fem"]}},
 ];
 /* ===== SVG 武將畫像產生器:依史書/演義記載特徵繪製 ===== */
 const FCOLOR = {"蜀":"#2f7d4f","魏":"#2f5b8e","吳":"#a33b2e","群":"#6b5b95"};
@@ -870,8 +914,78 @@ const FBG = {
  "蜀":["#2a4a33","#0e1a12"], "魏":["#243450","#0c1220"],
  "吳":["#4a251d","#1c0d0a"], "群":["#3a3046","#171226"]
 };
+const PORTRAIT_FILES = {
+ "劉備":"assets/sanguo-portraits/liu-bei.webp",
+ "關羽":"assets/sanguo-portraits/guan-yu.webp",
+ "張飛":"assets/sanguo-portraits/zhang-fei.webp",
+ "趙雲":"assets/sanguo-portraits/zhao-yun.webp",
+ "諸葛亮":"assets/sanguo-portraits/zhuge-liang.webp",
+ "馬超":"assets/sanguo-portraits/ma-chao.webp",
+ "黃忠":"assets/sanguo-portraits/huang-zhong.webp",
+ "魏延":"assets/sanguo-portraits/wei-yan.webp",
+ "姜維":"assets/sanguo-portraits/jiang-wei.webp",
+ "龐統":"assets/sanguo-portraits/pang-tong.webp",
+ "馬岱":"assets/sanguo-portraits/ma-dai.webp",
+ "關平":"assets/sanguo-portraits/guan-ping.webp",
+ "徐庶":"assets/sanguo-portraits/xu-shu.webp",
+ "法正":"assets/sanguo-portraits/fa-zheng.webp",
+ "嚴顏":"assets/sanguo-portraits/yan-yan.webp",
+ "曹操":"assets/sanguo-portraits/cao-cao.webp",
+ "司馬懿":"assets/sanguo-portraits/sima-yi.webp",
+ "張遼":"assets/sanguo-portraits/zhang-liao.webp",
+ "夏侯惇":"assets/sanguo-portraits/xiahou-dun.webp",
+ "夏侯淵":"assets/sanguo-portraits/xiahou-yuan.webp",
+ "許褚":"assets/sanguo-portraits/xu-chu.webp",
+ "典韋":"assets/sanguo-portraits/dian-wei.webp",
+ "徐晃":"assets/sanguo-portraits/xu-huang.webp",
+ "張郃":"assets/sanguo-portraits/zhang-he.webp",
+ "郭嘉":"assets/sanguo-portraits/guo-jia.webp",
+ "荀彧":"assets/sanguo-portraits/xun-yu.webp",
+ "曹仁":"assets/sanguo-portraits/cao-ren.webp",
+ "于禁":"assets/sanguo-portraits/yu-jin.webp",
+ "樂進":"assets/sanguo-portraits/yue-jin.webp",
+ "賈詡":"assets/sanguo-portraits/jia-xu.webp",
+ "孫堅":"assets/sanguo-portraits/sun-jian.webp",
+ "孫策":"assets/sanguo-portraits/sun-ce.webp",
+ "孫權":"assets/sanguo-portraits/sun-quan.webp",
+ "周瑜":"assets/sanguo-portraits/zhou-yu.webp",
+ "陸遜":"assets/sanguo-portraits/lu-xun.webp",
+ "呂蒙":"assets/sanguo-portraits/lu-meng.webp",
+ "甘寧":"assets/sanguo-portraits/gan-ning.webp",
+ "太史慈":"assets/sanguo-portraits/taishi-ci.webp",
+ "黃蓋":"assets/sanguo-portraits/huang-gai.webp",
+ "程普":"assets/sanguo-portraits/cheng-pu.webp",
+ "周泰":"assets/sanguo-portraits/zhou-tai.webp",
+ "凌統":"assets/sanguo-portraits/ling-tong.webp",
+ "魯肅":"assets/sanguo-portraits/lu-su.webp",
+ "呂布":"assets/sanguo-portraits/lu-bu.webp",
+ "董卓":"assets/sanguo-portraits/dong-zhuo.webp",
+ "袁紹":"assets/sanguo-portraits/yuan-shao.webp",
+ "袁術":"assets/sanguo-portraits/yuan-shu.webp",
+ "張角":"assets/sanguo-portraits/zhang-jiao.webp",
+ "華雄":"assets/sanguo-portraits/hua-xiong.webp",
+ "公孫瓚":"assets/sanguo-portraits/gongsun-zan.webp",
+ "黃月英":"assets/sanguo-portraits/huang-yueying.webp",
+ "關銀屏":"assets/sanguo-portraits/guan-yinping.webp",
+ "甄宓":"assets/sanguo-portraits/zhen-mi.webp",
+ "王異":"assets/sanguo-portraits/wang-yi.webp",
+ "張春華":"assets/sanguo-portraits/zhang-chunhua.webp",
+ "孫尚香":"assets/sanguo-portraits/sun-shangxiang.webp",
+ "大喬":"assets/sanguo-portraits/da-qiao.webp",
+ "小喬":"assets/sanguo-portraits/xiao-qiao.webp",
+ "貂蟬":"assets/sanguo-portraits/diao-chan.webp",
+ "祝融夫人":"assets/sanguo-portraits/zhu-rong.webp"
+};
 let _pid = 0;
 function drawPortrait(w, size){
+  const src = PORTRAIT_FILES[w.n];
+  if(src){
+    const width = size ? ` width="${size}"` : "";
+    return `<img class="portrait-art" src="${src}" alt="${w.n}"${width} loading="lazy" decoding="async">`;
+  }
+  return drawVectorPortrait(w, size);
+}
+function drawVectorPortrait(w, size){
   const p = w.p, uid = "pg" + (_pid++);
   const wide = p.ex.includes("wide");
   const rx = wide ? 50 : 43, ry = wide ? 50 : 54;
@@ -1175,21 +1289,21 @@ function fan(cx){
 /* ===== 城池資料 ===== */
 const CITIES = [
  {id:"beiping", n:"北平", x:720, y:70,  tier:1, owner:"群", defs:["公孫瓚","張角"]},
- {id:"yecheng", n:"鄴城", x:640, y:140, tier:3, owner:"群", defs:["袁紹"]},
+ {id:"yecheng", n:"鄴城", x:640, y:140, tier:3, owner:"群", defs:["袁紹","甄宓"]},
  {id:"chenliu", n:"陳留", x:600, y:230, tier:1, owner:"魏", defs:["夏侯惇","樂進"]},
  {id:"luoyang", n:"洛陽", x:480, y:220, tier:3, owner:"群", defs:["呂布","華雄"]},
- {id:"changan", n:"長安", x:330, y:200, tier:4, owner:"群", defs:["董卓"]},
+ {id:"changan", n:"長安", x:330, y:200, tier:4, owner:"群", defs:["董卓","貂蟬"]},
  {id:"hanzhong",n:"漢中", x:260, y:300, tier:2, owner:"蜀", defs:["魏延","黃忠","姜維"]},
  {id:"chengdu", n:"成都", x:140, y:380, tier:4, owner:"蜀", defs:["劉備","諸葛亮","關羽","馬超"]},
  {id:"jiangling",n:"江陵",x:430, y:420, tier:1, owner:"蜀", defs:["張飛","趙雲","關平"]},
  {id:"jingzhou",n:"荊州", x:480, y:330, tier:3, owner:"吳", defs:["呂蒙","陸遜"]},
- {id:"wancheng",n:"宛城", x:520, y:272, tier:2, owner:"群", defs:["袁術"]},
+ {id:"wancheng",n:"宛城", x:520, y:272, tier:2, owner:"群", defs:["袁術","祝融夫人"]},
  {id:"xuchang", n:"許昌", x:620, y:295, tier:4, owner:"魏", defs:["曹操","司馬懿","張遼","許褚"]},
  {id:"xuzhou",  n:"徐州", x:760, y:260, tier:2, owner:"魏", defs:["張郃","徐晃","曹仁"]},
  {id:"jianye",  n:"建業", x:800, y:360, tier:4, owner:"吳", defs:["孫權","周瑜","孫堅"]},
- {id:"chaisang",n:"柴桑", x:640, y:420, tier:1, owner:"吳", defs:["魯肅","程普"]},
+ {id:"chaisang",n:"柴桑", x:640, y:420, tier:1, owner:"吳", defs:["魯肅","程普","小喬"]},
  {id:"jiangxia",n:"江夏", x:560, y:400, tier:2, owner:"吳", defs:["甘寧","黃蓋","周泰"]},
- {id:"kuaiji",  n:"會稽", x:860, y:450, tier:2, owner:"吳", defs:["孫策","凌統"]},
+ {id:"kuaiji",  n:"會稽", x:860, y:450, tier:2, owner:"吳", defs:["孫策","凌統","大喬"]},
 ];
 const EDGES = [["beiping","yecheng"],["yecheng","chenliu"],["yecheng","luoyang"],
  ["chenliu","luoyang"],["chenliu","xuchang"],["chenliu","xuzhou"],
