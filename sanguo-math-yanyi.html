@@ -77,6 +77,7 @@ body{
   radial-gradient(circle at 50% 20%,rgba(255,240,168,.32),transparent 34%),
   linear-gradient(145deg,#3b2712,#120805);box-shadow:0 12px 28px rgba(0,0,0,.62),inset 0 0 0 3px rgba(214,173,56,.28);
   display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;overflow:hidden}
+.portrait .portrait-art{display:block;width:100%;height:100%;object-fit:cover;object-position:center 20%;border-radius:12px;box-shadow:0 0 0 1px rgba(0,0,0,.55)}
 .portrait .em{font-size:clamp(46px,7vw,74px);filter:drop-shadow(0 4px 5px #000)}
 .portrait .pn{font-size:clamp(19px,2.8vw,30px);font-weight:1000;color:#fff2b4;letter-spacing:3px;text-shadow:0 3px 5px #000;margin-top:8px}
 .portrait .pt{font-size:12px;color:#d5c08d;margin-top:4px}
@@ -116,6 +117,30 @@ body{
 #hint-box{display:none;background:#fff2bd;border-left:5px solid #d6ad38;border-radius:8px;margin:8px 0 0;padding:8px 12px;font-size:14px;font-weight:900;line-height:1.5}
 #q-fb{min-height:25px;font-size:15px;font-weight:1000;line-height:1.55;color:#5a4218;margin-top:8px}
 .battle-foot{text-align:center;padding:8px}
+#battlefield{position:relative;height:92px;margin:4px auto 0;width:min(900px,94vw);overflow:hidden;
+  background:linear-gradient(180deg,transparent 40%,#3a281244 78%,#4a341a66 100%);border-radius:12px}
+#battlefield .ground{position:absolute;left:2%;right:2%;bottom:7px;height:2px;background:#6d501755}
+.bf-deco{position:absolute;bottom:8px;font-size:30px;filter:drop-shadow(0 3px 3px #000a)}
+.bf-unit{position:absolute;bottom:10px;font-size:24px;filter:drop-shadow(0 3px 2px #00000090);animation:bfBob 1.6s ease-in-out infinite alternate;--fx:1}
+.bf-unit.me{--fx:-1}
+@keyframes bfBob{from{transform:scaleX(var(--fx)) translateY(0)}to{transform:scaleX(var(--fx)) translateY(-4px)}}
+.bf-unit.hit{animation:bfHit .5s}
+@keyframes bfHit{0%,100%{transform:scaleX(var(--fx)) translate(0,0)}25%{transform:scaleX(var(--fx)) translate(6px,-7px) rotate(10deg)}60%{transform:scaleX(var(--fx)) translate(-4px,0) rotate(-8deg)}}
+.bf-unit.dead{transition:all .7s;transform:scaleX(var(--fx)) rotate(84deg) translateY(10px);opacity:.25}
+.bf-proj{position:absolute;pointer-events:none;will-change:left,transform;z-index:3}
+.bf-proj.arrowp{font-size:16px;color:#ffd76e;text-shadow:0 0 4px #000;transition:left .55s linear,bottom .55s ease-in}
+.bf-proj.rock{font-size:22px;transition:left 1s linear;animation:bfArc 1s ease-in-out}
+@keyframes bfArc{0%{transform:translateY(0) rotate(0)}50%{transform:translateY(-58px) rotate(180deg)}100%{transform:translateY(0) rotate(360deg)}}
+.bf-proj.eleph{font-size:36px;transition:left 1.05s cubic-bezier(.5,0,.8,1)}
+.bf-boom{position:absolute;bottom:14px;font-size:34px;z-index:4;animation:boomPop .65s ease-out forwards}
+@keyframes boomPop{0%{transform:scale(.3);opacity:0}25%{transform:scale(1.5);opacity:1}100%{transform:scale(1);opacity:0}}
+#scr-battle.shake{animation:scrShake .45s}
+@keyframes scrShake{0%,100%{transform:translate(0,0)}20%{transform:translate(-7px,3px)}40%{transform:translate(6px,-4px)}60%{transform:translate(-4px,2px)}80%{transform:translate(3px,-2px)}}
+.portrait.hitp{animation:pboxHit .45s}
+@keyframes pboxHit{0%,100%{transform:translate(0,0) rotate(0)}30%{transform:translate(-6px,3px) rotate(-2deg)}60%{transform:translate(5px,-2px) rotate(1.5deg)}}
+.dmgfloat{position:absolute;left:50%;top:38%;transform:translateX(-50%);font-size:30px;font-weight:1000;
+  text-shadow:0 2px 4px #000;animation:dmgUp 1.05s ease-out forwards;pointer-events:none;z-index:5}
+@keyframes dmgUp{0%{opacity:0;transform:translate(-50%,10px) scale(.6)}20%{opacity:1;transform:translate(-50%,-6px) scale(1.25)}100%{opacity:0;transform:translate(-50%,-46px) scale(1)}}
 
 /* modals and story */
 .modal-mask{display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.78);align-items:center;justify-content:center;padding:18px}
@@ -126,6 +151,7 @@ body{
 .pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
 .pick-card{border:2px solid #8a681f;border-radius:13px;background:#fff7df;padding:8px;text-align:center;cursor:pointer}
 .pick-card.locked{filter:grayscale(1) brightness(.65);cursor:default}
+.pick-card .portrait-art{display:block;width:100%;aspect-ratio:5/6;object-fit:cover;object-position:center 20%;border-radius:10px;background:#111;box-shadow:0 0 0 1px rgba(56,35,10,.45)}
 .pick-card .em{font-size:42px}.pick-card b{display:block;font-size:17px}.pick-card span{font-size:12px;color:#6b5220}
 #res-title{font-size:32px;font-weight:1000;letter-spacing:4px;text-align:center;margin:4px 0 12px}
 #res-body{text-align:center;font-size:16px;line-height:2}
@@ -138,11 +164,13 @@ body{
 .story-line{background:linear-gradient(180deg,#fff6dc,#ead8a9);color:#2b1d0e;border:2px solid #8a681f;border-radius:13px;padding:14px;margin:14px auto;
   max-width:680px;font-size:clamp(18px,2.5vw,27px);font-weight:1000;line-height:1.55}
 .story-actors{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin:14px 0}
-.story-actor{min-width:110px}.story-actor .em{font-size:54px}.story-actor b{display:block;color:#fff2b4}
+.story-actor{min-width:110px}.story-actor .portrait-art{display:block;width:110px;aspect-ratio:5/6;object-fit:cover;object-position:center 20%;border:2px solid #fff2b4;border-radius:12px;background:#111;box-shadow:0 10px 22px rgba(0,0,0,.48)}
+.story-actor .em{font-size:54px}.story-actor b{display:block;color:#fff2b4;margin-top:6px}
 
 @media(max-width:720px){
   .arena{gap:1vw}.fighter{width:31vw}.mid{min-width:68px}.vs{font-size:30px}
   .portrait{border-radius:12px}.portrait .pt{display:none}
+  #battlefield{height:64px}.bf-unit{font-size:18px}.bf-deco{font-size:22px}
   .opts{grid-template-columns:1fr}.item{flex:1 1 calc(50% - 8px)}
   .force-card{width:150px}.q-panel{padding:11px}
 }
@@ -197,6 +225,7 @@ body{
       <div class="hpbar enemy"><i id="bt-enhp"></i></div><div class="hp-num" id="bt-enhpn"></div>
     </div>
   </div>
+  <div id="battlefield"></div>
   <div class="q-panel">
     <div class="q-top">
       <div class="q-type" id="q-type"></div>
@@ -255,6 +284,68 @@ const WARRIORS = [
  {n:"張角",f:"群",z:"-",t:"大賢良師",em:"⚡",wu:25,zh:86,ld:82},
  {n:"祝融夫人",f:"群",z:"火神",t:"南蠻女王",em:"🪃",wu:90,zh:60,ld:83},
 ];
+const PORTRAIT_FILES = {
+ "劉備":"assets/sanguo-portraits/liu-bei.webp",
+ "關羽":"assets/sanguo-portraits/guan-yu.webp",
+ "張飛":"assets/sanguo-portraits/zhang-fei.webp",
+ "趙雲":"assets/sanguo-portraits/zhao-yun.webp",
+ "諸葛亮":"assets/sanguo-portraits/zhuge-liang.webp",
+ "馬超":"assets/sanguo-portraits/ma-chao.webp",
+ "黃忠":"assets/sanguo-portraits/huang-zhong.webp",
+ "魏延":"assets/sanguo-portraits/wei-yan.webp",
+ "姜維":"assets/sanguo-portraits/jiang-wei.webp",
+ "龐統":"assets/sanguo-portraits/pang-tong.webp",
+ "馬岱":"assets/sanguo-portraits/ma-dai.webp",
+ "關平":"assets/sanguo-portraits/guan-ping.webp",
+ "徐庶":"assets/sanguo-portraits/xu-shu.webp",
+ "法正":"assets/sanguo-portraits/fa-zheng.webp",
+ "嚴顏":"assets/sanguo-portraits/yan-yan.webp",
+ "曹操":"assets/sanguo-portraits/cao-cao.webp",
+ "司馬懿":"assets/sanguo-portraits/sima-yi.webp",
+ "張遼":"assets/sanguo-portraits/zhang-liao.webp",
+ "夏侯惇":"assets/sanguo-portraits/xiahou-dun.webp",
+ "夏侯淵":"assets/sanguo-portraits/xiahou-yuan.webp",
+ "許褚":"assets/sanguo-portraits/xu-chu.webp",
+ "典韋":"assets/sanguo-portraits/dian-wei.webp",
+ "徐晃":"assets/sanguo-portraits/xu-huang.webp",
+ "張郃":"assets/sanguo-portraits/zhang-he.webp",
+ "郭嘉":"assets/sanguo-portraits/guo-jia.webp",
+ "荀彧":"assets/sanguo-portraits/xun-yu.webp",
+ "曹仁":"assets/sanguo-portraits/cao-ren.webp",
+ "于禁":"assets/sanguo-portraits/yu-jin.webp",
+ "樂進":"assets/sanguo-portraits/yue-jin.webp",
+ "賈詡":"assets/sanguo-portraits/jia-xu.webp",
+ "孫堅":"assets/sanguo-portraits/sun-jian.webp",
+ "孫策":"assets/sanguo-portraits/sun-ce.webp",
+ "孫權":"assets/sanguo-portraits/sun-quan.webp",
+ "周瑜":"assets/sanguo-portraits/zhou-yu.webp",
+ "陸遜":"assets/sanguo-portraits/lu-xun.webp",
+ "呂蒙":"assets/sanguo-portraits/lu-meng.webp",
+ "甘寧":"assets/sanguo-portraits/gan-ning.webp",
+ "太史慈":"assets/sanguo-portraits/taishi-ci.webp",
+ "黃蓋":"assets/sanguo-portraits/huang-gai.webp",
+ "程普":"assets/sanguo-portraits/cheng-pu.webp",
+ "周泰":"assets/sanguo-portraits/zhou-tai.webp",
+ "凌統":"assets/sanguo-portraits/ling-tong.webp",
+ "魯肅":"assets/sanguo-portraits/lu-su.webp",
+ "呂布":"assets/sanguo-portraits/lu-bu.webp",
+ "董卓":"assets/sanguo-portraits/dong-zhuo.webp",
+ "袁紹":"assets/sanguo-portraits/yuan-shao.webp",
+ "袁術":"assets/sanguo-portraits/yuan-shu.webp",
+ "張角":"assets/sanguo-portraits/zhang-jiao.webp",
+ "華雄":"assets/sanguo-portraits/hua-xiong.webp",
+ "公孫瓚":"assets/sanguo-portraits/gongsun-zan.webp",
+ "黃月英":"assets/sanguo-portraits/huang-yueying.webp",
+ "關銀屏":"assets/sanguo-portraits/guan-yinping.webp",
+ "甄宓":"assets/sanguo-portraits/zhen-mi.webp",
+ "王異":"assets/sanguo-portraits/wang-yi.webp",
+ "張春華":"assets/sanguo-portraits/zhang-chunhua.webp",
+ "孫尚香":"assets/sanguo-portraits/sun-shangxiang.webp",
+ "大喬":"assets/sanguo-portraits/da-qiao.webp",
+ "小喬":"assets/sanguo-portraits/xiao-qiao.webp",
+ "貂蟬":"assets/sanguo-portraits/diao-chan.webp",
+ "祝融夫人":"assets/sanguo-portraits/zhu-rong.webp"
+};
 const CITIES = [
  {id:"chengdu",n:"成都",x:180,y:390,tier:1,unit:"add",owner:"蜀",defs:["劉備","黃月英"]},
  {id:"hanzhong",n:"漢中",x:270,y:310,tier:2,unit:"sub",owner:"蜀",defs:["趙雲","張飛"]},
@@ -286,7 +377,12 @@ const cityById = id => CITIES.find(c => c.id === id);
 
 let G = null, B = null, curQ = null, qTimer = null, qTimeLeft = 0, qTimeMax = 0, voiceOn = true, _pulseCity = null;
 function newWar(n){ const w = wByName(n); const mx = 92 + Math.round(w.ld/3); return {n,hp:mx,mx}; }
-function portrait(w){ return `<div class="em">${w.em}</div><div class="pn">${w.n}</div><div class="pt">${w.t}<br>武${w.wu} 智${w.zh} 統${w.ld}</div>`; }
+function drawPortrait(w){
+  const src = w && PORTRAIT_FILES[w.n];
+  if(src) return `<img class="portrait-art" src="${src}" alt="${w.n}" loading="lazy" decoding="async">`;
+  return `<div class="em">${w ? w.em : "⚔️"}</div>`;
+}
+function portrait(w){ return drawPortrait(w); }
 function speak(t, who){
   if(!voiceOn || !window.speechSynthesis) return;
   try{ speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang="zh-TW"; u.pitch = who==="enemy"?.55:1.2; u.rate=1.05; speechSynthesis.speak(u); }catch(e){}
@@ -355,7 +451,7 @@ function openPick(cityId){
     const w=wByName(r.n), hurt = r.hp<=0;
     const el=document.createElement("div");
     el.className="pick-card" + (hurt?" locked":"");
-    el.innerHTML = `<div class="em">${w.em}</div><b>${w.n}</b><span>${hurt?"重傷休養中":"體力 "+r.hp+"/"+r.mx+"｜智力"+w.zh}</span>`;
+    el.innerHTML = `${drawPortrait(w)}<b>${w.n}</b><span>${hurt?"重傷休養中":"體力 "+r.hp+"/"+r.mx+"｜智力"+w.zh}</span>`;
     if(!hurt) el.onclick=()=>{ closeModal("modal-pick"); startBattle(cityId, r.n); };
     g.appendChild(el);
   });
@@ -386,7 +482,7 @@ function setupWave(){
   $("bt-mep").innerHTML = portrait(me); $("bt-men").textContent=me.n; $("bt-met").textContent=me.t;
   $("bt-enp").innerHTML = portrait(en); $("bt-enn").textContent=en.n; $("bt-ent").textContent=en.t;
   log(`${en.n}布下${UNIT[cUnit()]}題陣!答對就能進攻。`);
-  updateBars(); renderItems();
+  updateBars(); renderItems(); renderArmies();
   speak(en.n + "在此守城。先答出這一題!", "enemy");
 }
 function cUnit(){ return B.city.unit; }
@@ -407,6 +503,125 @@ function renderItems(){
     const n = B.inv[k] || 0;
     return `<button class="item" onclick="useItem('${k}')" ${n<1?"disabled":""}>${names[k][0]} ×${n}<small>${names[k][1]}</small></button>`;
   }).join("");
+}
+
+const UNITS_ME = ["⚔️","🏹","🐎","🛡️","⚔️"];
+const UNITS_EN = ["⚔️","🛡️","🏹","⚔️","🐎"];
+function renderArmies(){
+  const bf = $("battlefield"); if(!bf) return;
+  bf.innerHTML = '<div class="ground"></div>'
+    + '<span class="bf-deco" style="left:6px">⛺</span>'
+    + '<span class="bf-deco" style="right:6px">🏯</span>';
+  UNITS_ME.forEach((u,i)=>{
+    bf.insertAdjacentHTML("beforeend",
+      `<span class="bf-unit me" style="left:${9+i*6.5}%; animation-delay:${(i*.13).toFixed(2)}s">${u}</span>`);
+  });
+  UNITS_EN.forEach((u,i)=>{
+    bf.insertAdjacentHTML("beforeend",
+      `<span class="bf-unit enemy" style="right:${9+i*6.5}%; animation-delay:${(i*.11).toFixed(2)}s">${u}</span>`);
+  });
+}
+function bfSpawn(cls, html, leftPct, bottomPx){
+  const bf = $("battlefield"); if(!bf) return null;
+  const s = document.createElement("span");
+  s.className = "bf-proj " + cls;
+  s.innerHTML = html;
+  s.style.left = leftPct + "%";
+  s.style.bottom = (bottomPx || 14) + "px";
+  bf.appendChild(s);
+  return s;
+}
+function bfImpact(mine){
+  const bf = $("battlefield"); if(!bf) return;
+  const s = document.createElement("span");
+  s.className = "bf-boom";
+  s.style.left = (mine ? 70 : 14) + "%";
+  s.textContent = "💥";
+  bf.appendChild(s);
+  setTimeout(()=>s.remove(),700);
+  const scr = $("scr-battle");
+  if(scr){ scr.classList.remove("shake"); void scr.offsetWidth; scr.classList.add("shake"); }
+  bf.querySelectorAll(mine ? ".bf-unit.enemy" : ".bf-unit.me").forEach((u,i)=>{
+    setTimeout(()=>{ u.classList.add("hit"); setTimeout(()=>u.classList.remove("hit"),520); }, i*60);
+  });
+}
+function animArrows(mine){
+  for(let i=0;i<4;i++){
+    setTimeout(()=>{
+      const s = bfSpawn("arrowp",
+        mine ? "➤" : "<span style='display:inline-block;transform:scaleX(-1)'>➤</span>",
+        mine ? 15 : 80, 30 + Math.random()*20);
+      if(!s) return;
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        s.style.left = (mine ? 74 : 13) + "%";
+        s.style.bottom = "14px";
+      }));
+      setTimeout(()=>s.remove(),750);
+    }, i*110);
+  }
+  setTimeout(()=>bfImpact(mine),660);
+}
+function animCharge(mine){
+  const sel = mine ? ".bf-unit.me" : ".bf-unit.enemy";
+  const prop = mine ? "left" : "right";
+  document.querySelectorAll(sel).forEach((u,i)=>{
+    const orig = u.style[prop];
+    setTimeout(()=>{
+      u.style.transition = prop + " .42s cubic-bezier(.3,1.3,.7,1)";
+      u.style[prop] = (parseFloat(orig) + 36) + "%";
+      setTimeout(()=>{ u.style[prop] = orig; setTimeout(()=>u.style.transition = "",500); },560);
+    }, i*70);
+  });
+  setTimeout(()=>bfImpact(mine),480);
+}
+function animBoulder(mine){
+  const s = bfSpawn("rock","🪨",mine ? 10 : 84,16);
+  if(!s) return;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ s.style.left = (mine ? 70 : 14) + "%"; }));
+  setTimeout(()=>{ bfImpact(mine); s.remove(); },1000);
+}
+function animElephant(mine){
+  const s = bfSpawn("eleph",
+    mine ? "<span style='display:inline-block;transform:scaleX(-1)'>🐘</span>" : "🐘",
+    mine ? 3 : 90,10);
+  if(!s) return;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ s.style.left = (mine ? 62 : 22) + "%"; }));
+  setTimeout(()=>bfImpact(mine),1050);
+  setTimeout(()=>{ s.style.opacity = 0; setTimeout(()=>s.remove(),400); },1500);
+}
+function playAttack(mine){
+  if(!$("battlefield")) return;
+  const type = pickA(["arrow","arrow","charge","charge","boulder","elephant"]);
+  if(type==="arrow") animArrows(mine);
+  else if(type==="charge") animCharge(mine);
+  else if(type==="boulder") animBoulder(mine);
+  else animElephant(mine);
+  if(mine && B && B.combo >= 3){
+    for(let i=0;i<3;i++){
+      setTimeout(()=>{
+        const s = bfSpawn("arrowp","🔥",16,24 + i*9);
+        if(!s) return;
+        requestAnimationFrame(()=>requestAnimationFrame(()=>{ s.style.left = "72%"; s.style.bottom = "14px"; }));
+        setTimeout(()=>s.remove(),760);
+      },160 + i*130);
+    }
+    setTimeout(()=>bfImpact(true),950);
+  }
+}
+function hitPbox(id){
+  const e = $(id); if(!e) return;
+  e.classList.remove("hitp");
+  void e.offsetWidth;
+  e.classList.add("hitp");
+}
+function dmgFloat(hitEnemy, txt){
+  const host = hitEnemy ? $("bt-enp") : $("bt-mep");
+  if(!host) return;
+  const s = document.createElement("span");
+  s.className = "dmgfloat";
+  s.textContent = txt;
+  host.appendChild(s);
+  setTimeout(()=>s.remove(),1100);
 }
 
 function numOptions(ans, spread){
@@ -513,28 +728,63 @@ function resolveAnswer(ok, skipped, timeout){
   const d=B.defs[B.wave], me=wByName(B.me.n), en=wByName(d.n);
   if(ok){
     B.combo++; G.score += skipped ? 6 : 10; G.stars++;
-    if(d.sh>0){ d.sh--; $("q-fb").textContent = "智算成功!先破 " + en.n + " 的護盾。"; log("護盾被破,繼續算題進攻!"); }
-    else { const fast=qTimeLeft>qTimeMax*.55, dmg=20+Math.round(me.wu/7)+Math.min(B.combo,4)*4+(fast?6:0); d.hp-=dmg; $("q-fb").textContent = "答對了!造成 " + dmg + " 點數學攻擊。" + (fast?" 神速加成!":""); log(me.n + "用正確答案發動攻擊!"); }
+    playAttack(true);
+    if(d.sh>0){
+      d.sh--;
+      $("q-fb").textContent = "智算成功!先破 " + en.n + " 的護盾。";
+      log("護盾被破,繼續算題進攻!");
+      dmgFloat(true,"🛡️💥");
+      setTimeout(()=>hitPbox("bt-enp"),520);
+    }
+    else {
+      const fast=qTimeLeft>qTimeMax*.55, dmg=20+Math.round(me.wu/7)+Math.min(B.combo,4)*4+(fast?6:0);
+      d.hp-=dmg;
+      $("q-fb").textContent = "答對了!造成 " + dmg + " 點數學攻擊。" + (fast?" 神速加成!":"");
+      log(me.n + "用正確答案發動攻擊!");
+      dmgFloat(true,"-" + dmg);
+      setTimeout(()=>hitPbox("bt-enp"),520);
+    }
     speak("答對了,全軍進攻!", "me");
   }else{
     B.combo=0;
-    if(B.shieldReady){ B.shieldReady=false; $("q-fb").textContent=(timeout?"時間到!":"答錯了!")+"空城護身保住我軍,正確答案是「"+curQ.ans+"」。"; log("空城護身發動,沒有損失。"); }
-    else { const dmg=12+B.city.tier*3+Math.round(en.wu/12); B.me.hp-=dmg; $("q-fb").textContent=(timeout?"時間到!":"答錯了!")+"正確答案是「"+curQ.ans+"」。我方損失 "+dmg+" 點體力。"; log(en.n+"趁我軍算錯發動反擊!"); speak("再想清楚吧!", "enemy"); }
+    if(B.shieldReady){
+      B.shieldReady=false;
+      $("q-fb").textContent=(timeout?"時間到!":"答錯了!")+"空城護身保住我軍,正確答案是「"+curQ.ans+"」。";
+      log("空城護身發動,沒有損失。");
+      dmgFloat(false,"護身");
+      setTimeout(()=>hitPbox("bt-mep"),380);
+    }
+    else {
+      const dmg=12+B.city.tier*3+Math.round(en.wu/12);
+      B.me.hp-=dmg;
+      $("q-fb").textContent=(timeout?"時間到!":"答錯了!")+"正確答案是「"+curQ.ans+"」。我方損失 "+dmg+" 點體力。";
+      log(en.n+"趁我軍算錯發動反擊!");
+      playAttack(false);
+      dmgFloat(false,"-" + dmg);
+      setTimeout(()=>hitPbox("bt-mep"),520);
+      speak("再想清楚吧!", "enemy");
+    }
   }
   updateBars(); saveGame(false);
   setTimeout(()=>{ if(d.hp<=0) waveDown(); else if(B.me.hp<=0) meDown(); else askQuestion(); }, ok?1600:2600);
 }
 function waveDown(){
   const d=B.defs[B.wave]; log("擊敗守將 " + d.n + "!");
+  document.querySelectorAll("#battlefield .bf-unit.enemy").forEach((u,i)=>{
+    setTimeout(()=>u.classList.add("dead"),i*90);
+  });
   if(B.wave < B.defs.length-1){ B.wave++; setTimeout(()=>{ setupWave(); askQuestion(); },1000); }
   else setTimeout(battleWon,900);
 }
 function meDown(){
   log(B.me.n + "計算失誤,重傷退場!");
+  document.querySelectorAll("#battlefield .bf-unit.me").forEach((u,i)=>{
+    setTimeout(()=>u.classList.add("dead"),i*90);
+  });
   const alive=G.roster.filter(r=>r.hp>0);
   if(!alive.length){ setTimeout(()=>endBattle(false),1000); return; }
   const g=$("pick-grid"); $("pick-title").textContent = "選擇下一位武將接替出戰"; g.innerHTML="";
-  alive.forEach(r=>{ const w=wByName(r.n), el=document.createElement("div"); el.className="pick-card"; el.innerHTML=`<div class="em">${w.em}</div><b>${w.n}</b><span>體力 ${r.hp}/${r.mx}</span>`; el.onclick=()=>{ closeModal("modal-pick"); B.me=r; setupWave(); askQuestion(); }; g.appendChild(el); });
+  alive.forEach(r=>{ const w=wByName(r.n), el=document.createElement("div"); el.className="pick-card"; el.innerHTML=`${drawPortrait(w)}<b>${w.n}</b><span>體力 ${r.hp}/${r.mx}</span>`; el.onclick=()=>{ closeModal("modal-pick"); B.me=r; setupWave(); askQuestion(); }; g.appendChild(el); });
   $("modal-pick").classList.add("on");
 }
 function battleWon(){ G.owner[B.city.id]="我"; _pulseCity=B.city.id; endBattle(true); }
@@ -571,7 +821,7 @@ function playStory(id,done,force){
   const st=STORIES[id], box=$("story-scene"); if(!st || (!force && storySeen(id))){ if(done) done(); return; }
   markStorySeen(id); saveGame(false);
   box.className="on";
-  box.innerHTML = `<div class="story-card"><h2>${st.title}</h2><div class="story-line">${st.line}</div><div class="story-actors">${st.actors.map(n=>{const w=wByName(n);return `<div class="story-actor"><div class="em">${w?w.em:"⚔️"}</div><b>${n}</b></div>`}).join("")}</div><button class="btn" id="story-next">繼續</button></div>`;
+  box.innerHTML = `<div class="story-card"><h2>${st.title}</h2><div class="story-line">${st.line}</div><div class="story-actors">${st.actors.map(n=>{const w=wByName(n);return `<div class="story-actor">${w?drawPortrait(w):"<div class=\"em\">⚔️</div>"}<b>${n}</b></div>`}).join("")}</div><button class="btn" id="story-next">繼續</button></div>`;
   $("story-next").onclick = () => { box.className=""; box.innerHTML=""; if(done) done(); };
   speak(st.line,"me");
 }
