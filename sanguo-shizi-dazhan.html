@@ -118,6 +118,19 @@ body{
 .opt:disabled{cursor:default;}
 .q-feedback{min-height:24px; font-size:14.5px; margin-top:9px; font-weight:700; color:#5a4a1c; line-height:1.5;}
 .battle-foot{text-align:center; padding:8px;}
+/* v4:答題倒數計時 */
+#q-timer{position:relative; height:16px; background:#00000018; border:1.5px solid #9a7b33; border-radius:9px; margin:5px 0 9px; overflow:hidden; display:none;}
+#q-timer i{display:block; height:100%; width:100%; background:linear-gradient(90deg,#4caf50,#8bc34a); transition:width .1s linear; border-radius:7px;}
+#q-timer.warn i{background:linear-gradient(90deg,#e6a23c,#f0c04f);}
+#q-timer.danger i{background:linear-gradient(90deg,#d84335,#f0704f);}
+#q-timer span{position:absolute; right:8px; top:0; font-size:11.5px; font-weight:900; color:#5a4a1c; line-height:15px;}
+/* v4:成語意思選項(字較多) */
+.opt.small{font-size:clamp(13.5px,1.8vw,16.5px); line-height:1.4; text-align:left; padding:10px 12px;}
+/* v4:敵將護盾 */
+#bt-shield{min-height:20px; font-size:15px; letter-spacing:2px; margin-top:2px;}
+#combo-tag.hot{font-size:17px; color:#ff9c3f; text-shadow:0 0 10px #ff6b0090;}
+/* v4:成語生字簿格子 */
+.char-cell .cc-idiom{font-size:17px; font-weight:900; letter-spacing:1px; line-height:1.3; padding:4px 0;}
 
 /* ===== 圖鑑 / 生字簿 ===== */
 .page{flex:1; overflow-y:auto; padding:16px 20px 40px;}
@@ -261,6 +274,63 @@ body{
 @keyframes pboxEnter{0%{transform:translateX(70px) scale(.6);opacity:0}100%{transform:translateX(0) scale(1);opacity:1}}
 .fw{position:fixed; z-index:95; font-size:46px; pointer-events:none; animation:boomPop 1.3s ease-out forwards;}
 
+/* ===== v5 三國演義劇情過場 ===== */
+#story-scene{position:fixed; inset:0; z-index:120; display:none; overflow:hidden;
+  background:radial-gradient(ellipse at 50% 30%, #4a2c18f2 0%, #100805fa 78%); color:#f5dfae;}
+#story-scene.on{display:block;}
+.story-backdrop{position:absolute; inset:0; opacity:.9;}
+.story-backdrop:before{content:""; position:absolute; inset:0; background:
+  radial-gradient(circle at var(--sx,50%) 28%, rgba(255,240,168,.24), transparent 24%),
+  linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.72));}
+.story-prologue{--sx:50%; background:linear-gradient(180deg,#37200d,#111)}
+.story-taoyuan{--sx:42%; background:linear-gradient(180deg,#2d1d0d,#14351f)}
+.story-hulao{--sx:50%; background:linear-gradient(180deg,#5a1b11,#120604)}
+.story-chibi{--sx:58%; background:linear-gradient(180deg,#2b1520,#671f14 55%,#120604)}
+.story-kongcheng{--sx:48%; background:linear-gradient(180deg,#27364c,#21180e)}
+.story-nanman{--sx:54%; background:linear-gradient(180deg,#143929,#2d1d0d)}
+.story-unify{--sx:50%; background:linear-gradient(180deg,#4b2a12,#080503)}
+.story-title{position:absolute; left:clamp(18px,4vw,46px); top:clamp(18px,5vh,46px); z-index:2; max-width:min(760px,88vw);}
+.story-tag{display:inline-flex; border:1px solid rgba(255,242,180,.34); background:rgba(0,0,0,.42);
+  border-radius:999px; padding:6px 13px; font-size:13px; color:#ffe9a8; font-weight:900; letter-spacing:2px;}
+.story-title h2{font-size:clamp(34px,7vw,78px); margin:10px 0 0; color:#fff2b4; letter-spacing:9px;
+  text-shadow:0 0 28px rgba(232,201,106,.58),0 5px 0 #5a2a10;}
+.story-title p{margin:10px 0 0; color:#f0d69d; font-size:clamp(14px,2vw,18px); line-height:1.8; text-shadow:0 2px 4px #000;}
+.story-actors{position:absolute; left:clamp(12px,4vw,48px); right:clamp(12px,4vw,48px); bottom:96px; z-index:2;
+  display:flex; align-items:end; justify-content:space-between; gap:10px;}
+.story-side{display:flex; align-items:end; gap:10px;}
+.story-card{text-align:center; min-width:0;}
+.story-card .portrait-art,.story-card svg{width:clamp(82px,13vw,170px); aspect-ratio:5/6; object-fit:cover; object-position:center 20%;
+  border-radius:14px; border:2px solid #fff2b4; box-shadow:0 16px 34px rgba(0,0,0,.65); background:#111; display:block;}
+.story-card.main .portrait-art,.story-card.main svg{width:clamp(118px,18vw,230px);}
+.story-name{font-size:clamp(13px,2vw,18px); font-weight:900; letter-spacing:3px; margin-top:7px; color:#fff2b4; text-shadow:0 2px 5px #000;}
+.story-line{position:absolute; left:50%; bottom:256px; transform:translateX(-50%); z-index:3; width:min(760px,88vw);
+  background:linear-gradient(180deg,rgba(255,248,223,.96),rgba(231,206,147,.96)); color:#2b1d0e;
+  border:3px solid #8a681f; border-radius:15px; padding:14px 18px; text-align:center;
+  font-size:clamp(18px,2.8vw,30px); font-weight:900; line-height:1.55; box-shadow:0 12px 30px rgba(0,0,0,.48);}
+.story-controls{position:absolute; left:50%; bottom:28px; transform:translateX(-50%); z-index:5; display:flex; gap:10px; flex-wrap:wrap; justify-content:center;}
+.story-controls .btn{min-width:126px;}
+.story-fx{position:absolute; inset:0; z-index:1; pointer-events:none;}
+.story-flag{position:absolute; font-size:clamp(38px,6vw,64px); font-weight:900; color:#fff2b4; text-shadow:0 0 18px #000;}
+.story-flag.a{left:12%; top:30%; animation:storyFlag 1.7s ease-in-out infinite alternate;}
+.story-flag.b{right:12%; top:32%; animation:storyFlag 1.55s ease-in-out infinite alternate-reverse;}
+@keyframes storyFlag{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-12px) rotate(3deg)}}
+.story-spark{position:absolute; left:50%; top:45%; transform:translate(-50%,-50%); font-size:clamp(56px,9vw,104px); animation:storySpark 1.35s ease-out infinite;}
+@keyframes storySpark{0%{opacity:0;transform:translate(-50%,-50%) scale(.25)}35%{opacity:1;transform:translate(-50%,-50%) scale(1.25)}100%{opacity:0;transform:translate(-50%,-50%) scale(.9)}}
+.story-rain{position:absolute; inset:0; background:repeating-linear-gradient(112deg,transparent 0 30px,rgba(255,240,168,.42) 31px 33px,transparent 34px 65px); animation:storyRain 3.5s linear infinite; opacity:.48;}
+@keyframes storyRain{to{background-position:180px 0}}
+.story-fire{position:absolute; left:-5%; right:-5%; bottom:-30px; height:190px;
+  background:radial-gradient(circle at 20% 100%,#ffdf6d 0 8%,#d84335 9% 20%,transparent 21%),
+  radial-gradient(circle at 48% 100%,#ffdf6d 0 9%,#f06435 10% 24%,transparent 25%),
+  radial-gradient(circle at 76% 100%,#ffdf6d 0 7%,#d84335 8% 22%,transparent 23%);
+  animation:storyFire 1s ease-in-out infinite alternate; opacity:.9;}
+@keyframes storyFire{to{transform:translateY(-10px) scaleY(1.08)}}
+.story-mist{position:absolute; inset:auto -10% 0; height:210px; background:
+  radial-gradient(ellipse at 30% 70%,rgba(255,255,255,.28),transparent 42%),
+  radial-gradient(ellipse at 70% 60%,rgba(255,255,255,.22),transparent 42%); animation:storyMist 5s ease-in-out infinite alternate;}
+@keyframes storyMist{to{transform:translateX(70px);opacity:.55}}
+.story-wall{position:absolute; left:50%; top:36%; width:min(500px,68vw); height:180px; transform:translateX(-50%);
+  background:linear-gradient(180deg,#5a5048,#1d1713); clip-path:polygon(0 100%,0 42%,10% 42%,10% 18%,22% 18%,22% 42%,78% 42%,78% 18%,90% 18%,90% 42%,100% 42%,100% 100%); box-shadow:0 20px 45px #000;}
+
 @media (max-width:720px){
   .battle-arena .fighter{width:31vw;}
   .vs-mid{min-width:70px;}
@@ -269,6 +339,10 @@ body{
   #battlefield{height:64px;}
   .bf-unit{font-size:18px;}
   .bf-deco{font-size:22px;}
+  .story-line{bottom:226px;}
+  .story-actors{bottom:84px;}
+  .story-side{gap:6px;}
+  .story-card:not(.main){display:none;}
 }
 @media (max-height:700px){
   #battlefield{height:56px;}
@@ -331,11 +405,13 @@ body{
       <div class="pbox" id="bt-enp"></div>
       <div class="fname" id="bt-enn"></div><div class="ftitle" id="bt-ent"></div>
       <div class="hpbar enemy"><i id="bt-enhp"></i></div><div class="hp-num" id="bt-enhpn"></div>
+      <div id="bt-shield"></div>
     </div>
   </div>
   <div id="battlefield"></div>
   <div class="q-panel">
     <div class="q-type" id="q-type"></div>
+    <div id="q-timer"><i id="q-timer-i"></i><span id="q-timer-n"></span></div>
     <div class="q-text" id="q-text"></div>
     <div class="opt-grid" id="q-opts"></div>
     <div class="q-feedback" id="q-fb"></div>
@@ -408,6 +484,8 @@ body{
 <div id="occupy"></div>
 <!-- v3 戰前過場動畫 -->
 <div id="cutscene"></div>
+<!-- v5 三國演義劇情過場 -->
+<div id="story-scene"></div>
 
 <script>
 /* ===== 生字資料庫:一至四年級(依台灣國小常用生字彙編) c字 z注音 r部首 w造詞 g年級 ===== */
@@ -1429,20 +1507,118 @@ const wByName = n => WARRIORS.find(w => w.n === n);
 const cityById = id => CITIES.find(c => c.id === id);
 const $ = id => document.getElementById(id);
 
+/* ===== v5:三國演義劇情事件,穿插在統一戰役中 ===== */
+const STORY_EVENTS = {
+ prologue:{
+  title:"亂世起兵", tag:"開局劇情", cls:"story-prologue",
+  summary:"黃巾亂起,天下分崩。你選定一方勢力,要用識字與智慧完成自己的統一之路。",
+  actors:["劉備","曹操","孫權"], line:"亂世已起,群雄並立。從今天開始,每學會一個字,就向天下安定更近一步!",
+  fx:`<span class="story-flag a">漢</span><span class="story-flag b">亂</span><div class="story-spark">起</div>`
+ },
+ taoyuan:{
+  title:"桃園結義", tag:"蜀軍開局 / 仁義之路", cls:"story-taoyuan",
+  summary:"劉備、關羽、張飛立下誓言,讓統一不只是攻城,而是守護百姓的志業。",
+  actors:["劉備","關羽","張飛"], line:"桃園花開,三人同心。今日學字為兵,守護百姓,從第一座城開始!",
+  fx:`<span class="story-flag a">義</span><span class="story-flag b">民</span><div class="story-mist"></div>`
+ },
+ hulao:{
+  title:"虎牢關", tag:"洛陽 / 長安前線", cls:"story-hulao",
+  summary:"呂布登場,壓迫感最強。攻入中原之前,要先通過這場三英戰呂布的考驗。",
+  actors:["關羽","張飛","呂布"], line:"虎牢關前,赤兔如風。呂布喝道:想過此關,先答出這一題!",
+  fx:`<span class="story-flag a">蜀</span><span class="story-flag b">呂</span><div class="story-spark">戰</div>`
+ },
+ chibi:{
+  title:"草船借箭・赤壁火攻", tag:"江東水戰", cls:"story-chibi",
+  summary:"霧中借箭、東風火攻,把江東戰場變成策略與識字結合的大事件。",
+  actors:["諸葛亮","周瑜","曹操"], line:"江面起霧,草船悄悄前行。借來的不是箭,是改變天下的一陣東風!",
+  fx:`<div class="story-rain"></div><div class="story-fire"></div><span class="story-flag a">風</span><span class="story-flag b">火</span>`
+ },
+ kongcheng:{
+  title:"空城計", tag:"危急救場 / 許昌決戰", cls:"story-kongcheng",
+  summary:"血量危急或遇上司馬懿時,過場提醒學生冷靜判斷,用一題翻轉局勢。",
+  actors:["諸葛亮","司馬懿"], line:"城門大開,琴聲不亂。真正的智慧,是在危急時仍然看清題目。",
+  fx:`<div class="story-wall"></div><div class="story-mist"></div><span class="story-flag a">空</span><span class="story-flag b">疑</span>`
+ },
+ nanman:{
+  title:"南中歸心", tag:"祝融夫人 / 招降劇情", cls:"story-nanman",
+  summary:"南中戰役不是消滅敵人,而是用智慧與尊重讓對方心服。",
+  actors:["諸葛亮","祝融夫人","關銀屏"], line:"勝利不只靠武力。一次又一次說理,終於讓南中願意同心。",
+  fx:`<span class="story-flag a">南</span><span class="story-flag b">心</span><div class="story-fire"></div>`
+ },
+ unify:{
+  title:"天下歸一", tag:"佔領最後一城", cls:"story-unify",
+  summary:"最後不只顯示勝利,也回顧一路學過的字、成語、收服的武將與完成的劇情。",
+  actors:["劉備","曹操","孫權","貂蟬"], line:"天下終於安定。你用一個又一個國字,走完了自己的統一之路!",
+  fx:`<span class="story-flag a">一</span><span class="story-flag b">統</span><div class="story-spark">光</div>`
+ }
+};
+
 /* ===== 遊戲狀態 ===== */
 let G = null;      // {f, turn, owner:{cityId:力}, roster:[{n,hp,mx}], reserve:[], learned:[]}
 let B = null;      // 戰鬥狀態
 let P = null;      // 練功房狀態
 
 function newWar(n){ const w = wByName(n); const mx = 80 + Math.round(w.ld/2); return {n:n, hp:mx, mx:mx}; }
+function storySeen(id){ return !!(G && G.storySeen && G.storySeen.includes(id)); }
+function markStorySeen(id){
+  if(!G) return;
+  G.storySeen = G.storySeen || [];
+  if(!G.storySeen.includes(id)) G.storySeen.push(id);
+}
+function storyActors(names){
+  const mid = Math.ceil(names.length / 2);
+  const group = (list, left) => `<div class="story-side">${list.map((n,i) => {
+    const w = wByName(n);
+    return `<div class="story-card ${i===0 && left ? "main" : ""}">${w ? drawPortrait(w) : ""}<div class="story-name">${n}</div></div>`;
+  }).join("")}</div>`;
+  return group(names.slice(0, mid), true) + group(names.slice(mid), false);
+}
+function playStory(id, done, force){
+  const st = STORY_EVENTS[id], box = $("story-scene");
+  if(!st || !box){ if(done) done(); return; }
+  if(!force && storySeen(id)){ if(done) done(); return; }
+  markStorySeen(id); saveGame(false);
+  stopQTimer();
+  try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+  box.className = "on";
+  box.innerHTML = `
+    <div class="story-backdrop ${st.cls}"></div>
+    <div class="story-fx">${st.fx || ""}</div>
+    <div class="story-title"><span class="story-tag">${st.tag}</span><h2>${st.title}</h2><p>${st.summary}</p></div>
+    <div class="story-line">${st.line}</div>
+    <div class="story-actors">${storyActors(st.actors || [])}</div>
+    <div class="story-controls">
+      <button class="btn ghost" id="story-speak">播放口白</button>
+      <button class="btn" id="story-next">繼續</button>
+    </div>`;
+  const finish = () => { box.className = ""; box.innerHTML = ""; if(done) done(); };
+  $("story-next").onclick = finish;
+  $("story-speak").onclick = () => speak(st.line, "me");
+  setTimeout(() => speak(st.line, "me"), 250);
+}
+function storyForBattle(city){
+  if(!city) return null;
+  if(city.id === "luoyang" || city.id === "changan") return "hulao";
+  if(["chaisang","jianye","jiangxia","kuaiji"].includes(city.id)) return "chibi";
+  if(city.id === "xuchang") return "kongcheng";
+  if(city.defs && city.defs.includes("祝融夫人")) return "nanman";
+  return null;
+}
+function playStartStory(done){
+  playStory("prologue", () => {
+    if(G && G.f === "蜀") playStory("taoyuan", done);
+    else if(done) done();
+  });
+}
 
 function startGame(f){
   const owner = {};
   CITIES.forEach(c => owner[c.id] = (c.owner === f ? "我" : c.owner));
   const roster = FORCES[f].starters.map(newWar);
   const reserve = WARRIORS.filter(w => w.f === f && !FORCES[f].starters.includes(w.n)).map(w => w.n);
-  G = {f:f, turn:1, owner:owner, roster:roster, reserve:reserve, learned:[]};
+  G = {f:f, turn:1, owner:owner, roster:roster, reserve:reserve, learned:[], idioms:[], storySeen:[]};
   show("scr-map"); renderMap(); saveGame(false);
+  playStartStory(() => { renderMap(); saveGame(false); });
 }
 function show(id){
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("on"));
@@ -1474,7 +1650,7 @@ function saveGame(toast){
 }
 function loadGame(){
   try{ const d = localStorage.getItem("sgz_learn_save");
-    if(d){ G = JSON.parse(d); show("scr-map"); renderMap(); } }catch(e){}
+    if(d){ G = JSON.parse(d); G.idioms = G.idioms || []; G.storySeen = G.storySeen || []; show("scr-map"); renderMap(); } }catch(e){}
 }
 function hint(t){ const h = $("map-hint"); h.textContent = t;
   clearTimeout(hint._t); hint._t = setTimeout(()=>h.textContent="點選敵方相鄰城池發動進攻", 2600); }
@@ -1546,18 +1722,29 @@ function openPick(cityId){
 function startBattle(cityId, wname){
   const c = cityById(cityId);
   B = { city:c, me:G.roster.find(r => r.n === wname), wave:0, combo:0,
-        defs:c.defs.map(n => { const w = wByName(n); return {n:n, hp:60 + w.ld, mx:60 + w.ld}; }),
-        newChars:[], practice:false };
+        defs:c.defs.map((n, i) => { const w = wByName(n);
+          const hp = 60 + w.ld + (c.tier-1)*15;   /* v4:城池等級越高守將越強 */
+          const last = i === c.defs.length - 1;
+          const sh = last && c.tier >= 3 ? (c.tier >= 4 ? 2 : 1) : 0;  /* v4:主將護盾,需連續答對破防 */
+          return {n:n, hp:hp, mx:hp, sh:sh, shMax:sh}; }),
+        newChars:[], newIdioms:[], practice:false };
   $("bt-city").textContent = "進攻 " + c.n + "(" + GTITLE[c.tier] + "生字)";
-  show("scr-battle"); setupWave(); updateBars();
-  playCutscene(wByName(B.me.n), wByName(B.defs[0].n), askQuestion);
+  const begin = () => {
+    show("scr-battle"); setupWave(); updateBars();
+    playCutscene(wByName(B.me.n), wByName(B.defs[0].n), askQuestion);
+  };
+  const sid = storyForBattle(c);
+  if(sid && !storySeen(sid)) playStory(sid, begin);
+  else begin();
 }
 function setupWave(){
   const d = B.defs[B.wave], w = wByName(d.n), me = wByName(B.me.n);
   $("bt-wave").textContent = B.practice ? "陪練武將" : "守將 " + (B.wave+1) + "/" + B.defs.length;
   $("bt-mep").innerHTML = drawPortrait(me); $("bt-men").textContent = me.n; $("bt-met").textContent = me.t;
   $("bt-enp").innerHTML = drawPortrait(w);  $("bt-enn").textContent = w.n;  $("bt-ent").textContent = w.t;
-  log(B.practice ? "自由練習,答錯不扣血!" : d.n + "出城迎戰!答對國字就能發動攻擊!");
+  log(B.practice ? "自由練習,答錯不扣血!" :
+      d.sh > 0 ? d.n + "有 " + d.sh + " 層護盾!連續答對才能破防!" :
+      d.n + "出城迎戰!答對國字就能發動攻擊!");
   renderArmies();
   const eb = $("bt-enp");
   eb.classList.remove("enter"); void eb.offsetWidth; eb.classList.add("enter");
@@ -1569,7 +1756,11 @@ function updateBars(){
   $("bt-mehpn").textContent = Math.max(0,B.me.hp) + " / " + B.me.mx;
   $("bt-enhp").style.width = Math.max(0, d.hp / d.mx * 100) + "%";
   $("bt-enhpn").textContent = Math.max(0,d.hp) + " / " + d.mx;
-  $("combo-tag").textContent = B.combo >= 2 ? "連擊 x" + B.combo + "!" : "";
+  const ct = $("combo-tag");
+  ct.textContent = B.combo >= 2 ? (B.combo >= 3 ? "🔥" : "") + "連擊 x" + B.combo + "!" : "";
+  ct.className = B.combo >= 3 ? "hot" : "";
+  $("bt-shield").innerHTML = d.sh > 0
+    ? "🛡️".repeat(d.sh) + `<span style="font-size:11px;color:#ffd76e"> 護盾:連續答對破防</span>` : "";
 }
 function log(t){ $("battle-log").textContent = t; }
 
@@ -1583,21 +1774,109 @@ function pick(arr, n, exclude){
   while(out.length < n && cand.length){ out.push(cand.splice(Math.floor(Math.random()*cand.length),1)[0]); }
   return out;
 }
-function genQuestion(pl){
+/* ===== v4:部件組合成字資料(適合三、四年級) p部件 c組成字 z注音 w造詞 ===== */
+const PARTS = [
+ {p:["日","月"],c:"明",z:"ㄇㄧㄥˊ",w:"明天"},   {p:["木","木"],c:"林",z:"ㄌㄧㄣˊ",w:"森林"},
+ {p:["木","木","木"],c:"森",z:"ㄙㄣ",w:"森林"}, {p:["日","日","日"],c:"晶",z:"ㄐㄧㄥ",w:"水晶"},
+ {p:["火","火"],c:"炎",z:"ㄧㄢˊ",w:"炎熱"},     {p:["女","子"],c:"好",z:"ㄏㄠˇ",w:"美好"},
+ {p:["田","力"],c:"男",z:"ㄋㄢˊ",w:"男生"},     {p:["小","大"],c:"尖",z:"ㄐㄧㄢ",w:"尖銳"},
+ {p:["人","木"],c:"休",z:"ㄒㄧㄡ",w:"休息"},     {p:["口","鳥"],c:"鳴",z:"ㄇㄧㄥˊ",w:"鳥鳴"},
+ {p:["門","口"],c:"問",z:"ㄨㄣˋ",w:"問題"},     {p:["門","日"],c:"間",z:"ㄐㄧㄢ",w:"時間"},
+ {p:["門","耳"],c:"聞",z:"ㄨㄣˊ",w:"新聞"},     {p:["田","心"],c:"思",z:"ㄙ",w:"思考"},
+ {p:["禾","火"],c:"秋",z:"ㄑㄧㄡ",w:"秋天"},     {p:["白","水"],c:"泉",z:"ㄑㄩㄢˊ",w:"泉水"},
+ {p:["人","言"],c:"信",z:"ㄒㄧㄣˋ",w:"寫信"},   {p:["木","子"],c:"李",z:"ㄌㄧˇ",w:"行李"},
+ {p:["宀","子"],c:"字",z:"ㄗˋ",w:"寫字"},       {p:["宀","女"],c:"安",z:"ㄢ",w:"平安"},
+ {p:["日","青"],c:"晴",z:"ㄑㄧㄥˊ",w:"晴天"},   {p:["氵","青"],c:"清",z:"ㄑㄧㄥ",w:"清水"},
+ {p:["言","青"],c:"請",z:"ㄑㄧㄥˇ",w:"請問"},   {p:["忄","青"],c:"情",z:"ㄑㄧㄥˊ",w:"心情"},
+ {p:["木","目"],c:"相",z:"ㄒㄧㄤ",w:"互相"},     {p:["相","心"],c:"想",z:"ㄒㄧㄤˇ",w:"想念"},
+ {p:["立","日"],c:"音",z:"ㄧㄣ",w:"聲音"},       {p:["音","心"],c:"意",z:"ㄧˋ",w:"注意"},
+ {p:["雨","田"],c:"雷",z:"ㄌㄟˊ",w:"打雷"},     {p:["竹","毛"],c:"筆",z:"ㄅㄧˇ",w:"毛筆"},
+ {p:["王","里"],c:"理",z:"ㄌㄧˇ",w:"道理"},     {p:["魚","羊"],c:"鮮",z:"ㄒㄧㄢ",w:"新鮮"},
+ {p:["山","石"],c:"岩",z:"ㄧㄢˊ",w:"岩石"},     {p:["不","正"],c:"歪",z:"ㄨㄞ",w:"歪斜"},
+ {p:["上","下"],c:"卡",z:"ㄎㄚˇ",w:"卡片"},     {p:["手","目"],c:"看",z:"ㄎㄢˋ",w:"看見"},
+ {p:["艹","田"],c:"苗",z:"ㄇㄧㄠˊ",w:"樹苗"},   {p:["艹","早"],c:"草",z:"ㄘㄠˇ",w:"小草"},
+ {p:["日","生"],c:"星",z:"ㄒㄧㄥ",w:"星星"},     {p:["日","寺"],c:"時",z:"ㄕˊ",w:"時間"},
+ {p:["木","寸"],c:"村",z:"ㄘㄨㄣ",w:"鄉村"},     {p:["木","交"],c:"校",z:"ㄒㄧㄠˋ",w:"學校"},
+ {p:["女","馬"],c:"媽",z:"ㄇㄚ",w:"媽媽"},       {p:["口","馬"],c:"嗎",z:"ㄇㄚ˙",w:"好嗎"},
+ {p:["口","口","口"],c:"品",z:"ㄆㄧㄣˇ",w:"作品"},
+];
+/* ===== v4:成語資料(含三國典故) s成語 m意思 sg=1三國典故 ===== */
+const IDIOMS = [
+ {s:"三顧茅廬",m:"比喻誠心誠意,一再邀請賢才",sg:1},
+ {s:"草船借箭",m:"比喻運用智謀,借助他人的力量達成目標",sg:1},
+ {s:"望梅止渴",m:"比喻用空想來安慰自己",sg:1},
+ {s:"樂不思蜀",m:"形容快樂得忘了回家,樂而忘返",sg:1},
+ {s:"如魚得水",m:"比喻得到與自己十分投合的人或環境",sg:1},
+ {s:"初出茅廬",m:"比喻剛進入社會,缺乏歷練經驗",sg:1},
+ {s:"錦囊妙計",m:"比喻事先準備好的巧妙辦法",sg:1},
+ {s:"老當益壯",m:"年紀雖大,志氣和身體卻更強壯",sg:1},
+ {s:"才高八斗",m:"形容人文才非常高",sg:1},
+ {s:"七擒七縱",m:"比喻運用策略,使對方心悅誠服",sg:1},
+ {s:"單刀赴會",m:"比喻一個人勇敢地冒險赴約",sg:1},
+ {s:"過關斬將",m:"比喻一路克服重重困難",sg:1},
+ {s:"畫蛇添足",m:"比喻多此一舉,反而把事情弄糟"},
+ {s:"井底之蛙",m:"比喻見識淺薄狹小的人"},
+ {s:"亡羊補牢",m:"出了問題後及時補救,還不算晚"},
+ {s:"守株待兔",m:"比喻不努力,只想碰運氣獲得成功"},
+ {s:"拔苗助長",m:"比喻急著求成,反而把事情弄壞"},
+ {s:"掩耳盜鈴",m:"比喻自己欺騙自己"},
+ {s:"對牛彈琴",m:"比喻對不懂道理的人講道理,白費力氣"},
+ {s:"狐假虎威",m:"比喻藉著別人的威勢來欺壓人"},
+ {s:"畫龍點睛",m:"比喻在關鍵處加上一筆,使整體更生動"},
+ {s:"自相矛盾",m:"比喻言語或行為前後不一致"},
+ {s:"杯弓蛇影",m:"比喻疑神疑鬼,自己嚇自己"},
+ {s:"半途而廢",m:"做事沒有恆心,中途就放棄"},
+ {s:"聞雞起舞",m:"比喻把握時機,勤奮努力"},
+ {s:"愚公移山",m:"比喻有毅力、不怕困難,終能成功"},
+ {s:"胸有成竹",m:"比喻做事之前已有完整的把握和計畫"},
+ {s:"水落石出",m:"比喻事情真相大白"},
+ {s:"雪中送炭",m:"在別人急難的時候給予幫助"},
+ {s:"錦上添花",m:"比喻好上加好,美上加美"},
+ {s:"一箭雙鵰",m:"比喻做一件事同時獲得兩種效果"},
+ {s:"九牛一毛",m:"比喻極大數量中微不足道的一小部分"},
+ {s:"七上八下",m:"形容心情忐忑不安"},
+ {s:"五顏六色",m:"形容色彩繁多鮮豔"},
+ {s:"一心一意",m:"心思專一,毫無雜念"},
+ {s:"目瞪口呆",m:"形容受驚嚇而發愣的樣子"},
+ {s:"川流不息",m:"形容行人、車馬往來不絕"},
+ {s:"東山再起",m:"比喻失敗後重新振作,再度出發"},
+];
+/* ===== v4:形近/音近干擾選項 ===== */
+function zyTone(z){ const t = z.slice(-1); return "ˊˇˋ˙".includes(t) ? t : ""; }
+function zyBase(z){ return z.replace(/[ˊˇˋ˙]/g,""); }
+function zySim(a, b){
+  let s = 0;
+  const ba = zyBase(a), bb = zyBase(b);
+  if(ba[0] === bb[0]) s += 3;                       // 聲母相同(音近)
+  if(ba.slice(-1) === bb.slice(-1)) s += 2;         // 韻母結尾相同
+  if(zyTone(a) === zyTone(b)) s += 1;               // 聲調相同
+  if(ba.length === bb.length) s += 1;
+  return s;
+}
+function pickTricky(cands, scoreFn, n){
+  return cands.map(x => ({x:x, s:scoreFn(x) + Math.random()*2.5}))
+    .sort((a,b) => b.s - a.s).slice(0, n).map(o => o.x);
+}
+function genQuestion(pl, tier){
+  tier = tier || 1;
+  const hard = tier >= 3;   // 三、四年級:干擾選項更相似+新題型
   const ch = pl[Math.floor(Math.random()*pl.length)];
-  const types = ["zy","cz","bs","tz"];
+  let types = ["zy","cz","bs","tz"];
+  if(hard) types = ["zy","cz","bs","tz","pj","cy"];
   const t = types[Math.floor(Math.random()*types.length)];
   let q = {ch:ch, type:t};
   if(t === "zy"){
     q.label = "讀音題"; q.html = `「<span class="bigchar">${ch.c}</span>」的注音是?`;
-    const ds = pick([...new Set(pl.filter(x=>x.z!==ch.z).map(x=>x.z))], 3, [ch.z]);
+    const cand = [...new Set(pl.filter(x=>x.z!==ch.z).map(x=>x.z))];
+    const ds = hard ? pickTricky(cand, z => zySim(z, ch.z), 3) : pick(cand, 3, [ch.z]);
     q.opts = shuffle([ch.z, ...ds]); q.ans = ch.z;
     q.exp = `「${ch.c}」讀作 ${ch.z},部首「${ch.r}」,例如:${ch.w.join("、")}。`;
   }else if(t === "cz"){
     q.label = "選字題";
-    const cs = pl.filter(x => x.z === ch.z ? x.c === ch.c : true);
     q.html = `注音「${ch.z}」(${ch.w[0]}的「${ch.c}」)是哪個字?`;
-    const ds = pick(pl.filter(x => x.z !== ch.z).map(x=>x.c), 3, [ch.c]);
+    const cand = pl.filter(x => x.z !== ch.z && x.c !== ch.c);
+    const ds = hard ? pickTricky(cand, x => zySim(x.z, ch.z) + (x.r===ch.r?2:0), 3).map(x=>x.c)
+                    : pick(cand.map(x=>x.c), 3, [ch.c]);
     q.opts = shuffle([ch.c, ...ds]); q.ans = ch.c;
     q.exp = `${ch.z} 就是「${ch.c}」,可以造詞:${ch.w.join("、")}。`;
   }else if(t === "bs"){
@@ -1605,75 +1884,163 @@ function genQuestion(pl){
     const ds = pick([...new Set(pl.filter(x=>x.r!==ch.r).map(x=>x.r))], 3, [ch.r]);
     q.opts = shuffle([ch.r, ...ds]); q.ans = ch.r;
     q.exp = `「${ch.c}」的部首是「${ch.r}」。造詞:${ch.w.join("、")}。`;
-  }else{
+  }else if(t === "tz"){
     q.label = "造詞題";
     const word = ch.w[Math.floor(Math.random()*ch.w.length)];
     const blank = word.replace(ch.c, "▢");
     q.html = `「${blank}」(${ch.z})的 ▢ 要填哪個字?`;
     const rest = word.replace(ch.c, "");
-    const ds = pick(pl.filter(x => x.c !== ch.c && x.z !== ch.z &&
-        !x.w.some(w2 => w2.includes(rest) && rest.length > 0)).map(x=>x.c), 3, [ch.c]);
+    const cand = pl.filter(x => x.c !== ch.c && x.z !== ch.z &&
+        !x.w.some(w2 => w2.includes(rest) && rest.length > 0));
+    const ds = hard ? pickTricky(cand, x => zySim(x.z, ch.z) + (x.r===ch.r?2:0), 3).map(x=>x.c)
+                    : pick(cand.map(x=>x.c), 3, [ch.c]);
     q.opts = shuffle([ch.c, ...ds]); q.ans = ch.c;
     q.exp = `正確答案是「${ch.c}」(${ch.z}),組成「${word}」。`;
+  }else if(t === "pj"){
+    q.label = "部件組字題";
+    const it = PARTS[Math.floor(Math.random()*PARTS.length)];
+    q.ch = CHARS.find(c => c.c === it.c) || null;
+    if(Math.random() < 0.5){
+      q.html = `「<span class="bigchar">${it.p.join("</span>」+「<span class=\"bigchar\">")}</span>」可以組合成哪個字?`;
+      const ds = pick(PARTS.filter(x=>x.c!==it.c).map(x=>x.c), 3, [it.c]);
+      q.opts = shuffle([it.c, ...ds]); q.ans = it.c;
+    }else{
+      q.html = `「<span class="bigchar">${it.c}</span>」(${it.z})是由哪些部件組成的?`;
+      const ds = pick(PARTS.filter(x=>x.c!==it.c).map(x=>x.p.join(" + ")), 3, [it.p.join(" + ")]);
+      q.opts = shuffle([it.p.join(" + "), ...ds]); q.ans = it.p.join(" + ");
+    }
+    q.exp = `「${it.p.join("」+「")}」組成「${it.c}」(${it.z}),造詞:${it.w}。`;
+  }else{
+    q.label = "成語題";
+    const it = IDIOMS[Math.floor(Math.random()*IDIOMS.length)];
+    q.ch = null; q.idiom = it.s;
+    if(Math.random() < 0.55){
+      const pos = Math.floor(Math.random()*4);
+      const ansC = it.s[pos];
+      const blank = it.s.slice(0,pos) + "▢" + it.s.slice(pos+1);
+      q.html = `成語「<span class="bigchar">${blank}</span>」的 ▢ 是哪個字?`;
+      const cand = [...new Set(IDIOMS.filter(x=>x.s!==it.s).map(x=>x.s[pos]))].filter(c=>!it.s.includes(c));
+      q.opts = shuffle([ansC, ...pick(cand, 3, [ansC])]); q.ans = ansC;
+    }else{
+      q.html = `成語「<span class="bigchar">${it.s}</span>」是什麼意思?`;
+      const ds = pick(IDIOMS.filter(x=>x.s!==it.s).map(x=>x.m), 3, [it.m]);
+      q.opts = shuffle([it.m, ...ds]); q.ans = it.m; q.small = true;
+    }
+    q.exp = `「${it.s}」:${it.m}。` + (it.sg ? "(出自三國故事!)" : "");
   }
   return q;
 }
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
+/* ===== v4:答題倒數計時(等級越高時間越短) ===== */
+let qTimer = null, qTimeLeft = 0, qTimeMax = 0;
+const TIER_TIME = {1:28, 2:24, 3:20, 4:16};
+function stopQTimer(){ if(qTimer){ clearInterval(qTimer); qTimer = null; } }
+function renderQTimer(){
+  const el = $("q-timer"); if(!el) return;
+  const pct = Math.max(0, qTimeLeft / qTimeMax * 100);
+  $("q-timer-i").style.width = pct + "%";
+  $("q-timer-n").textContent = Math.ceil(Math.max(0,qTimeLeft)) + " 秒";
+  el.className = pct <= 25 ? "danger" : pct <= 50 ? "warn" : "";
+}
+function startQTimer(){
+  stopQTimer();
+  const el = $("q-timer");
+  if(!B || B.practice){ if(el) el.style.display = "none"; qTimeMax = 0; return; }
+  qTimeMax = TIER_TIME[B.city.tier] || 22;
+  qTimeLeft = qTimeMax;
+  el.style.display = "block";
+  renderQTimer();
+  qTimer = setInterval(() => {
+    qTimeLeft -= 0.1;
+    renderQTimer();
+    if(qTimeLeft <= 0){ stopQTimer(); if(curQ && B) answer(null, "__timeout__"); }
+  }, 100);
+}
+
 let curQ = null;
 function askQuestion(){
   const pl = B.practice ? B.pool : pool(B.city.tier, null);
-  curQ = genQuestion(pl);
+  curQ = genQuestion(pl, B.city.tier);
   $("q-type").textContent = curQ.label + (B.practice ? "・練功房" : "・" + GTITLE[B.city.tier] + "程度");
   $("q-text").innerHTML = curQ.html;
   $("q-fb").textContent = "";
   const box = $("q-opts"); box.innerHTML = "";
   curQ.opts.forEach(o => {
     const b = document.createElement("button");
-    b.className = "opt"; b.textContent = o;
+    b.className = "opt" + (curQ.small ? " small" : ""); b.textContent = o;
     b.onclick = () => answer(b, o);
     box.appendChild(b);
   });
   const asker = (B && !B.practice && B.defs) ? wByName(B.defs[B.wave].n).n + "問:" : "";
   speak(asker + plainQ(curQ.html), "enemy", true);
+  startQTimer();
 }
 function answer(btn, val){
+  stopQTimer();
+  const elapsed = qTimeMax > 0 ? qTimeMax - qTimeLeft : 999;
+  const timeout = val === "__timeout__";
   document.querySelectorAll("#q-opts .opt").forEach(b => { b.disabled = true;
     if(b.textContent === curQ.ans) b.classList.add("correct"); });
-  const ok = val === curQ.ans;
+  const ok = !timeout && val === curQ.ans;
   const ch = curQ.ch;
   if(ok){
-    if(!G.learned.includes(ch.c)){ G.learned.push(ch.c); if(!B.practice) B.newChars.push(ch.c); }
+    if(ch && !G.learned.includes(ch.c)){ G.learned.push(ch.c); if(!B.practice) B.newChars.push(ch.c); }
+    if(curQ.idiom){
+      G.idioms = G.idioms || [];
+      if(!G.idioms.includes(curQ.idiom)){
+        G.idioms.push(curQ.idiom);
+        if(!B.practice){ B.newIdioms = B.newIdioms || []; B.newIdioms.push(curQ.idiom); }
+      }
+    }
     $("q-fb").textContent = "答對了!" + curQ.exp;
   }else{
-    btn.classList.add("wrong");
-    $("q-fb").textContent = "答錯了~ " + curQ.exp;
+    if(btn) btn.classList.add("wrong");
+    $("q-fb").textContent = (timeout ? "時間到!" : "答錯了~ ") + curQ.exp;
   }
   if(B.practice){ practiceStep(ok); return; }
   const d = B.defs[B.wave], me = wByName(B.me.n), en = wByName(d.n);
+  const tier = B.city.tier;
   if(ok){
     B.combo++;
-    const dmg = 18 + Math.round(me.wu/6) + Math.min(B.combo,5)*4;
-    d.hp -= dmg;
-    log(me.n + "發動攻擊,造成 " + dmg + " 點傷害!");
-    playAttack(true); dmgFloat(true, "-" + dmg);
-    setTimeout(()=>hitPbox("bt-enp"), 500);
-    speak(pickA(OUR_CRY), "me");
+    if(d.sh > 0){
+      /* 高等城池守將有護盾:需連續破防 */
+      d.sh--;
+      sfxHit(); hitPbox("bt-enp");
+      dmgFloat(true, "🛡️💥");
+      log("擊破" + en.n + "的護盾!" + (d.sh > 0 ? "還剩 " + d.sh + " 層,繼續進攻!" : "護盾全破,發動總攻!"));
+      speak(d.sh > 0 ? "可惡,護盾被打破了!" : "什麼!我的護盾全碎了!", "enemy");
+    }else{
+      const fast = qTimeMax > 0 && elapsed <= qTimeMax * 0.4;
+      let dmg = 18 + Math.round(me.wu/6) + Math.min(B.combo,5)*4;
+      let extra = "";
+      if(fast){ dmg += 6; extra += "⚡神速加成!"; }
+      if(B.combo === 3){ dmg += 8; extra += "🔥怒氣爆發!"; }
+      if(B.combo >= 5 && B.combo % 5 === 0){ dmg += 15; extra += "💥必殺技!"; fireworks(4); }
+      d.hp -= dmg;
+      log(me.n + "發動攻擊,造成 " + dmg + " 點傷害!" + extra);
+      playAttack(true); dmgFloat(true, "-" + dmg);
+      setTimeout(()=>hitPbox("bt-enp"), 500);
+      speak(B.combo >= 5 ? "看我必殺技!" : pickA(OUR_CRY), "me");
+    }
   }else{
     B.combo = 0;
-    const dmg = 12 + Math.round(en.wu/8);
+    const dmg = 12 + Math.round(en.wu/8) + (tier-1)*2;
     B.me.hp -= dmg;
-    log(en.n + "趁機反擊,我方損失 " + dmg + " 點體力!");
+    log(en.n + (timeout ? "見你猶豫,發動突襲" : "趁機反擊") + ",我方損失 " + dmg + " 點體力!");
     playAttack(false); dmgFloat(false, "-" + dmg);
     setTimeout(()=>hitPbox("bt-mep"), 500);
-    speak(pickA(TAUNT_WRONG), "enemy");
+    speak(timeout ? "哈哈,兵貴神速,你太慢了!" : pickA(TAUNT_WRONG), "enemy");
   }
   updateBars();
-  setTimeout(() => {
+  const nextStep = () => {
     if(d.hp <= 0){ waveDown(); }
     else if(B.me.hp <= 0){ meDown(); }
     else askQuestion();
-  }, ok ? 1600 : 3000);
+  };
+  const dangerStory = !ok && B.me.hp > 0 && B.me.hp / B.me.mx <= .35 && !storySeen("kongcheng");
+  if(dangerStory) setTimeout(() => playStory("kongcheng", nextStep), 900);
+  else setTimeout(nextStep, ok ? 1600 : 3000);
 }
 function waveDown(){
   const d = B.defs[B.wave];
@@ -1709,6 +2076,7 @@ function meDown(){
   }
 }
 function fleeBattle(){
+  stopQTimer();
   if(B && B.practice){ endPractice(); return; }
   endBattle(false, true);
 }
@@ -1718,6 +2086,7 @@ function battleWon(){
   playOccupy(B.city.n, () => endBattle(true));
 }
 function endBattle(won, fled){
+  stopQTimer();
   G.turn++;
   if(!won) sfxLose();
   G.roster.forEach(r => { if(r.hp <= 0) r.hp = Math.round(r.mx * 0.4); });
@@ -1736,6 +2105,10 @@ function endBattle(won, fled){
     html += `<br>這場戰役學會了 ${B.newChars.length} 個新字:<br>` +
       B.newChars.map(c => `<span class="newchar">${c}</span>`).join("");
   }
+  if(B.newIdioms && B.newIdioms.length){
+    html += `<br>還學會了 ${B.newIdioms.length} 個成語:<br>` +
+      B.newIdioms.map(s => `<span class="newchar" style="font-size:16px;padding:2px 8px">${s}</span>`).join("");
+  }
   $("res-title").textContent = won ? "攻城成功!" : "暫時撤退";
   $("res-title").style.color = won ? "#2f7d4f" : "#8e2f24";
   $("res-body").innerHTML = html;
@@ -1753,7 +2126,7 @@ function closeResult(){ closeModal("modal-result"); show("scr-map"); renderMap()
 function openRecruit(name, tier){
   const w = wByName(name);
   $("rec-sub").innerHTML = `敗將<b>${name}</b>(${w.t})願意考驗你:答對就歸順我軍!`;
-  const q = genQuestion(pool(null, tier));
+  const q = genQuestion(pool(null, tier), tier);
   $("rq-type").textContent = q.label + "・挑戰題(" + GTITLE[tier] + ")";
   $("rq-text").innerHTML = q.html;
   $("rq-fb").textContent = "";
@@ -1761,13 +2134,14 @@ function openRecruit(name, tier){
   const box = $("rq-opts"); box.innerHTML = "";
   q.opts.forEach(o => {
     const b = document.createElement("button");
-    b.className = "opt"; b.textContent = o;
+    b.className = "opt" + (q.small ? " small" : ""); b.textContent = o;
     b.onclick = () => {
       document.querySelectorAll("#rq-opts .opt").forEach(x => { x.disabled = true;
         if(x.textContent === q.ans) x.classList.add("correct"); });
       const ok = o === q.ans;
       if(ok){
-        if(!G.learned.includes(q.ch.c)) G.learned.push(q.ch.c);
+        if(q.ch && !G.learned.includes(q.ch.c)) G.learned.push(q.ch.c);
+        if(q.idiom){ G.idioms = G.idioms || []; if(!G.idioms.includes(q.idiom)) G.idioms.push(q.idiom); }
         G.roster.push(newWar(name));
         $("rq-fb").textContent = "答對了!" + name + "歸順我軍!" + q.exp;
       }else{
@@ -1790,15 +2164,19 @@ function restTurn(){
 }
 function checkVictory(){
   if(G && CITIES.every(c => G.owner[c.id] === "我")){
+    if(!storySeen("unify")){ playStory("unify", showVictoryResult); return; }
+    showVictoryResult();
+  }
+}
+function showVictoryResult(){
     fireworks(14); sfxWin();
     speak("恭喜!你一統天下了!", "me");
     $("res-title").textContent = "一統天下!";
     $("res-title").style.color = "#c9a227";
     $("res-body").innerHTML = `恭喜!${G.f}軍佔領了全部 ${CITIES.length} 座城池!<br>
-      你總共學會了 <b>${G.learned.length}</b> 個國字,收服了 <b>${G.roster.length}</b> 名武將。<br>真正的英雄,是用智慧贏得天下!`;
+      你總共學會了 <b>${G.learned.length}</b> 個國字、<b>${(G.idioms||[]).length}</b> 個成語,收服了 <b>${G.roster.length}</b> 名武將。<br>真正的英雄,是用智慧贏得天下!`;
     $("res-btn").onclick = () => { closeModal("modal-result"); };
     $("modal-result").classList.add("on");
-  }
 }
 
 /* ===== 武將圖鑑 ===== */
@@ -1841,14 +2219,27 @@ let dictFrom = "map", dictTab = 0;
 function openDict(fromTitle){ dictFrom = fromTitle ? "title" : "map"; show("scr-dict"); renderDict(0); }
 function renderDict(gr){
   dictTab = gr;
-  const tabs = [0,1,2,3,4];
+  const tabs = [0,1,2,3,4,5];
   $("dict-tabs").innerHTML = tabs.map(t =>
-    `<button class="gtab${t===gr?" on":""}" onclick="renderDict(${t})">${t===0?"全部":GTITLE[t]}</button>`).join("");
+    `<button class="gtab${t===gr?" on":""}" onclick="renderDict(${t})">${t===0?"全部":t===5?"成語":GTITLE[t]}</button>`).join("");
+  const g = $("dict-grid"); g.innerHTML = "";
+  if(gr === 5){
+    const learnedI = G ? (G.idioms || []) : [];
+    const ln = IDIOMS.filter(it => learnedI.includes(it.s)).length;
+    $("dict-stats").textContent = `共 ${IDIOMS.length} 個成語|已學會 ${ln} 個(攻打三、四年級城池會考成語!)`;
+    IDIOMS.forEach(it => {
+      const d = document.createElement("div");
+      d.className = "char-cell" + (learnedI.includes(it.s) ? " learned" : "");
+      d.innerHTML = `<div class="cc-idiom">${it.s}</div><div class="cc-zy">${it.sg ? "三國典故" : "常用成語"}</div>`;
+      d.onclick = () => showIdiom(it);
+      g.appendChild(d);
+    });
+    return;
+  }
   const list = CHARS.filter(ch => gr === 0 || ch.g === gr);
   const learned = G ? G.learned : [];
   const ln = list.filter(ch => learned.includes(ch.c)).length;
   $("dict-stats").textContent = `共 ${list.length} 個字|已學會 ${ln} 個(打過勝仗的字會亮起來)`;
-  const g = $("dict-grid"); g.innerHTML = "";
   list.forEach(ch => {
     const d = document.createElement("div");
     d.className = "char-cell" + (learned.includes(ch.c) ? " learned" : "");
@@ -1856,6 +2247,13 @@ function renderDict(gr){
     d.onclick = () => showChar(ch);
     g.appendChild(d);
   });
+}
+function showIdiom(it){
+  $("cd-body").innerHTML = `
+    <div style="font-size:13px;color:#8a6a1e;letter-spacing:2px">${it.sg ? "三國典故成語" : "常用成語"}</div>
+    <div class="cd-ch" style="font-size:clamp(34px,6vw,52px);letter-spacing:4px">${it.s}</div>
+    <div style="font-size:16px;line-height:1.6;margin-top:8px">${it.m}</div>`;
+  $("modal-char").classList.add("on");
 }
 function showChar(ch){
   $("cd-body").innerHTML = `
@@ -1874,8 +2272,8 @@ function closeSub(){
 
 /* ===== 練功房 ===== */
 function startPractice(){
-  const gr = dictTab === 0 ? null : dictTab;
-  const pl = gr ? CHARS.filter(c => c.g === gr) : CHARS.slice();
+  const gr = (dictTab === 0 || dictTab === 5) ? null : dictTab;
+  const pl = gr ? CHARS.filter(c => c.g === gr) : (dictTab === 5 ? CHARS.filter(c => c.g >= 3) : CHARS.slice());
   const sparring = WARRIORS[Math.floor(Math.random()*WARRIORS.length)];
   if(!G){ G = {f:"蜀", turn:0, owner:null, roster:[], reserve:[], learned:[], freeplay:true}; }
   B = { practice:true, pool:pl, left:10, score:0,
@@ -1884,7 +2282,7 @@ function startPractice(){
         defs:[{n:sparring.n, hp:1, mx:1}], wave:0, combo:0, newChars:[] };
   B.me = {n:sparring.n, hp:100, mx:100};
   B.defs = [{n:sparring.n, hp:100, mx:100}];
-  $("bt-city").textContent = "練功房・" + (gr ? GTITLE[gr] : "全年級") + "生字(共10題)";
+  $("bt-city").textContent = "練功房・" + (gr ? GTITLE[gr] + "生字" : dictTab === 5 ? "成語部件挑戰" : "全年級生字") + "(共10題)";
   show("scr-battle"); setupWave(); updateBars(); askQuestion();
 }
 function practiceStep(ok){
