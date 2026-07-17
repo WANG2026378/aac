@@ -118,6 +118,56 @@ body{
 .opt:disabled{cursor:default;}
 .q-feedback{min-height:24px; font-size:14.5px; margin-top:9px; font-weight:700; color:#5a4a1c; line-height:1.5;}
 .battle-foot{text-align:center; padding:8px;}
+/* v6:智謀關卡 */
+#tactic-scene{position:fixed; inset:0; z-index:118; display:none; align-items:center; justify-content:center;
+  padding:calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+  background:radial-gradient(ellipse at 50% 30%,rgba(104,55,22,.94),rgba(13,7,4,.98) 78%); color:#f7e8be;}
+#tactic-scene.on{display:flex;}
+.tactic-card{width:min(880px,96vw); max-height:94vh; overflow-y:auto; border:3px solid #c9a227; border-radius:18px;
+  background:linear-gradient(180deg,#2f1d0c,#160d06 56%,#100804); box-shadow:0 18px 54px rgba(0,0,0,.72), inset 0 0 0 1px rgba(255,238,174,.22);
+  padding:16px 18px 18px;}
+.tactic-top{display:flex; gap:14px; align-items:center; margin-bottom:12px;}
+.tactic-face{width:92px; flex:0 0 92px;}
+.tactic-face svg,.tactic-face .portrait-art{display:block; width:100%; aspect-ratio:5/6; object-fit:cover; object-position:center 20%;
+  border:1px solid #f0d878; border-radius:13px; background:#111; box-shadow:0 8px 18px rgba(0,0,0,.5);}
+.tactic-title{flex:1; min-width:0;}
+.tactic-title .tag{display:inline-flex; align-items:center; gap:6px; border:1px solid rgba(255,233,168,.34); border-radius:999px;
+  padding:4px 10px; background:rgba(0,0,0,.32); color:#ffe9a8; font-size:12px; font-weight:900; letter-spacing:2px;}
+.tactic-title h2{margin:8px 0 5px; font-size:clamp(25px,4vw,40px); line-height:1.1; color:#fff2b4; letter-spacing:5px;
+  text-shadow:0 0 18px rgba(232,201,106,.45),0 3px 0 #5a2a10;}
+.tactic-title p{margin:0; color:#d9c48b; font-size:14px; line-height:1.6;}
+.tactic-stat{display:flex; gap:8px; flex-wrap:wrap; margin-top:9px;}
+.tactic-stat span{display:inline-flex; padding:4px 9px; border-radius:8px; background:rgba(255,245,205,.1); color:#f9df94; font-size:12.5px; font-weight:900;}
+.tactic-timer{position:relative; height:16px; background:rgba(0,0,0,.36); border:1px solid rgba(255,233,168,.46); border-radius:999px;
+  overflow:hidden; margin:8px 0 13px;}
+.tactic-timer i{display:block; height:100%; width:100%; background:linear-gradient(90deg,#61c76a,#f0cf6a); transition:width .12s linear;}
+.tactic-timer.danger i{background:linear-gradient(90deg,#d84335,#ff9a62);}
+.tactic-timer span{position:absolute; right:9px; top:0; line-height:15px; color:#2b1d0e; font-size:11px; font-weight:900;}
+.tactic-tools{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;}
+.tactic-tool{flex:1 1 150px; min-height:48px; border:2px solid #8a681f; border-radius:10px; background:linear-gradient(180deg,#fff5d8,#e5c36b);
+  color:#2b1d0e; font-family:inherit; font-weight:900; cursor:pointer; padding:7px 9px; text-align:left;}
+.tactic-tool small{display:block; font-size:11px; color:#6b5220; font-weight:700; margin-top:2px; line-height:1.25;}
+.tactic-tool.used{opacity:.48; filter:grayscale(.55); cursor:default;}
+.tactic-question{background:linear-gradient(180deg,#fff7df,#ead8a9); color:#2b1d0e; border:2px solid #8a681f; border-radius:14px;
+  padding:13px 15px; font-size:clamp(19px,2.7vw,28px); font-weight:900; line-height:1.55; text-align:center;}
+.tactic-question b{color:#8e2f24;}
+.tactic-options{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px;}
+.tactic-opt{min-height:54px; border:2px solid #a77d28; border-radius:11px; background:#fff8e5; color:#2b1d0e; font-family:inherit;
+  font-size:clamp(16px,2vw,21px); font-weight:900; line-height:1.35; cursor:pointer; padding:10px;}
+.tactic-opt:hover{filter:brightness(1.04); transform:translateY(-1px);}
+.tactic-opt.correct{background:#cdebbf; border-color:#377d37;}
+.tactic-opt.wrong{background:#efc1b8; border-color:#9b2f24;}
+.tactic-opt.removed{opacity:.28; text-decoration:line-through; cursor:default;}
+.tactic-opt:disabled{cursor:default;}
+.tactic-feedback{min-height:42px; color:#ffe9a8; font-size:15px; line-height:1.6; font-weight:900; margin-top:10px; text-align:center;}
+.tactic-bottom{display:flex; justify-content:center; gap:10px; margin-top:10px;}
+@media (max-width:720px){
+  .tactic-card{padding:13px;}
+  .tactic-top{align-items:flex-start;}
+  .tactic-face{width:72px; flex-basis:72px;}
+  .tactic-options{grid-template-columns:1fr;}
+  .tactic-tool{flex-basis:calc(50% - 8px); font-size:13px;}
+}
 /* v4:答題倒數計時 */
 #q-timer{position:relative; height:16px; background:#00000018; border:1.5px solid #9a7b33; border-radius:9px; margin:5px 0 9px; overflow:hidden; display:none;}
 #q-timer i{display:block; height:100%; width:100%; background:linear-gradient(90deg,#4caf50,#8bc34a); transition:width .1s linear; border-radius:7px;}
@@ -482,6 +532,8 @@ body{
 
 <!-- v2 佔領城池動畫 -->
 <div id="occupy"></div>
+<!-- v6 智謀關卡 -->
+<div id="tactic-scene"></div>
 <!-- v3 戰前過場動畫 -->
 <div id="cutscene"></div>
 <!-- v5 三國演義劇情過場 -->
@@ -1553,6 +1605,247 @@ const STORY_EVENTS = {
  }
 };
 
+/* ===== v6:智謀關卡,參考配對學習遊戲的規律/類比/順序玩法 ===== */
+const TACTIC_ITEMS = {
+ hint:{icon:"📜", name:"錦囊妙計", desc:"顯示一個作戰提示"},
+ remove:{icon:"🔭", name:"觀星臺", desc:"排除一個錯誤答案"},
+ time:{icon:"🐂", name:"木牛流馬", desc:"增加 8 秒思考時間"},
+ shield:{icon:"🎵", name:"空城琴音", desc:"答錯時保住體力一次"}
+};
+const TACTIC_PUZZLES = [
+ {type:"戰場規律", title:"盾弓騎陣",
+  html:"軍令旗依序是<br><b>盾兵 → 弓兵 → 騎兵 → 盾兵 → 弓兵 → ?</b>",
+  opts:["騎兵","盾兵","火攻","水軍"], ans:"騎兵",
+  hint:"三個一組重複:盾兵、弓兵、騎兵。", line:"看清軍旗規律,才能布好下一陣!"},
+ {type:"戰場規律", title:"水火風勢",
+  html:"江面信號依序是<br><b>火 → 風 → 水 → 火 → 風 → ?</b>",
+  opts:["水","火","雷","土"], ans:"水",
+  hint:"每三個信號循環一次,火後是風,風後是水。", line:"火借風勢,水路進兵,規律不能亂!"},
+ {type:"戰場規律", title:"三陣接龍",
+  html:"陣法輪換是<br><b>長蛇陣 → 雁行陣 → 魚鱗陣 → 長蛇陣 → ?</b>",
+  opts:["雁行陣","魚鱗陣","八卦陣","方圓陣"], ans:"雁行陣",
+  hint:"第一輪是長蛇、雁行、魚鱗,第二輪也照同樣順序。", line:"陣法輪替如讀字,順序看準就能破敵!"},
+ {type:"錦囊類比", title:"赤壁與空城",
+  html:"赤壁之戰靠<b>火攻</b>破敵,空城計靠什麼破敵?",
+  opts:["冷靜判斷","猛衝城門","多帶糧草","追趕百姓"], ans:"冷靜判斷",
+  hint:"空城計的重點不是武力,而是讓敵人懷疑與判斷。", line:"真正的智謀,有時是讓敵人不敢前進。"},
+ {type:"錦囊類比", title:"借箭與借風",
+  html:"草船借箭是借敵人的<b>箭</b>,赤壁借東風是借什麼?",
+  opts:["天時","糧草","城牆","馬匹"], ans:"天時",
+  hint:"東風是天氣與時機,也就是天時。", line:"軍師要懂人心,也要懂天時。"},
+ {type:"錦囊類比", title:"仁義收心",
+  html:"三顧茅廬重在<b>誠意</b>,七擒七縱重在什麼?",
+  opts:["收服人心","快速逃跑","只比武力","藏起寶物"], ans:"收服人心",
+  hint:"七擒七縱不是只求打敗,而是讓對方真心佩服。", line:"攻城容易,收心才難。"},
+ {type:"順序策謀", title:"草船借箭",
+  html:"哪一個是草船借箭較合理的順序?",
+  opts:["大霧出船 → 擂鼓誘敵 → 接滿箭矢 → 安全返回","擂鼓誘敵 → 安全返回 → 大霧出船 → 接滿箭矢","接滿箭矢 → 大霧出船 → 擂鼓誘敵 → 安全返回","安全返回 → 擂鼓誘敵 → 大霧出船 → 接滿箭矢"],
+  ans:"大霧出船 → 擂鼓誘敵 → 接滿箭矢 → 安全返回",
+  hint:"先利用大霧靠近,再讓敵人射箭。", line:"一步錯,整船箭都借不回來!"},
+ {type:"順序策謀", title:"赤壁火攻",
+  html:"哪一個是赤壁火攻較合理的順序?",
+  opts:["連環船 → 借東風 → 黃蓋詐降 → 火船突襲","火船突襲 → 連環船 → 借東風 → 黃蓋詐降","黃蓋詐降 → 火船突襲 → 借東風 → 連環船","借東風 → 火船突襲 → 連環船 → 黃蓋詐降"],
+  ans:"連環船 → 借東風 → 黃蓋詐降 → 火船突襲",
+  hint:"曹軍船隻相連後,火攻才容易蔓延。", line:"風向、詐降、火船,每一步都要算準。"},
+ {type:"順序策謀", title:"智取城池",
+  html:"攻打堅城時,哪一個策略順序最穩?",
+  opts:["探查守備 → 分析弱點 → 派兵牽制 → 主力進城","主力進城 → 探查守備 → 派兵牽制 → 分析弱點","派兵牽制 → 主力進城 → 探查守備 → 分析弱點","分析弱點 → 主力進城 → 探查守備 → 派兵牽制"],
+  ans:"探查守備 → 分析弱點 → 派兵牽制 → 主力進城",
+  hint:"先觀察,再判斷,最後才發動主攻。", line:"勇將破門,智將先看門在哪裡。"}
+];
+let tacticState = null, tacticTimer = null, tacticTimeLeft = 0, tacticTimeMax = 0;
+function escHtml(s){
+  return String(s).replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+}
+function tacticRank(zh){
+  if(zh >= 95) return "神機妙算";
+  if(zh >= 88) return "軍師";
+  if(zh >= 75) return "智將";
+  return "勇將";
+}
+function tacticKitFor(w){
+  const zh = w ? w.zh : 60;
+  if(zh >= 95) return ["hint","remove","time","shield"];
+  if(zh >= 88) return ["hint","remove","shield"];
+  if(zh >= 75) return ["hint","time"];
+  return ["hint"];
+}
+function shouldStartTactic(city, meW){
+  if(!B || B.practice || B.tacticUsed || !city || !meW) return false;
+  return city.tier >= 3 || !!storyForBattle(city);
+}
+function tacticPuzzleFor(city, meW){
+  const story = storyForBattle(city);
+  let list = TACTIC_PUZZLES.slice();
+  if(story === "chibi") list = list.filter(q => /赤壁|借箭|借風|水火風勢/.test(q.title + q.html));
+  else if(story === "kongcheng") list = list.filter(q => /空城|智取|仁義/.test(q.title + q.html));
+  else if(story === "nanman") list = list.filter(q => /仁義|智取|三陣/.test(q.title + q.html));
+  else if(story === "hulao") list = list.filter(q => q.type === "戰場規律" || q.title === "智取城池");
+  if(!list.length) list = TACTIC_PUZZLES.slice();
+  const q = list[Math.floor(Math.random() * list.length)];
+  return {...q, opts:shuffle(q.opts.slice())};
+}
+function startTacticChallenge(done){
+  const city = B && B.city, meW = B && B.me ? wByName(B.me.n) : null;
+  if(!shouldStartTactic(city, meW)){ if(done) done(); return; }
+  B.tacticUsed = true;
+  const puzzle = tacticPuzzleFor(city, meW);
+  tacticState = {done:done, city:city, meW:meW, puzzle:puzzle, kit:tacticKitFor(meW),
+    used:{}, shield:false, answered:false};
+  renderTactic();
+  startTacticTimer();
+  setTimeout(() => speak(meW.n + "展開智謀:" + plainQ(puzzle.html), "me"), 220);
+}
+function renderTactic(){
+  const st = tacticState, box = $("tactic-scene");
+  if(!st || !box) return;
+  const tools = st.kit.map(k => {
+    const it = TACTIC_ITEMS[k];
+    return `<button class="tactic-tool" id="tactic-tool-${k}" onclick="useTacticItem('${k}')">
+      ${it.icon} ${it.name}<small>${it.desc}</small></button>`;
+  }).join("");
+  box.className = "on";
+  box.innerHTML = `<div class="tactic-card">
+    <div class="tactic-top">
+      <div class="tactic-face">${drawPortrait(st.meW)}</div>
+      <div class="tactic-title">
+        <span class="tag">軍師智謀關卡</span>
+        <h2>${escHtml(st.puzzle.title)}</h2>
+        <p>${st.meW.n}準備攻打${st.city.n},先用智慧找出破敵之法。</p>
+        <div class="tactic-stat">
+          <span>智力 ${st.meW.zh}</span><span>${tacticRank(st.meW.zh)}</span><span>法寶 ${st.kit.length} 件</span><span>${st.puzzle.type}</span>
+        </div>
+      </div>
+    </div>
+    <div class="tactic-timer" id="tactic-timer"><i id="tactic-timer-i"></i><span id="tactic-timer-n"></span></div>
+    <div class="tactic-tools">${tools}</div>
+    <div class="tactic-question">${st.puzzle.html}</div>
+    <div class="tactic-options" id="tactic-options">
+      ${st.puzzle.opts.map(o => `<button class="tactic-opt" onclick="answerTactic(this,'${escHtml(o)}')">${escHtml(o)}</button>`).join("")}
+    </div>
+    <div class="tactic-feedback" id="tactic-feedback">選對策略,開戰時就能削弱敵軍。</div>
+    <div class="tactic-bottom"><button class="btn ghost" onclick="skipTactic()">直接開戰</button></div>
+  </div>`;
+}
+function startTacticTimer(){
+  stopTacticTimer();
+  const zh = tacticState && tacticState.meW ? tacticState.meW.zh : 70;
+  const tier = tacticState && tacticState.city ? tacticState.city.tier : 3;
+  tacticTimeMax = (tier >= 4 ? 22 : 26) + (zh >= 95 ? 4 : zh < 60 ? -2 : 0);
+  tacticTimeLeft = tacticTimeMax;
+  renderTacticTimer();
+  tacticTimer = setInterval(() => {
+    tacticTimeLeft -= .1;
+    renderTacticTimer();
+    if(tacticTimeLeft <= 0) finishTactic(false, true);
+  }, 100);
+}
+function stopTacticTimer(){
+  if(tacticTimer){ clearInterval(tacticTimer); tacticTimer = null; }
+}
+function renderTacticTimer(){
+  const el = $("tactic-timer");
+  if(!el || !tacticTimeMax) return;
+  const pct = Math.max(0, tacticTimeLeft / tacticTimeMax * 100);
+  $("tactic-timer-i").style.width = pct + "%";
+  $("tactic-timer-n").textContent = Math.ceil(Math.max(0, tacticTimeLeft)) + " 秒";
+  el.className = "tactic-timer" + (pct <= 28 ? " danger" : "");
+}
+function useTacticItem(key){
+  const st = tacticState;
+  if(!st || st.answered || st.used[key]) return;
+  st.used[key] = true;
+  const tool = $("tactic-tool-" + key);
+  if(tool) tool.classList.add("used");
+  if(key === "hint"){
+    $("tactic-feedback").textContent = "錦囊提示:" + st.puzzle.hint;
+    speak("錦囊提示:" + st.puzzle.hint, "me");
+  }else if(key === "remove"){
+    const wrong = [...document.querySelectorAll("#tactic-options .tactic-opt")]
+      .filter(b => b.textContent !== st.puzzle.ans && !b.classList.contains("removed"));
+    const b = wrong[Math.floor(Math.random() * wrong.length)];
+    if(b){ b.disabled = true; b.classList.add("removed"); }
+    $("tactic-feedback").textContent = "觀星臺看破迷霧,已排除一個錯誤策略。";
+    speak("觀星臺看破迷霧。", "me");
+  }else if(key === "time"){
+    tacticTimeLeft += 8; tacticTimeMax += 8; renderTacticTimer();
+    $("tactic-feedback").textContent = "木牛流馬送來補給,思考時間增加 8 秒。";
+    speak("木牛流馬送來補給。", "me");
+  }else if(key === "shield"){
+    st.shield = true;
+    $("tactic-feedback").textContent = "空城琴音已啟動,答錯時不會損失體力。";
+    speak("空城琴音已啟動。", "me");
+  }
+}
+function answerTactic(btn, val){
+  if(!tacticState || tacticState.answered) return;
+  finishTactic(val === tacticState.puzzle.ans, false, btn);
+}
+function skipTactic(){
+  if(!tacticState || tacticState.answered) return;
+  stopTacticTimer();
+  $("tactic-feedback").textContent = "先不使用智謀,直接進入原本戰鬥。";
+  log("我軍直接開戰,沒有智謀加成。");
+  const done = tacticState.done;
+  setTimeout(() => closeTactic(done), 650);
+}
+function finishTactic(ok, timeout, btn){
+  const st = tacticState;
+  if(!st || st.answered) return;
+  st.answered = true;
+  stopTacticTimer();
+  document.querySelectorAll("#tactic-options .tactic-opt").forEach(b => {
+    b.disabled = true;
+    if(b.textContent === st.puzzle.ans) b.classList.add("correct");
+  });
+  if(btn && !ok) btn.classList.add("wrong");
+  let msg = "";
+  if(ok){
+    msg = applyTacticReward();
+    $("tactic-feedback").textContent = "智謀成功!" + msg;
+    sfxWin(); speak("智謀成功!" + msg, "me");
+  }else if(st.shield){
+    msg = "空城琴音化解危機,我軍沒有損失。";
+    $("tactic-feedback").textContent = (timeout ? "時間到!" : "策略失誤!") + msg;
+    log(msg);
+    sfxHit(); speak(msg, "me");
+  }else{
+    const loss = Math.min(8, Math.max(0, B.me.hp - 1));
+    B.me.hp -= loss; updateBars();
+    msg = "敵軍看出破綻,我方先損失 " + loss + " 點體力。";
+    $("tactic-feedback").textContent = (timeout ? "時間到!" : "策略失誤!") + msg;
+    log(msg);
+    sfxLose(); speak("敵軍看出破綻,小心應戰。", "enemy");
+  }
+  setTimeout(() => closeTactic(st.done), ok ? 1700 : 2100);
+}
+function applyTacticReward(){
+  if(!B || !B.defs || !B.defs.length) return "全軍士氣提升!";
+  const d = B.defs[B.wave], me = wByName(B.me.n), en = wByName(d.n);
+  if(d.sh > 0){
+    d.sh--;
+    updateBars(); hitPbox("bt-enp"); dmgFloat(true, "🛡️💥");
+    const msg = "看破" + en.n + "的防線,先削弱 1 層護盾。";
+    log(msg);
+    return msg;
+  }
+  const dmg = Math.min(d.hp - 1, 12 + Math.round(me.zh / 7) + B.city.tier * 2);
+  if(dmg > 0){
+    d.hp -= dmg;
+    updateBars(); hitPbox("bt-enp"); dmgFloat(true, "智 -" + dmg);
+  }
+  const msg = "先手擾亂" + en.n + ",開戰前造成 " + Math.max(0,dmg) + " 點智謀傷害。";
+  log(msg);
+  return msg;
+}
+function closeTactic(done){
+  stopTacticTimer();
+  const box = $("tactic-scene");
+  if(box){ box.className = ""; box.innerHTML = ""; }
+  tacticState = null;
+  if(done) done();
+}
+
 /* ===== 遊戲狀態 ===== */
 let G = null;      // {f, turn, owner:{cityId:力}, roster:[{n,hp,mx}], reserve:[], learned:[]}
 let B = null;      // 戰鬥狀態
@@ -1731,7 +2024,7 @@ function startBattle(cityId, wname){
   $("bt-city").textContent = "進攻 " + c.n + "(" + GTITLE[c.tier] + "生字)";
   const begin = () => {
     show("scr-battle"); setupWave(); updateBars();
-    playCutscene(wByName(B.me.n), wByName(B.defs[0].n), askQuestion);
+    startTacticChallenge(() => playCutscene(wByName(B.me.n), wByName(B.defs[0].n), askQuestion));
   };
   const sid = storyForBattle(c);
   if(sid && !storySeen(sid)) playStory(sid, begin);
