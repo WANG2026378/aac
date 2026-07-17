@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="三國數學">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#8E2F24">
+<link rel="manifest" href="manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三國數學演義 — 國小一至四年級數學戰略遊戲</title>
+<style>
+:root{
+  --ink:#2b1d0e; --paper:#f7ecd2; --paper2:#ead8a9; --gold:#d6ad38; --gold2:#ffe08a;
+  --red:#8e2f24; --wei:#2f5b8e; --shu:#2f7d4f; --wu:#a33b2e; --qun:#6b5b95;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{
+  font-family:"PingFang TC","Microsoft JhengHei","Noto Serif TC",serif;
+  background:radial-gradient(ellipse at 50% 25%,#4a2c18 0%,#160d07 78%);
+  color:var(--ink); overflow:hidden; user-select:none;
+}
+.screen{display:none;position:absolute;inset:0;overflow:hidden}
+.screen.on{display:flex;flex-direction:column}
+.btn{
+  border:2px solid #6d5017;border-radius:9px;background:linear-gradient(180deg,#ffe08a,#d6ad38);
+  color:#2b1d0e;font:900 15px/1.2 inherit;letter-spacing:1px;padding:10px 16px;cursor:pointer;
+  box-shadow:0 4px 10px rgba(0,0,0,.34)
+}
+.btn.ghost{background:linear-gradient(180deg,#fff5d8,#dec88c)}
+.btn.red{background:linear-gradient(180deg,#c05a4a,#8e2f24);color:#fff0df;border-color:#5c1d15}
+.btn:disabled{opacity:.45;cursor:default}
+
+/* title */
+#scr-title{align-items:center;justify-content:center;text-align:center;padding:22px;background:
+  radial-gradient(circle at 50% 30%,rgba(255,224,138,.12),transparent 28%),
+  radial-gradient(ellipse at 50% 25%,#4b2a12 0%,#130904 82%)}
+#scr-title h1{margin:4px 0;font-size:clamp(42px,8vw,86px);letter-spacing:8px;color:var(--gold2);
+  text-shadow:0 0 24px rgba(255,224,138,.38),0 4px 0 #6b2d10}
+.sub{color:#e9d4a1;font-size:clamp(15px,2.2vw,22px);letter-spacing:3px;margin-bottom:22px}
+.force-row{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+.force-card{
+  width:180px;min-height:168px;border:3px solid #7a5c22;border-radius:14px;background:linear-gradient(180deg,#fff6dc,#e5c97d);
+  padding:15px 12px;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.48);transition:transform .15s
+}
+.force-card:hover{transform:translateY(-5px)}
+.force-flag{font-size:54px;font-weight:1000;line-height:1}
+.force-name{font-size:19px;font-weight:1000;margin:8px 0 4px}
+.force-desc{font-size:12.5px;line-height:1.55;color:#5d461e}
+.title-links{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:24px}
+.note{color:#bba979;font-size:13px;line-height:1.7;margin-top:18px}
+
+/* common bars */
+.topbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 14px;background:linear-gradient(180deg,#3d2c14,#24170a);
+  color:#f2dfb1;border-bottom:2px solid #7a5c22}
+.tb-title{font-weight:1000;color:var(--gold2);font-size:20px;letter-spacing:2px}
+.tb-stat{background:rgba(0,0,0,.3);border-radius:8px;padding:4px 10px;font-size:14px}
+.spacer{flex:1}
+
+/* map */
+#scr-map{background:#20150b}
+#map-wrap{flex:1;position:relative;overflow:hidden}
+#map-svg{width:100%;height:100%;display:block}
+.city-node{cursor:pointer}
+.city-node:hover .city-ring{stroke-width:4}
+#map-hint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:rgba(0,0,0,.72);color:#f5e8c4;
+  padding:8px 18px;border-radius:999px;font-size:14px;white-space:nowrap;pointer-events:none}
+
+/* battle */
+#scr-battle{background:radial-gradient(ellipse at 50% 18%,#54311b 0%,#140905 80%);color:#f5dfae}
+.battle-head{text-align:center;color:var(--gold2);font-weight:1000;letter-spacing:3px;font-size:22px;padding:9px 0 2px}
+.battle-sub{text-align:center;color:#c8b488;font-size:13px;margin-bottom:5px}
+.arena{display:flex;align-items:stretch;justify-content:center;gap:2vw;padding:6px 12px}
+.fighter{width:min(230px,28vw);text-align:center;position:relative}
+.portrait{aspect-ratio:5/6;border:2px solid #f0d878;border-radius:16px;background:
+  radial-gradient(circle at 50% 20%,rgba(255,240,168,.32),transparent 34%),
+  linear-gradient(145deg,#3b2712,#120805);box-shadow:0 12px 28px rgba(0,0,0,.62),inset 0 0 0 3px rgba(214,173,56,.28);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;overflow:hidden}
+.portrait .em{font-size:clamp(46px,7vw,74px);filter:drop-shadow(0 4px 5px #000)}
+.portrait .pn{font-size:clamp(19px,2.8vw,30px);font-weight:1000;color:#fff2b4;letter-spacing:3px;text-shadow:0 3px 5px #000;margin-top:8px}
+.portrait .pt{font-size:12px;color:#d5c08d;margin-top:4px}
+.fname{font-weight:1000;font-size:18px;margin-top:6px;letter-spacing:2px}
+.ftitle{font-size:12px;color:#cfbd90}
+.hpbar{height:14px;background:rgba(0,0,0,.58);border:1px solid #000;border-radius:8px;overflow:hidden;margin-top:6px}
+.hpbar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#4caf50,#8bc34a);transition:width .35s}
+.hpbar.enemy i{background:linear-gradient(90deg,#d84335,#ff8a65)}
+.hp-num{font-size:12px;color:#e8d9ad;margin-top:3px}
+.mid{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:122px;gap:7px}
+.vs{font-size:42px;color:#ffe08a;font-weight:1000;text-shadow:0 0 18px rgba(214,173,56,.6)}
+#combo{min-height:20px;color:#ffd76e;font-weight:1000}
+#battle-log{min-height:22px;text-align:center;color:#f2dfb1;font-size:13.5px;line-height:1.45}
+.q-panel{
+  width:min(900px,94vw);margin:5px auto 0;background:linear-gradient(180deg,#fff6dc,#ead8a9);color:var(--ink);
+  border:3px solid #7a5c22;border-radius:16px;padding:13px 16px 15px;box-shadow:0 12px 32px rgba(0,0,0,.58)
+}
+.q-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.q-type{color:#8a681f;font-weight:1000;font-size:13px;letter-spacing:2px}
+.item-row{display:flex;gap:7px;flex-wrap:wrap;margin:7px 0}
+.item{border:2px solid #9a7b33;border-radius:9px;background:#fff8e6;color:#3a2a08;font:900 13px/1.25 inherit;padding:7px 9px;cursor:pointer}
+.item small{display:block;font-size:10.5px;color:#72571d;font-weight:700}
+#timer{position:relative;height:16px;background:rgba(0,0,0,.12);border:1.5px solid #9a7b33;border-radius:999px;overflow:hidden;flex:1;min-width:160px}
+#timer i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#4caf50,#ffe08a);transition:width .12s linear}
+#timer.danger i{background:linear-gradient(90deg,#d84335,#ff9a62)}
+#timer span{position:absolute;right:8px;top:0;line-height:15px;font-size:11px;font-weight:1000;color:#4b3710}
+.q-text{font-size:clamp(21px,3vw,32px);font-weight:1000;line-height:1.42;margin:8px 0;text-align:center}
+#clock-box{text-align:center;min-height:0}
+#clock-box svg{max-width:160px;width:38vw;height:auto}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{min-height:52px;border:2px solid #9a7b33;border-radius:11px;background:#fffaf0;color:#2b1d0e;font:1000 clamp(17px,2.4vw,24px)/1.25 inherit;cursor:pointer;padding:10px}
+.opt:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.opt.correct{background:#cbe8bb;border-color:#377d37}
+.opt.wrong{background:#efc0b7;border-color:#9b2f24}
+.opt.faded{opacity:.25;text-decoration:line-through}
+.opt:disabled{cursor:default}
+#hint-box{display:none;background:#fff2bd;border-left:5px solid #d6ad38;border-radius:8px;margin:8px 0 0;padding:8px 12px;font-size:14px;font-weight:900;line-height:1.5}
+#q-fb{min-height:25px;font-size:15px;font-weight:1000;line-height:1.55;color:#5a4218;margin-top:8px}
+.battle-foot{text-align:center;padding:8px}
+
+/* modals and story */
+.modal-mask{display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.78);align-items:center;justify-content:center;padding:18px}
+.modal-mask.on{display:flex}
+.modal{width:min(760px,96vw);max-height:92vh;overflow-y:auto;background:linear-gradient(180deg,#fff6dc,#ead8a9);border:3px solid #7a5c22;border-radius:18px;
+  padding:20px 22px;box-shadow:0 16px 46px rgba(0,0,0,.72);position:relative}
+.mx{position:absolute;right:12px;top:8px;border:0;background:none;font-size:25px;font-weight:1000;color:#7a5c22;cursor:pointer}
+.pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.pick-card{border:2px solid #8a681f;border-radius:13px;background:#fff7df;padding:8px;text-align:center;cursor:pointer}
+.pick-card.locked{filter:grayscale(1) brightness(.65);cursor:default}
+.pick-card .em{font-size:42px}.pick-card b{display:block;font-size:17px}.pick-card span{font-size:12px;color:#6b5220}
+#res-title{font-size:32px;font-weight:1000;letter-spacing:4px;text-align:center;margin:4px 0 12px}
+#res-body{text-align:center;font-size:16px;line-height:2}
+#story-scene{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;padding:18px;background:
+  radial-gradient(circle at 50% 28%,rgba(255,224,138,.2),transparent 24%),
+  linear-gradient(180deg,rgba(83,39,16,.97),rgba(10,5,3,.98));color:#f7e6b9;text-align:center}
+#story-scene.on{display:flex}
+.story-card{width:min(820px,94vw);border:3px solid #d6ad38;border-radius:18px;background:rgba(0,0,0,.35);padding:24px;box-shadow:0 18px 48px rgba(0,0,0,.55)}
+.story-card h2{font-size:clamp(32px,6vw,68px);color:#fff2b4;margin:4px 0 10px;letter-spacing:7px;text-shadow:0 4px 0 #5a2a10}
+.story-line{background:linear-gradient(180deg,#fff6dc,#ead8a9);color:#2b1d0e;border:2px solid #8a681f;border-radius:13px;padding:14px;margin:14px auto;
+  max-width:680px;font-size:clamp(18px,2.5vw,27px);font-weight:1000;line-height:1.55}
+.story-actors{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin:14px 0}
+.story-actor{min-width:110px}.story-actor .em{font-size:54px}.story-actor b{display:block;color:#fff2b4}
+
+@media(max-width:720px){
+  .arena{gap:1vw}.fighter{width:31vw}.mid{min-width:68px}.vs{font-size:30px}
+  .portrait{border-radius:12px}.portrait .pt{display:none}
+  .opts{grid-template-columns:1fr}.item{flex:1 1 calc(50% - 8px)}
+  .force-card{width:150px}.q-panel{padding:11px}
+}
+</style>
+</head>
+<body>
+
+<div id="scr-title" class="screen on">
+  <h1>三國數學演義</h1>
+  <div class="sub">三國演義 × 加減法 × 時間日期 × 軍師法寶</div>
+  <div style="color:#e8d4a2;margin-bottom:12px;font-weight:900;letter-spacing:2px">請選擇你的勢力</div>
+  <div class="force-row" id="force-row"></div>
+  <div class="title-links">
+    <button class="btn ghost" id="btn-continue" style="display:none" onclick="loadGame()">繼續上次戰役</button>
+    <button class="btn ghost btn-voice" onclick="toggleVoice()">配音:開</button>
+  </div>
+  <div class="note">攻下一座城,就完成一組數學挑戰。城池等級越高,題目年級越高。<br>智力高的武將會帶更多解題法寶。</div>
+</div>
+
+<div id="scr-map" class="screen">
+  <div class="topbar">
+    <span class="tb-title" id="tb-force">蜀軍</span>
+    <span class="tb-stat" id="tb-turn">第 1 回合</span>
+    <span class="tb-stat" id="tb-city">城池 0/12</span>
+    <span class="tb-stat" id="tb-score">分數 0</span>
+    <span class="tb-stat" id="tb-stars">數學星 0</span>
+    <span class="spacer"></span>
+    <button class="btn ghost btn-voice" onclick="toggleVoice()">配音:開</button>
+    <button class="btn ghost" onclick="restTurn()">休整補血</button>
+    <button class="btn ghost" onclick="saveGame(true)">存檔</button>
+    <button class="btn red" onclick="backTitle()">回主畫面</button>
+  </div>
+  <div id="map-wrap">
+    <svg id="map-svg" viewBox="0 0 960 560" preserveAspectRatio="xMidYMid meet"></svg>
+    <div id="map-hint">點選敵方相鄰城池發動數學攻城</div>
+  </div>
+</div>
+
+<div id="scr-battle" class="screen">
+  <div class="battle-head" id="bt-city">進攻 洛陽</div>
+  <div class="battle-sub" id="bt-wave">守將 1/2</div>
+  <div class="arena">
+    <div class="fighter">
+      <div class="portrait" id="bt-mep"></div>
+      <div class="fname" id="bt-men"></div><div class="ftitle" id="bt-met"></div>
+      <div class="hpbar"><i id="bt-mehp"></i></div><div class="hp-num" id="bt-mehpn"></div>
+    </div>
+    <div class="mid"><div class="vs">VS</div><div id="combo"></div><div id="battle-log"></div></div>
+    <div class="fighter">
+      <div class="portrait" id="bt-enp"></div>
+      <div class="fname" id="bt-enn"></div><div class="ftitle" id="bt-ent"></div>
+      <div class="hpbar enemy"><i id="bt-enhp"></i></div><div class="hp-num" id="bt-enhpn"></div>
+    </div>
+  </div>
+  <div class="q-panel">
+    <div class="q-top">
+      <div class="q-type" id="q-type"></div>
+      <div id="timer"><i id="timer-i"></i><span id="timer-n"></span></div>
+    </div>
+    <div class="item-row" id="item-row"></div>
+    <div class="q-text" id="q-text"></div>
+    <div id="clock-box"></div>
+    <div class="opts" id="q-opts"></div>
+    <div id="hint-box"></div>
+    <div id="q-fb"></div>
+  </div>
+  <div class="battle-foot">
+    <button class="btn red" onclick="fleeBattle()">撤退</button>
+  </div>
+</div>
+
+<div class="modal-mask" id="modal-pick"><div class="modal">
+  <button class="mx" onclick="closeModal('modal-pick')">×</button>
+  <h3 id="pick-title" style="margin:2px 0 12px;letter-spacing:2px">選擇出戰武將</h3>
+  <div class="pick-grid" id="pick-grid"></div>
+</div></div>
+
+<div class="modal-mask" id="modal-result"><div class="modal">
+  <div id="res-title"></div><div id="res-body"></div>
+  <div style="margin-top:16px;text-align:center"><button class="btn" id="res-btn" onclick="closeResult()">確定</button></div>
+</div></div>
+
+<div id="story-scene"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const rand = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+const pickA = arr => arr[rand(0,arr.length-1)];
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=rand(0,i); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+const WARRIORS = [
+ {n:"劉備",f:"蜀",z:"玄德",t:"仁德之主",em:"🟢",wu:76,zh:75,ld:86},
+ {n:"關羽",f:"蜀",z:"雲長",t:"武聖",em:"🗡️",wu:97,zh:76,ld:95},
+ {n:"張飛",f:"蜀",z:"益德",t:"萬人敵",em:"🐯",wu:98,zh:45,ld:83},
+ {n:"趙雲",f:"蜀",z:"子龍",t:"常勝將軍",em:"🐉",wu:96,zh:76,ld:91},
+ {n:"諸葛亮",f:"蜀",z:"孔明",t:"臥龍軍師",em:"🪶",wu:38,zh:100,ld:94},
+ {n:"黃月英",f:"蜀",z:"月英",t:"機關巧手",em:"⚙️",wu:45,zh:96,ld:84},
+ {n:"曹操",f:"魏",z:"孟德",t:"亂世梟雄",em:"🔵",wu:72,zh:91,ld:96},
+ {n:"司馬懿",f:"魏",z:"仲達",t:"冢虎軍師",em:"♟️",wu:63,zh:96,ld:93},
+ {n:"張遼",f:"魏",z:"文遠",t:"合肥名將",em:"🛡️",wu:92,zh:78,ld:93},
+ {n:"郭嘉",f:"魏",z:"奉孝",t:"鬼才",em:"📘",wu:25,zh:98,ld:76},
+ {n:"許褚",f:"魏",z:"仲康",t:"虎痴",em:"🪓",wu:96,zh:36,ld:68},
+ {n:"孫權",f:"吳",z:"仲謀",t:"吳大帝",em:"🔴",wu:67,zh:80,ld:89},
+ {n:"周瑜",f:"吳",z:"公瑾",t:"美周郎",em:"🔥",wu:71,zh:96,ld:94},
+ {n:"陸遜",f:"吳",z:"伯言",t:"書生都督",em:"📜",wu:69,zh:95,ld:93},
+ {n:"呂蒙",f:"吳",z:"子明",t:"士別三日",em:"📚",wu:81,zh:89,ld:88},
+ {n:"甘寧",f:"吳",z:"興霸",t:"錦帆賊",em:"🏴",wu:94,zh:66,ld:82},
+ {n:"呂布",f:"群",z:"奉先",t:"天下無雙",em:"🐎",wu:100,zh:26,ld:80},
+ {n:"貂蟬",f:"群",z:"閉月",t:"連環計",em:"🌙",wu:34,zh:94,ld:92},
+ {n:"張角",f:"群",z:"-",t:"大賢良師",em:"⚡",wu:25,zh:86,ld:82},
+ {n:"祝融夫人",f:"群",z:"火神",t:"南蠻女王",em:"🪃",wu:90,zh:60,ld:83},
+];
+const CITIES = [
+ {id:"chengdu",n:"成都",x:180,y:390,tier:1,unit:"add",owner:"蜀",defs:["劉備","黃月英"]},
+ {id:"hanzhong",n:"漢中",x:270,y:310,tier:2,unit:"sub",owner:"蜀",defs:["趙雲","張飛"]},
+ {id:"changan",n:"長安",x:360,y:250,tier:3,unit:"time",owner:"群",defs:["張角","呂布"]},
+ {id:"luoyang",n:"洛陽",x:470,y:245,tier:3,unit:"add",owner:"群",defs:["貂蟬","呂布"]},
+ {id:"xuchang",n:"許昌",x:610,y:280,tier:4,unit:"date",owner:"魏",defs:["曹操","司馬懿"]},
+ {id:"yecheng",n:"鄴城",x:600,y:180,tier:2,unit:"sub",owner:"魏",defs:["郭嘉","張遼"]},
+ {id:"xuzhou",n:"徐州",x:750,y:260,tier:2,unit:"time",owner:"魏",defs:["許褚","張遼"]},
+ {id:"jiangling",n:"江陵",x:375,y:382,tier:2,unit:"date",owner:"蜀",defs:["關羽"]},
+ {id:"jingzhou",n:"荊州",x:500,y:362,tier:3,unit:"sub",owner:"吳",defs:["呂蒙","陸遜"]},
+ {id:"jiangxia",n:"江夏",x:605,y:415,tier:2,unit:"add",owner:"吳",defs:["甘寧"]},
+ {id:"jianye",n:"建業",x:785,y:360,tier:4,unit:"time",owner:"吳",defs:["孫權","周瑜"]},
+ {id:"nanman",n:"南中",x:250,y:485,tier:3,unit:"date",owner:"群",defs:["祝融夫人"]},
+];
+const EDGES = [["chengdu","hanzhong"],["chengdu","jiangling"],["chengdu","nanman"],["hanzhong","changan"],["changan","luoyang"],["luoyang","xuchang"],["luoyang","jingzhou"],["xuchang","yecheng"],["xuchang","xuzhou"],["jingzhou","jiangling"],["jingzhou","jiangxia"],["jiangxia","jianye"],["xuzhou","jianye"],["jiangling","nanman"]];
+const FORCES = {
+ "蜀":{starters:["劉備","關羽","張飛","趙雲","諸葛亮"],desc:"仁義起兵,用智慧安定天下。"},
+ "魏":{starters:["曹操","司馬懿","張遼","郭嘉","許褚"],desc:"中原兵強,謀士精算糧草時辰。"},
+ "吳":{starters:["孫權","周瑜","陸遜","呂蒙","甘寧"],desc:"江東水軍,善用時間與日期調度。"},
+};
+const GTITLE = {1:"一年級",2:"二年級",3:"三年級",4:"四年級"};
+const UNIT = {add:"加法糧道",sub:"減法軍需",time:"時間軍令",date:"日期行軍"};
+const UNIT_EM = {add:"➕",sub:"➖",time:"🕐",date:"📅"};
+const WD = ["日","一","二","三","四","五","六"];
+const MDAYS = {1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31};
+const FCOLOR = {"蜀":"#2f7d4f","魏":"#2f5b8e","吳":"#a33b2e","群":"#6b5b95","我":"#d6ad38"};
+const wByName = n => WARRIORS.find(w => w.n === n);
+const cityById = id => CITIES.find(c => c.id === id);
+
+let G = null, B = null, curQ = null, qTimer = null, qTimeLeft = 0, qTimeMax = 0, voiceOn = true, _pulseCity = null;
+function newWar(n){ const w = wByName(n); const mx = 92 + Math.round(w.ld/3); return {n,hp:mx,mx}; }
+function portrait(w){ return `<div class="em">${w.em}</div><div class="pn">${w.n}</div><div class="pt">${w.t}<br>武${w.wu} 智${w.zh} 統${w.ld}</div>`; }
+function speak(t, who){
+  if(!voiceOn || !window.speechSynthesis) return;
+  try{ speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang="zh-TW"; u.pitch = who==="enemy"?.55:1.2; u.rate=1.05; speechSynthesis.speak(u); }catch(e){}
+}
+function toggleVoice(){ voiceOn=!voiceOn; if(!voiceOn){try{speechSynthesis.cancel()}catch(e){}} document.querySelectorAll(".btn-voice").forEach(b=>b.textContent=voiceOn?"配音:開":"配音:關"); }
+function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on")); $(id).classList.add("on"); }
+function closeModal(id){ $(id).classList.remove("on"); }
+
+function initTitle(){
+  const row = $("force-row"); row.innerHTML = "";
+  ["蜀","魏","吳"].forEach(f => {
+    const d = document.createElement("div");
+    d.className = "force-card";
+    d.innerHTML = `<div class="force-flag" style="color:${FCOLOR[f]}">${f}</div><div class="force-name">${f==="蜀"?"蜀漢・劉備":f==="魏"?"曹魏・曹操":"東吳・孫權"}</div><div class="force-desc">${FORCES[f].desc}<br>起始武將:${FORCES[f].starters.join("、")}</div>`;
+    d.onclick = () => { if(!G || confirm("開始新的三國數學戰役?")) startGame(f); };
+    row.appendChild(d);
+  });
+  try{ $("btn-continue").style.display = localStorage.getItem("sg_math_save") ? "" : "none"; }catch(e){}
+}
+function startGame(f){
+  const owner = {}; CITIES.forEach(c => owner[c.id] = c.owner === f ? "我" : c.owner);
+  G = {f,turn:1,score:0,stars:0,owner,roster:FORCES[f].starters.map(newWar),storySeen:[]};
+  show("scr-map"); renderMap(); saveGame(false);
+  playStory("start", () => renderMap(), true);
+}
+function saveGame(toast){ try{ localStorage.setItem("sg_math_save", JSON.stringify(G)); if(toast) hint("已存檔!"); }catch(e){ if(toast) hint("這個環境暫時無法存檔"); } }
+function loadGame(){ try{ const d=localStorage.getItem("sg_math_save"); if(d){ G=JSON.parse(d); show("scr-map"); renderMap(); }}catch(e){} }
+function backTitle(){ if(G) saveGame(false); show("scr-title"); initTitle(); }
+
+function renderMap(){
+  $("tb-force").textContent = G.f + "軍";
+  $("tb-turn").textContent = "第 " + G.turn + " 回合";
+  $("tb-city").textContent = "城池 " + CITIES.filter(c=>G.owner[c.id]==="我").length + "/" + CITIES.length;
+  $("tb-score").textContent = "分數 " + G.score;
+  $("tb-stars").textContent = "數學星 " + G.stars;
+  let s = "";
+  EDGES.forEach(e => { const a=cityById(e[0]), b=cityById(e[1]); s += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="#8a7444" stroke-width="2.5" stroke-dasharray="7 6" opacity=".55"/>`; });
+  CITIES.forEach(c => {
+    const o = G.owner[c.id], mine = o==="我", atk = !mine && isAdjacentToMine(c.id);
+    s += `<g class="city-node" onclick="cityClick('${c.id}')">`;
+    if(atk) s += `<circle cx="${c.x}" cy="${c.y}" r="31" fill="${FCOLOR[o]}" opacity=".18"><animate attributeName="r" values="26;36;26" dur="1.6s" repeatCount="indefinite"/></circle>`;
+    s += `<circle class="city-ring" cx="${c.x}" cy="${c.y}" r="22" fill="${FCOLOR[o]}" stroke="${mine?"#fff2c8":"#1a120a"}" stroke-width="${mine?3.5:2.5}"/>
+      <text x="${c.x}" y="${c.y+1}" text-anchor="middle" font-size="14" font-weight="900" fill="#fff8e8">${mine?G.f:o}</text>
+      <text x="${c.x}" y="${c.y+42}" text-anchor="middle" font-size="17" font-weight="900" fill="#f0e2bb">${c.n}</text>
+      <text x="${c.x}" y="${c.y+58}" text-anchor="middle" font-size="11" fill="#c8b488">${UNIT_EM[c.unit]} ${UNIT[c.unit]}・${GTITLE[c.tier]}</text>`;
+    if(!mine) s += `<text x="${c.x}" y="${c.y-31}" text-anchor="middle" font-size="11.5" fill="#d8c69a">守將${c.defs.length}名</text>`;
+    s += `</g>`;
+  });
+  if(_pulseCity){ const c=cityById(_pulseCity); if(c) s += `<circle cx="${c.x}" cy="${c.y}" r="24" fill="none" stroke="#ffe9a8" stroke-width="4"><animate attributeName="r" values="22;50" dur="1s" repeatCount="3"/><animate attributeName="opacity" values="1;0" dur="1s" repeatCount="3"/></circle>`; _pulseCity=null; }
+  $("map-svg").innerHTML = s;
+  checkVictory();
+}
+function isAdjacentToMine(id){ return EDGES.some(e => (e[0]===id && G.owner[e[1]]==="我") || (e[1]===id && G.owner[e[0]]==="我")); }
+function hint(t){ const h=$("map-hint"); h.textContent=t; clearTimeout(hint._t); hint._t=setTimeout(()=>h.textContent="點選敵方相鄰城池發動數學攻城",2600); }
+function cityClick(id){
+  const c = cityById(id), o = G.owner[id];
+  if(o==="我"){ hint(c.n + "是我方城池。"); return; }
+  if(!isAdjacentToMine(id)){ hint("太遠了!只能攻打相鄰城池。"); return; }
+  openPick(id);
+}
+function openPick(cityId){
+  const c = cityById(cityId);
+  $("pick-title").textContent = `進攻${c.n}｜${UNIT_EM[c.unit]}${UNIT[c.unit]}・${GTITLE[c.tier]}｜選擇武將`;
+  const g=$("pick-grid"); g.innerHTML="";
+  G.roster.forEach(r => {
+    const w=wByName(r.n), hurt = r.hp<=0;
+    const el=document.createElement("div");
+    el.className="pick-card" + (hurt?" locked":"");
+    el.innerHTML = `<div class="em">${w.em}</div><b>${w.n}</b><span>${hurt?"重傷休養中":"體力 "+r.hp+"/"+r.mx+"｜智力"+w.zh}</span>`;
+    if(!hurt) el.onclick=()=>{ closeModal("modal-pick"); startBattle(cityId, r.n); };
+    g.appendChild(el);
+  });
+  $("modal-pick").classList.add("on");
+}
+
+function kitFor(w){
+  const inv = {hint:1,fifty:0,time:0,shield:0,skip:0};
+  if(w.zh>=75) inv.time++;
+  if(w.zh>=88){ inv.fifty++; inv.shield++; }
+  if(w.zh>=95){ inv.skip++; inv.hint++; }
+  return inv;
+}
+function startBattle(cityId, wname){
+  const c=cityById(cityId);
+  B = {city:c,me:G.roster.find(r=>r.n===wname),wave:0,combo:0,shieldReady:false,usedFifty:false,usedHint:false,
+    inv:kitFor(wByName(wname)),
+    defs:c.defs.map((n,i)=>{ const w=wByName(n); const hp=62+w.ld+(c.tier-1)*16; return {n,hp,mx:hp,sh:i===c.defs.length-1 && c.tier>=3 ? c.tier-2 : 0}; })};
+  $("bt-city").textContent = `進攻 ${c.n}｜${UNIT_EM[c.unit]}${UNIT[c.unit]}｜${GTITLE[c.tier]}`;
+  const begin = () => { show("scr-battle"); setupWave(); askQuestion(); };
+  const sid = storyForCity(c);
+  if(sid && !storySeen(sid)) playStory(sid, begin);
+  else begin();
+}
+function setupWave(){
+  const d=B.defs[B.wave], en=wByName(d.n), me=wByName(B.me.n);
+  $("bt-wave").textContent = "守將 " + (B.wave+1) + "/" + B.defs.length;
+  $("bt-mep").innerHTML = portrait(me); $("bt-men").textContent=me.n; $("bt-met").textContent=me.t;
+  $("bt-enp").innerHTML = portrait(en); $("bt-enn").textContent=en.n; $("bt-ent").textContent=en.t;
+  log(`${en.n}布下${UNIT[cUnit()]}題陣!答對就能進攻。`);
+  updateBars(); renderItems();
+  speak(en.n + "在此守城。先答出這一題!", "enemy");
+}
+function cUnit(){ return B.city.unit; }
+function log(t){ $("battle-log").textContent=t; }
+function updateBars(){
+  const d=B.defs[B.wave];
+  $("bt-mehp").style.width = Math.max(0,B.me.hp/B.me.mx*100)+"%";
+  $("bt-mehpn").textContent = Math.max(0,B.me.hp)+" / "+B.me.mx;
+  $("bt-enhp").style.width = Math.max(0,d.hp/d.mx*100)+"%";
+  $("bt-enhpn").textContent = Math.max(0,d.hp)+" / "+d.mx + (d.sh>0 ? "｜護盾"+d.sh : "");
+  $("combo").textContent = B.combo>=2 ? "連算 x" + B.combo : "";
+}
+function renderItems(){
+  const names = {
+    hint:["錦囊提示","看提示"], fifty:["觀星排除","去掉錯誤"], time:["木牛流馬","加 10 秒"], shield:["空城護身","答錯免傷"], skip:["借東風","直接通過"]
+  };
+  $("item-row").innerHTML = ["hint","fifty","time","shield","skip"].map(k => {
+    const n = B.inv[k] || 0;
+    return `<button class="item" onclick="useItem('${k}')" ${n<1?"disabled":""}>${names[k][0]} ×${n}<small>${names[k][1]}</small></button>`;
+  }).join("");
+}
+
+function numOptions(ans, spread){
+  const opts = new Set([String(ans)]);
+  const deltas = [1,-1,2,-2,5,-5,10,-10,spread,-spread];
+  let i=0;
+  while(opts.size<4 && i<80){
+    const v = Number(ans) + (i<deltas.length ? deltas[i] : rand(-spread, spread));
+    if(v>=0 && v!==Number(ans)) opts.add(String(v));
+    i++;
+  }
+  while(opts.size<4) opts.add(String(Number(ans)+opts.size+1));
+  return shuffle([...opts]);
+}
+function timeStr(h,m){ return m===0 ? `${h}點` : (m===30 && curGrade()===1 ? `${h}點半` : `${h}點${m}分`); }
+function curGrade(){ return B && B.city ? B.city.tier : 1; }
+function genAdd(g){
+  let a,b;
+  if(g===1){ a=rand(1,10); b=rand(1,20-a); }
+  else if(g===2){ a=rand(11,88); b=rand(11,99-a); }
+  else if(g===3){ a=rand(100,850); b=rand(100,999-a); }
+  else { a=rand(1000,8500); b=rand(500,9999-a); }
+  const ans=a+b, word=Math.random()<.35;
+  return {unit:"add",q:word?pickA([`軍糧有 ${a} 袋,援軍又送來 ${b} 袋,共有幾袋?`,`箭矢原有 ${a} 支,工匠再造 ${b} 支,共有幾支?`]):`${a} + ${b} = ?`,ans:String(ans),opts:numOptions(ans,g<3?10:120),hint:`這題用加法:${a} + ${b}。先加高位,再加低位。`};
+}
+function genSub(g){
+  let a,b;
+  if(g===1){ a=rand(5,20); b=rand(1,a-1); }
+  else if(g===2){ a=rand(30,99); b=rand(11,a-5); }
+  else if(g===3){ a=rand(300,999); b=rand(100,a-50); }
+  else { a=rand(2000,9999); b=rand(500,a-500); }
+  const ans=a-b, word=Math.random()<.35;
+  return {unit:"sub",q:word?pickA([`城中有 ${a} 袋糧,出兵用了 ${b} 袋,還剩幾袋?`,`弓兵有 ${a} 支箭,射出了 ${b} 支,還剩幾支?`]):`${a} − ${b} = ?`,ans:String(ans),opts:numOptions(ans,g<3?10:120),hint:`這題用減法:${a} − ${b}。不夠減時要退位。`};
+}
+function clockSVG(h,m){
+  const hAng=((h%12)*30+m*.5-90)*Math.PI/180, mAng=(m*6-90)*Math.PI/180;
+  let nums="", ticks="";
+  for(let i=1;i<=12;i++){ const a=(i*30-90)*Math.PI/180; nums += `<text x="${100+76*Math.cos(a)}" y="${100+76*Math.sin(a)+6}" text-anchor="middle" font-size="18" font-weight="900" fill="#1a3b5d">${i}</text>`; }
+  for(let i=0;i<60;i++){ const a=(i*6-90)*Math.PI/180, big=i%5===0; ticks += `<line x1="${100+(big?88:92)*Math.cos(a)}" y1="${100+(big?88:92)*Math.sin(a)}" x2="${100+95*Math.cos(a)}" y2="${100+95*Math.sin(a)}" stroke="#1a3b5d" stroke-width="${big?3:1}"/>`; }
+  return `<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="97" fill="#fffbe6" stroke="#0b5ea8" stroke-width="4"/>${ticks}${nums}<line x1="100" y1="100" x2="${100+45*Math.cos(hAng)}" y2="${100+45*Math.sin(hAng)}" stroke="#8e2f24" stroke-width="7" stroke-linecap="round"/><line x1="100" y1="100" x2="${100+68*Math.cos(mAng)}" y2="${100+68*Math.sin(mAng)}" stroke="#0b5ea8" stroke-width="4" stroke-linecap="round"/><circle cx="100" cy="100" r="6" fill="#333"/></svg>`;
+}
+function genTime(g){
+  if(g===1){ const h=rand(1,12), m=pickA([0,30]), ans=timeStr(h,m); const opts=new Set([ans]); while(opts.size<4){ opts.add(timeStr(rand(1,12),pickA([0,30]))); } return {unit:"time",q:"看看軍令鐘,現在是幾點?",ans,opts:shuffle([...opts]),clock:[h,m],hint:"短針看幾點,長針指12是整點,指6是半點。"}; }
+  if(g===2){ const h=rand(1,12), m=rand(1,11)*5, ans=`${h}點${m}分`; const opts=new Set([ans]); while(opts.size<4) opts.add(`${rand(1,12)}點${rand(1,11)*5}分`); return {unit:"time",q:"看看軍令鐘,現在是幾點幾分?",ans,opts:shuffle([...opts]),clock:[h,m],hint:"長針指到的數字乘以5,就是分鐘。"}; }
+  if(g===3){ const h=rand(1,10), m=rand(0,5)*10, dur=rand(2,9)*10; let eh=h, em=m+dur; if(em>=60){eh++;em-=60;} const ans=`${eh}點${em}分`; const opts=new Set([ans]); while(opts.size<4) opts.add(`${Math.max(1,eh+rand(-1,1))}點${pickA([0,10,20,30,40,50])}分`); return {unit:"time",q:`軍隊 ${h}點${m?m+"分":""} 出發,行軍 ${dur} 分鐘後抵達,抵達時是幾點幾分?`,ans,opts:shuffle([...opts]),hint:`把分鐘相加:${m}+${dur},滿60分就進位1小時。`}; }
+  const type=rand(1,3);
+  if(type===1){ const h=rand(1,11), ans=`${h+12}時`, opts=new Set([ans]); while(opts.size<4) opts.add(`${rand(13,23)}時`); return {unit:"time",q:`下午 ${h} 時,用24時制表示是幾時?`,ans,opts:shuffle([...opts]),hint:"下午時間用24時制要加12。"}; }
+  if(type===2){ const mm=rand(1,5), ss=pickA([0,10,20,30,40,50]), ans=mm*60+ss; return {unit:"time",q:`${mm}分${ss?ss+"秒":""} = 幾秒?`,ans:String(ans),opts:numOptions(ans,30),hint:"1分=60秒,先乘60再加秒數。"}; }
+  const h1=rand(7,10), m1=pickA([0,15,30,45]), durH=rand(1,3), durM=pickA([15,30,45]); let h2=h1+durH,m2=m1+durM; if(m2>=60){h2++;m2-=60;} const ans=`${durH}小時${durM}分`, opts=new Set([ans]); while(opts.size<4) opts.add(`${rand(1,4)}小時${pickA([15,30,45])}分`); return {unit:"time",q:`軍議從 ${h1}:${String(m1).padStart(2,"0")} 到 ${h2}:${String(m2).padStart(2,"0")},一共多久?`,ans,opts:shuffle([...opts]),hint:"用結束時間減開始時間,小時和分鐘分開算。"};
+}
+function isLeap(y){ return (y%4===0 && y%100!==0) || y%400===0; }
+function genDate(g){
+  if(g===1){ const w=rand(0,6), dir=rand(0,1), ans=`星期${WD[(w+(dir?1:6))%7]}`, opts=new Set([ans]); while(opts.size<4) opts.add(`星期${WD[rand(0,6)]}`); return {unit:"date",q:`今天是星期${WD[w]},${dir?"明天":"昨天"}是星期幾?`,ans,opts:shuffle([...opts]),hint:"星期順序:日、一、二、三、四、五、六,再回到日。"}; }
+  if(g===2){ const type=rand(1,3); if(type===1){ const mo=pickA([1,3,4,5,6,7,8,9,10,11,12]); return {unit:"date",q:`${mo}月有幾天?`,ans:String(MDAYS[mo]),opts:shuffle([...new Set([String(MDAYS[mo]),"28","29","30","31"])].slice(0,4)),hint:"1、3、5、7、8、10、12月有31天;4、6、9、11月有30天。"}; } if(type===2) return {unit:"date",q:"一個星期有幾天?",ans:"7",opts:shuffle(["5","6","7","8"]),hint:"週一到週五,再加週六週日。"}; return {unit:"date",q:"一年有幾個月?",ans:"12",opts:shuffle(["10","11","12","13"]),hint:"一年從1月數到12月。"}; }
+  if(g===3){ const type=rand(1,2); if(type===1){ const w=rand(0,6), n=rand(4,13), ans=`星期${WD[(w+n)%7]}`, opts=new Set([ans]); while(opts.size<4) opts.add(`星期${WD[rand(0,6)]}`); return {unit:"date",q:`今天是星期${WD[w]},再過 ${n} 天是星期幾?`,ans,opts:shuffle([...opts]),hint:`每7天循環一次,先算 ${n} 除以7的餘數。`}; } const mo=rand(1,12), maxD=MDAYS[mo], d=rand(1,maxD-10), n=rand(3,9), ans=`${mo}月${d+n}日`, opts=new Set([ans]); while(opts.size<4) opts.add(`${mo}月${rand(Math.max(1,d+n-4),Math.min(maxD,d+n+4))}日`); return {unit:"date",q:`今天是 ${mo}月${d}日,再過 ${n} 天是幾月幾日?`,ans,opts:shuffle([...opts]),hint:`把日期相加:${d}+${n}。`}; }
+  const type=rand(1,2);
+  if(type===1){ const y=pickA([2000,2020,2023,2024,2025,2026,2028,1900]), ans=isLeap(y)?"29天":"28天"; return {unit:"date",q:`${y}年是${isLeap(y)?"閏年":"平年"},這一年的2月有幾天?`,ans,opts:shuffle(["28天","29天","30天","31天"]),hint:"閏年2月29天,平年2月28天。"}; }
+  const mo=rand(1,12), maxD=MDAYS[mo], d1=rand(1,maxD-15), d2=d1+rand(5,14), ans=d2-d1; return {unit:"date",q:`從 ${mo}月${d1}日 到 ${mo}月${d2}日,相隔幾天?`,ans:String(ans),opts:numOptions(ans,4),hint:`用後面的日期減前面的日期:${d2}-${d1}。`};
+}
+function genQuestion(unit){ const g=curGrade(); if(unit==="add") return genAdd(g); if(unit==="sub") return genSub(g); if(unit==="time") return genTime(g); if(unit==="date") return genDate(g); return genAdd(g); }
+
+function askQuestion(){
+  B.usedFifty=false; B.usedHint=false; curQ = genQuestion(B.city.unit);
+  $("q-type").textContent = `${UNIT_EM[curQ.unit]} ${UNIT[curQ.unit]}｜${GTITLE[B.city.tier]}｜${wByName(B.me.n).n}的法寶`;
+  $("q-text").textContent = curQ.q;
+  $("clock-box").innerHTML = curQ.clock ? clockSVG(curQ.clock[0],curQ.clock[1]) : "";
+  $("q-fb").textContent = ""; $("hint-box").style.display="none"; $("hint-box").textContent="";
+  const box=$("q-opts"); box.innerHTML="";
+  curQ.opts.forEach(o => { const b=document.createElement("button"); b.className="opt"; b.textContent=o; b.onclick=()=>answer(b,o); box.appendChild(b); });
+  renderItems(); startTimer();
+  speak(curQ.q.replace(/[0-9]/g, m => " "+m+" "), "enemy");
+}
+function startTimer(){
+  stopTimer(); const zh=wByName(B.me.n).zh;
+  qTimeMax = ({1:32,2:28,3:25,4:22}[B.city.tier] || 24) + (zh>=95?4:0);
+  qTimeLeft = qTimeMax; renderTimer();
+  qTimer = setInterval(()=>{ qTimeLeft-=.1; renderTimer(); if(qTimeLeft<=0){ stopTimer(); answer(null,"__timeout__"); } },100);
+}
+function stopTimer(){ if(qTimer){ clearInterval(qTimer); qTimer=null; } }
+function renderTimer(){ const pct=Math.max(0,qTimeLeft/qTimeMax*100); $("timer-i").style.width=pct+"%"; $("timer-n").textContent=Math.ceil(Math.max(0,qTimeLeft))+" 秒"; $("timer").className=pct<=28?"danger":""; }
+function useItem(k){
+  if(!B || !curQ || (B.inv[k]||0)<1) return;
+  if(k==="hint"){
+    if(B.usedHint) return; B.usedHint=true; B.inv.hint--; $("hint-box").style.display="block"; $("hint-box").textContent="錦囊提示: " + curQ.hint; $("q-fb").textContent="軍師打開錦囊,提示已出現。";
+  }else if(k==="fifty"){
+    if(B.usedFifty) return; B.usedFifty=true; B.inv.fifty--; const wrong=[...document.querySelectorAll("#q-opts .opt")].filter(b=>b.textContent!==curQ.ans && !b.disabled); shuffle(wrong).slice(0,2).forEach(b=>{b.disabled=true;b.classList.add("faded")}); $("q-fb").textContent="觀星臺排除兩個錯誤答案。";
+  }else if(k==="time"){
+    B.inv.time--; qTimeLeft+=10; qTimeMax+=10; renderTimer(); $("q-fb").textContent="木牛流馬送來補給,時間增加 10 秒。";
+  }else if(k==="shield"){
+    B.inv.shield--; B.shieldReady=true; $("q-fb").textContent="空城護身啟動,下次答錯不扣體力。";
+  }else if(k==="skip"){
+    B.inv.skip--; document.querySelectorAll("#q-opts .opt").forEach(b=>{ if(b.textContent===curQ.ans) b.classList.add("correct"); b.disabled=true; }); $("q-fb").textContent="借東風成功!此題直接通過。"; stopTimer(); setTimeout(()=>resolveAnswer(true,true),800);
+  }
+  renderItems();
+}
+function answer(btn,val){
+  stopTimer();
+  document.querySelectorAll("#q-opts .opt").forEach(b=>{ b.disabled=true; if(b.textContent===curQ.ans) b.classList.add("correct"); });
+  const timeout = val==="__timeout__", ok = !timeout && val===curQ.ans;
+  if(btn && !ok) btn.classList.add("wrong");
+  resolveAnswer(ok,false,timeout);
+}
+function resolveAnswer(ok, skipped, timeout){
+  const d=B.defs[B.wave], me=wByName(B.me.n), en=wByName(d.n);
+  if(ok){
+    B.combo++; G.score += skipped ? 6 : 10; G.stars++;
+    if(d.sh>0){ d.sh--; $("q-fb").textContent = "智算成功!先破 " + en.n + " 的護盾。"; log("護盾被破,繼續算題進攻!"); }
+    else { const fast=qTimeLeft>qTimeMax*.55, dmg=20+Math.round(me.wu/7)+Math.min(B.combo,4)*4+(fast?6:0); d.hp-=dmg; $("q-fb").textContent = "答對了!造成 " + dmg + " 點數學攻擊。" + (fast?" 神速加成!":""); log(me.n + "用正確答案發動攻擊!"); }
+    speak("答對了,全軍進攻!", "me");
+  }else{
+    B.combo=0;
+    if(B.shieldReady){ B.shieldReady=false; $("q-fb").textContent=(timeout?"時間到!":"答錯了!")+"空城護身保住我軍,正確答案是「"+curQ.ans+"」。"; log("空城護身發動,沒有損失。"); }
+    else { const dmg=12+B.city.tier*3+Math.round(en.wu/12); B.me.hp-=dmg; $("q-fb").textContent=(timeout?"時間到!":"答錯了!")+"正確答案是「"+curQ.ans+"」。我方損失 "+dmg+" 點體力。"; log(en.n+"趁我軍算錯發動反擊!"); speak("再想清楚吧!", "enemy"); }
+  }
+  updateBars(); saveGame(false);
+  setTimeout(()=>{ if(d.hp<=0) waveDown(); else if(B.me.hp<=0) meDown(); else askQuestion(); }, ok?1600:2600);
+}
+function waveDown(){
+  const d=B.defs[B.wave]; log("擊敗守將 " + d.n + "!");
+  if(B.wave < B.defs.length-1){ B.wave++; setTimeout(()=>{ setupWave(); askQuestion(); },1000); }
+  else setTimeout(battleWon,900);
+}
+function meDown(){
+  log(B.me.n + "計算失誤,重傷退場!");
+  const alive=G.roster.filter(r=>r.hp>0);
+  if(!alive.length){ setTimeout(()=>endBattle(false),1000); return; }
+  const g=$("pick-grid"); $("pick-title").textContent = "選擇下一位武將接替出戰"; g.innerHTML="";
+  alive.forEach(r=>{ const w=wByName(r.n), el=document.createElement("div"); el.className="pick-card"; el.innerHTML=`<div class="em">${w.em}</div><b>${w.n}</b><span>體力 ${r.hp}/${r.mx}</span>`; el.onclick=()=>{ closeModal("modal-pick"); B.me=r; setupWave(); askQuestion(); }; g.appendChild(el); });
+  $("modal-pick").classList.add("on");
+}
+function battleWon(){ G.owner[B.city.id]="我"; _pulseCity=B.city.id; endBattle(true); }
+function endBattle(won,fled){
+  stopTimer(); G.turn++;
+  G.roster.forEach(r=>{ if(r.hp<=0) r.hp=Math.round(r.mx*.45); });
+  let html = won ? `成功攻下 <b>${B.city.n}</b>!<br>完成 ${UNIT_EM[B.city.unit]}${UNIT[B.city.unit]} 的數學戰役。` : (fled?"我軍暫時撤退,下次再來。":"我軍全員負傷,需要休整。");
+  if(won){
+    const recruit = B.defs.map(d=>d.n).find(n=>!G.roster.some(r=>r.n===n));
+    if(recruit){ G.roster.push(newWar(recruit)); html += `<br><b>${recruit}</b>佩服你的數學能力,加入我軍!`; }
+  }
+  $("res-title").textContent = won ? "攻城成功!" : "暫時撤退";
+  $("res-title").style.color = won ? "#2f7d4f" : "#8e2f24";
+  $("res-body").innerHTML = html + `<br>目前分數:<b>${G.score}</b>｜數學星:<b>${G.stars}</b>`;
+  $("res-btn").onclick = () => { closeModal("modal-result"); show("scr-map"); renderMap(); saveGame(false); };
+  $("modal-result").classList.add("on");
+}
+function closeResult(){ closeModal("modal-result"); show("scr-map"); renderMap(); saveGame(false); }
+function fleeBattle(){ endBattle(false,true); }
+function restTurn(){ G.turn++; G.roster.forEach(r=>r.hp=Math.min(r.mx,r.hp+Math.round(r.mx*.55))); hint("全軍休整,體力恢復!"); renderMap(); saveGame(false); }
+
+const STORIES = {
+ start:{title:"數學起兵",line:"天下大亂,各軍糧草、兵力、時辰、日期都要算準。今日起,用數學完成統一大業!",actors:["劉備","曹操","孫權"]},
+ hulao:{title:"虎牢算陣",line:"虎牢關前,呂布喝道:只會武力不夠,先算出軍令題,才准過關!",actors:["關羽","張飛","呂布"]},
+ chibi:{title:"赤壁時辰",line:"赤壁之戰要算風向、時辰與行軍日期。時間一錯,火攻就會失敗。",actors:["諸葛亮","周瑜","曹操"]},
+ xuchang:{title:"許昌決算",line:"最後的中原決戰,糧草加減、行軍日期、24時制都要精準無誤。",actors:["曹操","司馬懿","諸葛亮"]},
+ nanman:{title:"南中歸心",line:"南中戰役不是只靠武力,也要用日期與次序安排補給,讓人心真正歸服。",actors:["諸葛亮","祝融夫人","黃月英"]},
+ win:{title:"天下歸一",line:"你用數學安排行軍、糧草與時間,讓天下重回安定。",actors:["劉備","曹操","孫權","諸葛亮"]},
+};
+function storyForCity(c){ if(c.id==="changan"||c.id==="luoyang") return "hulao"; if(c.id==="jianye"||c.id==="jiangxia") return "chibi"; if(c.id==="xuchang") return "xuchang"; if(c.id==="nanman") return "nanman"; return null; }
+function storySeen(id){ return G && G.storySeen && G.storySeen.includes(id); }
+function markStorySeen(id){ if(!G.storySeen) G.storySeen=[]; if(!G.storySeen.includes(id)) G.storySeen.push(id); }
+function playStory(id,done,force){
+  const st=STORIES[id], box=$("story-scene"); if(!st || (!force && storySeen(id))){ if(done) done(); return; }
+  markStorySeen(id); saveGame(false);
+  box.className="on";
+  box.innerHTML = `<div class="story-card"><h2>${st.title}</h2><div class="story-line">${st.line}</div><div class="story-actors">${st.actors.map(n=>{const w=wByName(n);return `<div class="story-actor"><div class="em">${w?w.em:"⚔️"}</div><b>${n}</b></div>`}).join("")}</div><button class="btn" id="story-next">繼續</button></div>`;
+  $("story-next").onclick = () => { box.className=""; box.innerHTML=""; if(done) done(); };
+  speak(st.line,"me");
+}
+function checkVictory(){
+  if(G && CITIES.every(c=>G.owner[c.id]==="我")){
+    if(!storySeen("win")){ playStory("win", showVictory, true); }
+    else showVictory();
+  }
+}
+function showVictory(){
+  $("res-title").textContent = "一統天下!";
+  $("res-title").style.color = "#d6ad38";
+  $("res-body").innerHTML = `恭喜!${G.f}軍攻下全部城池。<br>總分 <b>${G.score}</b>,數學星 <b>${G.stars}</b>。<br>加法、減法、時間、日期都被你運用在統一大業裡!`;
+  $("res-btn").onclick = () => closeModal("modal-result");
+  $("modal-result").classList.add("on");
+}
+
+initTitle();
+</script>
+
+<style id="portal-home-style">
+.portal-home-link{position:fixed;top:calc(10px + env(safe-area-inset-top));left:calc(10px + env(safe-area-inset-left));z-index:2147483000;display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border-radius:999px;background:rgba(255,255,255,.94);color:#1f2937;text-decoration:none;font:700 14px/1.2 "PingFang TC","Microsoft JhengHei",sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.18);border:2px solid rgba(255,107,107,.28);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);user-select:none;touch-action:manipulation}.portal-home-link:active{transform:translateY(1px)}@media(max-width:640px){.portal-home-link{font-size:13px;padding:8px 11px}}
+</style>
+<a class="portal-home-link" href="index.html" aria-label="回教學首頁">🏠 回教學首頁</a>
+<script src="offline-register.js" defer></script>
+</body>
+</html>
