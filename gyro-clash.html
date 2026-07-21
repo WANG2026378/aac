@@ -158,6 +158,7 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
  #battleWrap.mobile-fill #chargeUI .pw{font-size:21px;margin-top:2px}
  #battleWrap.mobile-fill #chargeUI .tip{min-height:22px;margin-top:3px;font-size:12px;line-height:1.25}
  #battleWrap.mobile-fill #chargeUI .holdBtn{width:100%;min-height:56px;margin-top:4px;padding:10px 0;font-size:19px}
+ #battleWrap.mobile-fill #chargeUI.single-control .holdBtn{position:absolute;left:calc(env(safe-area-inset-left) + 14px);bottom:calc(env(safe-area-inset-bottom) + 18px);width:min(36vw,300px);min-height:66px;margin:0;font-size:21px;z-index:3}
  #battleWrap.mobile-fill #centerMsg{font-size:38px}
  #battleWrap.mobile-fill #resultOverlay{border-radius:0}
  #battleTools{display:flex;right:calc(env(safe-area-inset-right) + 12px);bottom:calc(env(safe-area-inset-bottom) + 18px)}
@@ -869,7 +870,9 @@ function startRound(){
 
 /* ---- 蓄力 ---- */
 function setupCharge(){
- $("chargeUI").classList.add("on");
+ const chargeUI=$("chargeUI");
+ chargeUI.classList.add("on");
+ chargeUI.classList.toggle("single-control",battle.mode===1||battle.mode===3);
  const c0=charById(battle.charP[0]),c1=charById(battle.charP[1]);
  battle.aiL=LAUNCHERS[Math.floor(Math.random()*LAUNCHERS.length)].id;
  chargeState={
