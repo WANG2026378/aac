@@ -116,15 +116,24 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
 }
 @media (max-width:600px) and (orientation:portrait), (max-height:600px) and (max-width:1000px) and (orientation:portrait){
  #scr-battle::after{content:"戰鬥時橫放手機，操作更大、更順手";position:fixed;bottom:10px;left:50%;transform:translateX(-50%);z-index:20;color:#dfe4ff;background:rgba(18,23,58,.92);border:1px solid #5a63b8;border-radius:10px;padding:7px 12px;font-size:13px;white-space:nowrap}
+ #battleWrap:not(.mobile-fill) #hudL{left:14px;top:8px}
+ #battleWrap:not(.mobile-fill) #hudR{left:14px;right:auto;top:auto;bottom:8px;text-align:left}
+ #battleWrap:not(.mobile-fill) #hudR .bar>i{float:left}
+ #battleWrap:not(.mobile-fill) #hudR .skBtns{justify-content:flex-start}
 }
 @media (max-width:600px) and (orientation:landscape), (max-height:600px) and (max-width:1000px) and (orientation:landscape){
  #scr-battle.mobile-battle{padding:0;overflow:hidden}
  #battleWrap.mobile-fill{width:100vw;height:100dvh;transform:none!important}
  #battleWrap.mobile-fill #cv{width:100%;height:100%;border-radius:0}
- #battleWrap.mobile-fill .hud{width:34vw;top:calc(env(safe-area-inset-top) + 8px)}
+ #battleWrap.mobile-fill .hud{width:min(21vw,180px);top:calc(env(safe-area-inset-top) + 7px);opacity:.7}
  #battleWrap.mobile-fill #hudL{left:calc(env(safe-area-inset-left) + 10px)}
  #battleWrap.mobile-fill #hudR{right:calc(env(safe-area-inset-right) + 10px)}
  #battleWrap.mobile-fill .hud,#battleWrap.mobile-fill #scoreBoard,#battleWrap.mobile-fill #chargeUI .chCol{zoom:var(--battle-ui-scale,1)}
+ #battleWrap.mobile-fill .hud .nm{font-size:12px}#battleWrap.mobile-fill .hud .lbl{display:none}
+ #battleWrap.mobile-fill .hud .bar{height:7px;margin-top:3px}
+ #battleWrap.mobile-fill .hud .skBtns{margin-top:4px;gap:3px}
+ #battleWrap.mobile-fill .hud .skb{min-height:32px;padding:5px 7px;font-size:11px;border-radius:8px}
+ #battleWrap.mobile-fill #scoreBoard{top:6px;padding:4px 13px;font-size:17px;opacity:.72;background:rgba(10,14,40,.5)}
  #battleWrap.mobile-fill #chargeUI{gap:clamp(28px,8vw,80px)}
  #battleWrap.mobile-fill #centerMsg{font-size:38px}
  #battleWrap.mobile-fill #resultOverlay{border-radius:0}
