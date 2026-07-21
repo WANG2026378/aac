@@ -52,7 +52,7 @@ window.gyroLeague = {
       await this.ensureUser();
       const profile = await db.from("gyro_players").select("display_name").eq("id", this.user.id).maybeSingle();
       if (profile.data) $("leagueName").value = profile.data.display_name || "";
-      status(profile.data ? "已準備好，按「開始自動配對」即可找對手。" : "請先設定戰螺暱稱。");
+      status(profile.data ? "已準備好，按「開始自動配對」即可找對手。" : "請輸入暱稱後按「開始自動配對」。");
       await this.loadBoard();
     } catch (error) {
       console.warn("Gyro League sign-in failed:", error);
@@ -104,8 +104,8 @@ window.gyroLeague = {
       await this.ensureUser();
       const name = $("leagueName").value.trim();
       if (name.length < 2) return status("請先設定並儲存暱稱。");
-      const profile = await db.from("gyro_players").select("display_name").eq("id", this.user.id).maybeSingle();
-      if (!profile.data) return status("請先按「儲存暱稱」。");
+      const profile = await db.rpc("set_gyro_nickname", { p_display_name: name });
+      if (profile.error) throw profile.error;
       this.stopMatchmaking();
       status("正在加入配對池...");
       const result = await db.rpc("join_gyro_matchmaking");
