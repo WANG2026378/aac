@@ -87,6 +87,7 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
 #musicBtn{position:fixed;top:12px;right:14px;z-index:50;background:#1c2148;border:1px solid #5a63b8;color:#dfe4ff;border-radius:50%;width:44px;height:44px;font-size:20px;cursor:pointer}
 #homeBtn{position:fixed;top:12px;left:14px;z-index:50;background:#1c2148;border:1px solid #5a63b8;color:#dfe4ff;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:700;text-decoration:none;letter-spacing:1px}
 #homeBtn:hover{background:#2a3165}
+.league-note{max-width:620px;text-align:center;color:#aab2e8;font-size:14px;line-height:1.7;margin:4px auto 14px}.league-name{width:min(100%,360px);border:1px solid #5a63b8;background:#12173a;color:#fff;border-radius:10px;padding:12px 14px;font:inherit;font-size:18px;text-align:center;letter-spacing:1px}.league-board{width:min(100%,620px);background:#12173a;border:1px solid #333c78;border-radius:12px;padding:8px 14px;margin-top:12px}.league-row{display:grid;grid-template-columns:42px 1fr auto auto;gap:10px;align-items:center;padding:10px 2px;border-bottom:1px solid #262d58;font-size:15px}.league-row:last-child{border-bottom:0}.league-rank{color:#ffd24d;font-weight:900}.league-rating{color:#9ff3ff;font-weight:800}.league-record{color:#aab2e8;font-size:12px}.league-status{min-height:22px;color:#9ff3ff;font-size:13px;margin-top:8px}
 .vgauge::after{content:"";position:absolute;top:4%;left:0;right:0;height:3px;background:#ffd24d;box-shadow:0 0 8px #ffd24d;z-index:2}
 #pickBar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;width:100%;max-width:1060px;margin-bottom:12px;background:#12173a;border:1px solid #333c78;border-radius:12px;padding:10px}
 .slotChip{background:#232a55;border:1px solid #5a63b8;border-radius:10px;padding:7px 12px;font-size:14px;cursor:pointer}
@@ -105,7 +106,8 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
   <div class="sub">GYRO CLASH · 蓄力發射 × 大招對決 × 進化養成</div>
   <button class="btn" onclick="startBattleFlow(1)">⚔️ 單人對戰 AI</button>
   <button class="btn alt" onclick="startBattleFlow(2)">👥 雙人同機對戰</button>
-  <button class="btn" style="background:linear-gradient(135deg,#0aa2c0,#3a49ff)" onclick="show('scr-online')">🌐 線上對戰</button>
+  <button class="btn" style="background:linear-gradient(135deg,#0aa2c0,#3a49ff)" onclick="netReset();show('scr-online')">🌐 線上對戰</button>
+  <button class="btn" style="background:linear-gradient(135deg,#c87800,#ff4d6d)" onclick="gyroLeague.open()">🏆 公開排位賽</button>
   <button class="btn grn" onclick="show('scr-garage')">🌀 我的陀螺</button>
   <button class="btn grn" onclick="show('scr-shop')">🏪 戰螺商店</button>
   <div class="pts" style="margin-top:26px">💰 點數:<span id="ptsMenu">0</span></div>
@@ -138,6 +140,18 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
     </div>
     <div class="sub" style="margin-top:10px;font-size:12px">提示:部分公司/學校網路可能擋 P2P 連線,換用手機網路通常可解</div>
   </div>
+</div>
+
+<div class="screen" id="scr-league">
+  <div class="topbar"><h2>🏆 公開排位賽</h2><button class="btn sm gry" onclick="show('scr-menu')">返回</button></div>
+  <div class="detailBox" style="text-align:center">
+    <div style="font-weight:800;font-size:19px;color:#ffd24d;margin-bottom:8px">測試賽季 · 雙方確認戰績</div>
+    <div class="league-note">使用暱稱參加，不收集真實姓名。兩位玩家都送出相同比分後，伺服器才會更新積分與排行榜。</div>
+    <input id="leagueName" class="league-name" maxlength="16" placeholder="輸入你的戰螺暱稱">
+    <div class="row" style="margin-top:8px"><button class="btn sm grn" onclick="gyroLeague.saveName()">儲存暱稱</button><button class="btn sm alt" onclick="gyroLeague.startRanked()">⚔️ 建立／加入排位房</button></div>
+    <div id="leagueStatus" class="league-status"></div>
+  </div>
+  <div class="league-board"><div style="font-weight:800;color:#ffd24d;padding:8px 0">本季排行榜</div><div id="leagueBoard"><div class="league-row"><span class="league-rank">--</span><span>載入中...</span><span></span><span></span></div></div></div>
 </div>
 
 <div class="screen" id="scr-diff">
@@ -1229,6 +1243,10 @@ function endMatch(){
  }else{
   save.pts+=winPts;det=`P${w+1} 獲勝!勝利獎勵 +${winPts} 點數(共用錢包)`;
  }
+ if(battle.mode===3&&net.ranked){
+  det+="\n⏳ 排位戰績確認中...";
+  setTimeout(()=>{if(window.gyroLeague)window.gyroLeague.reportMatch(w,battle.score.slice());},0);
+ }
  /* 勝場累積(進化用) */
  const wo=battle.mode===3?(w===my?ownData(battle.pick[my]):null):ownData(battle.pick[w]);
  if(wo&&(battle.mode===2||battle.mode===3||w===0)){wo.wins++;det+=`\n【${dispName(battle.pick[w])}】勝場 +1(累計 ${wo.wins})`;
@@ -1427,13 +1445,14 @@ addEventListener("resize",fitCanvas);
 document.addEventListener("touchmove",e=>{if($("scr-battle").classList.contains("on"))e.preventDefault();},{passive:false});
 document.addEventListener("dblclick",e=>e.preventDefault());
 /* ============== 線上對戰(PeerJS 房間制) ============== */
-const net={peer:null,conn:null,role:null,code:null,myIdx:0,mySel:false,theirSel:false,lastCv:0,stT:0,lastFe:null,
+const net={peer:null,conn:null,role:null,code:null,myIdx:0,mySel:false,theirSel:false,lastCv:0,stT:0,lastFe:null,ranked:false,matchId:null,playerId:null,opponentId:null,
  mkCode(){let s="";const cs="ABCDEFGHJKMNPQRSTUVWXYZ23456789";for(let i=0;i<5;i++)s+=cs[Math.floor(Math.random()*cs.length)];return s;},
+ newMatchId(){return crypto.randomUUID?crypto.randomUUID():"00000000-0000-4000-8000-"+Date.now().toString(16).padStart(12,"0").slice(-12);},
  online(){return battle.mode===3&&this.conn&&this.conn.open;},
  send(o){try{if(this.conn&&this.conn.open)this.conn.send(o);}catch(e){}},
  host(){
   if(typeof Peer==="undefined")return toast("線上元件載入失敗,請確認網路後重整頁面");
-  netReset();this.code=this.mkCode();this.role="host";this.myIdx=0;
+  const ranked=this.ranked,playerId=this.playerId;netReset();this.ranked=ranked;this.playerId=playerId;this.code=this.mkCode();this.role="host";this.myIdx=0;if(this.ranked)this.matchId=this.newMatchId();
   $("onlineStatus").textContent="建立房間中...";
   this.peer=new Peer("gyroclash-"+this.code);
   this.peer.on("open",()=>{$("onlineStatus").innerHTML="房間代碼:<b style='font-size:34px;color:#ffd24d;letter-spacing:6px'>"+this.code+"</b><br>等待對方輸入代碼加入...";});
@@ -1444,7 +1463,7 @@ const net={peer:null,conn:null,role:null,code:null,myIdx:0,mySel:false,theirSel:
   if(typeof Peer==="undefined")return toast("線上元件載入失敗,請確認網路後重整頁面");
   code=(code||"").trim().toUpperCase();
   if(code.length<4)return toast("請輸入 5 碼房間代碼");
-  netReset();this.role="guest";this.myIdx=1;
+  const ranked=this.ranked,playerId=this.playerId;netReset();this.ranked=ranked;this.playerId=playerId;this.role="guest";this.myIdx=1;
   $("onlineStatus").textContent="連線中...";
   this.peer=new Peer();
   this.peer.on("open",()=>{this.conn=this.peer.connect("gyroclash-"+code,{reliable:true});this.bind();});
@@ -1453,6 +1472,7 @@ const net={peer:null,conn:null,role:null,code:null,myIdx:0,mySel:false,theirSel:
  bind(){
   const c=this.conn;
   c.on("open",()=>{
+   if(this.ranked)this.send({t:"rank",id:this.matchId,playerId:this.playerId});
    $("onlineStatus").textContent="✅ 已連線!準備選角...";
    battle.mode=3;battle.score=[0,0];battle.round=0;battle.picks=[[],[]];
    this.mySel=false;this.theirSel=false;battle.pickingFor=this.myIdx;
@@ -1462,10 +1482,11 @@ const net={peer:null,conn:null,role:null,code:null,myIdx:0,mySel:false,theirSel:
   c.on("close",()=>{toast("對方已離線");netReset();battle.mode=1;show("scr-menu");});
  }
 };
-function netReset(){try{if(net.peer)net.peer.destroy();}catch(e){}net.peer=null;net.conn=null;net.role=null;net.mySel=false;net.theirSel=false;}
+function netReset(){try{if(net.peer)net.peer.destroy();}catch(e){}net.peer=null;net.conn=null;net.role=null;net.mySel=false;net.theirSel=false;net.ranked=false;net.matchId=null;net.playerId=null;net.opponentId=null;}
 function netWait(msg){show("scr-online");$("onlineStatus").textContent=msg;}
 function onNet(d){
  switch(d.t){
+  case"rank":{if(d.id)net.matchId=d.id;if(d.playerId)net.opponentId=d.playerId;break;}
   case"sel":{const o=1-net.myIdx;battle.charP[o]=d.ch;battle.picks[o]=d.picks;net.theirSel=true;
    if(net.role==="host"&&net.mySel)renderArena();break;}
   case"arena":{battle.arena=ARENAS.find(a=>a.id===d.id);startMatch();break;}
@@ -1572,6 +1593,6 @@ setInterval(()=>{
 /* ---- 啟動 ---- */
 loadSave();refreshPts();fitCanvas();
 </script>
-</script>
+<script type="module" src="gyro-league.js"></script>
 </body>
 </html>
