@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>超能戰螺 GYRO CLASH</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js"></script>
 <style>
@@ -85,6 +85,7 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
 .shout-on{animation:shoutA 1.35s ease-out forwards}
 @keyframes shoutA{0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(-6deg)}14%{opacity:1;transform:translate(-50%,-50%) scale(1.18) rotate(2deg)}30%{transform:translate(-50%,-50%) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.35)}}
 #musicBtn{position:fixed;top:12px;right:14px;z-index:50;background:#1c2148;border:1px solid #5a63b8;color:#dfe4ff;border-radius:50%;width:44px;height:44px;font-size:20px;cursor:pointer}
+#fullscreenBtn{display:none;position:fixed;top:12px;right:66px;z-index:50;width:44px;height:44px;border:1px solid #5a63b8;border-radius:50%;background:#1c2148;color:#dfe4ff;font:700 22px inherit;cursor:pointer}
 #homeBtn{position:fixed;top:12px;left:14px;z-index:50;background:#1c2148;border:1px solid #5a63b8;color:#dfe4ff;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:700;text-decoration:none;letter-spacing:1px}
 #homeBtn:hover{background:#2a3165}
 .league-note{max-width:620px;text-align:center;color:#aab2e8;font-size:14px;line-height:1.7;margin:4px auto 14px}.league-name{width:min(100%,360px);border:1px solid #5a63b8;background:#12173a;color:#fff;border-radius:10px;padding:12px 14px;font:inherit;font-size:18px;text-align:center;letter-spacing:1px}.league-board{width:min(100%,620px);background:#12173a;border:1px solid #333c78;border-radius:12px;padding:8px 14px;margin-top:12px}.league-row{display:grid;grid-template-columns:42px 1fr auto auto;gap:10px;align-items:center;padding:10px 2px;border-bottom:1px solid #262d58;font-size:15px}.league-row:last-child{border-bottom:0}.league-rank{color:#ffd24d;font-weight:900}.league-rating{color:#9ff3ff;font-weight:800}.league-record{color:#aab2e8;font-size:12px}.league-status{min-height:22px;color:#9ff3ff;font-size:13px;margin-top:8px}
@@ -111,7 +112,7 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
  #scr-online .row,#scr-league .row{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:8px}.row .btn{width:100%;margin:0}
  #joinCode{width:100%!important;min-height:50px;font-size:22px!important;grid-column:1 / -1}
  #onlineStatus{font-size:17px!important;line-height:1.75!important}.holdBtn{width:190px;min-height:58px;font-size:20px}
- #homeBtn{top:10px;left:10px;width:44px;height:44px;padding:0;border-radius:50%;font-size:0;display:grid;place-items:center;letter-spacing:0}#homeBtn::after{content:"⌂";font-size:27px;line-height:1;color:#dfe4ff}#musicBtn{top:10px;right:10px;width:46px;height:46px}
+ #homeBtn{top:calc(env(safe-area-inset-top) + 10px);left:calc(env(safe-area-inset-left) + 10px);width:44px;height:44px;padding:0;border-radius:50%;font-size:0;display:grid;place-items:center;letter-spacing:0}#homeBtn::after{content:"⌂";font-size:27px;line-height:1;color:#dfe4ff}#musicBtn{top:calc(env(safe-area-inset-top) + 10px);right:calc(env(safe-area-inset-right) + 10px);width:46px;height:46px}#fullscreenBtn{display:grid;place-items:center;top:calc(env(safe-area-inset-top) + 10px);right:calc(env(safe-area-inset-right) + 64px)}
  #toast{width:calc(100% - 24px);bottom:14px;padding:12px 16px;text-align:center;font-size:16px}
 }
 @media (max-width:600px) and (orientation:portrait), (max-height:600px) and (max-width:1000px) and (orientation:portrait){
@@ -145,6 +146,7 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
 <div id="app">
 <a id="homeBtn" href="index.html">🏠 回教學首頁</a>
 <button id="musicBtn" title="音樂開關">🔊</button>
+<button id="fullscreenBtn" title="全螢幕模式" onclick="toggleFullscreen()">⛶</button>
 
 <div class="screen on" id="scr-menu">
   <h1 class="logo">超能戰螺</h1>
@@ -1491,11 +1493,16 @@ function adjustBattleUi(delta){
  document.documentElement.style.setProperty("--battle-ui-scale",battleUiScale);
  toast(`戰鬥控制 ${Math.round(battleUiScale*100)}%`);
 }
+function toggleFullscreen(){
+ const target=$("app"),active=document.fullscreenElement||document.webkitFullscreenElement;
+ if(active){(document.exitFullscreen||document.webkitExitFullscreen)?.call(document);return;}
+ const request=target.requestFullscreen||target.webkitRequestFullscreen;
+ if(request){
+  Promise.resolve(request.call(target)).catch(()=>toast("Safari 若未切換，請用分享選單加入主畫面後開啟。"));
+ }else toast("Safari 請用分享選單加入主畫面後，以全螢幕開啟。");
+}
 function toggleBattleFullscreen(){
- const target=$("scr-battle");
- if(document.fullscreenElement){document.exitFullscreen?.();return;}
- if(target.requestFullscreen)target.requestFullscreen().catch(()=>toast("此瀏覽器無法切換全螢幕，可橫放手機使用。"));
- else toast("此瀏覽器無法切換全螢幕，可橫放手機使用。");
+ toggleFullscreen();
 }
 function fitCanvas(){
  const compact=innerWidth<=600||(innerHeight<=600&&innerWidth<=1000);
@@ -1512,6 +1519,8 @@ function fitCanvas(){
  wrap.style.transformOrigin="center";
 }
 addEventListener("resize",fitCanvas);
+document.addEventListener("fullscreenchange",fitCanvas);
+document.addEventListener("webkitfullscreenchange",fitCanvas);
 
 document.addEventListener("touchmove",e=>{if($("scr-battle").classList.contains("on"))e.preventDefault();},{passive:false});
 document.addEventListener("dblclick",e=>e.preventDefault());
