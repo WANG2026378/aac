@@ -150,9 +150,14 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
  #battleWrap.mobile-fill .hud .skBtns{margin-top:4px;gap:3px}
  #battleWrap.mobile-fill .hud .skb{min-height:32px;padding:5px 7px;font-size:11px;border-radius:8px}
  #battleWrap.mobile-fill #scoreBoard{top:6px;padding:4px 13px;font-size:17px;opacity:.72;background:rgba(10,14,40,.5)}
- #battleWrap.mobile-fill #chargeUI{gap:clamp(28px,8vw,80px)}
- #battleWrap.mobile-fill #chargeUI .chCol{width:min(34vw,280px)}
- #battleWrap.mobile-fill #chargeUI .holdBtn{width:100%;min-height:64px;margin-top:8px;font-size:20px}
+ #battleWrap.mobile-fill #chargeUI{align-items:flex-start;gap:clamp(28px,8vw,80px);padding-top:8px}
+ #battleWrap.mobile-fill #chargeUI .chCol{width:min(34vw,280px);display:flex;flex-direction:column;align-items:center}
+ #battleWrap.mobile-fill #chargeUI .lcv{width:150px;height:82px;margin:0}
+ #battleWrap.mobile-fill #chargeUI .vgauge{width:48px;height:108px}
+ #battleWrap.mobile-fill #chargeUI .who{font-size:17px;margin-bottom:2px}
+ #battleWrap.mobile-fill #chargeUI .pw{font-size:21px;margin-top:2px}
+ #battleWrap.mobile-fill #chargeUI .tip{min-height:22px;margin-top:3px;font-size:12px;line-height:1.25}
+ #battleWrap.mobile-fill #chargeUI .holdBtn{width:100%;min-height:56px;margin-top:4px;padding:10px 0;font-size:19px}
  #battleWrap.mobile-fill #centerMsg{font-size:38px}
  #battleWrap.mobile-fill #resultOverlay{border-radius:0}
  #battleTools{display:flex;right:calc(env(safe-area-inset-right) + 12px);bottom:calc(env(safe-area-inset-bottom) + 18px)}
