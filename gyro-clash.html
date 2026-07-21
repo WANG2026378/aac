@@ -95,7 +95,7 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
 .slotChip.empty{opacity:.45;cursor:default}
 .ordB{position:absolute;top:6px;right:8px;background:#ffd24d;color:#0a0a14;border-radius:11px;min-width:22px;height:22px;display:none;align-items:center;justify-content:center;font-weight:800;font-size:12px;padding:0 5px;z-index:2}
 #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#1c2148;border:1px solid #5a63b8;padding:10px 24px;border-radius:12px;font-size:15px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99}
-#battleTools{display:none;position:absolute;right:12px;bottom:12px;z-index:12;gap:7px}.battleTool{width:44px;height:44px;border:1px solid #7380dc;border-radius:10px;background:rgba(18,23,58,.94);color:#fff;font:700 17px inherit;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.35)}.battleTool:active{transform:scale(.95)}
+#battleTools{display:none;position:absolute;right:12px;bottom:12px;z-index:12;gap:8px}.battleTool{width:52px;height:52px;border:1px solid #7380dc;border-radius:12px;background:rgba(18,23,58,.94);color:#fff;font:700 19px inherit;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.35)}.battleTool:active{transform:scale(.95)}
 @media (max-width:600px), (max-height:600px) and (max-width:1000px){
  .screen{padding:12px 10px 22px}
  h1.logo{font-size:42px;margin:68px 0 8px;letter-spacing:2px}
@@ -116,11 +116,26 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
  #toast{width:calc(100% - 24px);bottom:14px;padding:12px 16px;text-align:center;font-size:16px}
 }
 @media (max-width:600px) and (orientation:portrait), (max-height:600px) and (max-width:1000px) and (orientation:portrait){
- #scr-battle::after{content:"戰鬥時橫放手機，操作更大、更順手";position:fixed;bottom:10px;left:50%;transform:translateX(-50%);z-index:20;color:#dfe4ff;background:rgba(18,23,58,.92);border:1px solid #5a63b8;border-radius:10px;padding:7px 12px;font-size:13px;white-space:nowrap}
- #battleWrap:not(.mobile-fill) #hudL{left:14px;top:8px}
- #battleWrap:not(.mobile-fill) #hudR{left:14px;right:auto;top:auto;bottom:8px;text-align:left}
- #battleWrap:not(.mobile-fill) #hudR .bar>i{float:left}
- #battleWrap:not(.mobile-fill) #hudR .skBtns{justify-content:flex-start}
+ #scr-battle.mobile-battle{padding:0;overflow:hidden}
+ #battleWrap.mobile-fill{width:100vw;height:100dvh;transform:none!important}
+ #battleWrap.mobile-fill #cv{width:100%;height:100%;border-radius:0}
+ #battleWrap.mobile-fill .hud{width:min(72vw,286px);opacity:.76}
+ #battleWrap.mobile-fill #hudL{left:calc(env(safe-area-inset-left) + 12px);top:calc(env(safe-area-inset-top) + 72px)}
+ #battleWrap.mobile-fill #hudR{left:calc(env(safe-area-inset-left) + 12px);right:auto;top:auto;bottom:calc(env(safe-area-inset-bottom) + 14px);text-align:left}
+ #battleWrap.mobile-fill #hudR .bar>i{float:left}
+ #battleWrap.mobile-fill #hudR .skBtns{justify-content:flex-start}
+ #battleWrap.mobile-fill .hud .nm{font-size:16px}#battleWrap.mobile-fill .hud .lbl{display:none}
+ #battleWrap.mobile-fill .hud .bar{height:10px;margin-top:4px}
+ #battleWrap.mobile-fill .hud .skBtns{margin-top:6px;gap:5px}
+ #battleWrap.mobile-fill .hud .skb{min-height:46px;padding:8px 11px;font-size:13px}
+ #battleWrap.mobile-fill #scoreBoard{top:calc(env(safe-area-inset-top) + 10px);padding:5px 16px;font-size:19px;opacity:.8;background:rgba(10,14,40,.56)}
+ #battleWrap.mobile-fill #chargeUI{gap:10px;align-items:center}
+ #battleWrap.mobile-fill #chargeUI .chCol{width:calc(50vw - 16px);zoom:var(--battle-ui-scale,1)}
+ #battleWrap.mobile-fill #chargeUI .lcv{width:100%;height:auto;margin-bottom:4px}
+ #battleWrap.mobile-fill #chargeUI .vgauge{width:58px;height:min(31vh,240px)}
+ #battleWrap.mobile-fill #chargeUI .tip{min-height:38px;font-size:14px}
+ #battleWrap.mobile-fill #chargeUI .holdBtn{width:100%;min-height:70px;margin-top:8px;font-size:20px}
+ #battleTools{display:flex;right:calc(env(safe-area-inset-right) + 10px);bottom:auto;top:calc(env(safe-area-inset-top) + 68px)}
 }
 @media (max-width:600px) and (orientation:landscape), (max-height:600px) and (max-width:1000px) and (orientation:landscape){
  #scr-battle.mobile-battle{padding:0;overflow:hidden}
@@ -138,7 +153,7 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
  #battleWrap.mobile-fill #chargeUI{gap:clamp(28px,8vw,80px)}
  #battleWrap.mobile-fill #centerMsg{font-size:38px}
  #battleWrap.mobile-fill #resultOverlay{border-radius:0}
- #battleTools{display:flex;right:calc(env(safe-area-inset-right) + 10px);bottom:calc(env(safe-area-inset-bottom) + 10px)}
+ #battleTools{display:flex;right:calc(env(safe-area-inset-right) + 12px);bottom:calc(env(safe-area-inset-bottom) + 18px)}
 }
 </style>
 </head>
@@ -1506,7 +1521,7 @@ function toggleBattleFullscreen(){
 }
 function fitCanvas(){
  const compact=innerWidth<=600||(innerHeight<=600&&innerWidth<=1000);
- const fillMobile=compact&&innerWidth>innerHeight;
+ const fillMobile=compact;
  const wrap=$("battleWrap"),canvas=$("cv"),screen=$("scr-battle");
  wrap.classList.toggle("mobile-fill",fillMobile);screen.classList.toggle("mobile-battle",fillMobile);
  if(fillMobile){
