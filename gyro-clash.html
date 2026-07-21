@@ -176,8 +176,8 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
   <div class="sub">GYRO CLASH · 蓄力發射 × 大招對決 × 進化養成</div>
   <button class="btn" onclick="startBattleFlow(1)">⚔️ 單人對戰 AI</button>
   <button class="btn alt" onclick="startBattleFlow(2)">👥 雙人同機對戰</button>
-  <button class="btn" style="background:linear-gradient(135deg,#0aa2c0,#3a49ff)" onclick="netReset();show('scr-online')">🌐 線上對戰</button>
-  <button class="btn" style="background:linear-gradient(135deg,#c87800,#ff4d6d)" onclick="gyroLeague.open()">🏆 公開排位賽</button>
+  <button class="btn" style="background:linear-gradient(135deg,#0aa2c0,#3a49ff)" onclick="netReset();show('scr-online')">🌐 好友線上對戰</button>
+  <button class="btn" style="background:linear-gradient(135deg,#c87800,#ff4d6d)" onclick="gyroLeague.open()">⚡ 線上自動配對（排位）</button>
   <button class="btn grn" onclick="show('scr-garage')">🌀 我的陀螺</button>
   <button class="btn grn" onclick="show('scr-shop')">🏪 戰螺商店</button>
   <div class="pts" style="margin-top:26px">💰 點數:<span id="ptsMenu">0</span></div>
@@ -200,9 +200,9 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
 </div>
 
 <div class="screen" id="scr-online">
-  <div class="topbar"><h2 id="onlineTitle">🌐 線上對戰</h2><button class="btn sm gry" onclick="netReset();show('scr-menu')">返回</button></div>
+  <div class="topbar"><h2 id="onlineTitle">🌐 好友線上對戰</h2><button class="btn sm gry" onclick="netReset();show('scr-menu')">返回</button></div>
   <div class="detailBox" style="text-align:center">
-    <div id="onlineStatus" style="font-size:16px;line-height:2;min-height:60px">兩台裝置都開啟本遊戲(需網路)。<br>一方建立房間拿代碼,另一方輸入代碼加入。</div>
+    <div id="onlineStatus" style="font-size:16px;line-height:2;min-height:60px">指定對戰：兩台裝置都開啟本遊戲(需網路)。<br>一方建立房間拿代碼，另一方輸入代碼加入。</div>
     <div class="row" style="margin-top:10px">
       <button class="btn sm grn" onclick="net.host()">🏠 建立房間</button>
       <input id="joinCode" placeholder="輸入代碼" maxlength="5" style="width:120px;text-align:center;font-size:20px;letter-spacing:3px;border-radius:10px;border:1px solid #5a63b8;background:#12173a;color:#fff;padding:8px;text-transform:uppercase">
@@ -213,7 +213,7 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
 </div>
 
 <div class="screen" id="scr-league">
-  <div class="topbar"><h2>🏆 公開排位賽</h2><button class="btn sm gry" onclick="show('scr-menu')">返回</button></div>
+  <div class="topbar"><h2>⚡ 線上自動配對（排位）</h2><button class="btn sm gry" onclick="show('scr-menu')">返回</button></div>
   <div class="detailBox" style="text-align:center">
     <div style="font-weight:800;font-size:19px;color:#ffd24d;margin-bottom:8px">測試賽季 · 雙方確認戰績</div>
     <div class="league-note">使用暱稱參加，不收集真實姓名。按下開始後會自動尋找對手，不需要房間密碼。兩位玩家都送出相同比分後，伺服器才會更新積分與排行榜。</div>
@@ -1558,7 +1558,7 @@ const net={peer:null,conn:null,role:null,code:null,myIdx:0,mySel:false,theirSel:
  send(o){try{if(this.conn&&this.conn.open)this.conn.send(o);}catch(e){}},
  host(forcedCode=null,forcedMatchId=null,forcedOpponentId=null){
   if(typeof Peer==="undefined")return toast("線上元件載入失敗,請確認網路後重整頁面");
-  const ranked=this.ranked,playerId=this.playerId,matchId=forcedMatchId||this.matchId,opponentId=forcedOpponentId||this.opponentId;netReset();this.ranked=ranked;this.playerId=playerId;this.opponentId=opponentId;this.code=forcedCode||this.mkCode();this.role="host";this.myIdx=0;if(this.ranked){this.matchId=matchId||this.newMatchId();$("onlineTitle").textContent="🏆 公開排位房";}
+  const ranked=this.ranked,playerId=this.playerId,matchId=forcedMatchId||this.matchId,opponentId=forcedOpponentId||this.opponentId;netReset();this.ranked=ranked;this.playerId=playerId;this.opponentId=opponentId;this.code=forcedCode||this.mkCode();this.role="host";this.myIdx=0;if(this.ranked){this.matchId=matchId||this.newMatchId();$("onlineTitle").textContent="⚡ 自動配對排位房";}
   $("onlineStatus").textContent="建立房間中...";
   this.peer=new Peer("gyroclash-"+this.code);
   this.peer.on("open",()=>{$("onlineStatus").innerHTML="房間代碼:<b style='font-size:34px;color:#ffd24d;letter-spacing:6px'>"+this.code+"</b><br>等待對方輸入代碼加入...";});
@@ -1569,7 +1569,7 @@ const net={peer:null,conn:null,role:null,code:null,myIdx:0,mySel:false,theirSel:
   if(typeof Peer==="undefined")return toast("線上元件載入失敗,請確認網路後重整頁面");
   code=(code||"").trim().toUpperCase();
   if(code.length<4)return toast("請輸入 5 碼房間代碼");
-  const ranked=this.ranked,playerId=this.playerId,matchId=forcedMatchId||this.matchId,opponentId=forcedOpponentId||this.opponentId;netReset();this.ranked=ranked;this.playerId=playerId;this.opponentId=opponentId;this.role="guest";this.myIdx=1;if(this.ranked){this.matchId=matchId||null;$("onlineTitle").textContent="🏆 公開排位房";}
+  const ranked=this.ranked,playerId=this.playerId,matchId=forcedMatchId||this.matchId,opponentId=forcedOpponentId||this.opponentId;netReset();this.ranked=ranked;this.playerId=playerId;this.opponentId=opponentId;this.role="guest";this.myIdx=1;if(this.ranked){this.matchId=matchId||null;$("onlineTitle").textContent="⚡ 自動配對排位房";}
   $("onlineStatus").textContent="連線中...";
   this.peer=new Peer();
   this.peer.on("open",()=>{this.conn=this.peer.connect("gyroclash-"+code,{reliable:true});this.bind();});
@@ -1588,7 +1588,7 @@ const net={peer:null,conn:null,role:null,code:null,myIdx:0,mySel:false,theirSel:
   c.on("close",()=>{toast("對方已離線");netReset();battle.mode=1;show("scr-menu");});
  }
 };
-function netReset(){try{if(net.peer)net.peer.destroy();}catch(e){}net.peer=null;net.conn=null;net.role=null;net.mySel=false;net.theirSel=false;net.ranked=false;net.matchId=null;net.playerId=null;net.opponentId=null;const title=$("onlineTitle");if(title)title.textContent="🌐 線上對戰";}
+function netReset(){try{if(net.peer)net.peer.destroy();}catch(e){}net.peer=null;net.conn=null;net.role=null;net.mySel=false;net.theirSel=false;net.ranked=false;net.matchId=null;net.playerId=null;net.opponentId=null;const title=$("onlineTitle");if(title)title.textContent="🌐 好友線上對戰";}
 function netWait(msg){show("scr-online");$("onlineStatus").textContent=msg;}
 function onNet(d){
  switch(d.t){

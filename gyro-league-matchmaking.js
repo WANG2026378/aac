@@ -158,7 +158,7 @@ window.gyroLeague = {
     net.opponentId = data.opponent_id;
     net.matchId = data.match_id;
     show("scr-online");
-    $("onlineTitle").textContent = "🏆 自動配對成功";
+    $("onlineTitle").textContent = "⚡ 自動配對成功";
     $("onlineStatus").innerHTML = `<b style='color:#7dffa9'>已找到對手${data.challenge ? " · 越級挑戰" : ""}</b><br>正在建立對戰連線...`;
     if (data.is_host) {
       net.host(data.room_code, data.match_id, data.opponent_id);
