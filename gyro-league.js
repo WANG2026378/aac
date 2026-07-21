@@ -16,6 +16,9 @@ const errorMessage = error => {
   if (/anonymous sign-ins are disabled/i.test(message)) {
     return "請到 Supabase 的 Authentication > Providers > Anonymous Sign-Ins，啟用後按 Save。";
   }
+  if (/gyro_matchmaking|join_gyro_matchmaking|get_gyro_matchmaking_status/i.test(message)) {
+    return "自動配對尚未啟用：請在 Supabase SQL Editor 執行 gyro-matchmaking.sql。";
+  }
   return message;
 };
 
@@ -25,6 +28,9 @@ const escapeHtml = value => String(value || "").replace(/[&<>"']/g, char => ({
 
 window.gyroLeague = {
   user: null,
+  matchmakingTimer: null,
+  matchmakingPoll: null,
+  matchmakingExpiresAt: 0,
 
   async ensureUser() {
     const current = await db.auth.getSession();
@@ -46,7 +52,7 @@ window.gyroLeague = {
       await this.ensureUser();
       const profile = await db.from("gyro_players").select("display_name").eq("id", this.user.id).maybeSingle();
       if (profile.data) $("leagueName").value = profile.data.display_name || "";
-      status(profile.data ? "已準備好，可建立或加入排位房。" : "請先設定戰螺暱稱。");
+      status(profile.data ? "已準備好，按「開始自動配對」即可找對手。" : "請先設定戰螺暱稱。");
       await this.loadBoard();
     } catch (error) {
       console.warn("Gyro League sign-in failed:", error);
@@ -70,22 +76,105 @@ window.gyroLeague = {
     }
   },
 
-  async startRanked() {
+  stopMatchmaking() {
+    clearInterval(this.matchmakingTimer);
+    clearInterval(this.matchmakingPoll);
+    this.matchmakingTimer = null;
+    this.matchmakingPoll = null;
+    const panel = $("matchmakingPanel");
+    if (panel) panel.classList.remove("on");
+  },
+
+  renderMatchmakingCountdown() {
+    const seconds = Math.max(0, Math.ceil((this.matchmakingExpiresAt - Date.now()) / 1000));
+    const count = $("matchmakingCountdown");
+    const copy = $("matchmakingCopy");
+    if (count) count.textContent = seconds;
+    if (copy) copy.textContent = seconds > 10
+      ? "正在尋找積分接近的對手"
+      : "正在放寬積分範圍，快要配到了";
+    if (seconds === 0) {
+      this.stopMatchmaking();
+      status("本輪沒有對手，請再按一次開始配對。");
+    }
+  },
+
+  async startMatchmaking() {
     try {
       await this.ensureUser();
       const name = $("leagueName").value.trim();
       if (name.length < 2) return status("請先設定並儲存暱稱。");
       const profile = await db.from("gyro_players").select("display_name").eq("id", this.user.id).maybeSingle();
       if (!profile.data) return status("請先按「儲存暱稱」。");
-      net.ranked = true;
-      net.playerId = this.user.id;
-      show("scr-online");
-      $("onlineTitle").textContent = "🏆 公開排位房";
-      $("onlineStatus").innerHTML = "<b style='color:#ffd24d'>公開排位賽已準備好</b><br>1. 這台按「建立房間」取得代碼。<br>2. 請另一台裝置、另一位暱稱輸入代碼加入。<br><span style='color:#aab2e8;font-size:12px'>同一個瀏覽器帳號不能自己和自己進行排位。</span>";
+      this.stopMatchmaking();
+      status("正在加入配對池...");
+      const result = await db.rpc("join_gyro_matchmaking");
+      if (result.error) throw result.error;
+      await this.handleMatchmakingStatus(result.data);
     } catch (error) {
-      console.warn("Gyro League start failed:", error);
-      status(`排位尚未準備好：${errorMessage(error)}`);
+      console.warn("Gyro League matchmaking start failed:", error);
+      status(`配對尚未準備好：${errorMessage(error)}`);
     }
+  },
+
+  async cancelMatchmaking() {
+    this.stopMatchmaking();
+    const result = await db.rpc("cancel_gyro_matchmaking");
+    status(result.error ? `取消失敗：${errorMessage(result.error)}` : "已取消配對。");
+  },
+
+  async pollMatchmaking() {
+    const result = await db.rpc("get_gyro_matchmaking_status");
+    if (result.error) {
+      this.stopMatchmaking();
+      status(`配對連線中斷：${errorMessage(result.error)}`);
+      return;
+    }
+    await this.handleMatchmakingStatus(result.data);
+  },
+
+  async handleMatchmakingStatus(data) {
+    if (!data || data.status === "idle") return;
+    if (data.status === "waiting") {
+      this.matchmakingExpiresAt = new Date(data.expires_at).getTime();
+      $("matchmakingPanel")?.classList.add("on");
+      this.renderMatchmakingCountdown();
+      this.matchmakingTimer ||= setInterval(() => this.renderMatchmakingCountdown(), 250);
+      this.matchmakingPoll ||= setInterval(() => this.pollMatchmaking(), 1200);
+      return;
+    }
+    if (data.status === "expired") {
+      this.stopMatchmaking();
+      status("本輪沒有對手，請再按一次開始配對。");
+      return;
+    }
+    if (data.status === "matched") this.enterMatchedRoom(data);
+  },
+
+  enterMatchedRoom(data) {
+    this.stopMatchmaking();
+    net.ranked = true;
+    net.playerId = this.user.id;
+    net.opponentId = data.opponent_id;
+    net.matchId = data.match_id;
+    show("scr-online");
+    $("onlineTitle").textContent = "🏆 自動配對成功";
+    $("onlineStatus").innerHTML = `<b style='color:#7dffa9'>已找到對手${data.challenge ? " · 越級挑戰" : ""}</b><br>正在建立對戰連線...`;
+    if (data.is_host) {
+      net.host(data.room_code, data.match_id, data.opponent_id);
+    } else {
+      this.joinMatchedRoom(data, 0);
+    }
+  },
+
+  joinMatchedRoom(data, attempt) {
+    setTimeout(() => {
+      if (net.conn?.open) return;
+      net.join(data.room_code, data.match_id, data.opponent_id);
+      if (attempt < 3) setTimeout(() => {
+        if (!net.conn?.open) this.joinMatchedRoom(data, attempt + 1);
+      }, 1400);
+    }, attempt === 0 ? 900 : 0);
   },
 
   async reportMatch(winner, score) {

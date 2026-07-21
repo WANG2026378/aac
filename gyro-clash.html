@@ -88,7 +88,7 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
 #fullscreenBtn{display:none;position:fixed;top:12px;right:66px;z-index:50;width:44px;height:44px;border:1px solid #5a63b8;border-radius:50%;background:#1c2148;color:#dfe4ff;font:700 22px inherit;cursor:pointer}
 #homeBtn{position:fixed;top:12px;left:14px;z-index:50;background:#1c2148;border:1px solid #5a63b8;color:#dfe4ff;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:700;text-decoration:none;letter-spacing:1px}
 #homeBtn:hover{background:#2a3165}
-.league-note{max-width:620px;text-align:center;color:#aab2e8;font-size:14px;line-height:1.7;margin:4px auto 14px}.league-name{width:min(100%,360px);border:1px solid #5a63b8;background:#12173a;color:#fff;border-radius:10px;padding:12px 14px;font:inherit;font-size:18px;text-align:center;letter-spacing:1px}.league-board{width:min(100%,620px);background:#12173a;border:1px solid #333c78;border-radius:12px;padding:8px 14px;margin-top:12px}.league-row{display:grid;grid-template-columns:42px 1fr auto auto;gap:10px;align-items:center;padding:10px 2px;border-bottom:1px solid #262d58;font-size:15px}.league-row:last-child{border-bottom:0}.league-rank{color:#ffd24d;font-weight:900}.league-rating{color:#9ff3ff;font-weight:800}.league-record{color:#aab2e8;font-size:12px}.league-status{min-height:22px;color:#9ff3ff;font-size:13px;margin-top:8px}
+.league-note{max-width:620px;text-align:center;color:#aab2e8;font-size:14px;line-height:1.7;margin:4px auto 14px}.league-name{width:min(100%,360px);border:1px solid #5a63b8;background:#12173a;color:#fff;border-radius:10px;padding:12px 14px;font:inherit;font-size:18px;text-align:center;letter-spacing:1px}.league-board{width:min(100%,620px);background:#12173a;border:1px solid #333c78;border-radius:12px;padding:8px 14px;margin-top:12px}.league-row{display:grid;grid-template-columns:42px 1fr auto auto;gap:10px;align-items:center;padding:10px 2px;border-bottom:1px solid #262d58;font-size:15px}.league-row:last-child{border-bottom:0}.league-rank{color:#ffd24d;font-weight:900}.league-rating{color:#9ff3ff;font-weight:800}.league-record{color:#aab2e8;font-size:12px}.league-status{min-height:22px;color:#9ff3ff;font-size:13px;margin-top:8px}.matchmaking-panel{display:none;width:min(100%,360px);margin:10px auto 0;padding:12px;border:1px solid #5a63b8;background:#101636;border-radius:12px;text-align:center}.matchmaking-panel.on{display:block}.matchmaking-count{font-size:34px;font-weight:900;color:#ffd24d;line-height:1}.matchmaking-copy{font-size:13px;color:#aab2e8;margin:6px 0}
 .vgauge::after{content:"";position:absolute;top:4%;left:0;right:0;height:3px;background:#ffd24d;box-shadow:0 0 8px #ffd24d;z-index:2}
 #pickBar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;width:100%;max-width:1060px;margin-bottom:12px;background:#12173a;border:1px solid #333c78;border-radius:12px;padding:10px}
 .slotChip{background:#232a55;border:1px solid #5a63b8;border-radius:10px;padding:7px 12px;font-size:14px;cursor:pointer}
@@ -216,10 +216,11 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
   <div class="topbar"><h2>🏆 公開排位賽</h2><button class="btn sm gry" onclick="show('scr-menu')">返回</button></div>
   <div class="detailBox" style="text-align:center">
     <div style="font-weight:800;font-size:19px;color:#ffd24d;margin-bottom:8px">測試賽季 · 雙方確認戰績</div>
-    <div class="league-note">使用暱稱參加，不收集真實姓名。兩位玩家都送出相同比分後，伺服器才會更新積分與排行榜。</div>
+    <div class="league-note">使用暱稱參加，不收集真實姓名。按下開始後會自動尋找對手，不需要房間密碼。兩位玩家都送出相同比分後，伺服器才會更新積分與排行榜。</div>
     <input id="leagueName" class="league-name" maxlength="16" placeholder="輸入你的戰螺暱稱">
-    <div class="row" style="margin-top:8px"><button class="btn sm grn" onclick="gyroLeague.saveName()">儲存暱稱</button><button class="btn sm alt" onclick="gyroLeague.startRanked()">⚔️ 建立／加入排位房</button></div>
+    <div class="row" style="margin-top:8px"><button class="btn sm grn" onclick="gyroLeague.saveName()">儲存暱稱</button><button class="btn sm alt" onclick="gyroLeague.startMatchmaking()">⚡ 開始自動配對</button></div>
     <div id="leagueStatus" class="league-status"></div>
+    <div class="matchmaking-panel" id="matchmakingPanel"><div class="matchmaking-count" id="matchmakingCountdown">30</div><div class="matchmaking-copy" id="matchmakingCopy">正在尋找積分接近的對手</div><button class="btn sm gry" onclick="gyroLeague.cancelMatchmaking()">取消配對</button></div>
   </div>
   <div class="league-board"><div style="font-weight:800;color:#ffd24d;padding:8px 0">本季排行榜</div><div id="leagueBoard"><div class="league-row"><span class="league-rank">--</span><span>載入中...</span><span></span><span></span></div></div></div>
 </div>
@@ -1555,20 +1556,20 @@ const net={peer:null,conn:null,role:null,code:null,myIdx:0,mySel:false,theirSel:
  newMatchId(){return crypto.randomUUID?crypto.randomUUID():"00000000-0000-4000-8000-"+Date.now().toString(16).padStart(12,"0").slice(-12);},
  online(){return battle.mode===3&&this.conn&&this.conn.open;},
  send(o){try{if(this.conn&&this.conn.open)this.conn.send(o);}catch(e){}},
- host(){
+ host(forcedCode=null,forcedMatchId=null,forcedOpponentId=null){
   if(typeof Peer==="undefined")return toast("線上元件載入失敗,請確認網路後重整頁面");
-  const ranked=this.ranked,playerId=this.playerId;netReset();this.ranked=ranked;this.playerId=playerId;this.code=this.mkCode();this.role="host";this.myIdx=0;if(this.ranked){this.matchId=this.newMatchId();$("onlineTitle").textContent="🏆 公開排位房";}
+  const ranked=this.ranked,playerId=this.playerId,matchId=forcedMatchId||this.matchId,opponentId=forcedOpponentId||this.opponentId;netReset();this.ranked=ranked;this.playerId=playerId;this.opponentId=opponentId;this.code=forcedCode||this.mkCode();this.role="host";this.myIdx=0;if(this.ranked){this.matchId=matchId||this.newMatchId();$("onlineTitle").textContent="🏆 公開排位房";}
   $("onlineStatus").textContent="建立房間中...";
   this.peer=new Peer("gyroclash-"+this.code);
   this.peer.on("open",()=>{$("onlineStatus").innerHTML="房間代碼:<b style='font-size:34px;color:#ffd24d;letter-spacing:6px'>"+this.code+"</b><br>等待對方輸入代碼加入...";});
   this.peer.on("connection",c=>{this.conn=c;this.bind();});
   this.peer.on("error",e=>{$("onlineStatus").textContent="建立房間失敗("+e.type+")，請重試；若持續失敗，改用手機網路或確認瀏覽器允許網路連線。";});
  },
- join(code){
+ join(code,forcedMatchId=null,forcedOpponentId=null){
   if(typeof Peer==="undefined")return toast("線上元件載入失敗,請確認網路後重整頁面");
   code=(code||"").trim().toUpperCase();
   if(code.length<4)return toast("請輸入 5 碼房間代碼");
-  const ranked=this.ranked,playerId=this.playerId;netReset();this.ranked=ranked;this.playerId=playerId;this.role="guest";this.myIdx=1;if(this.ranked)$("onlineTitle").textContent="🏆 公開排位房";
+  const ranked=this.ranked,playerId=this.playerId,matchId=forcedMatchId||this.matchId,opponentId=forcedOpponentId||this.opponentId;netReset();this.ranked=ranked;this.playerId=playerId;this.opponentId=opponentId;this.role="guest";this.myIdx=1;if(this.ranked){this.matchId=matchId||null;$("onlineTitle").textContent="🏆 公開排位房";}
   $("onlineStatus").textContent="連線中...";
   this.peer=new Peer();
   this.peer.on("open",()=>{this.conn=this.peer.connect("gyroclash-"+code,{reliable:true});this.bind();});
