@@ -80,7 +80,8 @@ window.gyroLeague = {
       net.ranked = true;
       net.playerId = this.user.id;
       show("scr-online");
-      $("onlineStatus").innerHTML = "<b style='color:#ffd24d'>公開排位賽</b><br>建立房間或輸入房間代碼。對戰結束後，雙方確認相同比分才會計分。";
+      $("onlineTitle").textContent = "🏆 公開排位房";
+      $("onlineStatus").innerHTML = "<b style='color:#ffd24d'>公開排位賽已準備好</b><br>1. 這台按「建立房間」取得代碼。<br>2. 請另一台裝置、另一位暱稱輸入代碼加入。<br><span style='color:#aab2e8;font-size:12px'>同一個瀏覽器帳號不能自己和自己進行排位。</span>";
     } catch (error) {
       console.warn("Gyro League start failed:", error);
       status(`排位尚未準備好：${errorMessage(error)}`);

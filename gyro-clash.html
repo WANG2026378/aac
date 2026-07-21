@@ -130,7 +130,7 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
 </div>
 
 <div class="screen" id="scr-online">
-  <div class="topbar"><h2>🌐 線上對戰</h2><button class="btn sm gry" onclick="netReset();show('scr-menu')">返回</button></div>
+  <div class="topbar"><h2 id="onlineTitle">🌐 線上對戰</h2><button class="btn sm gry" onclick="netReset();show('scr-menu')">返回</button></div>
   <div class="detailBox" style="text-align:center">
     <div id="onlineStatus" style="font-size:16px;line-height:2;min-height:60px">兩台裝置都開啟本遊戲(需網路)。<br>一方建立房間拿代碼,另一方輸入代碼加入。</div>
     <div class="row" style="margin-top:10px">
@@ -1452,22 +1452,22 @@ const net={peer:null,conn:null,role:null,code:null,myIdx:0,mySel:false,theirSel:
  send(o){try{if(this.conn&&this.conn.open)this.conn.send(o);}catch(e){}},
  host(){
   if(typeof Peer==="undefined")return toast("線上元件載入失敗,請確認網路後重整頁面");
-  const ranked=this.ranked,playerId=this.playerId;netReset();this.ranked=ranked;this.playerId=playerId;this.code=this.mkCode();this.role="host";this.myIdx=0;if(this.ranked)this.matchId=this.newMatchId();
+  const ranked=this.ranked,playerId=this.playerId;netReset();this.ranked=ranked;this.playerId=playerId;this.code=this.mkCode();this.role="host";this.myIdx=0;if(this.ranked){this.matchId=this.newMatchId();$("onlineTitle").textContent="🏆 公開排位房";}
   $("onlineStatus").textContent="建立房間中...";
   this.peer=new Peer("gyroclash-"+this.code);
   this.peer.on("open",()=>{$("onlineStatus").innerHTML="房間代碼:<b style='font-size:34px;color:#ffd24d;letter-spacing:6px'>"+this.code+"</b><br>等待對方輸入代碼加入...";});
   this.peer.on("connection",c=>{this.conn=c;this.bind();});
-  this.peer.on("error",e=>{$("onlineStatus").textContent="連線發生問題("+e.type+"),請重試";});
+  this.peer.on("error",e=>{$("onlineStatus").textContent="建立房間失敗("+e.type+")，請重試；若持續失敗，改用手機網路或確認瀏覽器允許網路連線。";});
  },
  join(code){
   if(typeof Peer==="undefined")return toast("線上元件載入失敗,請確認網路後重整頁面");
   code=(code||"").trim().toUpperCase();
   if(code.length<4)return toast("請輸入 5 碼房間代碼");
-  const ranked=this.ranked,playerId=this.playerId;netReset();this.ranked=ranked;this.playerId=playerId;this.role="guest";this.myIdx=1;
+  const ranked=this.ranked,playerId=this.playerId;netReset();this.ranked=ranked;this.playerId=playerId;this.role="guest";this.myIdx=1;if(this.ranked)$("onlineTitle").textContent="🏆 公開排位房";
   $("onlineStatus").textContent="連線中...";
   this.peer=new Peer();
   this.peer.on("open",()=>{this.conn=this.peer.connect("gyroclash-"+code,{reliable:true});this.bind();});
-  this.peer.on("error",e=>{$("onlineStatus").textContent="連線失敗("+e.type+"),確認代碼後重試";});
+  this.peer.on("error",e=>{$("onlineStatus").textContent="加入房間失敗("+e.type+")，請確認 5 碼代碼、兩台裝置都保持本頁開啟；若持續失敗，改用手機網路。";});
  },
  bind(){
   const c=this.conn;
@@ -1482,7 +1482,7 @@ const net={peer:null,conn:null,role:null,code:null,myIdx:0,mySel:false,theirSel:
   c.on("close",()=>{toast("對方已離線");netReset();battle.mode=1;show("scr-menu");});
  }
 };
-function netReset(){try{if(net.peer)net.peer.destroy();}catch(e){}net.peer=null;net.conn=null;net.role=null;net.mySel=false;net.theirSel=false;net.ranked=false;net.matchId=null;net.playerId=null;net.opponentId=null;}
+function netReset(){try{if(net.peer)net.peer.destroy();}catch(e){}net.peer=null;net.conn=null;net.role=null;net.mySel=false;net.theirSel=false;net.ranked=false;net.matchId=null;net.playerId=null;net.opponentId=null;const title=$("onlineTitle");if(title)title.textContent="🌐 線上對戰";}
 function netWait(msg){show("scr-online");$("onlineStatus").textContent=msg;}
 function onNet(d){
  switch(d.t){
