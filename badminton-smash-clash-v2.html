@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>超能羽球 SMASH CLASH</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+  html, body { margin:0; padding:0; width:100%; height:100%; background:#04121c; overflow:hidden;
+    font-family: "PingFang TC","Microsoft JhengHei","Heiti TC",sans-serif; }
+  #app { position:relative; width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; }
+  #stage { position:relative; width:960px; height:600px; max-width:100vw; max-height:100vh; background:#000; }
+  #game { position:absolute; top:0; left:0; width:100%; height:100%; display:block; }
+
+  .screen { position:absolute; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center;
+    background: radial-gradient(ellipse at center, #123a52 0%, #051520 80%); color:#fff; z-index:20; padding:20px; text-align:center; }
+  .screen.active { display:flex; }
+  .title { font-size:38px; font-weight:900; letter-spacing:2px; margin-bottom:6px;
+    background: linear-gradient(90deg,#ffe259,#ffa751,#ff5e62,#7c4dff); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .subtitle { font-size:14px; opacity:0.8; margin-bottom:18px; }
+  .row { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-bottom:16px; max-width:900px; }
+  .card { width:150px; padding:12px 8px; border-radius:14px; border:3px solid rgba(255,255,255,0.15);
+    background:rgba(255,255,255,0.06); cursor:pointer; transition:transform .15s, border-color .15s; }
+  .card:hover, .card.sel { transform:translateY(-4px) scale(1.04); border-color:#ffe259; box-shadow:0 0 18px rgba(255,226,89,.5); }
+  .card .icon { font-size:36px; margin-bottom:6px; }
+  .card .name { font-weight:700; font-size:15px; }
+  .card .desc { font-size:11px; opacity:.75; margin-top:4px; line-height:1.4; }
+  .stat-bar { height:5px; border-radius:3px; background:rgba(255,255,255,.15); margin-top:3px; overflow:hidden; }
+  .stat-fill { height:100%; border-radius:3px; }
+  .btn-big { padding:12px 30px; font-size:18px; font-weight:800; border:none; border-radius:30px; cursor:pointer;
+    background:linear-gradient(90deg,#ff5e62,#ffa751); color:#fff; box-shadow:0 4px 14px rgba(255,94,98,.5); margin-top:10px; }
+  .btn-big:disabled { opacity:.35; cursor:not-allowed; }
+  .btn-small { padding:8px 18px; font-size:13px; font-weight:700; border:none; border-radius:20px; cursor:pointer;
+    background:rgba(255,255,255,.15); color:#fff; margin:4px; }
+  .btn-small.sel, .btn-small:hover { background:#ffe259; color:#222; }
+
+  #hud { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:10; display:none; }
+  #hud.active { display:block; }
+  .hud-top { position:absolute; top:8px; left:8px; right:8px; display:flex; justify-content:space-between; align-items:flex-start; }
+  .team-box { width:38%; color:#fff; font-size:12px; font-weight:700; }
+  .team-box.right { text-align:right; }
+  .hpbar-wrap, .enbar-wrap { height:14px; border-radius:8px; background:rgba(0,0,0,.5); overflow:hidden; border:1px solid rgba(255,255,255,.3); margin-top:3px; }
+  .hpbar { height:100%; background:linear-gradient(90deg,#4dff88,#1fbf5c); transition:width .25s; }
+  .hpbar.low { background:linear-gradient(90deg,#ff5e5e,#c21f1f); animation:pulse 0.6s infinite; }
+  .enbar { height:100%; background:linear-gradient(90deg,#5ec8ff,#7c4dff); transition:width .25s; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.55;} }
+  .score-mid { font-size:26px; font-weight:900; color:#ffe259; text-shadow:0 2px 4px #000; text-align:center; min-width:120px;}
+  .cam-label { position:absolute; top:44px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.55); color:#ffe259;
+    padding:3px 12px; border-radius:12px; font-size:12px; font-weight:700; letter-spacing:1px; display:none; }
+  .chant-banner { position:absolute; top:38%; left:50%; transform:translate(-50%,-50%); font-size:30px; font-weight:900;
+    color:#fff; text-shadow:0 0 12px #ffe259, 0 0 24px #ff5e62; display:none; white-space:nowrap; }
+
+  #touch-controls { position:absolute; bottom:10px; left:0; right:0; display:flex; justify-content:space-between; align-items:flex-end; padding:0 16px; z-index:15; }
+  .dpad { display:flex; gap:10px; width:210px; }
+  .dbtn { width:100px; min-height:64px; border-radius:18px; background:rgba(20,30,40,.65); border:2px solid rgba(255,255,255,.6);
+    color:#fff; font-size:17px; font-weight:800; display:flex; align-items:center; justify-content:center; touch-action:none; }
+  .dbtn:active, .dbtn.pressed { background:#ffe259; color:#222; }
+  .shotpad { display:flex; gap:10px; width:268px; }
+  .sbtn { width:129px; min-height:82px; border-radius:18px; border:2px solid rgba(255,255,255,.65); color:#fff;
+    font-size:15px; font-weight:800; display:flex; align-items:center; justify-content:center; text-align:center; touch-action:none; line-height:1.25; }
+  .sbtn:active, .sbtn.pressed { transform:scale(0.92); filter:brightness(1.3); }
+  .s-lift { background:rgba(120,200,255,.52); }.s-smash { background:rgba(255,100,100,.55); }
+  .s-smash.ready { animation:ultglow .8s infinite; background:rgba(220,90,255,.78); }.s-smash.locked { opacity:.46; filter:grayscale(.45); }
+  @keyframes ultglow { 0%,100%{box-shadow:0 0 6px #fff;} 50%{box-shadow:0 0 22px #ffe259;} }
+
+  #gameover-box { z-index:30; }
+  .footer-note { position:absolute; bottom:6px; font-size:10px; color:rgba(255,255,255,.4); }
+  #homeBtn { position:fixed; top:10px; left:10px; z-index:30; width:42px; height:42px; border:1px solid rgba(255,255,255,.6); border-radius:50%; background:rgba(0,0,0,.45); color:#fff; font-size:19px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div id="app">
+<button id="homeBtn" title="回教學首頁" aria-label="回教學首頁" onclick="location.href='index.html'">🏠</button>
+<div id="stage">
+  <canvas id="game" width="960" height="600"></canvas>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-top">
+      <div class="team-box" id="teamA-box">
+        <div id="teamA-name">隊伍A</div>
+        <div class="hpbar-wrap" id="hpA-wrap"><div class="hpbar" id="hpA-fill" style="width:100%"></div></div>
+        <div style="font-size:10px;margin-top:4px;opacity:.85">技巧</div><div class="enbar-wrap"><div class="enbar" id="enA-fill" style="width:0%"></div></div>
+      </div>
+      <div class="score-mid" id="score-mid">0 : 0</div>
+      <div class="team-box right" id="teamB-box">
+        <div id="teamB-name">隊伍B</div>
+        <div class="hpbar-wrap" id="hpB-wrap"><div class="hpbar" id="hpB-fill" style="width:100%"></div></div>
+        <div style="font-size:10px;margin-top:4px;opacity:.85">技巧</div><div class="enbar-wrap"><div class="enbar" id="enB-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="cam-label" id="cam-label">追球鏡頭</div>
+    <div class="chant-banner" id="chant-banner"></div>
+    <div class="chant-banner" id="ult-banner" style="top:30%; font-size:40px;"></div>
+    <div id="flash-overlay" style="position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;"></div>
+    <div id="mute-btn" style="position:absolute; top:8px; right:50%; transform:translateX(150px); pointer-events:auto; cursor:pointer;
+      background:rgba(0,0,0,.4); color:#fff; font-size:16px; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center;">🔊</div>
+  </div>
+
+  <!-- Touch Controls -->
+  <div id="touch-controls">
+    <div class="dpad">
+      <div class="dbtn" data-k="back">◀ 後退</div><div class="dbtn" data-k="front">前進 ▶</div>
+    </div>
+    <div class="shotpad">
+      <div class="sbtn s-lift" data-k="lift">由下往上拍<br><small>發球／接球</small></div>
+      <div class="sbtn s-smash locked" data-k="smash" id="smash-btn">由上而下拍<br><small>技巧滿：絕招殺球</small></div>
+    </div>
+  </div>
+
+  <!-- Screens -->
+  <div class="screen active" id="screen-title">
+    <div class="title">超能羽球 SMASH CLASH</div>
+    <div class="subtitle">戰鬥系列第四彈・戰鬥對決 × 正規羽球</div>
+    <button class="btn-big" onclick="goScreen('team')">開始遊戲</button>
+    <div class="footer-note">左右鍵前後移動；空白鍵下往上拍；Enter 上往下絕招殺球（技巧滿）</div>
+  </div>
+
+  <div class="screen" id="screen-team">
+    <div class="title" style="font-size:26px;">選擇你的隊伍</div>
+    <div class="subtitle">每支隊伍都有專屬應援口號</div>
+    <div class="row" id="team-cards"></div>
+    <button class="btn-big" id="team-next" onclick="goScreen('racket')" disabled>下一步</button>
+  </div>
+
+  <div class="screen" id="screen-racket">
+    <div class="title" style="font-size:26px;">選擇球拍裝備</div>
+    <div class="subtitle">力量／準度／速度／幸運 四維屬性影響打法</div>
+    <div class="row" id="racket-cards"></div>
+    <button class="btn-big" id="racket-next" onclick="goScreen('mode')" disabled>下一步</button>
+  </div>
+
+  <div class="screen" id="screen-mode">
+    <div class="title" style="font-size:26px;">選擇玩法</div>
+    <div class="row">
+      <div class="card" id="mode-battle" onclick="pick('mode','battle')">
+        <div class="icon">⚔️</div><div class="name">戰鬥對決</div>
+        <div class="desc">HP血條制，殺球大絕直接扣血，先打光對手獲勝</div>
+      </div>
+      <div class="card" id="mode-classic" onclick="pick('mode','classic')">
+        <div class="icon">🏸</div><div class="name">經典比賽</div>
+        <div class="desc">正規羽球21分制，落地出界得分</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="card" id="type-single" onclick="pick('type','single')">
+        <div class="icon">🧍</div><div class="name">單打（2D左右對打）</div>
+        <div class="desc">1 v 1，左右來回移動比拚招式</div>
+      </div>
+      <div class="card" id="type-double" onclick="pick('type','double')">
+        <div class="icon">🧍🧍</div><div class="name">雙打（平面3D）</div>
+        <div class="desc">2 v 2，AI隊友自動補位</div>
+      </div>
+    </div>
+    <button class="btn-big" id="mode-start" onclick="startMatch()" disabled>進場比賽！</button>
+  </div>
+
+  <div class="screen" id="screen-gameover">
+    <div class="title" id="gameover-title" style="font-size:32px;">勝負已分！</div>
+    <div class="subtitle" id="gameover-sub"></div>
+    <button class="btn-big" onclick="goScreen('title')">回到主選單</button>
+  </div>
+</div>
+</div>
+
+<script>
+/* ================= 資料設定 ================= */
+const TEAMS = [
+  { id:'swallow', name:'疾風燕', color:'#3ea6ff', chant:'疾風燕，穿雲箭！', icon:'🐦' },
+  { id:'tiger',   name:'雷霆虎', color:'#ff8c3a', chant:'雷霆虎，震八方！', icon:'🐯' },
+  { id:'hawk',    name:'幻影鷹', color:'#a561ff', chant:'幻影鷹，一擊必殺！', icon:'🦅' },
+  { id:'fox',     name:'烈焰狐', color:'#ff4d4d', chant:'烈焰狐，燃燒吧！', icon:'🦊' },
+];
+const RACKETS = [
+  { id:'gale',    name:'疾風拍', icon:'💨', power:6, acc:8, spd:10, luck:6, special:'gale',
+    sdesc:'疾風強化：出手更快，大絕附帶勁風尾流' },
+  { id:'blaze',   name:'烈焰拍', icon:'🔥', power:10, acc:6, spd:6, luck:6, special:'blaze',
+    sdesc:'烈焰重擊：殺球傷害額外 +20%' },
+  { id:'hawkeye', name:'鷹眼拍', icon:'🎯', power:6, acc:10, spd:6, luck:7, special:'hawkeye',
+    sdesc:'鷹眼鎖定：準度極高，出手顯示落點預測圈' },
+  { id:'phantom', name:'幻影拍', icon:'🍀', power:7, acc:7, spd:7, luck:10, special:'phantom',
+    sdesc:'幻影軌跡：大絕附加分身球路，對手更難判斷' },
+  { id:'thunder', name:'雷擊拍', icon:'⚡', power:8, acc:7, spd:7, luck:6, special:'thunder',
+    sdesc:'雷擊麻痺：殺球命中使對手短暫行動遲緩' },
+  { id:'ghost',   name:'幽靈拍', icon:'👻', power:6, acc:8, spd:8, luck:7, special:'ghost',
+    sdesc:'幽靈殘影：球路若隱若現，對手接球容易失手' },
+];
+const SHOT_DAMAGE = { clear:6, smash:16, drop:9, ult:32, fault:8 };
+const CAM_LABELS = ['追球鏡頭','擊球特寫','慢動作全景','看台廣角'];
+const ULT_MOVES = {
+  swallow:{ name:'萬里穿雲斬', color:'#3ea6ff' },
+  tiger:  { name:'雷霆震天殺', color:'#ff8c3a' },
+  hawk:   { name:'幻影千殺',   color:'#a561ff' },
+  fox:    { name:'業火滅殺',   color:'#ff4d4d' },
+};
+
+/* ================= 畫面切換 ================= */
+let picked = { team:null, racket:null, mode:null, type:null };
+function goScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  document.getElementById('hud').classList.remove('active');
+}
+function pick(kind, val){
+  picked[kind] = val;
+  if(kind==='mode'){
+    document.getElementById('mode-battle').classList.toggle('sel', val==='battle');
+    document.getElementById('mode-classic').classList.toggle('sel', val==='classic');
+  }
+  if(kind==='type'){
+    document.getElementById('type-single').classList.toggle('sel', val==='single');
+    document.getElementById('type-double').classList.toggle('sel', val==='double');
+  }
+  document.getElementById('mode-start').disabled = !(picked.mode && picked.type);
+}
+function buildTeamCards(){
+  const wrap = document.getElementById('team-cards'); wrap.innerHTML='';
+  TEAMS.forEach(t=>{
+    const c = document.createElement('div'); c.className='card';
+    c.innerHTML = `<div class="icon">${t.icon}</div><div class="name" style="color:${t.color}">${t.name}</div><div class="desc">「${t.chant}」</div>`;
+    c.onclick = ()=>{ picked.team=t.id; [...wrap.children].forEach(x=>x.classList.remove('sel')); c.classList.add('sel');
+      document.getElementById('team-next').disabled=false; };
+    wrap.appendChild(c);
+  });
+}
+function buildRacketCards(){
+  const wrap = document.getElementById('racket-cards'); wrap.innerHTML='';
+  RACKETS.forEach(r=>{
+    const c = document.createElement('div'); c.className='card';
+    c.innerHTML = `<div class="icon">${r.icon}</div><div class="name">${r.name}</div>
+      ${['power','acc','spd','luck'].map(k=>{
+        const label={power:'力量',acc:'準度',spd:'速度',luck:'幸運'}[k];
+        const col={power:'#ff6b6b',acc:'#4dff88',spd:'#5ec8ff',luck:'#ffe259'}[k];
+        return `<div style="font-size:10px;text-align:left;margin-top:3px;">${label}<div class="stat-bar"><div class="stat-fill" style="width:${r[k]*10}%;background:${col}"></div></div></div>`;
+      }).join('')}
+      <div class="desc" style="margin-top:6px;color:#ffe259;">✦ ${r.sdesc}</div>`;
+    c.onclick = ()=>{ picked.racket=r.id; [...wrap.children].forEach(x=>x.classList.remove('sel')); c.classList.add('sel');
+      document.getElementById('racket-next').disabled=false; };
+    wrap.appendChild(c);
+  });
+}
+buildTeamCards(); buildRacketCards();
+
+/* ================= 幾何投影 ================= */
+const CW = 960, CH = 600;
+const COURT_D = 600, NET_D = 300;
+const SINGLE_W = 480, DOUBLE_W = 620;
+const COURT_TOP_Y = 165, COURT_BOTTOM_Y = 555;
+const SCALE_NEAR = 1.0, SCALE_FAR = 0.55;
+function scaleAt(d){ return SCALE_NEAR + (SCALE_FAR-SCALE_NEAR)*(d/COURT_D); }
+function screenY(d){ return COURT_BOTTOM_Y - (d/COURT_D)*(COURT_BOTTOM_Y-COURT_TOP_Y); }
+function screenX(x,d){ return CW/2 + x*scaleAt(d); }
+// 單打：真平面2D側視（球網固定在畫面正中央，左右兩側同尺寸、無遠近透視）
+const FLAT_LEFT = 110, FLAT_RIGHT = 850, FLAT_GROUND_Y = 470, FLAT_NET_H = 96;
+function flatX(d){ return FLAT_LEFT + (d/COURT_D)*(FLAT_RIGHT-FLAT_LEFT); }
+
+/* ================= 遊戲狀態 ================= */
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+let match = null; // 建立於 startMatch()
+
+function startMatch(){
+ try{
+  const teamData = TEAMS.find(t=>t.id===picked.team) || TEAMS[0];
+  const racketData = RACKETS.find(r=>r.id===picked.racket) || RACKETS[0];
+  const opponentPool = TEAMS.filter(t=>t.id!==teamData.id);
+  const teamB = opponentPool[Math.floor(Math.random()*opponentPool.length)];
+  const isDouble = picked.type==='double';
+  const courtW = isDouble ? DOUBLE_W : SINGLE_W;
+
+  match = {
+    mode: picked.mode, isDouble, courtW,
+    teamA: teamData, teamB: teamB,
+    racketA: racketData, racketB: RACKETS[Math.floor(Math.random()*RACKETS.length)],
+    scoreA:0, scoreB:0, hpA:100, hpB:100, enA:0, enB:0,
+    servingSide: 0, // 0 = A(近端/玩家), 1 = B(遠端)
+    state:'serve', // serve | rally | replay | pointend | over
+    timeScale:1, replayTimer:0, replayLabelTimer:0, replayLabelIdx:0,
+    chantTimer:0, chantText:'',
+    time:0,
+    ball:{ x:0, d:0, h:5, vx:0, vd:0, vh:0, lastHitSide:0, inPlay:false },
+  };
+  const halfW = courtW/2 - 40;
+  match.players = {
+    A:[ mkPlayer(0, 0, 150, teamData, racketData, false) ],
+    B:[ mkPlayer(1, 0, 450, teamB, match.racketB, true) ],
+  };
+  if(isDouble){
+    match.players.A.push(mkPlayer(0, -halfW*0.6, 90, teamData, racketData, true));
+    match.players.B.push(mkPlayer(1, halfW*0.6, 510, teamB, match.racketB, true));
+    match.players.A[0].x = halfW*0.6;
+    match.players.B[0].x = -halfW*0.6;
+  }
+  resetServe();
+  document.querySelectorAll('.screen').forEach(sc=>sc.classList.remove('active')); // 隱藏所有選單畫面
+  document.getElementById('hud').classList.add('active');
+  updateHUDStatic();
+  lastTime = 0;
+  const myMatch = match; // 綁定這一局的參照，避免重玩時舊迴圈疊加造成雙倍速度
+  requestAnimationFrame((ts)=>loop(ts, myMatch));
+ } catch(err){
+  console.error('比賽啟動失敗：', err);
+  alert('遊戲啟動時發生錯誤，請重新整理頁面再試一次。\n(錯誤訊息：'+err.message+')');
+ }
+}
+function mkPlayer(side,x,d,team,racket,isAI){
+  return { side, x, d, fixedD:d, h:0, vh:0, team, racket, isAI, reach:56,
+    speed: 2.1 + racket.spd*0.16, faceUp: side===0, burst:0, stun:0 };
+}
+function resetServe(){
+  const s = match; const serverSide = s.servingSide;
+  const p = s.players[serverSide===0?'A':'B'][0];
+  if(s.isDouble){
+    p.x = serverSide===0? -60 : 60; p.d = serverSide===0? 80 : 520;
+  } else {
+    p.x = 0; p.d = p.fixedD;
+  }
+  s.ball.x = p.x; s.ball.d = p.d + (serverSide===0? 20:-20); s.ball.h=8; s.ball.vx=0; s.ball.vd=0; s.ball.vh=0;
+  s.ball.inPlay = false; s.ball.lastHitSide = serverSide;
+  s.ball.ghostFlag=false; s.ball.phantomFlag=false; s.ball.hitterRacket=null;
+  s.state = 'serve';
+}
+
+/* ================= 輸入 ================= */
+const keys = {};
+window.addEventListener('keydown', e=>{
+  const map = {'arrowup':'up','arrowdown':'down','arrowleft':'left','arrowright':'right',
+    'w':'up','s':'down','a':'left','d':'right',' ':'serve','1':'clear','2':'smash','3':'drop','4':'ult'};
+  const k = map[e.key.toLowerCase()]; if(k){ keys[k]=true; if(k!=='up'&&k!=='down'&&k!=='left'&&k!=='right') handleAction(k); e.preventDefault(); }
+});
+window.addEventListener('keyup', e=>{
+  const map = {'arrowup':'up','arrowdown':'down','arrowleft':'left','arrowright':'right','w':'up','s':'down','a':'left','d':'right'};
+  const k = map[e.key.toLowerCase()]; if(k) keys[k]=false;
+});
+document.querySelectorAll('[data-k]').forEach(btn=>{
+  const k = btn.dataset.k;
+  const isMove = ['up','down','left','right'].includes(k);
+  const start = (e)=>{ e.preventDefault(); keys[k]=true; btn.classList.add('pressed'); if(!isMove) handleAction(k); };
+  const end = (e)=>{ e.preventDefault(); keys[k]=false; btn.classList.remove('pressed'); };
+  btn.addEventListener('touchstart', start); btn.addEventListener('touchend', end);
+  btn.addEventListener('mousedown', start); btn.addEventListener('mouseup', end); btn.addEventListener('mouseleave', end);
+});
+window.addEventListener('keydown',e=>{
+  const k={arrowleft:'back',a:'back',arrowright:'front',d:'front',' ':'lift',enter:'smash'}[e.key.toLowerCase()];
+  if(!k) return; keys[k]=true; if(k==='lift'||k==='smash') handleAction(k); e.preventDefault();
+});
+window.addEventListener('keyup',e=>{
+  const k={arrowleft:'back',a:'back',arrowright:'front',d:'front'}[e.key.toLowerCase()]; if(k) keys[k]=false;
+});
+
+function handleAction(type){
+  if(!match) return;
+  if(!match.isDouble){ flatAction(type); return; }
+  if(match.state==='serve' && match.servingSide===0){
+    if(type==='serve'||type==='clear') doServe(0);
+    return;
+  }
+  if(match.state!=='rally') return;
+  attemptHit(0, type==='serve'?'clear':type);
+}
+
+/* ================= 擊球判定 ================= */
+function distTo(p, b){ return Math.hypot(p.x-b.x, p.d-b.d); }
+function canReach(p,b){
+  if(!b.inPlay && match.state!=='serve') return false;
+  const sameSide = (p.side===0 && b.d<NET_D) || (p.side===1 && b.d>=NET_D);
+  return sameSide && distTo(p,b) < p.reach && b.h < 130;
+}
+function doServe(side){
+  if(!match.isDouble){ flatServe(side); return; }
+  const s = match; const p = s.players[side===0?'A':'B'][0];
+  const oppP = s.players[side===0?'B':'A'][0];
+  const targetX = (Math.random()-0.5)*(s.courtW*0.6);
+  const targetD = s.isDouble ? (side===0? 380+Math.random()*160 : 60+Math.random()*160) : oppP.fixedD;
+  launchBall(p, targetX, targetD, 'clear', 0.85);
+  s.ball.inPlay = true; s.state='rally'; s.ball.lastHitSide = side;
+}
+function launchBall(fromP, targetX, targetD, shotType, powerMul){
+  const s = match; const b = s.ball;
+  b.x = fromP.x; b.d = fromP.d; b.h = Math.max(fromP.h+30, 24);
+  const dx = targetX - b.x, dd = targetD - b.d;
+  const dist = Math.hypot(dx,dd);
+  let baseTime = shotType==='smash'? 0.42 : shotType==='drop'? 0.55 : shotType==='ult'? 0.30 : 0.72;
+  if(fromP.racket && fromP.racket.special==='gale') baseTime *= 0.8;
+  const t = Math.max(0.24, baseTime * (0.7+dist/500));
+  b.vx = dx/t; b.vd = dd/t;
+  const g = 620;
+  let apex;
+  if(shotType==='smash') apex = fromP.h+30 + 70;  // 殺球最高點要高於球網(78)才過得了網
+  else if(shotType==='drop') apex = fromP.h+30 + 60;
+  else if(shotType==='ult') apex = fromP.h+30 + 65;
+  else apex = fromP.h+30 + 190;
+  apex *= (0.85+ (powerMul||1)*0.3);
+  b.vh = (apex - b.h)/(t/2) + 0.5*g*(t/2);
+  b._g = g; b._t=0; b._flightT=t; b.shotType=shotType;
+}
+function attemptHit(side, shotType){
+  if(!match.isDouble){ flatAction(shotType==='ult'?'smash':'lift'); return; }
+  const s = match; const players = s.players[side===0?'A':'B'];
+  let hitter=null;
+  for(const p of players){ if(canReach(p,s.ball)){ hitter=p; break; } }
+  if(!hitter) return;
+  if(shotType==='ult'){
+    const en = side===0? s.enA : s.enB;
+    if(en<100) return;
+    if(side===0) s.enA=0; else s.enB=0;
+  }
+  const racket = hitter.racket;
+  const faultBase = shotType==='smash'?0.30: shotType==='drop'?0.16: shotType==='ult'?0.10:0.08;
+  let faultChance = Math.max(0.02, faultBase * (1 - racket.acc/10*0.65));
+  if(s.ball.ghostFlag) faultChance += 0.10;
+  if(s.ball.phantomFlag) faultChance += 0.08;
+  const missed = Math.random() < faultChance;
+  const oppSide = side===0?1:0;
+  const oppHalfMin = oppSide===0? 0 : NET_D, oppHalfMax = oppSide===0? NET_D : COURT_D;
+  const halfW = s.courtW/2 - 30;
+
+  if(missed){
+    const failD = side===0? oppHalfMax+80 : oppHalfMin-80;
+    const failX = s.isDouble ? (Math.random()-0.5)*s.courtW*1.3 : 0;
+    launchBall(hitter, failX, failD, shotType, 0.6);
+    s.ball.inPlay = true; s.ball.lastHitSide = side; s.ball.faulting = true;
+    s.ball.ghostFlag=false; s.ball.phantomFlag=false; s.ball.hitterRacket=racket;
+    return;
+  }
+  let targetX, targetD, powerMul=1;
+  // 準度越高，落點越集中；準度越低，越容易打太用力出界——讓「出界」真的跟擊球好壞有關，不再只靠隱藏機率
+  const spreadMul = 1.3 - racket.acc/10*0.5;
+  if(shotType==='smash'){
+    targetX = s.isDouble ? (Math.random()-0.5)*halfW*1.6 : 0;
+    const spread = 165*spreadMul;
+    targetD = oppSide===0? (oppHalfMin-25+Math.random()*spread) : (oppHalfMax+25-Math.random()*spread);
+    powerMul = 1.15;
+  } else if(shotType==='drop'){
+    targetX = s.isDouble ? (Math.random()-0.5)*halfW*0.9 : 0;
+    targetD = oppSide===0? NET_D-70-Math.random()*40 : NET_D+70+Math.random()*40;
+  } else if(shotType==='ult'){
+    targetX = s.isDouble ? (Math.random()-0.5)*halfW*1.8 : 0;
+    const spread = 80*spreadMul;
+    targetD = oppSide===0? (oppHalfMin-12+Math.random()*spread) : (oppHalfMax+12-Math.random()*spread);
+    powerMul = 1.4;
+  } else {
+    targetX = s.isDouble ? (Math.random()-0.5)*halfW*1.5 : 0;
+    const spread = 220*spreadMul;
+    targetD = oppSide===0? (oppHalfMin-30+Math.random()*spread) : (oppHalfMax+30-Math.random()*spread);
+  }
+  launchBall(hitter, targetX, targetD, shotType, powerMul);
+  s.ball.inPlay = true; s.ball.lastHitSide = side; s.ball.faulting = false;
+  s.ball.hitterRacket = racket;
+  s.ball.ghostFlag = racket.special==='ghost';
+  s.ball.phantomFlag = racket.special==='phantom' && shotType==='ult';
+  if(racket.special==='hawkeye' && side===0){
+    s.predictCircle = { x:targetX, d:targetD, timer:0.9, color:'#4dff88' };
+  }
+  if(side===0){ s.enA = Math.min(100, s.enA + (shotType==='smash'?10:14)); }
+  else { s.enB = Math.min(100, s.enB + (shotType==='smash'?10:14)); }
+  if(shotType==='ult'){
+    triggerReplay(); triggerUltimateFX(side, hitter.team);
+  } else if(shotType==='smash'){
+    triggerReplay();
+  }
+}
+
+/* ================= AI ================= */
+function updateAI(dt){
+  const s = match;
+  if(!s.isDouble){ flatUpdateAI(dt); return; }
+  for(const teamKey of ['A','B']){
+    const side = teamKey==='A'?0:1;
+    s.players[teamKey].forEach((p,idx)=>{
+      if(!p.isAI) return;
+      const spdMul = p.stun>0 ? 0.4 : 1;
+      if(p.stun>0) p.stun -= dt;
+      const b = s.ball;
+      let targetX = 0, targetD = side===0? 150:450;
+      if(s.isDouble){
+        const partnerFront = idx===0;
+        targetD = side===0? (partnerFront?120:200) : (partnerFront?480:400);
+      }
+      const ballComing = (side===0 && b.d<NET_D) || (side===1 && b.d>=NET_D);
+      if(ballComing){
+        const g=620, timeToGround = b.vh>0 ? (b.vh + Math.sqrt(Math.max(0,b.vh*b.vh+2*g*b.h)))/g : Math.sqrt(Math.max(0,2*b.h/g));
+        if(s.isDouble){
+          targetX = clampNum(b.x + b.vx*Math.min(timeToGround,0.5)*0.5, -s.courtW/2+20, s.courtW/2-20);
+          targetD = clampNum(b.d, side===0? 20:NET_D+20, side===0? NET_D-20:COURT_D-20);
+        } else {
+          // 單打：沿唯一的左右(前後場)軸線追球
+          targetD = clampNum(b.d + b.vd*Math.min(timeToGround,0.4)*0.4, side===0? 15:NET_D+15, side===0? NET_D-15:COURT_D-15);
+        }
+      }
+      const dx = targetX-p.x, dd = targetD-p.d;
+      const dist = Math.hypot(dx,dd)||1;
+      const step = p.speed*100*dt*spdMul;
+      if(s.isDouble){
+        p.x += (dx/dist)*Math.min(step,Math.abs(dx));
+        p.d += (dd/dist)*Math.min(step,Math.abs(dd));
+      } else {
+        p.x = 0;
+        p.d += Math.sign(dd)*Math.min(step, Math.abs(dd));
+      }
+
+      if(s.state==='serve' && side===1 && s.servingSide===1){
+        s._serveTimer = (s._serveTimer||0)+dt;
+        if(s._serveTimer>0.6){ s._serveTimer=0; doServe(1); }
+      }
+      if(s.state==='rally' && canReach(p,b) && Math.random()<0.85){
+        const roll = Math.random();
+        let shotType = roll<0.5?'clear': roll<0.78?'smash':'drop';
+        if((side===0?s.enA:s.enB)>=100 && Math.random()<0.25) shotType='ult';
+        attemptHit(side, shotType);
+      }
+    });
+  }
+}
+function clampNum(v,a,b){ return Math.max(a,Math.min(b,v)); }
+
+/* ================= 單打 2D：獨立、穩定的落點回拍系統 ================= */
+function flatServe(side){
+  const s=match;
+  flatSend(side,'clear');
+  s.state='rally';
+}
+function flatSend(side, shotType){
+  const s=match, b=s.ball, from=s.players[side===0?'A':'B'][0];
+  const targetSide=side===0?1:0;
+  const min=targetSide===0?55:345, max=targetSide===0?255:545;
+  const target=shotType==='ult' ? (targetSide===0?80:520) : min+Math.random()*(max-min);
+  b.flat=true; b.fromD=from.d; b.toD=target; b.t=0; b.duration=shotType==='ult'?0.42:0.95;
+  b.d=from.d; b.x=0; b.h=16; b.inPlay=true; b.targetSide=targetSide; b.lastHitSide=side;
+  b.shotType=shotType; b.faulting=false; b.hitterRacket=from.racket;
+  b.ghostFlag=false; b.phantomFlag=from.racket.special==='phantom'&&shotType==='ult';
+  from.burst=0.45;
+}
+function flatAction(type){
+  const s=match;
+  if(s.state==='serve'&&s.servingSide===0){ if(type==='lift') flatServe(0); return; }
+  if(s.state!=='rally'||type!=='lift'&&type!=='smash') return;
+  const b=s.ball, p=s.players.A[0];
+  if(b.targetSide!==0||b.t<0.45||Math.abs(p.d-b.d)>118) return;
+  if(type==='smash'){
+    if(s.enA<100){ flatHint('技巧尚未滿格！\n先用下往上拍回球'); return; }
+    s.enA=0; flatSend(0,'ult'); triggerUltimateFX(0,p.team);
+  }else{
+    s.enA=Math.min(100,s.enA+25); flatSend(0,'clear');
+  }
+  updateHUDDynamic();
+}
+function flatUpdateAI(dt){
+  const s=match, ai=s.players.B[0], b=s.ball;
+  if(s.state==='serve'&&s.servingSide===1){ s._serveTimer=(s._serveTimer||0)+dt; if(s._serveTimer>.55){s._serveTimer=0;flatServe(1);} return; }
+  if(s.state!=='rally'||b.targetSide!==1) return;
+  ai.d += Math.sign(b.toD-ai.d)*Math.min(ai.speed*90*dt,Math.abs(b.toD-ai.d));
+  if(b.t>.73&&Math.abs(ai.d-b.d)<135){
+    s.enB=Math.min(100,s.enB+22);
+    const shot=s.enB>=100&&Math.random()<.22?'ult':'clear';
+    if(shot==='ult') s.enB=0;
+    flatSend(1,shot); updateHUDDynamic();
+  }
+}
+function flatUpdateBall(dt){
+  const s=match,b=s.ball; if(!b.inPlay) return;
+  b.t=Math.min(1,b.t+dt/b.duration);
+  b.d=b.fromD+(b.toD-b.fromD)*b.t;
+  const peak=b.shotType==='ult'?175:125;
+  b.h=16+4*peak*b.t*(1-b.t);
+  if(b.t<1) return;
+  b.h=0; b.inPlay=false;
+  // 2D 單打沒有出界：球落到接球者半場卻沒被回拍，上一拍得分。
+  endRally(b.lastHitSide,'land');
+}
+function flatHint(message){
+  const el=document.getElementById('chant-banner'); el.textContent=message; el.style.color='#ffe259'; el.style.display='block'; match.chantTimer=1.1;
+}
+
+/* ================= 物理更新 & 得分 ================= */
+function updateBall(dt){
+  const s = match, b = s.ball;
+  if(!s.isDouble){ flatUpdateBall(dt); return; }
+  if(!b.inPlay) return;
+  const prevD = b.d;
+  b.vh -= 620*dt;
+  b.x += b.vx*dt; b.d += b.vd*dt; b.h += b.vh*dt;
+  // 遊戲化安全限制：球不需要物理完全精確，但不能飄出誇張範圍
+  b.d = clampNum(b.d, -150, COURT_D+150); b.x = clampNum(b.x, -400, 400);
+
+  // 過網判定
+  if((prevD-NET_D)*(b.d-NET_D) < 0){
+    const NET_H = 78;
+    if(b.h < NET_H){
+      endRally(b.lastHitSide===0?1:0, 'net');
+      return;
+    }
+  }
+  // 落地判定
+  if(b.h<=0){
+    b.h=0;
+    const halfW = s.courtW/2;
+    const inBounds = Math.abs(b.x)<=halfW && b.d>=0 && b.d<=COURT_D;
+    const landingSide = b.d<NET_D? 0:1;
+    if(!inBounds || b.faulting){
+      endRally(b.lastHitSide===0?1:0, 'out');
+    } else {
+      endRally(landingSide===0?1:0, 'land');
+    }
+  }
+}
+function endRally(scoringSide, reason){
+  const s = match;
+  if(s.state!=='rally') return;
+  s.state='pointend';
+  const shotType = s.ball.shotType||'clear';
+  const dmgType = reason==='land' ? shotType : 'fault';
+  let dmg = SHOT_DAMAGE[dmgType]||6;
+  const scorer = s.players[scoringSide===0?'A':'B'][0];
+  const usedRacket = s.ball.hitterRacket || scorer.racket;
+  dmg *= (0.85 + usedRacket.power/10*0.4);
+  if(reason==='land' && shotType==='smash' && usedRacket.special==='blaze') dmg *= 1.2;
+  if(Math.random() < usedRacket.luck/10*0.22) dmg *= 1.5;
+  dmg = Math.round(dmg);
+  if(reason==='land' && shotType==='smash' && usedRacket.special==='thunder'){
+    const loserSide = scoringSide===0?1:0;
+    s.players[loserSide===0?'A':'B'].forEach(p=>p.stun=0.9);
+  }
+
+  if(s.mode==='battle'){
+    if(scoringSide===0) s.hpB = Math.max(0,s.hpB-dmg); else s.hpA = Math.max(0,s.hpA-dmg);
+  } else {
+    if(scoringSide===0) s.scoreA++; else s.scoreB++;
+  }
+  showChant(scoringSide);
+  s.servingSide = scoringSide;
+  updateHUDDynamic();
+
+  const doNext = ()=>{
+    let over=false, winner=null;
+    if(s.mode==='battle'){
+      if(s.hpA<=0){ over=true; winner=1; } else if(s.hpB<=0){ over=true; winner=0; }
+    } else {
+      if((s.scoreA>=21 && s.scoreA-s.scoreB>=2) || s.scoreA>=30){ over=true; winner=0; }
+      else if((s.scoreB>=21 && s.scoreB-s.scoreA>=2) || s.scoreB>=30){ over=true; winner=1; }
+    }
+    if(over){ endMatch(winner); } else { resetServe(); }
+  };
+  if(shotType==='smash' || shotType==='ult' || reason!=='land'){
+    setTimeout(doNext, 650);
+  } else {
+    setTimeout(doNext, 250);
+  }
+}
+function endMatch(winnerSide){
+  const s = match;
+  goScreenReal('gameover');
+  const winTeam = winnerSide===0? s.teamA : s.teamB;
+  document.getElementById('gameover-title').textContent = `${winTeam.icon} ${winTeam.name} 獲勝！`;
+  document.getElementById('gameover-sub').textContent = s.mode==='battle'
+    ? `最終血量 ${s.teamA.name} ${s.hpA} : ${s.hpB} ${s.teamB.name}`
+    : `最終比分 ${s.teamA.name} ${s.scoreA} : ${s.scoreB} ${s.teamB.name}`;
+}
+function goScreenReal(id){
+  document.querySelectorAll('.screen').forEach(sc=>sc.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  document.getElementById('hud').classList.remove('active');
+}
+
+/* ================= 重播 / 慢動作 ================= */
+function triggerReplay(){
+  const s = match;
+  s.timeScale = 0.28; s.replayTimer = 0.9; s.replayLabelTimer=0; s.replayLabelIdx=0;
+  const label = document.getElementById('cam-label');
+  label.style.display='block'; label.textContent = CAM_LABELS[0];
+}
+function updateReplay(dt){
+  const s = match;
+  if(s.replayTimer>0){
+    s.replayTimer -= dt/s.timeScale;
+    s.replayLabelTimer += dt/s.timeScale;
+    if(s.replayLabelTimer>0.35){
+      s.replayLabelTimer=0; s.replayLabelIdx=(s.replayLabelIdx+1)%CAM_LABELS.length;
+      document.getElementById('cam-label').textContent = CAM_LABELS[s.replayLabelIdx];
+    }
+    if(s.replayTimer<=0){ s.timeScale=1; document.getElementById('cam-label').style.display='none'; }
+  }
+  if(s.ultBannerTimer>0){
+    s.ultBannerTimer -= dt;
+    if(s.ultBannerTimer<=0) document.getElementById('ult-banner').style.display='none';
+  }
+  if(s.predictCircle){
+    s.predictCircle.timer -= dt;
+    if(s.predictCircle.timer<=0) s.predictCircle=null;
+  }
+}
+function triggerUltimateFX(side, team){
+  const s = match;
+  const move = ULT_MOVES[team.id] || { name:'超必殺', color:'#ffe259' };
+  const banner = document.getElementById('ult-banner');
+  banner.textContent = `${team.icon} ${move.name}！！`;
+  banner.style.color = move.color;
+  banner.style.display='block';
+  s.ultBannerTimer = 1.2;
+  playSfxUlt();
+  // 閃光效果：用 setTimeout 而不是巢狀 rAF，避免某些瀏覽器沒有正確觸發轉場、導致白屏卡住不退
+  const flash = document.getElementById('flash-overlay');
+  flash.style.transition = 'none';
+  flash.style.opacity = '0.85'; // 瞬間閃一下
+  setTimeout(()=>{
+    flash.style.transition = 'opacity 0.55s';
+    flash.style.opacity = '0';
+  }, 30);
+  setTimeout(()=>{ flash.style.opacity = '0'; }, 900); // 保險：不管前面發生什麼，0.9秒後強制清掉閃光
+}
+function showChant(scoringSide){
+  const s = match;
+  const team = scoringSide===0? s.teamA : s.teamB;
+  const el = document.getElementById('chant-banner');
+  el.textContent = `${team.icon} ${team.chant}`;
+  el.style.color = team.color;
+  el.style.display='block';
+  s.chantTimer = 1.3;
+  s.players[scoringSide===0?'A':'B'].forEach(p=>p.burst=1.3);
+  s.cheerBurst = s.cheerBurst || {A:0,B:0};
+  s.cheerBurst[scoringSide===0?'A':'B'] = 1.5;
+}
+
+/* ================= HUD ================= */
+function updateHUDStatic(){
+  const s = match;
+  document.getElementById('teamA-name').innerHTML = `${s.teamA.icon} ${s.teamA.name}`;
+  document.getElementById('teamB-name').innerHTML = `${s.teamB.icon} ${s.teamB.name}`;
+  document.getElementById('hpA-wrap').style.display = s.mode==='battle'?'block':'none';
+  document.getElementById('hpB-wrap').style.display = s.mode==='battle'?'block':'none';
+  updateHUDDynamic();
+}
+function updateHUDDynamic(){
+  const s = match;
+  document.getElementById('hpA-fill').style.width = s.hpA+'%';
+  document.getElementById('hpB-fill').style.width = s.hpB+'%';
+  document.getElementById('hpA-fill').classList.toggle('low', s.hpA<30);
+  document.getElementById('hpB-fill').classList.toggle('low', s.hpB<30);
+  document.getElementById('enA-fill').style.width = s.enA+'%';
+  document.getElementById('enB-fill').style.width = s.enB+'%';
+  document.getElementById('score-mid').textContent = s.mode==='battle' ? `${s.hpA} : ${s.hpB}` : `${s.scoreA} : ${s.scoreB}`;
+  const smashBtn=document.getElementById('smash-btn');
+  smashBtn.classList.toggle('ready', s.enA>=100);
+  smashBtn.classList.toggle('locked', s.enA<100);
+}
+
+/* ================= 玩家移動 ================= */
+function updatePlayerMove(dt){
+  const s = match; const p = s.players.A[0];
+  const spdMul = p.stun>0 ? 0.4 : 1;
+  if(!s.isDouble){
+    let move=0; if(keys.back||keys.left) move-=1; if(keys.front||keys.right) move+=1;
+    p.x=0; p.d=clampNum(p.d+move*p.speed*115*dt*spdMul,45,270);
+    if(p.burst>0) p.burst-=dt; if(p.stun>0) p.stun-=dt;
+    return;
+  }
+  if(s.isDouble){
+    const halfW = s.courtW/2-20;
+    let mx=0, md=0;
+    if(keys.left) mx-=1; if(keys.right) mx+=1;
+    if(keys.up) md+=1; if(keys.down) md-=1;
+    const len = Math.hypot(mx,md)||1;
+    p.x = clampNum(p.x + (mx/len)*p.speed*100*dt*spdMul, -halfW, halfW);
+    p.d = clampNum(p.d + (md/len)*p.speed*100*dt*spdMul, 10, NET_D-10);
+  } else {
+    // 單打：真平面2D，左右鍵＝靠近／遠離球網（沿唯一的前後場軸線移動）
+    let md=0;
+    if(keys.left) md-=1; if(keys.right) md+=1;
+    p.x = 0;
+    p.d = clampNum(p.d + md*p.speed*100*dt*spdMul, 15, NET_D-15);
+  }
+  if(p.burst>0) p.burst -= dt;
+  if(p.stun>0) p.stun -= dt;
+}
+
+/* ================= 主迴圈 ================= */
+let lastTime=0;
+function loop(ts, myMatch){
+  if(!match || match!==myMatch) return; // 這局已結束或被新的一局取代，停止這個舊迴圈
+  if(!lastTime) lastTime=ts;
+  let dt = (ts-lastTime)/1000; lastTime=ts;
+  dt = Math.min(dt, 0.05);
+  try{
+    const scaledDt = dt*(match.timeScale||1);
+    updatePlayerMove(scaledDt);
+    updateAI(scaledDt);
+    updateBall(scaledDt);
+    updateReplay(dt);
+    if(match.chantTimer>0){ match.chantTimer-=dt; if(match.chantTimer<=0) document.getElementById('chant-banner').style.display='none'; }
+    if(match.cheerBurst){ if(match.cheerBurst.A>0) match.cheerBurst.A-=dt; if(match.cheerBurst.B>0) match.cheerBurst.B-=dt; }
+    match.time += scaledDt;
+    render();
+  } catch(err){
+    // 任何一幀出錯都不該讓整個遊戲卡死——記錄下來，下一幀繼續跑
+    console.error('遊戲畫面更新發生錯誤，已略過這一幀：', err);
+  }
+  requestAnimationFrame((ts2)=>loop(ts2, myMatch));
+}
+
+/* ================= 渲染 ================= */
+function drawCourtLine(x1,d1,x2,d2,w){
+  ctx.beginPath();
+  ctx.moveTo(screenX(x1,d1), screenY(d1));
+  ctx.lineTo(screenX(x2,d2), screenY(d2));
+  ctx.lineWidth = w||2;
+  ctx.stroke();
+}
+function drawCheerSquad(sideX, baseY, color, burst, faceIn){
+  const t = match.time;
+  for(let i=0;i<3;i++){
+    const spread = 26;
+    const cx = sideX + (i-1)*spread*(faceIn?1:-1);
+    const scaleUp = burst>0 ? 1.7 : 1;
+    const bob = Math.sin(t*4 + i)*4*(burst>0?2.2:1);
+    const armSwing = Math.sin(t*5+i) * (burst>0? 0.9: 0.4);
+    ctx.save();
+    ctx.translate(cx, baseY+bob);
+    ctx.scale(scaleUp, scaleUp);
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.moveTo(-8,14); ctx.lineTo(8,14); ctx.lineTo(4,-4); ctx.lineTo(-4,-4); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#ffe0c2'; ctx.beginPath(); ctx.arc(0,-10,6,0,7); ctx.fill();
+    ctx.strokeStyle = color; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(-4,-2); ctx.lineTo(-14, -2-armSwing*14); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(4,-2); ctx.lineTo(14, -2+armSwing*14); ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(-14, -2-armSwing*14, 4,0,7); ctx.fill();
+    ctx.beginPath(); ctx.arc(14, -2+armSwing*14, 4,0,7); ctx.fill();
+    ctx.restore();
+  }
+}
+function drawPlayerFig(p, color){
+  const sx = screenX(p.x,p.d), sy = screenY(p.d) - p.h*scaleAt(p.d)*0.6;
+  const sc = scaleAt(p.d);
+  const burstScale = p.burst>0 ? 1+Math.min(0.4,p.burst*0.4) : 1;
+  const facing = p.side===0 ? 1 : -1; // 面向球網
+  const stride = Math.sin(match.time*6 + (p.x*0.05)) * 1.5;
+  const swing = p.burst>0 ? -1.15 : -0.35;
+  drawHumanoidAt(sx, sy, sc*burstScale*1.7, facing, color, swing, stride);
+}
+function drawPlayerFlat(p, color){
+  // 單打真平面2D：無遠近透視，兩人同尺寸站在球網左右兩側
+  const sx = flatX(p.d), sy = FLAT_GROUND_Y - p.h*0.6;
+  const burstScale = p.burst>0 ? 1+Math.min(0.4,p.burst*0.4) : 1;
+  const facing = p.side===0 ? 1 : -1; // 面向球網
+  const stride = Math.sin(match.time*6 + (p.d*0.05)) * 1.5;
+  const swing = p.burst>0 ? -1.15 : -0.35;
+  drawHumanoidAt(sx, sy, 3.25*burstScale, facing, color, swing, stride);
+}
+function drawHumanoidAt(sx, sy, sc, facing, color, swing, stride){
+  ctx.save();
+  ctx.translate(sx,sy); ctx.scale(sc*facing, sc);
+  // 地面陰影
+  ctx.save(); ctx.translate(0, 30);
+  ctx.fillStyle='rgba(0,0,0,0.32)'; ctx.beginPath(); ctx.ellipse(0,0,15,5,0,0,7); ctx.fill(); ctx.restore();
+
+  // 後腳、前腳 (褲子/短褲)
+  ctx.strokeStyle = '#2b2b2b'; ctx.lineWidth = 5; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(-3,12); ctx.lineTo(-6+stride, 27); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(3,12); ctx.lineTo(6-stride, 27); ctx.stroke();
+  // 鞋子
+  ctx.strokeStyle = '#fff'; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(-6+stride,27); ctx.lineTo(-9+stride,28); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(6-stride,27); ctx.lineTo(9-stride,28); ctx.stroke();
+
+  // 短褲
+  ctx.fillStyle = '#2b3a4a';
+  ctx.beginPath(); ctx.moveTo(-8,6); ctx.lineTo(8,6); ctx.lineTo(6,15); ctx.lineTo(-6,15); ctx.closePath(); ctx.fill();
+
+  // 上衣（隊伍色運動背心）
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(-9,7); ctx.lineTo(-8,-11); ctx.lineTo(-4,-14); ctx.lineTo(4,-14); ctx.lineTo(8,-11); ctx.lineTo(9,7);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.beginPath(); ctx.moveTo(-2,-13); ctx.lineTo(2,-13); ctx.lineTo(3,3); ctx.lineTo(-3,3); ctx.closePath(); ctx.fill();
+
+  // 非持拍手臂
+  ctx.strokeStyle = '#ffcf9e'; ctx.lineWidth=4; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(-7,-9); ctx.lineTo(-13, 2+stride*0.6); ctx.stroke();
+
+  // 頭 + 短髮
+  ctx.fillStyle = '#ffcf9e'; ctx.beginPath(); ctx.arc(0,-19,7.5,0,7); ctx.fill();
+  ctx.fillStyle = '#2c1c12';
+  ctx.beginPath(); ctx.arc(0,-21.5,7.6,Math.PI*1.05, Math.PI*1.95); ctx.fill();
+  // 簡單五官（可愛感）
+  ctx.fillStyle='#2c1c12'; ctx.beginPath(); ctx.arc(2.6,-18.5,1,0,7); ctx.fill();
+  ctx.fillStyle='rgba(255,120,120,0.5)'; ctx.beginPath(); ctx.arc(4.2,-16.5,1.6,0,7); ctx.fill();
+  // 頭帶（隊色）
+  ctx.strokeStyle = color; ctx.lineWidth=2.4;
+  ctx.beginPath(); ctx.arc(0,-19,7.6,Math.PI*1.1,Math.PI*1.9); ctx.stroke();
+
+  // 持拍手臂（依揮拍動作擺動）
+  ctx.strokeStyle = '#ffcf9e'; ctx.lineWidth=4.2; ctx.lineCap='round';
+  const elbowX = 8, elbowY = -8 + swing*6;
+  const handX = 20, handY = -6 + swing*22;
+  ctx.beginPath(); ctx.moveTo(8,-9); ctx.lineTo(elbowX+6, elbowY); ctx.lineTo(handX, handY); ctx.stroke();
+  // 球拍
+  ctx.save(); ctx.translate(handX,handY); ctx.rotate(swing*0.9);
+  ctx.strokeStyle='#e8e8e8'; ctx.lineWidth=2.4;
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,11); ctx.stroke(); // 拍柄
+  ctx.strokeStyle = color; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.ellipse(0,-6,7,9,0,0,7); ctx.stroke(); // 拍框
+  ctx.strokeStyle='rgba(255,255,255,0.7)'; ctx.lineWidth=0.6;
+  for(let gy=-13;gy<=1;gy+=3){ ctx.beginPath(); ctx.moveTo(-6,gy); ctx.lineTo(6,gy); ctx.stroke(); }
+  for(let gx=-5;gx<=5;gx+=3){ ctx.beginPath(); ctx.moveTo(gx,-14); ctx.lineTo(gx,2); ctx.stroke(); }
+  ctx.restore();
+
+  ctx.restore();
+}
+function render(){
+  const s = match;
+  ctx.clearRect(0,0,CW,CH);
+  // 觀眾席背景
+  const bgGrad = ctx.createLinearGradient(0,0,0,CH);
+  bgGrad.addColorStop(0,'#0a2436'); bgGrad.addColorStop(1,'#123a52');
+  ctx.fillStyle = bgGrad; ctx.fillRect(0,0,CW,CH);
+  ctx.fillStyle = 'rgba(255,255,255,0.05)';
+  for(let i=0;i<18;i++){ ctx.fillRect(20+i*52, 40+ (i%3)*10, 30, 60); }
+
+  if(s.isDouble) renderOblique(); else renderFlat();
+
+  if(s.state==='serve' && s.servingSide===0){
+    ctx.fillStyle='rgba(255,255,255,0.85)'; ctx.font='bold 16px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('按 空白鍵/發球鈕 開球！', CW/2, 130);
+  }
+}
+function renderOblique(){
+  const s = match;
+  // 相機重播位移 / 縮放
+  ctx.save();
+  if(s.replayTimer>0){
+    const fx = screenX(s.ball.x,s.ball.d), fy = screenY(s.ball.d);
+    const z = 1.5;
+    ctx.translate(CW/2,CH/2); ctx.scale(z,z); ctx.translate(-fx,-fy);
+  }
+
+  // 球場地板 (梯形，斜俯視偽3D)
+  const halfWNear = s.courtW/2*scaleAt(0), halfWFar = s.courtW/2*scaleAt(COURT_D);
+  ctx.fillStyle = '#1c6b4d';
+  ctx.beginPath();
+  ctx.moveTo(CW/2-halfWNear, screenY(0)); ctx.lineTo(CW/2+halfWNear, screenY(0));
+  ctx.lineTo(CW/2+halfWFar, screenY(COURT_D)); ctx.lineTo(CW/2-halfWFar, screenY(COURT_D));
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='#fff'; ctx.globalAlpha=0.85;
+  drawCourtLine(-s.courtW/2,0,-s.courtW/2,COURT_D,2);
+  drawCourtLine(s.courtW/2,0,s.courtW/2,COURT_D,2);
+  drawCourtLine(-s.courtW/2,0,s.courtW/2,0,2);
+  drawCourtLine(-s.courtW/2,COURT_D,s.courtW/2,COURT_D,2);
+  drawCourtLine(-s.courtW/2,NET_D,s.courtW/2,NET_D,1.5);
+  // 完整羽球場線：中線、前發球線、雙打後發球線
+  ctx.globalAlpha=0.7;
+  drawCourtLine(0,10,0,NET_D-80,1.5);
+  drawCourtLine(0,NET_D+80,0,COURT_D-10,1.5);
+  drawCourtLine(-s.courtW/2,NET_D-80,s.courtW/2,NET_D-80,1.5);
+  drawCourtLine(-s.courtW/2,NET_D+80,s.courtW/2,NET_D+80,1.5);
+  if(s.isDouble){
+    drawCourtLine(-s.courtW/2,40,s.courtW/2,40,1.5);
+    drawCourtLine(-s.courtW/2,COURT_D-40,s.courtW/2,COURT_D-40,1.5);
+  }
+  ctx.globalAlpha=1;
+
+  // 網子
+  const netY0 = screenY(NET_D);
+  const netH = 78*scaleAt(NET_D);
+  const nx1 = screenX(-s.courtW/2,NET_D), nx2 = screenX(s.courtW/2,NET_D);
+  ctx.fillStyle='rgba(255,255,255,0.25)';
+  ctx.fillRect(nx1, netY0-netH, nx2-nx1, netH);
+  ctx.strokeStyle='#fff'; ctx.lineWidth=2;
+  ctx.strokeRect(nx1, netY0-netH, nx2-nx1, netH);
+  for(let i=1;i<10;i++){ const yy=netY0-netH+ (netH/10)*i; ctx.beginPath(); ctx.moveTo(nx1,yy); ctx.lineTo(nx2,yy); ctx.lineWidth=0.5; ctx.stroke(); }
+
+  // 啦啦隊
+  drawCheerSquad(70, 560, s.teamA.color, s.cheerBurst?s.cheerBurst.A:0, true);
+  drawCheerSquad(CW-70, 560, s.teamB.color, s.cheerBurst?s.cheerBurst.B:0, false);
+
+  // 球員
+  s.players.A.forEach(p=>drawPlayerFig(p, s.teamA.color));
+  s.players.B.forEach(p=>drawPlayerFig(p, s.teamB.color));
+
+  // 鷹眼落點預測圈
+  if(s.predictCircle){
+    const pc = s.predictCircle;
+    ctx.save(); ctx.globalAlpha = Math.max(0,Math.min(1,pc.timer));
+    ctx.strokeStyle = pc.color; ctx.lineWidth=2; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.ellipse(screenX(pc.x,pc.d), screenY(pc.d), 18*scaleAt(pc.d), 9*scaleAt(pc.d), 0,0,7); ctx.stroke();
+    ctx.setLineDash([]); ctx.restore();
+  }
+  // 幻影拍：大絕分身球路殘影
+  if(s.ball.phantomFlag && s.ball.inPlay){
+    const b0 = s.ball;
+    for(let k=1;k<=2;k++){
+      ctx.save(); ctx.globalAlpha=0.22;
+      const ox = Math.sin(match.time*6+k)*14, oy = Math.cos(match.time*5+k)*8;
+      const px = screenX(b0.x,b0.d)+ox, py = screenY(b0.d)-b0.h*scaleAt(b0.d)+oy;
+      ctx.fillStyle = '#c98bff'; ctx.beginPath(); ctx.arc(px,py,5,0,7); ctx.fill();
+      ctx.restore();
+    }
+  }
+  // 球
+  const b = s.ball;
+  const bsx = screenX(b.x,b.d), bsy = screenY(b.d) - b.h*scaleAt(b.d);
+  const bshY = screenY(b.d);
+  ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(screenX(b.x,b.d), bshY, 6*scaleAt(b.d),3*scaleAt(b.d),0,0,7); ctx.fill();
+  if(b.shotType==='ult'){
+    ctx.strokeStyle='rgba(200,120,255,0.7)'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(bsx-b.vx*0.03, bsy-( -b.vh*0.02)); ctx.lineTo(bsx,bsy); ctx.stroke();
+  }
+  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(bsx,bsy,5*scaleAt(b.d)+2,0,7); ctx.fill();
+  ctx.fillStyle='#ffe259'; ctx.beginPath(); ctx.arc(bsx,bsy,3*scaleAt(b.d)+1,0,7); ctx.fill();
+
+  ctx.restore();
+}
+function renderFlat(){
+  // 單打：真平面2D側視 —— 球網固定在畫面正中央垂直線，兩人在球網左右兩側等尺寸走動，無遠近透視
+  const s = match;
+  ctx.save();
+  if(s.replayTimer>0){
+    const fx = flatX(s.ball.d), fy = FLAT_GROUND_Y - s.ball.h;
+    const z = 1.5;
+    ctx.translate(CW/2,CH/2); ctx.scale(z,z); ctx.translate(-fx,-fy);
+  }
+
+  // 球場地板（無透視的長方形）
+  ctx.fillStyle = '#1c6b4d';
+  ctx.fillRect(FLAT_LEFT, FLAT_GROUND_Y, FLAT_RIGHT-FLAT_LEFT, 40);
+  ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.globalAlpha=0.85;
+  ctx.strokeRect(FLAT_LEFT, FLAT_GROUND_Y, FLAT_RIGHT-FLAT_LEFT, 40);
+  ctx.beginPath(); ctx.moveTo(CW/2, FLAT_GROUND_Y); ctx.lineTo(CW/2, FLAT_GROUND_Y+40); ctx.stroke();
+  // 前發球線（雙邊）+ 中線
+  ctx.lineWidth=1.5; ctx.globalAlpha=0.7;
+  [NET_D-80, NET_D+80].forEach(dd=>{
+    const lx = flatX(dd);
+    ctx.beginPath(); ctx.moveTo(lx, FLAT_GROUND_Y); ctx.lineTo(lx, FLAT_GROUND_Y+40); ctx.stroke();
+  });
+  ctx.beginPath(); ctx.moveTo(flatX(10), FLAT_GROUND_Y+20); ctx.lineTo(flatX(NET_D-80), FLAT_GROUND_Y+20); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(flatX(NET_D+80), FLAT_GROUND_Y+20); ctx.lineTo(flatX(COURT_D-10), FLAT_GROUND_Y+20); ctx.stroke();
+  ctx.globalAlpha=1;
+
+  // 球網（固定在畫面正中央的垂直線+網柱）
+  ctx.fillStyle='rgba(255,255,255,0.25)';
+  ctx.fillRect(CW/2-3, FLAT_GROUND_Y-FLAT_NET_H, 6, FLAT_NET_H);
+  ctx.strokeStyle='#fff'; ctx.lineWidth=2;
+  ctx.strokeRect(CW/2-3, FLAT_GROUND_Y-FLAT_NET_H, 6, FLAT_NET_H);
+  for(let i=1;i<10;i++){ const yy=FLAT_GROUND_Y-FLAT_NET_H+(FLAT_NET_H/10)*i; ctx.beginPath(); ctx.moveTo(CW/2-3,yy); ctx.lineTo(CW/2+3,yy); ctx.lineWidth=0.5; ctx.stroke(); }
+
+  // 啦啦隊
+  drawCheerSquad(70, 560, s.teamA.color, s.cheerBurst?s.cheerBurst.A:0, true);
+  drawCheerSquad(CW-70, 560, s.teamB.color, s.cheerBurst?s.cheerBurst.B:0, false);
+
+  // 球員（左右兩側同尺寸站立，無遠近縮放）
+  drawPlayerFlat(s.players.A[0], s.teamA.color);
+  drawPlayerFlat(s.players.B[0], s.teamB.color);
+
+  // 鷹眼落點預測圈
+  if(s.predictCircle){
+    const pc = s.predictCircle;
+    ctx.save(); ctx.globalAlpha = Math.max(0,Math.min(1,pc.timer));
+    ctx.strokeStyle = pc.color; ctx.lineWidth=2; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.ellipse(flatX(pc.d), FLAT_GROUND_Y, 18, 9, 0,0,7); ctx.stroke();
+    ctx.setLineDash([]); ctx.restore();
+  }
+  // 幻影拍：大絕分身球路殘影
+  if(s.ball.phantomFlag && s.ball.inPlay){
+    const b0 = s.ball;
+    for(let k=1;k<=2;k++){
+      ctx.save(); ctx.globalAlpha=0.22;
+      const ox = Math.sin(match.time*6+k)*14, oy = Math.cos(match.time*5+k)*8;
+      const px = flatX(b0.d)+ox, py = FLAT_GROUND_Y-b0.h+oy;
+      ctx.fillStyle = '#c98bff'; ctx.beginPath(); ctx.arc(px,py,5,0,7); ctx.fill();
+      ctx.restore();
+    }
+  }
+  // 球
+  const b = s.ball;
+  const bsx = flatX(b.d), bsy = FLAT_GROUND_Y - b.h;
+  ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(bsx, FLAT_GROUND_Y, 6,3,0,0,7); ctx.fill();
+  if(b.shotType==='ult'){
+    ctx.strokeStyle='rgba(200,120,255,0.7)'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(bsx-b.vd*0.03, bsy+b.vh*0.02); ctx.lineTo(bsx,bsy); ctx.stroke();
+  }
+  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(bsx,bsy,7,0,7); ctx.fill();
+  ctx.fillStyle='#ffe259'; ctx.beginPath(); ctx.arc(bsx,bsy,4,0,7); ctx.fill();
+
+  ctx.restore();
+}
+
+/* ================= 音樂：輕鬆有趣的原創小旋律 (Web Audio 程序生成) ================= */
+let actx=null, musicOn=true, musicTimer=null, musicStep=0;
+const MELODY = [523,587,659,523, 659,698,784,659, 880,784,698,659, 587,523,587,659]; // 輕快C大調音階小旋律
+const BASSLINE = [262,262,330,330, 349,349,392,392];
+function ensureAudio(){
+  try{
+    if(!actx){ actx = new (window.AudioContext||window.webkitAudioContext)(); }
+    if(actx && actx.state==='suspended') actx.resume();
+  } catch(err){ console.error('音效初始化失敗，遊戲繼續但沒有聲音：', err); actx=null; musicOn=false; }
+}
+function beep(freq, t0, dur, type, gainMax){
+  if(!actx) return;
+  try{
+    const o = actx.createOscillator(); const g = actx.createGain();
+    o.type = type||'square'; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(gainMax||0.06, t0+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+    o.connect(g); g.connect(actx.destination);
+    o.start(t0); o.stop(t0+dur+0.02);
+  } catch(err){ /* 單一音效失敗不影響遊戲 */ }
+}
+function scheduleMusic(){
+  if(!musicOn || !actx) return;
+  const stepDur = 0.24;
+  const now = actx.currentTime + 0.05;
+  for(let i=0;i<4;i++){
+    const idx = (musicStep+i)%MELODY.length;
+    beep(MELODY[idx], now+i*stepDur, stepDur*0.85, 'triangle', 0.05);
+    if(idx%2===0) beep(BASSLINE[idx%BASSLINE.length], now+i*stepDur, stepDur*0.9, 'square', 0.03);
+  }
+  musicStep = (musicStep+4)%MELODY.length;
+}
+function startMusic(){
+  ensureAudio();
+  if(musicTimer) return;
+  scheduleMusic();
+  musicTimer = setInterval(scheduleMusic, 4*0.24*1000);
+}
+function stopMusic(){ if(musicTimer){ clearInterval(musicTimer); musicTimer=null; } }
+document.getElementById('mute-btn').addEventListener('click', ()=>{
+  musicOn = !musicOn;
+  document.getElementById('mute-btn').textContent = musicOn? '🔊':'🔇';
+  if(musicOn) startMusic(); else stopMusic();
+});
+document.getElementById('screen-title').querySelector('.btn-big').addEventListener('click', ()=>{ startMusic(); }, {once:false});
+function playSfxUlt(){
+  if(!actx) return;
+  const now = actx.currentTime;
+  [660,880,1046,1318].forEach((f,i)=> beep(f, now+i*0.06, 0.18, 'sawtooth', 0.08));
+}
+
+/* 隱藏起始頁多餘連結 */
+function noop(){}
+</script>
+</body>
+</html>
