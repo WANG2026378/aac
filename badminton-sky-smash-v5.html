@@ -19,7 +19,9 @@ canvas{position:absolute;inset:0;width:100%;height:100%}
 #score{text-align:center;font-size:24px;font-weight:1000;color:#ffe36d;text-shadow:0 2px 5px #000}
 #message{position:absolute;left:50%;top:21%;transform:translateX(-50%);font-size:28px;font-weight:1000;text-shadow:0 3px 10px #000,0 0 18px #42d8ff;white-space:nowrap;opacity:0;transition:opacity .16s}
 #controls{position:absolute;z-index:10;left:max(12px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom));display:flex;justify-content:flex-start;align-items:end;gap:12px;max-width:calc(100% - 24px)}
-.group{display:flex;gap:7px;flex:0 0 auto}.control{touch-action:none;border:2px solid #b8edff;border-radius:50%;background:#071525d9;color:#fff;font-weight:900;box-shadow:0 5px 16px #0008,inset 0 0 16px #52bfff33}.move{width:76px;height:76px;font-size:29px}.hit{width:70px;height:70px;font-size:13px}.drop{border-color:#91f0ce;background:#0b5347d9}.clear{border-color:#9ddfff;background:#174d73d9}.smash{border-color:#ffdc76;background:#5b194fd9}.ultimate{border-color:#ff9df1;background:#682c79e6}.ultimate.lock{opacity:.42;filter:grayscale(.7)}.control:active,.control.on{transform:scale(.92);filter:brightness(1.35)}
+.group,.move-buttons{display:flex;gap:7px;flex:0 0 auto}.control{touch-action:none;border:2px solid #b8edff;border-radius:50%;background:#071525d9;color:#fff;font-weight:900;box-shadow:0 5px 16px #0008,inset 0 0 16px #52bfff33}.move{width:76px;height:76px;font-size:29px}.hit{width:70px;height:70px;font-size:13px}.drop{border-color:#91f0ce;background:#0b5347d9}.clear{border-color:#9ddfff;background:#174d73d9}.smash{border-color:#ffdc76;background:#5b194fd9}.ultimate{border-color:#ff9df1;background:#682c79e6}.ultimate.lock{opacity:.42;filter:grayscale(.7)}.control:active,.control.on{transform:scale(.92);filter:brightness(1.35)}
+.joystick{display:none;position:relative;width:132px;height:132px;touch-action:none;cursor:grab}.joystick.active{cursor:grabbing}.joystick-ring{position:absolute;inset:6px;border:3px solid #b8edffcc;border-radius:50%;background:#061323cf;box-shadow:0 6px 18px #0009,inset 0 0 28px #39c9ff38}.joystick-ring::before{content:'◀  ▶';position:absolute;inset:0;display:grid;place-items:center;color:#a9e9ff99;font-size:20px;font-weight:1000;word-spacing:43px}.joystick-thumb{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px;border:3px solid #e9fbff;border-radius:50%;background:#1686bde8;box-shadow:0 4px 12px #000a,inset 0 0 18px #8feaff88;transform:translateX(0);will-change:transform}.joystick-label{position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);padding:2px 8px;border-radius:10px;background:#02070cbb;color:#d7f7ff;font-size:11px;font-weight:900;white-space:nowrap}
+#controlTools{display:none;position:absolute;z-index:12;top:48px;right:max(14px,env(safe-area-inset-right));height:34px;align-items:center;gap:6px;padding:4px 7px;border:1px solid #b8edff88;border-radius:17px;background:#02070c99;backdrop-filter:blur(5px)}#controlVisibility{width:25px;height:25px;padding:0;border:0;border-radius:50%;background:#1b526fbf;color:#e9fbff;font-size:16px;font-weight:900}#controlOpacity{width:84px;height:24px;margin:0;accent-color:#63dfff}
 #tactics{display:none;position:absolute;z-index:13;inset:0;pointer-events:none}#tactics.show{display:block}.tactic-title{position:absolute;left:50%;top:16%;transform:translateX(-50%);padding:7px 14px;border:2px solid #ffe36d;background:#071525ed;color:#fff;font-size:16px;font-weight:1000;box-shadow:0 0 18px #42d8ff88;white-space:nowrap}.aim-choice{position:absolute;top:62%;width:62px;height:62px;transform:translate(-50%,-50%);border:3px solid #fff;border-radius:50%;background:#073049d9;color:#fff;font-size:13px;font-weight:1000;pointer-events:auto;box-shadow:0 0 0 5px #46dbff33,0 0 22px #42d8ff}.aim-choice::before{content:'◎';display:block;font-size:18px;line-height:16px;color:#ffe36d}.aim-choice.front{left:64%}.aim-choice.body{left:74%}.aim-choice.back{left:85%}.aim-choice.special{left:50%;top:34%;width:116px;height:48px;border-radius:6px;border-color:#ff9df1;background:#682c79ed}.aim-choice.special::before{content:'✦';display:inline;margin-right:5px}.aim-choice:active{transform:translate(-50%,-50%) scale(.9);filter:brightness(1.4)}
 #start{position:absolute;z-index:20;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;background:radial-gradient(circle at 50% 40%,#174f77 0,#071827 55%,#02070c 100%)}
 #start.hide{display:none}h1{margin:0;font-size:40px;color:#eafcff;text-shadow:0 0 24px #43cfff}.tag{margin:6px 0 13px;color:#aeeeff;font-weight:700}.pick-label{margin:7px 0 5px;font-size:12px;color:#ccefff}.pick-row{display:flex;gap:8px}.pick{min-width:112px;border:2px solid #ffffff66;border-radius:6px;padding:8px 10px;background:#071525;color:#fff;font-weight:800}.pick small{display:block;margin-top:3px;color:#b9d5e8}.pick.sel{border-color:#ffe36d;background:#18405c;box-shadow:0 0 14px #55cfff66}#play{border:2px solid #fff;border-radius:6px;padding:11px 32px;margin-top:13px;background:#f05f3e;color:#fff;font-size:19px;font-weight:1000;box-shadow:0 7px 0 #892b1d}
@@ -27,6 +29,18 @@ canvas{position:absolute;inset:0;width:100%;height:100%}
 @media(max-height:430px){.teams{top:5px}.move{width:70px;height:70px}.hit{width:66px;height:66px}#controls{bottom:5px;gap:9px}#home{width:32px;height:32px;font-size:15px}}
 @media(max-width:620px){#controls{flex-direction:column-reverse;align-items:flex-start;gap:5px}.move{width:66px;height:66px}.hit{width:60px;height:60px;font-size:12px}.group{gap:6px}}
 @media(max-width:620px) and (orientation:portrait){#stage{width:100vw;height:100vh}canvas{inset:auto 0;top:50%;width:100%;height:auto;aspect-ratio:16/9;transform:translateY(-50%)}h1{font-size:32px}.teams{left:48px;right:9px;grid-template-columns:1fr 82px 1fr;gap:6px}.team{font-size:12px}#score{font-size:19px}#message{top:25%;font-size:22px}.aim-choice{top:58%}.aim-choice.special{top:35%}}
+@media(orientation:landscape) and (max-width:1200px){
+  #stage{width:100vw;height:100vh}
+  canvas{inset:0;width:100%;height:100%;transform:none;object-fit:cover}
+  #controls{inset:0;max-width:none;display:block;pointer-events:none}
+  .move-group{position:absolute;left:max(14px,env(safe-area-inset-left));bottom:max(8px,env(safe-area-inset-bottom));display:block;pointer-events:auto;opacity:var(--mobile-control-opacity,.72);transition:opacity .16s}
+  .move-buttons{display:none}
+  .joystick{display:block}
+  .hit-group{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,68px);grid-template-rows:repeat(2,68px);gap:8px;pointer-events:auto;opacity:var(--mobile-control-opacity,.72);transition:opacity .16s}
+  .hit{width:68px;height:68px;font-size:13px}
+  #controlTools{display:flex}
+  #message{top:18%;font-size:24px}
+}
 </style>
 </head>
 <body>
@@ -42,9 +56,13 @@ canvas{position:absolute;inset:0;width:100%;height:100%}
   <div id="message"></div>
 </div>
 <div id="controls">
-  <div class="group move-group"><button class="control move" data-key="left" aria-keyshortcuts="A">◀</button><button class="control move" data-key="right" aria-keyshortcuts="D">▶</button></div>
+  <div class="group move-group">
+    <div class="move-buttons"><button class="control move" data-key="left" aria-keyshortcuts="A">◀</button><button class="control move" data-key="right" aria-keyshortcuts="D">▶</button></div>
+    <div class="joystick" id="joystick" role="slider" aria-label="左右移動搖桿" aria-valuemin="-1" aria-valuemax="1" aria-valuenow="0"><div class="joystick-ring"><div class="joystick-thumb" id="joystickThumb"></div></div><span class="joystick-label">左右移動</span></div>
+  </div>
   <div class="group hit-group"><button class="control hit drop" data-key="drop" aria-keyshortcuts="J">短球</button><button class="control hit clear" data-key="clear" aria-keyshortcuts="K">長球</button><button class="control hit smash" id="smash" data-key="smash" aria-keyshortcuts="L">殺球</button><button class="control hit ultimate lock" id="ultimate" data-key="ultimate" aria-keyshortcuts="P">角色<br>絕招</button></div>
 </div>
+<div id="controlTools"><button id="controlVisibility" aria-label="顯示或隱藏操作按鍵" title="顯示或隱藏操作按鍵" onclick="toggleControlVisibility()">◐</button><input id="controlOpacity" type="range" min="0" max="100" value="72" aria-label="操作按鍵透明度" oninput="applyControlOpacity(this.value/100)"></div>
 <div id="tactics" aria-hidden="true"><div class="tactic-title">慢鏡戰術・選擇落點 <span id="tacticTime">2.0</span></div><button class="aim-choice front" data-aim="front">前點</button><button class="aim-choice body" data-aim="body">追身</button><button class="aim-choice back" data-aim="back">底線</button><button class="aim-choice special" id="tacticUltimate" data-aim="ultimate">角色大招</button></div>
 <div id="start"><h1>超能羽球：天空扣殺</h1><div class="tag">原創橫向羽球動作對決</div>
   <div class="pick-label">模式</div><div class="pick-row"><button class="pick sel" data-mode="battle">戰鬥模式<small>血量・能量・絕招</small></button><button class="pick" data-mode="classic">經典模式<small>21 分正式計分</small></button></div>
@@ -54,7 +72,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%}
 </div></div>
 <script>
 const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
-const stageEl=document.getElementById('stage'),hpAEl=document.getElementById('hpA'),hpBEl=document.getElementById('hpB'),spAEl=document.getElementById('spA'),spBEl=document.getElementById('spB'),scoreEl=document.getElementById('score'),smashEl=document.getElementById('smash'),ultimateEl=document.getElementById('ultimate'),nameAEl=document.getElementById('nameA'),nameBEl=document.getElementById('nameB'),tacticsEl=document.getElementById('tactics'),tacticTimeEl=document.getElementById('tacticTime'),tacticUltimateEl=document.getElementById('tacticUltimate');
+const stageEl=document.getElementById('stage'),hpAEl=document.getElementById('hpA'),hpBEl=document.getElementById('hpB'),spAEl=document.getElementById('spA'),spBEl=document.getElementById('spB'),scoreEl=document.getElementById('score'),smashEl=document.getElementById('smash'),ultimateEl=document.getElementById('ultimate'),nameAEl=document.getElementById('nameA'),nameBEl=document.getElementById('nameB'),tacticsEl=document.getElementById('tactics'),tacticTimeEl=document.getElementById('tacticTime'),tacticUltimateEl=document.getElementById('tacticUltimate'),joystickEl=document.getElementById('joystick'),joystickThumbEl=document.getElementById('joystickThumb'),controlOpacityEl=document.getElementById('controlOpacity'),controlVisibilityEl=document.getElementById('controlVisibility');
 const W=960,H=540,FLOOR=448,NET_X=480,NET_H=168,LEFT=72,RIGHT=888;
 const NET_CLEAR_Y=FLOOR-NET_H+8,SMASH_CONTACT_MAX_Y=NET_CLEAR_Y-18;
 // BWF 13.40m × 6.10m 場地；單打邊線寬 5.18m、短發球線距網 1.98m、雙打後發球線距底線 0.76m。
@@ -73,8 +91,8 @@ function athlete(side,fighterId){const fighter=FIGHTERS[fighterId]||FIGHTERS.thu
 let A=athlete(0,'thunder'),B=athlete(1,'mirage'),ball={x:A.x+28,y:FLOOR-98,fromX:A.x,toX:B.x,t:0,dur:1.15,side:1,live:false,shot:'clear'};
 function resetRound(server=0){
   const token=++roundToken;
-  cancelTactics();
-  A.x=A.home;B.x=B.home;A.jump=B.jump=0;keys.left=keys.right=false;
+  cancelTactics();releaseJoystick();
+  A.x=A.home;B.x=B.home;A.jump=B.jump=0;
   [A,B].forEach(p=>{p.anim='ready';p.animT=0;p.pending=null;p.pendingUltimate=null;p.smashMode=null;p.aimTarget=null;p.tacticalRelease=false;});
   const p=server===0?A:B;ball={x:p.x+(server===0?28:-28),y:FLOOR-98,fromX:p.x,toX:server===0?B.home:A.home,t:0,dur:1.15,side:1-server,live:false,waiting:false,shot:'clear',server,aiPlan:null};
   setTimeout(()=>{if(running&&token===roundToken&&!ball.live&&!ball.waiting)sendShot(p,'serve',.65);},520);
@@ -346,14 +364,14 @@ function updateHud(){
   const classic=gameMode==='classic';document.getElementById('stage').classList.toggle('classic',classic);
   hpAEl.style.width=A.hp+'%';hpBEl.style.width=B.hp+'%';spAEl.style.width=A.skill+'%';spBEl.style.width=B.skill+'%';
   nameAEl.textContent=A.fighter.name;nameBEl.textContent=B.fighter.name;scoreEl.textContent=classic?scoreA+' : '+scoreB:Math.round(A.hp)+' : '+Math.round(B.hp);
-  smashEl.classList.remove('lock');ultimateEl.classList.toggle('lock',!classic&&A.skill<100);ultimateEl.textContent=A.fighter.ultimate;ultimateEl.setAttribute('aria-label',A.fighter.ultimate);
+  smashEl.classList.remove('lock');ultimateEl.classList.toggle('lock',!classic&&A.skill<100);ultimateEl.textContent='絕招';ultimateEl.title=A.fighter.ultimate;ultimateEl.setAttribute('aria-label',A.fighter.ultimate+'（絕招）');
 }
 function finish(winner){
   roundToken++;running=false;cancelTactics();[A,B].forEach(p=>{p.pending=null;p.pendingUltimate=null;});const champion=winner===0?A:B,score=gameMode==='classic'?' '+scoreA+'：'+scoreB:'';show(champion.fighter.name+'勝利！'+score,'#ffe36d');
   setTimeout(()=>{document.getElementById('start').classList.remove('hide');document.getElementById('play').textContent='再戰一場';},900);
 }
 function begin(){
-  roundToken++;cancelTactics();gameMode=selectedMode;scoreA=0;scoreB=0;const rivals=Object.keys(FIGHTERS).filter(id=>id!==selectedFighter),rival=rivals[Math.floor(Math.random()*rivals.length)];
+  roundToken++;cancelTactics();messageTimer=0;document.getElementById('message').style.opacity=0;gameMode=selectedMode;scoreA=0;scoreB=0;const rivals=Object.keys(FIGHTERS).filter(id=>id!==selectedFighter),rival=rivals[Math.floor(Math.random()*rivals.length)];
   A=athlete(0,selectedFighter);B=athlete(1,rival);running=true;last=0;document.getElementById('start').classList.add('hide');updateHud();resetRound(0);
 }
 function focusGame(){try{stageEl.focus({preventScroll:true});}catch(error){stageEl.focus();}}
@@ -363,10 +381,22 @@ document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('clic
 document.querySelectorAll('[data-fighter]').forEach(btn=>btn.addEventListener('click',()=>{selectedFighter=btn.dataset.fighter;document.querySelectorAll('[data-fighter]').forEach(item=>item.classList.toggle('sel',item===btn));A=athlete(0,selectedFighter);updateHud();}));
 document.querySelectorAll('[data-aim]').forEach(btn=>btn.addEventListener('pointerdown',e=>{e.preventDefault();resolveTactics(btn.dataset.aim);}));
 document.querySelectorAll('[data-key]').forEach(btn=>{const k=btn.dataset.key,down=e=>{e.preventDefault();btn.classList.add('on');if(k==='left'||k==='right')keys[k]=true;else tryHit(k);},up=e=>{e.preventDefault();btn.classList.remove('on');if(k==='left'||k==='right')keys[k]=false;};btn.addEventListener('pointerdown',down);btn.addEventListener('pointerup',up);btn.addEventListener('pointercancel',up);btn.addEventListener('pointerleave',up);});
+let joystickPointer=null;
+function setJoystick(clientX){const rect=joystickEl.getBoundingClientRect(),axis=clamp((clientX-(rect.left+rect.width/2))/(rect.width*.34),-1,1),active=Math.abs(axis)>.2;joystickThumbEl.style.transform=`translateX(${axis*42}px)`;keys.left=active&&axis<0;keys.right=active&&axis>0;joystickEl.classList.toggle('active',active);joystickEl.setAttribute('aria-valuenow',active?String(Math.sign(axis)):'0');}
+function releaseJoystick(){joystickPointer=null;keys.left=keys.right=false;joystickThumbEl.style.transform='translateX(0)';joystickEl.classList.remove('active');joystickEl.setAttribute('aria-valuenow','0');}
+joystickEl.addEventListener('pointerdown',e=>{e.preventDefault();joystickPointer=e.pointerId;joystickEl.setPointerCapture(e.pointerId);setJoystick(e.clientX);focusGame();});
+joystickEl.addEventListener('pointermove',e=>{if(e.pointerId===joystickPointer)setJoystick(e.clientX);});
+joystickEl.addEventListener('pointerup',e=>{if(e.pointerId===joystickPointer)releaseJoystick();});
+joystickEl.addEventListener('pointercancel',releaseJoystick);joystickEl.addEventListener('lostpointercapture',releaseJoystick);
+let lastVisibleControlOpacity=.72;
+function applyControlOpacity(value,save=true){const opacity=clamp(Number(value)||0,0,1);stageEl.style.setProperty('--mobile-control-opacity',String(opacity));controlOpacityEl.value=String(Math.round(opacity*100));controlVisibilityEl.textContent=opacity===0?'○':'◐';controlVisibilityEl.setAttribute('aria-pressed',opacity===0?'true':'false');if(opacity>0)lastVisibleControlOpacity=opacity;if(save){try{localStorage.setItem('badminton-control-opacity',String(opacity));}catch(error){}}}
+let savedControlOpacity=.72;try{const storedValue=localStorage.getItem('badminton-control-opacity');if(storedValue!==null){const stored=Number(storedValue);if(Number.isFinite(stored))savedControlOpacity=stored;}}catch(error){}
+applyControlOpacity(savedControlOpacity,false);
+function toggleControlVisibility(){const current=Number(controlOpacityEl.value)/100;applyControlOpacity(current>0?0:lastVisibleControlOpacity);}
 const keyboardCodes={KeyA:'left',KeyD:'right',ArrowLeft:'left',ArrowRight:'right',KeyJ:'drop',KeyK:'clear',KeyL:'smash',KeyP:'ultimate'},keyboardFallback={a:'left',d:'right',arrowleft:'left',arrowright:'right',j:'drop',k:'clear',l:'smash',p:'ultimate'},keyButton=action=>document.querySelector(`[data-key="${action}"]`),controlFromKey=e=>keyboardCodes[e.code]||keyboardFallback[(e.key||'').toLowerCase()]||null;
 addEventListener('keydown',e=>{const control=controlFromKey(e);if(!control)return;e.preventDefault();stageEl.dataset.lastInput=control;const move=control==='left'||control==='right';if(move){if(!e.repeat&&running&&!tacticState)A.x=clamp(A.x+(control==='right'?18:-18),105,425);keys[control]=true;keyButton(control).classList.add('on');return;}if(!e.repeat){const btn=keyButton(control);btn.classList.add('on');clearTimeout(btn.keyFlash);btn.keyFlash=setTimeout(()=>btn.classList.remove('on'),140);tryHit(control);}});
 addEventListener('keyup',e=>{const control=controlFromKey(e);if(control==='left'||control==='right'){keys[control]=false;keyButton(control).classList.remove('on');}});
-addEventListener('blur',()=>{keys.left=keys.right=false;document.querySelectorAll('[data-key]').forEach(btn=>btn.classList.remove('on'));});
+addEventListener('blur',()=>{releaseJoystick();document.querySelectorAll('[data-key]').forEach(btn=>btn.classList.remove('on'));});
 updateHud();requestAnimationFrame(loop);
 </script>
 </body>
