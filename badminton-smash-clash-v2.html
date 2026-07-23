@@ -532,7 +532,7 @@ function flatSend(side, shotType){
   b.d=from.d; b.x=0; b.h=16; b.inPlay=true; b.targetSide=targetSide; b.lastHitSide=side;
   b.shotType=shotType; b.faulting=false; b.hitterRacket=from.racket;
   b.ghostFlag=false; b.phantomFlag=from.racket.special==='phantom'&&shotType==='ult';
-  from.burst=0.45;
+  from.swingType=shotType; from.burst=shotType==='ult'?0.72:0.45;
 }
 function flatAction(type){
   const s=match;
@@ -837,7 +837,7 @@ function drawPlayerFig(p, color){
   const burstScale = p.burst>0 ? 1+Math.min(0.4,p.burst*0.4) : 1;
   const facing = p.side===0 ? 1 : -1; // 面向球網
   const stride = Math.sin(match.time*6 + (p.x*0.05)) * 1.5;
-  const swing = p.burst>0 ? -1.15 : -0.35;
+  const swing = p.burst>0 ? (p.swingType==='ult' ? 1.18 : -0.82) : -0.22;
   drawHumanoidAt(sx, sy, sc*burstScale*1.7, facing, color, swing, stride);
 }
 function drawPlayerFlat(p, color){
@@ -846,7 +846,7 @@ function drawPlayerFlat(p, color){
   const burstScale = p.burst>0 ? 1+Math.min(0.4,p.burst*0.4) : 1;
   const facing = p.side===0 ? 1 : -1; // 面向球網
   const stride = Math.sin(match.time*6 + (p.d*0.05)) * 1.5;
-  const swing = p.burst>0 ? -1.15 : -0.35;
+  const swing = p.burst>0 ? (p.swingType==='ult' ? 1.18 : -0.82) : -0.22;
   drawHumanoidAt(sx, sy, 3.25*burstScale, facing, color, swing, stride);
 }
 function drawHumanoidAt(sx, sy, sc, facing, color, swing, stride){
@@ -894,22 +894,28 @@ function drawHumanoidAt(sx, sy, sc, facing, color, swing, stride){
   ctx.strokeStyle = color; ctx.lineWidth=2.4;
   ctx.beginPath(); ctx.arc(0,-19,7.6,Math.PI*1.1,Math.PI*1.9); ctx.stroke();
 
-  // 持拍手：肩 → 肘 → 手腕。手掌固定握住拍柄底端，不會飄在拍框旁。
-  const elbow={x:14+Math.cos(swing)*3,y:-6+swing*9};
-  const wrist={x:23+Math.sin(swing)*5,y:-4+swing*19};
+  // 持拍手：肩 → 肘 → 手腕。上手殺球會抬肘後向下壓拍。
+  const elbow={x:14+Math.cos(swing)*4,y:-6+swing*10};
+  const wrist={x:24+Math.sin(swing)*6,y:-4+swing*20};
   ctx.strokeStyle = '#ffcf9e'; ctx.lineWidth=4.2; ctx.lineCap='round';
   ctx.beginPath();ctx.moveTo(8,-9);ctx.lineTo(elbow.x,elbow.y);ctx.lineTo(wrist.x,wrist.y);ctx.stroke();
   ctx.fillStyle='#ffcf9e'; [elbow,wrist].forEach(j=>{ctx.beginPath();ctx.arc(j.x,j.y,2.55,0,7);ctx.fill();});
-  // 球拍的握把從手腕向外延伸，拍頭在握把前方。
+  // 刀板握拍：手的虎口朝拍側，拍柄穿過掌心，拍頭永遠在手的前上方。
   ctx.save(); ctx.translate(wrist.x,wrist.y); ctx.rotate(swing*0.9);
-  ctx.strokeStyle='#4a2b19'; ctx.lineWidth=3.2;
-  ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,12); ctx.stroke();
-  ctx.fillStyle='#2f1a10'; ctx.fillRect(-2.2,7,4.4,6);
+  ctx.strokeStyle='#d9dce3'; ctx.lineWidth=2.2;
+  ctx.beginPath(); ctx.moveTo(0,-8); ctx.lineTo(0,14); ctx.stroke();
+  ctx.strokeStyle='#4a2b19'; ctx.lineWidth=4;
+  ctx.beginPath(); ctx.moveTo(0,1); ctx.lineTo(0,14); ctx.stroke();
+  ctx.fillStyle='#2f1a10'; ctx.fillRect(-2.5,10,5,6);
+  // 手掌與手指覆蓋拍柄中央，清楚呈現握住而非貼在拍旁。
+  ctx.fillStyle='#ffcf9e'; ctx.beginPath(); ctx.ellipse(0,4.5,4.6,3.6,0,0,7); ctx.fill();
+  ctx.strokeStyle='#d99875'; ctx.lineWidth=.7;
+  [-2,0,2].forEach(x=>{ctx.beginPath();ctx.moveTo(x,2);ctx.lineTo(x,7);ctx.stroke();});
   ctx.strokeStyle = color; ctx.lineWidth=2;
-  ctx.beginPath(); ctx.ellipse(0,-6,7,9,0,0,7); ctx.stroke(); // 拍框
+  ctx.beginPath(); ctx.ellipse(0,-17,7,10,0,0,7); ctx.stroke(); // 拍框
   ctx.strokeStyle='rgba(255,255,255,0.7)'; ctx.lineWidth=0.6;
-  for(let gy=-13;gy<=1;gy+=3){ ctx.beginPath(); ctx.moveTo(-6,gy); ctx.lineTo(6,gy); ctx.stroke(); }
-  for(let gx=-5;gx<=5;gx+=3){ ctx.beginPath(); ctx.moveTo(gx,-14); ctx.lineTo(gx,2); ctx.stroke(); }
+  for(let gy=-26;gy<=-8;gy+=3){ ctx.beginPath(); ctx.moveTo(-6,gy); ctx.lineTo(6,gy); ctx.stroke(); }
+  for(let gx=-5;gx<=5;gx+=3){ ctx.beginPath(); ctx.moveTo(gx,-27); ctx.lineTo(gx,-7); ctx.stroke(); }
   ctx.restore();
 
   ctx.restore();
