@@ -846,7 +846,9 @@ function drawPlayerFlat(p, color){
   const burstScale = p.burst>0 ? 1+Math.min(0.4,p.burst*0.4) : 1;
   // 人物腳底對齊球場地面；跳躍時才從地面離開。
   const playerScale = 3.25*burstScale;
-  const sx = flatX(p.d), sy = FLAT_GROUND_Y - 29*playerScale - p.h*.6;
+  const smashPhase = p.swingType==='ult' && p.burst>0 ? (0.72-p.burst)/0.72 : 0;
+  const jumpLift = smashPhase>0 && smashPhase<1 ? Math.sin(smashPhase*Math.PI)*34 : 0;
+  const sx = flatX(p.d), sy = FLAT_GROUND_Y - 29*playerScale - p.h*.6 - jumpLift;
   const facing = p.side===0 ? 1 : -1; // 面向球網
   const stride = Math.sin(match.time*6 + (p.d*0.05)) * 1.5;
   const swing = p.burst>0 ? (p.swingType==='ult' ? 1.18 : -0.82) : -0.22;
