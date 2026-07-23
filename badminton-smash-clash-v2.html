@@ -533,7 +533,7 @@ function flatSend(side, shotType){
   b.d=from.d; b.x=0; b.h=16; b.inPlay=true; b.targetSide=targetSide; b.lastHitSide=side;
   b.shotType=shotType; b.faulting=false; b.hitterRacket=from.racket;
   b.ghostFlag=false; b.phantomFlag=from.racket.special==='phantom'&&shotType==='ult';
-  from.swingType=shotType; from.burst=shotType==='ult'?0.72:0.45;
+  from.swingType=shotType; from.swingAt=s.time; from.burst=shotType==='ult'?0.72:0.45;
 }
 function flatAction(type){
   const s=match;
@@ -846,12 +846,18 @@ function drawPlayerFlat(p, color){
   const burstScale = p.burst>0 ? 1+Math.min(0.4,p.burst*0.4) : 1;
   // 人物腳底對齊球場地面；跳躍時才從地面離開。
   const playerScale = 3.25*burstScale;
-  const smashPhase = p.swingType==='ult' && p.burst>0 ? (0.72-p.burst)/0.72 : 0;
+  const shotAge = p.swingAt==null ? 9 : match.time-p.swingAt;
+  const smashPhase = p.swingType==='ult' ? Math.min(1,shotAge/.72) : 0;
   const jumpLift = smashPhase>0 && smashPhase<1 ? Math.sin(smashPhase*Math.PI)*34 : 0;
   const sx = flatX(p.d), sy = FLAT_GROUND_Y - 29*playerScale - p.h*.6 - jumpLift;
   const facing = p.side===0 ? 1 : -1; // 面向球網
   const stride = Math.sin(match.time*6 + (p.d*0.05)) * 1.5;
-  const swing = p.burst>0 ? (p.swingType==='ult' ? 1.18 : -0.82) : -0.22;
+  let swing=-0.22;
+  if(p.swingType==='ult'&&smashPhase<1){
+    swing = smashPhase<.28 ? -1.02 : smashPhase<.58 ? -1.02+(smashPhase-.28)*8.1 : 1.42-(smashPhase-.58)*2.05;
+  }else if(p.swingType==='clear'&&shotAge<.46){
+    swing = shotAge<.20 ? -.70 : .60-(shotAge-.20)*2.4;
+  }
   drawHumanoidAt(sx, sy, playerScale, facing, color, swing, stride);
 }
 function drawHumanoidAt(sx, sy, sc, facing, color, swing, stride){
