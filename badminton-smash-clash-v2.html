@@ -247,7 +247,8 @@ buildTeamCards(); buildRacketCards();
 /* ================= 幾何投影 ================= */
 const CW = 960, CH = 600;
 const COURT_D = 600, NET_D = 300;
-const SINGLE_W = 480, DOUBLE_W = 620;
+// 以標準羽球場 13.40m × 5.18m（單打）／6.10m（雙打）換算的遊戲比例。
+const SINGLE_W = 518, DOUBLE_W = 610;
 const COURT_TOP_Y = 165, COURT_BOTTOM_Y = 555;
 const SCALE_NEAR = 1.0, SCALE_FAR = 0.55;
 function scaleAt(d){ return SCALE_NEAR + (SCALE_FAR-SCALE_NEAR)*(d/COURT_D); }
@@ -842,12 +843,14 @@ function drawPlayerFig(p, color){
 }
 function drawPlayerFlat(p, color){
   // 單打真平面2D：無遠近透視，兩人同尺寸站在球網左右兩側
-  const sx = flatX(p.d), sy = FLAT_GROUND_Y - p.h*0.6;
   const burstScale = p.burst>0 ? 1+Math.min(0.4,p.burst*0.4) : 1;
+  // 人物腳底對齊球場地面；跳躍時才從地面離開。
+  const playerScale = 3.25*burstScale;
+  const sx = flatX(p.d), sy = FLAT_GROUND_Y - 29*playerScale - p.h*.6;
   const facing = p.side===0 ? 1 : -1; // 面向球網
   const stride = Math.sin(match.time*6 + (p.d*0.05)) * 1.5;
   const swing = p.burst>0 ? (p.swingType==='ult' ? 1.18 : -0.82) : -0.22;
-  drawHumanoidAt(sx, sy, 3.25*burstScale, facing, color, swing, stride);
+  drawHumanoidAt(sx, sy, playerScale, facing, color, swing, stride);
 }
 function drawHumanoidAt(sx, sy, sc, facing, color, swing, stride){
   ctx.save();
@@ -950,7 +953,7 @@ function renderOblique(){
     ctx.translate(CW/2,CH/2); ctx.scale(z,z); ctx.translate(-fx,-fy);
   }
 
-  // 球場地板 (梯形，斜俯視偽3D)
+  // 球場地板：依羽球標準比例繪成透視梯形。
   const halfWNear = s.courtW/2*scaleAt(0), halfWFar = s.courtW/2*scaleAt(COURT_D);
   ctx.fillStyle = '#1c6b4d';
   ctx.beginPath();
@@ -963,13 +966,17 @@ function renderOblique(){
   drawCourtLine(-s.courtW/2,0,s.courtW/2,0,2);
   drawCourtLine(-s.courtW/2,COURT_D,s.courtW/2,COURT_D,2);
   drawCourtLine(-s.courtW/2,NET_D,s.courtW/2,NET_D,1.5);
-  // 完整羽球場線：中線、前發球線、雙打後發球線
+  // 發球線：短發球線距網 1.98m，雙打後發球線距底線 0.76m。
   ctx.globalAlpha=0.7;
   drawCourtLine(0,10,0,NET_D-80,1.5);
   drawCourtLine(0,NET_D+80,0,COURT_D-10,1.5);
   drawCourtLine(-s.courtW/2,NET_D-80,s.courtW/2,NET_D-80,1.5);
   drawCourtLine(-s.courtW/2,NET_D+80,s.courtW/2,NET_D+80,1.5);
   if(s.isDouble){
+    // 雙打外邊線內的兩條是單打邊線（5.18m 對 6.10m）。
+    const singleHalf = DOUBLE_W*(5.18/6.10)/2;
+    drawCourtLine(-singleHalf,0,-singleHalf,COURT_D,1.5);
+    drawCourtLine(singleHalf,0,singleHalf,COURT_D,1.5);
     drawCourtLine(-s.courtW/2,40,s.courtW/2,40,1.5);
     drawCourtLine(-s.courtW/2,COURT_D-40,s.courtW/2,COURT_D-40,1.5);
   }
@@ -1036,20 +1043,21 @@ function renderFlat(){
     ctx.translate(CW/2,CH/2); ctx.scale(z,z); ctx.translate(-fx,-fy);
   }
 
-  // 球場地板（無透視的長方形）
+  // 2D 側視也保留完整場地地板與發球區，不再只是狹窄的綠色條帶。
+  const flatDepth=96, flatTop=FLAT_GROUND_Y-flatDepth;
   ctx.fillStyle = '#1c6b4d';
-  ctx.fillRect(FLAT_LEFT, FLAT_GROUND_Y, FLAT_RIGHT-FLAT_LEFT, 40);
+  ctx.fillRect(FLAT_LEFT, flatTop, FLAT_RIGHT-FLAT_LEFT, flatDepth);
   ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.globalAlpha=0.85;
-  ctx.strokeRect(FLAT_LEFT, FLAT_GROUND_Y, FLAT_RIGHT-FLAT_LEFT, 40);
-  ctx.beginPath(); ctx.moveTo(CW/2, FLAT_GROUND_Y); ctx.lineTo(CW/2, FLAT_GROUND_Y+40); ctx.stroke();
-  // 前發球線（雙邊）+ 中線
+  ctx.strokeRect(FLAT_LEFT, flatTop, FLAT_RIGHT-FLAT_LEFT, flatDepth);
+  ctx.beginPath(); ctx.moveTo(CW/2, flatTop); ctx.lineTo(CW/2, FLAT_GROUND_Y); ctx.stroke();
+  // 2D 單打的短發球線；垂直線位置對應完整球場長度。
   ctx.lineWidth=1.5; ctx.globalAlpha=0.7;
   [NET_D-80, NET_D+80].forEach(dd=>{
     const lx = flatX(dd);
-    ctx.beginPath(); ctx.moveTo(lx, FLAT_GROUND_Y); ctx.lineTo(lx, FLAT_GROUND_Y+40); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(lx, flatTop); ctx.lineTo(lx, FLAT_GROUND_Y); ctx.stroke();
   });
-  ctx.beginPath(); ctx.moveTo(flatX(10), FLAT_GROUND_Y+20); ctx.lineTo(flatX(NET_D-80), FLAT_GROUND_Y+20); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(flatX(NET_D+80), FLAT_GROUND_Y+20); ctx.lineTo(flatX(COURT_D-10), FLAT_GROUND_Y+20); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(FLAT_LEFT, flatTop+flatDepth*.52); ctx.lineTo(CW/2-3,flatTop+flatDepth*.52); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(CW/2+3,flatTop+flatDepth*.52); ctx.lineTo(FLAT_RIGHT,flatTop+flatDepth*.52); ctx.stroke();
   ctx.globalAlpha=1;
 
   // 球網（固定在畫面正中央的垂直線+網柱）
