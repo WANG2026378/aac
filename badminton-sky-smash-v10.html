@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
+<title>超能羽球：天空扣殺 V10</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#030912;font-family:"PingFang TC","Microsoft JhengHei",sans-serif}
+#app{position:fixed;inset:0;display:grid;place-items:center;background:#030912}
+#stage{position:relative;width:min(100vw,177.777vh);height:min(100vh,56.25vw);overflow:hidden;background:#071526}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+#home{position:absolute;z-index:12;left:8px;top:8px;width:38px;height:38px;border:1px solid #a8eaff;border-radius:50%;background:#061323cc;color:#fff;font-size:18px}
+#hud{position:absolute;z-index:8;inset:0;pointer-events:none;color:#fff}
+.teams{position:absolute;left:56px;right:56px;top:10px;display:grid;grid-template-columns:1fr 118px 1fr;gap:14px;align-items:start}
+.team{font-size:15px;font-weight:900;text-shadow:0 2px 4px #000}.team.r{text-align:right}
+.bar{height:13px;margin-top:4px;border:2px solid #c9f4ff80;background:#02070dcc;overflow:hidden}.fill{height:100%;width:100%;background:linear-gradient(90deg,#36e28d,#b6ff6d);transition:width .2s}.skill{height:7px;margin-top:4px;border:1px solid #fff6;background:#02070dcc;overflow:hidden}.skill>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#59c8ff,#ffe36d);transition:width .18s}#stage.classic .bar,#stage.classic .skill,#stage.classic .ultimate{display:none}
+#score{text-align:center;font-size:24px;font-weight:1000;color:#ffe36d;text-shadow:0 2px 5px #000}
+#message{position:absolute;left:50%;top:21%;transform:translateX(-50%);font-size:28px;font-weight:1000;text-shadow:0 3px 10px #000,0 0 18px #42d8ff;white-space:nowrap;opacity:0;transition:opacity .16s}
+#controls{position:absolute;z-index:10;left:max(12px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom));display:flex;justify-content:flex-start;align-items:end;gap:12px;max-width:calc(100% - 24px)}
+.group{display:flex;gap:7px;flex:0 0 auto}.control{touch-action:none;border:2px solid #b8edff;border-radius:50%;background:#071525d9;color:#fff;font-weight:900;box-shadow:0 5px 16px #0008,inset 0 0 16px #52bfff33}.move{width:76px;height:76px;font-size:29px}.hit{width:70px;height:70px;font-size:13px}.drop{border-color:#91f0ce;background:#0b5347d9}.clear{border-color:#9ddfff;background:#174d73d9}.smash{border-color:#ffdc76;background:#5b194fd9}.ultimate{border-color:#ff9df1;background:#682c79e6}.ultimate.lock{opacity:.42;filter:grayscale(.7)}.control:active,.control.on{transform:scale(.92);filter:brightness(1.35)}
+#tactics{display:none;position:absolute;z-index:13;inset:0;pointer-events:none}#tactics.show{display:block}.tactic-title{position:absolute;left:50%;top:16%;transform:translateX(-50%);padding:7px 14px;border:2px solid #ffe36d;background:#071525ed;color:#fff;font-size:16px;font-weight:1000;box-shadow:0 0 18px #42d8ff88;white-space:nowrap}.aim-choice{position:absolute;top:62%;width:62px;height:62px;transform:translate(-50%,-50%);border:3px solid #fff;border-radius:50%;background:#073049d9;color:#fff;font-size:13px;font-weight:1000;pointer-events:auto;box-shadow:0 0 0 5px #46dbff33,0 0 22px #42d8ff}.aim-choice::before{content:'◎';display:block;font-size:18px;line-height:16px;color:#ffe36d}.aim-choice.front{left:64%}.aim-choice.body{left:74%}.aim-choice.back{left:85%}.aim-choice.special{left:50%;top:34%;width:116px;height:48px;border-radius:6px;border-color:#ff9df1;background:#682c79ed}.aim-choice.special::before{content:'✦';display:inline;margin-right:5px}.aim-choice:active{transform:translate(-50%,-50%) scale(.9);filter:brightness(1.4)}
+#start{position:absolute;z-index:20;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;background:radial-gradient(circle at 50% 40%,#174f77 0,#071827 55%,#02070c 100%)}
+#start.hide{display:none}h1{margin:0;font-size:40px;color:#eafcff;text-shadow:0 0 24px #43cfff}.tag{margin:6px 0 13px;color:#aeeeff;font-weight:700}.pick-label{margin:7px 0 5px;font-size:12px;color:#ccefff}.pick-row{display:flex;gap:8px}.pick{min-width:112px;border:2px solid #ffffff66;border-radius:6px;padding:8px 10px;background:#071525;color:#fff;font-weight:800}.pick small{display:block;margin-top:3px;color:#b9d5e8}.pick.sel{border-color:#ffe36d;background:#18405c;box-shadow:0 0 14px #55cfff66}#play{border:2px solid #fff;border-radius:6px;padding:11px 32px;margin-top:13px;background:#f05f3e;color:#fff;font-size:19px;font-weight:1000;box-shadow:0 7px 0 #892b1d}
+@media(pointer:coarse){.move{width:82px;height:82px}.hit{width:76px;height:76px}.group{gap:8px}#controls{gap:14px}}
+@media(max-height:430px){.teams{top:5px}.move{width:70px;height:70px}.hit{width:66px;height:66px}#controls{bottom:5px;gap:9px}#home{width:32px;height:32px;font-size:15px}}
+@media(max-width:620px){#controls{flex-direction:column-reverse;align-items:flex-start;gap:5px}.move{width:66px;height:66px}.hit{width:60px;height:60px;font-size:12px}.group{gap:6px}}
+@media(max-width:620px) and (orientation:portrait){#stage{width:100vw;height:100vh}canvas{inset:auto 0;top:50%;width:100%;height:auto;aspect-ratio:16/9;transform:translateY(-50%)}h1{font-size:32px}.teams{left:48px;right:9px;grid-template-columns:1fr 82px 1fr;gap:6px}.team{font-size:12px}#score{font-size:19px}#message{top:25%;font-size:22px}.aim-choice{top:58%}.aim-choice.special{top:35%}}
+</style>
+</head>
+<body>
+<div id="app"><div id="stage" tabindex="0" aria-label="超能羽球遊戲區">
+<canvas id="game" width="960" height="540"></canvas>
+<button id="home" aria-label="回教學首頁" onclick="location.href='index.html'">🏠</button>
+<div id="hud">
+  <div class="teams">
+    <div class="team"><span id="nameA">疾風隊</span><div class="bar"><div class="fill" id="hpA"></div></div><div class="skill"><i id="spA"></i></div></div>
+    <div id="score">100 : 100</div>
+    <div class="team r"><span id="nameB">雷光隊</span><div class="bar"><div class="fill" id="hpB"></div></div><div class="skill"><i id="spB"></i></div></div>
+  </div>
+  <div id="message"></div>
+</div>
+<div id="controls">
+  <div class="group move-group"><button class="control move" data-key="left" aria-keyshortcuts="A">◀</button><button class="control move" data-key="right" aria-keyshortcuts="D">▶</button></div>
+  <div class="group hit-group"><button class="control hit drop" data-key="drop" aria-keyshortcuts="J">短球</button><button class="control hit clear" data-key="clear" aria-keyshortcuts="K">長球</button><button class="control hit smash" id="smash" data-key="smash" aria-keyshortcuts="L">殺球</button><button class="control hit ultimate lock" id="ultimate" data-key="ultimate" aria-keyshortcuts="P">角色<br>絕招</button></div>
+</div>
+<div id="tactics" aria-hidden="true"><div class="tactic-title">慢鏡戰術・選擇落點 <span id="tacticTime">2.0</span></div><button class="aim-choice front" data-aim="front">前點</button><button class="aim-choice body" data-aim="body">追身</button><button class="aim-choice back" data-aim="back">底線</button><button class="aim-choice special" id="tacticUltimate" data-aim="ultimate">角色大招</button></div>
+<div id="start"><h1>超能羽球：天空扣殺</h1><div class="tag">原創橫向羽球動作對決</div>
+  <div class="pick-label">模式</div><div class="pick-row"><button class="pick sel" data-mode="battle">戰鬥模式<small>血量・能量・絕招</small></button><button class="pick" data-mode="classic">經典模式<small>21 分正式計分</small></button></div>
+  <div class="pick-label">角色</div><div class="pick-row"><button class="pick sel" data-fighter="thunder">蒼雷<small>力量進攻</small></button><button class="pick" data-fighter="mirage">幻羽<small>假動作網前</small></button><button class="pick" data-fighter="aegis">青城<small>防守反擊</small></button></div>
+  <button id="play">開始比賽</button>
+</div>
+</div></div>
+<script>
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const stageEl=document.getElementById('stage'),hpAEl=document.getElementById('hpA'),hpBEl=document.getElementById('hpB'),spAEl=document.getElementById('spA'),spBEl=document.getElementById('spB'),scoreEl=document.getElementById('score'),smashEl=document.getElementById('smash'),ultimateEl=document.getElementById('ultimate'),nameAEl=document.getElementById('nameA'),nameBEl=document.getElementById('nameB'),tacticsEl=document.getElementById('tactics'),tacticTimeEl=document.getElementById('tacticTime'),tacticUltimateEl=document.getElementById('tacticUltimate');
+const W=960,H=540,FLOOR=448,NET_X=480,NET_H=168,LEFT=72,RIGHT=888;
+const NET_CLEAR_Y=FLOOR-NET_H+8,SMASH_CONTACT_MAX_Y=NET_CLEAR_Y-18;
+// BWF 13.40m × 6.10m 場地；單打邊線寬 5.18m、短發球線距網 1.98m、雙打後發球線距底線 0.76m。
+const COURT={farY:286,nearY:518,farL:128,farR:832,nearL:72,nearR:888};
+const SHORT_R=(6.70-1.98)/13.40,DOUBLE_LONG_R=.76/13.40,SINGLE_INSET=.46/6.10;
+const FIGHTERS={
+  thunder:{name:'蒼雷',color:'#34b9ff',style:'power',ultimate:'雷霆貫地'},
+  mirage:{name:'幻羽',color:'#b06cff',style:'trick',ultimate:'鏡花墜網'},
+  aegis:{name:'青城',color:'#31d59a',style:'guard',ultimate:'不落領域'}
+};
+const keys={left:false,right:false};
+let last=0,running=false,messageTimer=0,shake=0,slow=1,gameMode='battle',selectedMode='battle',selectedFighter='thunder',scoreA=0,scoreB=0,roundToken=0,tacticState=null;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+function athlete(side,fighterId){const fighter=FIGHTERS[fighterId]||FIGHTERS.thunder;return{side,fighterId,fighter,x:side===0?270:690,home:side===0?270:690,vx:0,hp:100,skill:0,anim:'ready',animT:0,jump:0,color:fighter.color};}
+let A=athlete(0,'thunder'),B=athlete(1,'mirage'),ball={x:A.x+28,y:FLOOR-98,fromX:A.x,toX:B.x,t:0,dur:1.15,side:1,live:false,shot:'clear'};
+function resetRound(server=0){
+  const token=++roundToken;
+  cancelTactics();
+  A.x=A.home;B.x=B.home;A.jump=B.jump=0;keys.left=keys.right=false;
+  [A,B].forEach(p=>{p.anim='ready';p.animT=0;p.pending=null;p.pendingUltimate=null;p.smashMode=null;p.aimTarget=null;p.tacticalRelease=false;});
+  const p=server===0?A:B;ball={x:p.x+(server===0?28:-28),y:FLOOR-98,fromX:p.x,toX:server===0?B.home:A.home,t:0,dur:1.15,side:1-server,live:false,waiting:false,shot:'clear',server,aiPlan:null};
+  setTimeout(()=>{if(running&&token===roundToken&&!ball.live&&!ball.waiting)sendShot(p,'serve',.65);},520);
+}
+function launchShot(p,type,quality=0.65,keepAnimation=false){
+  const target=p.side===0?B:A,dir=p.side===0?1:-1;
+  if(!keepAnimation){p.anim=type==='smash'?'smash':type==='drop'?'drop':type==='clear'?'clear':'swing';p.animT=0;}
+  let targetX;
+  if(type==='drop')targetX=NET_X+dir*(62+Math.random()*28);
+  else if(type==='clear')targetX=p.side===0?760+Math.random()*78:200-Math.random()*78;
+  else if(type==='smash'&&p.aimTarget){
+    const zones=p.side===0?{front:640,body:clamp(target.x,665,765),back:830}:{front:320,body:clamp(target.x,195,295),back:130};targetX=zones[p.aimTarget]||zones.body;p.aimTarget=null;
+  }
+  else if(type==='smash')targetX=clamp(target.x+dir*55+(Math.random()-.5)*50,target.side===0?105:535,target.side===0?425:855);
+  else targetX=clamp(target.x+(Math.random()-.5)*55,target.side===0?105:535,target.side===0?425:855);
+  ball.fromX=p.x+dir*28;
+  // 先預測網面高度；一般殺球若會碰網，就改瞄準後場以提早通過網面。
+  if(type==='smash'&&!p.pendingUltimate&&smashNetY(ball.fromX,targetX,ball.y)>NET_CLEAR_Y-3)targetX=target.side===0?115:845;
+  ball.toX=targetX;
+  ball.x=ball.fromX;ball.t=0;ball.side=target.side;ball.live=true;ball.waiting=false;ball.shot=type;ball.smashMode=p.smashMode||null;ball.ultimate=p.pendingUltimate||null;p.pendingUltimate=null;ball.startY=type==='smash'?ball.y:FLOOR-(type==='serve'?92:type==='drop'?105:118);ball.powerArc=type==='smash'&&ball.ultimate&&ball.ultimate.id==='power';ball.angle=0;ball.crossedNet=false;ball.aiPlan=null;
+  ball.dur=type==='smash'?.64:type==='drop'?lerp(.92,.68,quality):type==='serve'?1.02:lerp(1.28,.92,quality);ball.quality=quality;
+  if(ball.ultimate){shake=1.25;show(ball.ultimate.name+'！',ball.ultimate.color);}
+  else if(type==='smash'){shake=1;show(p.smashMode==='jump'?'飛躍殺球！':'提肘殺球！','#ffe36d');}
+  else if(quality>.83)show('完美回擊！','#9ff5ff');
+  updateHud();
+}
+function sendShot(p,type,quality=0.65,smashMode='jump'){
+  if(type==='smash'){
+    const dir=p.side===0?1:-1,isTactical=!!p.tacticalRelease;
+    // 保留來球原本的高點；人物迎向球，不把羽球跟著跳躍再次托高。
+    const contactX=p.side===0?Math.min(NET_X-18,p.x+118):Math.max(NET_X+18,p.x-118);
+    const isJump=smashMode==='jump'||smashMode==='ultimateJump';p.smashMode=smashMode;
+    const leadIn=isTactical?(isJump?.78:.38):p.side===1?(isJump?.62:.28):(isJump?.5:.24);
+    p.anim=isJump?'smash':'standingSmash';p.animT=leadIn;p.pending={type,quality,contactX,contactY:ball.y,contactAt:isJump?1.15:.69};p.tacticalRelease=false;slow=isTactical?.78:.95;
+    ball.live=false;ball.waiting=true;ball.x=p.pending.contactX;ball.y=p.pending.contactY;
+    updateHud();return;
+  }
+  launchShot(p,type,quality);
+}
+function ballY(t,shot,startY){
+  if(shot==='smash')return startY+(FLOOR-10-startY)*Math.pow(t,1.12)-14*Math.sin(Math.PI*t);
+  const peak=shot==='clear'?220:shot==='drop'?120:138;
+  return startY+(FLOOR-8-startY)*t-peak*Math.sin(Math.PI*t);
+}
+function powerSmashY(progress,startY,fromX,toX){
+  const netProgress=clamp((NET_X-fromX)/(toX-fromX),.03,.97),netY=NET_CLEAR_Y-18;
+  if(progress<=netProgress){const u=progress/netProgress;return lerp(startY,netY,u)-24*Math.sin(Math.PI*u);}
+  const u=(progress-netProgress)/(1-netProgress);return lerp(netY,FLOOR-10,Math.pow(u,.72))-10*Math.sin(Math.PI*u);
+}
+function smashNetY(fromX,toX,startY){
+  const progress=clamp((NET_X-fromX)/(toX-fromX),0,1),t=1-Math.pow(1-progress,1/2.6);
+  return ballY(t,'smash',startY);
+}
+function gainEnergy(p,amount){if(gameMode==='battle')p.skill=clamp(p.skill+amount,0,100);}
+function cancelTactics(){tacticState=null;tacticsEl.classList.remove('show');tacticsEl.setAttribute('aria-hidden','true');}
+function enterTactics(quality){
+  if(tacticState)return;tacticState={quality,remaining:2};keys.left=keys.right=false;slow=1;ball.live=false;ball.waiting=true;A.anim='smash';A.animT=.55;
+  tacticTimeEl.textContent='2.0';tacticUltimateEl.style.display=A.skill>=100?'block':'none';tacticUltimateEl.textContent=A.fighter.ultimate;tacticsEl.classList.add('show');tacticsEl.setAttribute('aria-hidden','false');
+}
+function resolveTactics(choice){
+  if(!tacticState)return;if(choice==='ultimate'&&A.skill<100)return;
+  const state=tacticState;cancelTactics();ball.live=true;ball.waiting=false;ball.side=0;A.tacticalRelease=true;
+  if(choice==='ultimate'){activateUltimate(A);A.tacticalRelease=false;return;}
+  A.skill=clamp(A.skill-50,0,100);A.aimTarget=choice;sendShot(A,'smash',Math.max(.9,state.quality),'jump');updateHud();
+}
+function activateUltimate(p){
+  if(gameMode!=='battle'){show('經典模式沒有角色絕招','#d5efff');return;}
+  if(p.skill<100){show('力量值尚未全滿','#ffcf8e');return;}
+  if(!ball.live||ball.side!==p.side){show('等待自己的回球時機','#ffcf8e');return;}
+  p.skill=0;
+  const f=p.fighter,ultimate={id:f.style,name:f.ultimate,color:f.color};p.pendingUltimate=ultimate;
+  if(f.style==='power'){
+    const mode=ball.y<FLOOR-190?'ultimateJump':'ultimateStanding';sendShot(p,'smash',1,mode);
+  }else if(f.style==='trick'){
+    launchShot(p,'drop',1);ball.dur=.46;ball.toX=NET_X+(p.side===0?1:-1)*48;
+  }else{
+    p.hp=clamp(p.hp+28,0,100);launchShot(p,'clear',1);ball.dur=.62;
+  }
+  updateHud();
+}
+function tryHit(type){
+  if(tacticState){if(type==='ultimate')resolveTactics('ultimate');return;}
+  if(type==='ultimate'){activateUltimate(A);return;}
+  if(!running)return;if(!ball.live||ball.side!==0){show('等待對手回球','#d5efff');return;}
+  const isSmash=type==='smash',distance=Math.abs(A.x-ball.x);
+  const timing=Math.max(0,1-Math.abs((isSmash?.52:.83)-ball.t)/(isSmash?.23:.32));
+  if(distance>(isSmash?150:108)||ball.t<(isSmash?.31:.48)){show('移到球下方','#ffb29f');return;}
+  if(type==='smash'&&(ball.y>SMASH_CONTACT_MAX_Y||ball.t>.76)){show('擊球點要高於網口','#ffcf8e');return;}
+  if(type==='smash'){
+    const high=ball.y<FLOOR-190;
+    if(gameMode==='battle'&&high&&A.skill>=50){enterTactics(timing);return;}
+    const mode=high&&gameMode==='classic'?'jump':'standing';gainEnergy(A,10+timing*8);
+    sendShot(A,'smash',1,mode);
+  }else if(type==='drop'){gainEnergy(A,14+timing*16);sendShot(A,'drop',timing);}
+  else{gainEnergy(A,18+timing*22);sendShot(A,'clear',timing);}
+}
+function ai(dt){
+  if(!ball.live||ball.side!==1)return;
+  const desired=clamp(ball.toX,535,855);B.x+=Math.sign(desired-B.x)*Math.min(Math.abs(desired-B.x),170*dt);
+  const distance=Math.abs(B.x-ball.x);
+  // 每次來球只規劃一次，避免用逐幀亂數造成 AI 幾乎每球都殺；發球也只偶爾搶攻。
+  if(!ball.aiPlan&&ball.t>.34){
+    const canAttack=ball.shot!=='drop'&&ball.y<=SMASH_CONTACT_MAX_Y,smashChance=ball.shot==='serve'?.12:.32;
+    if(gameMode==='battle'&&B.skill>=100&&Math.random()<.28)ball.aiPlan='ultimate';
+    else ball.aiPlan=canAttack&&Math.random()<smashChance?'smash':'rally';
+  }
+  if(ball.aiPlan==='ultimate'&&ball.t>.4&&distance<145){ball.aiPlan='used';activateUltimate(B);return;}
+  const canSmash=ball.aiPlan==='smash'&&ball.t>.38&&ball.t<.72&&ball.y<=SMASH_CONTACT_MAX_Y&&distance<150;
+  if(canSmash){ball.aiPlan='used';const high=ball.y<FLOOR-190,canJump=gameMode==='classic'||B.skill>=50,mode=high&&canJump?'jump':'standing';if(gameMode==='battle'&&mode==='jump')B.skill-=50;else gainEnergy(B,12);sendShot(B,'smash',.82,mode);return;}
+  if(ball.t>.79&&distance<112){
+    const shot=Math.random()<.48?'drop':'clear';gainEnergy(B,shot==='drop'?18:24);sendShot(B,shot,.66+Math.random()*.22);
+  }
+}
+function point(winner,shot){
+  if(!ball.live)return;ball.live=false;
+  const token=++roundToken;
+  if(gameMode==='classic'){
+    if(winner===0)scoreA++;else scoreB++;
+    const over=((scoreA>=21||scoreB>=21)&&Math.abs(scoreA-scoreB)>=2)||scoreA>=30||scoreB>=30;
+    updateHud();show((winner===0?A:B).fighter.name+' 得分！',winner===0?'#8feaff':'#ff9b8d');
+    if(over)setTimeout(()=>{if(running&&token===roundToken)finish(winner);},700);else setTimeout(()=>{if(running&&token===roundToken)resetRound(winner);},780);
+    return;
+  }
+  const victim=winner===0?B:A,ultimate=ball.ultimate;
+  const damage=ultimate?(ultimate.id==='power'?42:ultimate.id==='trick'?25:18):shot==='smash'?(ball.smashMode==='jump'?30:22):shot==='drop'?8:10;
+  victim.hp=clamp(victim.hp-damage,0,100);shake=ultimate?1.35:shot==='smash'?1:.45;updateHud();
+  show((winner===0?A:B).fighter.name+' 得分！',winner===0?'#8feaff':'#ff9b8d');
+  if(victim.hp<=0)setTimeout(()=>{if(running&&token===roundToken)finish(winner);},700);else setTimeout(()=>{if(running&&token===roundToken)resetRound(winner);},780);
+}
+function update(dt){
+  if(!running)return;
+  if(tacticState){
+    tacticState.remaining=Math.max(0,tacticState.remaining-dt);tacticTimeEl.textContent=tacticState.remaining.toFixed(1);A.anim='smash';A.animT=.55;
+    if(tacticState.remaining<=0)resolveTactics('body');return;
+  }
+  const move=(keys.right?1:0)-(keys.left?1:0);A.x=clamp(A.x+move*235*dt,105,425);
+  if(move){A.anim='step';A.animT+=dt*7;}else if(A.anim==='step'){A.anim='ready';A.animT=0;}
+  [A,B].forEach(p=>{
+    if(p.anim!=='ready'&&p.anim!=='step')p.animT+=dt;
+    if(p.pending){
+      ball.x=p.pending.contactX;ball.y=p.pending.contactY;
+      if(p.animT>=p.pending.contactAt){const pending=p.pending;p.pending=null;launchShot(p,pending.type,pending.quality,true);slow=.55;}
+    }
+    if(!p.pending&&((p.anim==='swing'&&p.animT>.66)||(p.anim==='clear'&&p.animT>.88)||(p.anim==='drop'&&p.animT>.64)||(p.anim==='standingSmash'&&p.animT>.9)||(p.anim==='smash'&&p.animT>1.64))){p.anim='ready';p.animT=0;}
+  });
+  ai(dt);
+  if(ball.live){
+    const oldX=ball.x,oldY=ball.y;ball.t=clamp(ball.t+dt/ball.dur,0,1);
+    const flight=ball.shot==='smash'?1-Math.pow(1-ball.t,2.6):ball.shot==='drop'?1-Math.pow(1-ball.t,1.42):1-Math.pow(1-ball.t,1.12);
+    ball.x=lerp(ball.fromX,ball.toX,flight);ball.y=ball.powerArc?powerSmashY(flight,ball.startY,ball.fromX,ball.toX):ballY(ball.t,ball.shot,ball.startY);
+    ball.angle=Math.atan2(ball.y-oldY,ball.x-oldX);
+    if(!ball.crossedNet&&(oldX-NET_X)*(ball.x-NET_X)<=0){ball.crossedNet=true;if(ball.y>NET_CLEAR_Y){point(ball.side,'net');return;}}
+    if(ball.t>=1)point(1-ball.side,ball.shot);
+  }
+  if(slow<1)slow=Math.min(1,slow+dt*.45);if(shake>0)shake=Math.max(0,shake-dt*2.8);
+  if(messageTimer>0){messageTimer-=dt;if(messageTimer<=0)document.getElementById('message').style.opacity=0;}
+}
+function line(x1,y1,x2,y2,w,c){ctx.strokeStyle=c;ctx.lineWidth=w;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();}
+function joint(x,y,r,c){ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();}
+function drawArena(){
+  const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#040914');bg.addColorStop(.58,'#102c46');bg.addColorStop(1,'#087991');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#02050bcc';ctx.fillRect(0,92,W,122);
+  for(let i=0;i<34;i++){const x=12+i*29,y=128+(i%3)*20,bob=Math.sin(performance.now()/380+i)*3;ctx.fillStyle=i%7===0?'#35c5ff':i%9===0?'#ff6c5e':'#8ea6b8';joint(x,y+bob,5,ctx.fillStyle);ctx.fillRect(x-7,y+6,14,22);}
+  const C=COURT,court=ctx.createLinearGradient(0,C.farY,0,C.nearY);court.addColorStop(0,'#18ced4');court.addColorStop(1,'#087f99');ctx.fillStyle=court;ctx.beginPath();ctx.moveTo(C.farL,C.farY);ctx.lineTo(C.farR,C.farY);ctx.lineTo(C.nearR,C.nearY);ctx.lineTo(C.nearL,C.nearY);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#e7ffff';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(C.farL,C.farY);ctx.lineTo(C.farR,C.farY);ctx.lineTo(C.nearR,C.nearY);ctx.lineTo(C.nearL,C.nearY);ctx.closePath();ctx.stroke();
+  const across=(r,w=2,c='#e7ffffcc')=>line(lerp(C.farL,C.farR,r),C.farY,lerp(C.nearL,C.nearR,r),C.nearY,w,c);
+  const lengthwise=(w,wid=2,c='#e7ffffcc')=>line(lerp(C.farL,C.nearL,w),lerp(C.farY,C.nearY,w),lerp(C.farR,C.nearR,w),lerp(C.farY,C.nearY,w),wid,c);
+  // 網線、短發球線、雙打後發球線。
+  across(.5,2.5);across(SHORT_R);across(1-SHORT_R);across(DOUBLE_LONG_R,1.5,'#e7ffffaa');across(1-DOUBLE_LONG_R,1.5,'#e7ffffaa');
+  // 單打內邊線（外框仍保留雙打邊線）。
+  lengthwise(SINGLE_INSET,2.5);lengthwise(1-SINGLE_INSET,2.5);
+  // 左右發球區中央線，只存在於底線與短發球線之間。
+  const midW=.5,midY=lerp(C.farY,C.nearY,midW),leftBaseX=lerp(C.farL,C.nearL,midW),rightBaseX=lerp(C.farR,C.nearR,midW),leftShortX=lerp(lerp(C.farL,C.farR,SHORT_R),lerp(C.nearL,C.nearR,SHORT_R),midW),rightShortX=lerp(lerp(C.farL,C.farR,1-SHORT_R),lerp(C.nearL,C.nearR,1-SHORT_R),midW);
+  line(leftBaseX,midY,leftShortX,midY,2,'#e7ffffcc');line(rightShortX,midY,rightBaseX,midY,2,'#e7ffffcc');
+}
+function drawNet(){
+  const C=COURT,farTop=C.farY-NET_H*.58,nearTop=C.nearY-NET_H;
+  ctx.fillStyle='#d8f8ff20';ctx.beginPath();ctx.moveTo(NET_X,farTop);ctx.lineTo(NET_X,nearTop);ctx.lineTo(NET_X,C.nearY);ctx.lineTo(NET_X,C.farY);ctx.closePath();ctx.fill();
+  line(NET_X,C.farY,NET_X,farTop,4,'#1b2c38');line(NET_X,C.nearY,NET_X,nearTop,6,'#1b2c38');line(NET_X,farTop,NET_X,nearTop,4,'#f5ffff');
+  for(let i=1;i<10;i++){const t=i/10,yTop=lerp(farTop,nearTop,t),yBottom=lerp(C.farY,C.nearY,t);line(NET_X,yTop,NET_X,yBottom,1,'#dffaff77');}
+  for(let i=1;i<7;i++){const t=i/7;line(NET_X,lerp(farTop,C.farY,t),NET_X,lerp(nearTop,C.nearY,t),1,'#dffaff77');}
+}
+function pose(p){
+  const t=p.animT,jumpSmash=p.anim==='smash',standingSmash=p.anim==='standingSmash',sm=jumpSmash||standingSmash,cl=p.anim==='clear',sw=p.anim==='swing',dr=p.anim==='drop',step=p.anim==='step';
+  const q=jumpSmash?clamp(t/1.6,0,1):standingSmash?clamp(t/.9,0,1):cl?clamp(t/.88,0,1):sw?clamp(t/.66,0,1):dr?clamp(t/.64,0,1):0;
+  let jump=0,lean=0,turn=0,headTilt=0;
+  if(jumpSmash){
+    const air=clamp((q-.08)/.86,0,1);
+    jump=Math.sin(Math.PI*air)*142;
+    lean=q<.54?lerp(-.08,-.22,q/.54):q<.72?lerp(-.22,.18,(q-.54)/.18):lerp(.18,0,(q-.72)/.28);
+    turn=q<.52?lerp(-.18,-.52,q/.52):q<.72?lerp(-.52,.5,(q-.52)/.2):lerp(.5,0,(q-.72)/.28);headTilt=-.13;
+  }else if(standingSmash){lean=q<.5?lerp(-.05,-.14,q/.5):lerp(-.14,.16,(q-.5)/.5);turn=q<.5?lerp(-.12,-.42,q/.5):lerp(-.42,.42,(q-.5)/.5);headTilt=-.12;}
+  else if(cl){lean=q<.44?lerp(0,-.17,q/.44):lerp(-.17,.1,(q-.44)/.56);turn=q<.5?lerp(-.1,-.38,q/.5):lerp(-.38,.34,(q-.5)/.5);headTilt=-.18;}
+  else if(sw){lean=q<.46?-.06:lerp(-.06,.10,(q-.46)/.54);}
+  else if(dr){lean=Math.sin(Math.PI*q)*.2;turn=-Math.sin(Math.PI*q)*.1;headTilt=-.06;}
+  const stride=step?Math.sin(t)*10:0;
+  return{jump,lean,turn,headTilt,stride,sm,jumpSmash,standingSmash,cl,sw,dr,q};
+}
+function drawPlayer(p){
+  const f=p.side===0?1:-1,P=pose(p),x=p.x,y=FLOOR-P.jump,s=1.22;
+  ctx.save();ctx.translate(x,y);ctx.scale(f*s,s);
+  ctx.fillStyle='#00101955';ctx.beginPath();ctx.ellipse(0,4+P.jump,31,8,0,0,Math.PI*2);ctx.fill();
+  ctx.rotate(P.lean);
+  // 剪刀腳：起跳時持拍側腿後收，擊球後前後腿交換並以屈膝吸收落地。
+  let legScissor=0,landing=0;
+  if(P.jumpSmash){legScissor=P.q<.62?Math.sin(Math.PI*clamp(P.q/.62,0,1))*16:lerp(16,-12,clamp((P.q-.62)/.38,0,1));landing=P.q>.84?(P.q-.84)/.16:0;}
+  // 網前跨步時前膝深彎、後腿拉長；高遠球則先向後撤到球的後方。
+  const action=Math.sin(Math.PI*P.q),lunge=P.dr?action*34:0,rearStep=P.cl?action*20:0;
+  const hip={x:0,y:-55+landing*4+lunge*.22},k1={x:-14+P.stride*.35-legScissor*.45-rearStep*.55-lunge*.25,y:-28+landing*5+lunge*.18},k2={x:13-P.stride*.35+legScissor*.45+lunge*.78+rearStep*.12,y:-31+landing*8+lunge*.62},a1={x:-19+P.stride-legScissor-rearStep-lunge*.28,y:0},a2={x:18-P.stride+legScissor+lunge*1.38+rearStep*.1,y:0};
+  line(hip.x-6,hip.y,k1.x,k1.y,8,'#182431');line(k1.x,k1.y,a1.x,a1.y,7,'#f1b47f');line(hip.x+6,hip.y,k2.x,k2.y,8,'#182431');line(k2.x,k2.y,a2.x,a2.y,7,'#f1b47f');
+  line(a1.x,a1.y,a1.x-10,2,6,'#fff');line(a2.x,a2.y,a2.x+10,2,6,'#fff');
+  const shoulderShift=P.turn*9,hipShift=-P.turn*3;
+  ctx.fillStyle='#122131';ctx.beginPath();ctx.moveTo(-18+hipShift,-66);ctx.lineTo(18+hipShift,-66);ctx.lineTo(12,-48);ctx.lineTo(-12,-48);ctx.closePath();ctx.fill();
+  ctx.fillStyle=p.color;ctx.beginPath();ctx.moveTo(-20+shoulderShift,-110);ctx.quadraticCurveTo(shoulderShift,-121,20+shoulderShift,-110);ctx.lineTo(16+hipShift,-64);ctx.lineTo(-16+hipShift,-64);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#ffffff55';ctx.save();ctx.translate(shoulderShift*.3,0);ctx.rotate(P.turn*.08);ctx.fillRect(-4,-112,8,46);ctx.restore();line(-17+shoulderShift,-103,17+shoulderShift,-103,2,'#07203866');
+  // 非持拍手先指向來球，擊球時收向胸前以帶動軀幹旋轉。
+  let freeE={x:-29,y:-86},freeH={x:-35,y:-61};
+  if(P.sm||P.cl){
+    if(P.q<.55){freeE={x:-25,y:-126};freeH={x:-2,y:-156};}
+    else{const z=clamp((P.q-.55)/.25,0,1);freeE={x:lerp(-25,-18,z),y:lerp(-126,-94,z)};freeH={x:lerp(-2,5,z),y:lerp(-156,-83,z)};}
+  }else if(P.dr){const z=action;freeE={x:-28-z*10,y:-88+z*7};freeH={x:-42-z*12,y:-70+z*10};}
+  const freeSh={x:-15+shoulderShift*.25,y:-102};line(freeSh.x,freeSh.y,freeE.x,freeE.y,7,'#f1b47f');line(freeE.x,freeE.y,freeH.x,freeH.y,7,'#f1b47f');joint(freeE.x,freeE.y,4,'#f1b47f');joint(freeH.x,freeH.y,4.5,'#f1b47f');
+
+  // 持拍手分段：抬肘後引 → 肘部領先 → 最高點伸直 → 前臂旋前下壓 → 跨身收拍。
+  let el={x:28,y:-96},wr={x:45,y:-82},rv={x:18,y:-42};
+  if(P.sm){
+    if(P.q<.34){const z=P.q/.34;el={x:lerp(28,29,z),y:lerp(-96,-132,z)};wr={x:lerp(45,8,z),y:lerp(-82,-150,z)};rv={x:lerp(18,-18,z),y:lerp(-42,-43,z)};}
+    else if(P.q<.58){const z=(P.q-.34)/.24;el={x:lerp(29,38,z),y:lerp(-132,-139,z)};wr={x:lerp(8,27,z),y:lerp(-150,-158,z)};rv={x:lerp(-18,12,z),y:lerp(-43,-47,z)};}
+    else if(P.q<.68){const z=(P.q-.58)/.10;el={x:lerp(38,34,z),y:lerp(-139,-128,z)};wr={x:lerp(27,55,z),y:lerp(-158,-151,z)};rv={x:lerp(12,35,z),y:lerp(-47,-34,z)};}
+    else if(P.q<.83){const z=(P.q-.68)/.15;el={x:lerp(34,24,z),y:lerp(-128,-102,z)};wr={x:lerp(55,35,z),y:lerp(-151,-73,z)};rv={x:lerp(35,20,z),y:lerp(-34,40,z)};}
+    else{const z=(P.q-.83)/.17;el={x:lerp(24,27,z),y:lerp(-102,-91,z)};wr={x:lerp(35,17,z),y:lerp(-73,-68,z)};rv={x:lerp(20,14,z),y:lerp(40,18,z)};}
+  }else if(P.cl){
+    if(P.q<.4){const z=P.q/.4;el={x:lerp(28,31,z),y:lerp(-96,-129,z)};wr={x:lerp(45,8,z),y:lerp(-82,-148,z)};rv={x:lerp(18,-14,z),y:lerp(-42,-46,z)};}
+    else if(P.q<.64){const z=(P.q-.4)/.24;el={x:lerp(31,38,z),y:lerp(-129,-138,z)};wr={x:lerp(8,35,z),y:lerp(-148,-158,z)};rv={x:lerp(-14,17,z),y:lerp(-46,-50,z)};}
+    else{const z=(P.q-.64)/.36;el={x:lerp(38,24,z),y:lerp(-138,-98,z)};wr={x:lerp(35,48,z),y:lerp(-158,-88,z)};rv={x:lerp(17,28,z),y:lerp(-50,-27,z)};}
+  }else if(P.sw){const z=P.q<.45?P.q/.45:(P.q-.45)/.55;if(P.q<.45){el={x:lerp(28,30,z),y:lerp(-96,-119,z)};wr={x:lerp(45,17,z),y:lerp(-82,-130,z)};rv={x:lerp(18,-8,z),y:lerp(-42,-44,z)};}else{el={x:lerp(30,27,z),y:lerp(-119,-98,z)};wr={x:lerp(17,48,z),y:lerp(-130,-91,z)};rv={x:lerp(-8,26,z),y:lerp(-44,-34,z)};}}
+  else if(P.dr){const z=action;el={x:28+z*17,y:-96+z*9};wr={x:45+z*34,y:-82+z*8};rv={x:18+z*20,y:-42+z*29};}
+  const sh={x:15+shoulderShift,y:-102};line(sh.x,sh.y,el.x,el.y,8,'#f1b47f');line(el.x,el.y,wr.x,wr.y,7,'#f1b47f');joint(el.x,el.y,4.3,'#f1b47f');
+  // 接觸前由手指瞬間收握，手腕帶動前臂旋前；拍框會短暫由正面轉成較窄的側面。
+  let wristRoll=0,grip=.28,pronation=0;
+  if(P.sm){wristRoll=P.q<.54?lerp(-.28,-.12,P.q/.54):P.q<.73?lerp(-.12,.92,(P.q-.54)/.19):lerp(.92,.32,(P.q-.73)/.27);grip=clamp((P.q-.52)/.13,0,1);pronation=Math.sin(Math.PI*clamp((P.q-.49)/.43,0,1));}
+  else if(P.cl){wristRoll=P.q<.5?-.2:lerp(-.2,.72,clamp((P.q-.5)/.3,0,1));grip=clamp((P.q-.5)/.16,0,1);pronation=Math.sin(Math.PI*clamp((P.q-.48)/.42,0,1));}
+  else if(P.dr){wristRoll=action*.34;grip=.45+action*.35;pronation=action*.38;}
+  const armMag=Math.hypot(wr.x-el.x,wr.y-el.y)||1,armNx=-(wr.y-el.y)/armMag,armNy=(wr.x-el.x)/armMag,rollMark=Math.sin(wristRoll)*2.2;
+  line(lerp(el.x,wr.x,.38)+armNx*rollMark,lerp(el.y,wr.y,.38)+armNy*rollMark,lerp(el.x,wr.x,.9)+armNx*rollMark,lerp(el.y,wr.y,.9)+armNy*rollMark,1.5,'#ffd1a9aa');
+  const mag=Math.hypot(rv.x,rv.y)||1,ux=rv.x/mag,uy=rv.y/mag,headX=wr.x+ux*58,headY=wr.y+uy*58,ang=Math.atan2(uy,ux)+Math.PI/2;
+  line(wr.x+ux*2,wr.y+uy*2,headX-ux*16,headY-uy*16,4,'#5a3725');
+  const shaftAngle=Math.atan2(uy,ux),handX=wr.x+ux*5,handY=wr.y+uy*5,fingerGap=lerp(3,1.8,grip);
+  ctx.save();ctx.translate(handX,handY);ctx.rotate(shaftAngle+wristRoll*.12);ctx.fillStyle='#efb17e';ctx.beginPath();ctx.ellipse(0,0,8,5,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#8d513e';ctx.lineWidth=1;[-1,0,1].forEach(i=>{ctx.beginPath();ctx.moveTo(i*fingerGap-1,-4);ctx.quadraticCurveTo(i*fingerGap+1,0,i*fingerGap,4);ctx.stroke();});ctx.strokeStyle='#fff1dcaa';ctx.beginPath();ctx.moveTo(-5,-1);ctx.lineTo(4+grip*2,2);ctx.stroke();ctx.restore();
+  const faceWidth=15*(1-.52*pronation);ctx.save();ctx.translate(headX,headY);ctx.rotate(ang+wristRoll*.08);ctx.strokeStyle=p.color;ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(0,0,faceWidth,22,0,0,Math.PI*2);ctx.stroke();line(-faceWidth+2,0,faceWidth-2,0,1,'#e9ffffaa');line(0,-20,0,20,1,'#e9ffffaa');ctx.restore();
+  ctx.save();ctx.translate(0,-132);ctx.rotate(P.headTilt);joint(0,0,18,'#efb17e');ctx.fillStyle='#14202c';ctx.beginPath();ctx.arc(0,-6,19,Math.PI,Math.PI*2);ctx.lineTo(12,-5);ctx.lineTo(5,-14);ctx.lineTo(-2,-7);ctx.lineTo(-11,-15);ctx.closePath();ctx.fill();line(-13,-1,13,-1,4,p.color);ctx.fillStyle='#16202a';joint(7,3,2,'#16202a');line(4,11,11,10,1.5,'#9b4e3d');ctx.restore();ctx.restore();
+}
+function drawBall(){
+  if(!ball.live&&!ball.waiting)return;const dir=ball.live?Math.sign(ball.toX-ball.fromX)||1:(ball.x<NET_X?1:-1);
+  if(ball.live){const grad=ctx.createLinearGradient(ball.x-dir*(ball.shot==='smash'?145:65),ball.y,ball.x,ball.y);grad.addColorStop(0,'#8defff00');grad.addColorStop(1,ball.shot==='smash'?'#ffe268':'#bdf7ff');line(ball.x-dir*(ball.shot==='smash'?145:65),ball.y+5,ball.x,ball.y,ball.shot==='smash'?12:5,grad);}
+  if(ball.live&&ball.side===0){const timing=Math.max(0,1-Math.abs(.83-ball.t)/.32),r=31-timing*15;ctx.globalAlpha=.3+timing*.65;ctx.strokeStyle=timing>.78?'#ffe36d':'#a9edff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(ball.x,ball.y,r,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;}
+  // 軟木球頭朝飛行方向，羽裙拖在後方；下降時會隨軌跡轉向。
+  const angle=ball.live?ball.angle||0:(dir>0?0:Math.PI);ctx.save();ctx.translate(ball.x,ball.y);ctx.rotate(angle);
+  ctx.fillStyle='#f6fbff';ctx.beginPath();ctx.moveTo(-4,-3);ctx.lineTo(-18,-9);ctx.lineTo(-14,0);ctx.lineTo(-18,9);ctx.lineTo(-4,3);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#a9cbd8';ctx.lineWidth=1;[-14,-10,-6].forEach(x=>line(x,-6,x,6,1,'#a9cbd8'));joint(2,0,6,'#fff1d2');ctx.restore();
+}
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.save();if(shake>0)ctx.translate(Math.sin(performance.now()*.08)*shake*5,Math.cos(performance.now()*.07)*shake*3);
+  drawArena();drawPlayer(A);drawPlayer(B);drawNet();drawBall();ctx.restore();
+}
+function loop(ts){if(!last)last=ts;let dt=Math.min(.035,(ts-last)/1000);last=ts;update(dt*slow);draw();requestAnimationFrame(loop);}
+function show(text,color='#fff'){const m=document.getElementById('message');m.textContent=text;m.style.color=color;m.style.opacity=1;messageTimer=1.05;}
+function updateHud(){
+  const classic=gameMode==='classic';document.getElementById('stage').classList.toggle('classic',classic);
+  hpAEl.style.width=A.hp+'%';hpBEl.style.width=B.hp+'%';spAEl.style.width=A.skill+'%';spBEl.style.width=B.skill+'%';
+  nameAEl.textContent=A.fighter.name;nameBEl.textContent=B.fighter.name;scoreEl.textContent=classic?scoreA+' : '+scoreB:Math.round(A.hp)+' : '+Math.round(B.hp);
+  smashEl.classList.remove('lock');ultimateEl.classList.toggle('lock',!classic&&A.skill<100);ultimateEl.textContent=A.fighter.ultimate;ultimateEl.setAttribute('aria-label',A.fighter.ultimate);
+}
+function finish(winner){
+  roundToken++;running=false;cancelTactics();[A,B].forEach(p=>{p.pending=null;p.pendingUltimate=null;});const champion=winner===0?A:B,score=gameMode==='classic'?' '+scoreA+'：'+scoreB:'';show(champion.fighter.name+'勝利！'+score,'#ffe36d');
+  setTimeout(()=>{document.getElementById('start').classList.remove('hide');document.getElementById('play').textContent='再戰一場';},900);
+}
+function begin(){
+  roundToken++;cancelTactics();gameMode=selectedMode;scoreA=0;scoreB=0;const rivals=Object.keys(FIGHTERS).filter(id=>id!==selectedFighter),rival=rivals[Math.floor(Math.random()*rivals.length)];
+  A=athlete(0,selectedFighter);B=athlete(1,rival);running=true;last=0;document.getElementById('start').classList.add('hide');updateHud();resetRound(0);
+}
+function focusGame(){try{stageEl.focus({preventScroll:true});}catch(error){stageEl.focus();}}
+document.getElementById('play').addEventListener('click',()=>{begin();setTimeout(focusGame,0);});
+canvas.addEventListener('pointerdown',focusGame);
+document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{selectedMode=btn.dataset.mode;document.querySelectorAll('[data-mode]').forEach(item=>item.classList.toggle('sel',item===btn));}));
+document.querySelectorAll('[data-fighter]').forEach(btn=>btn.addEventListener('click',()=>{selectedFighter=btn.dataset.fighter;document.querySelectorAll('[data-fighter]').forEach(item=>item.classList.toggle('sel',item===btn));A=athlete(0,selectedFighter);updateHud();}));
+document.querySelectorAll('[data-aim]').forEach(btn=>btn.addEventListener('pointerdown',e=>{e.preventDefault();resolveTactics(btn.dataset.aim);}));
+document.querySelectorAll('[data-key]').forEach(btn=>{const k=btn.dataset.key,down=e=>{e.preventDefault();btn.classList.add('on');if(k==='left'||k==='right')keys[k]=true;else tryHit(k);},up=e=>{e.preventDefault();btn.classList.remove('on');if(k==='left'||k==='right')keys[k]=false;};btn.addEventListener('pointerdown',down);btn.addEventListener('pointerup',up);btn.addEventListener('pointercancel',up);btn.addEventListener('pointerleave',up);});
+const keyboardCodes={KeyA:'left',KeyD:'right',ArrowLeft:'left',ArrowRight:'right',KeyJ:'drop',KeyK:'clear',KeyL:'smash',KeyP:'ultimate'},keyboardFallback={a:'left',d:'right',arrowleft:'left',arrowright:'right',j:'drop',k:'clear',l:'smash',p:'ultimate'},keyButton=action=>document.querySelector(`[data-key="${action}"]`),controlFromKey=e=>keyboardCodes[e.code]||keyboardFallback[(e.key||'').toLowerCase()]||null;
+addEventListener('keydown',e=>{const control=controlFromKey(e);if(!control)return;e.preventDefault();stageEl.dataset.lastInput=control;const move=control==='left'||control==='right';if(move){if(!e.repeat&&running&&!tacticState)A.x=clamp(A.x+(control==='right'?18:-18),105,425);keys[control]=true;keyButton(control).classList.add('on');return;}if(!e.repeat){const btn=keyButton(control);btn.classList.add('on');clearTimeout(btn.keyFlash);btn.keyFlash=setTimeout(()=>btn.classList.remove('on'),140);tryHit(control);}});
+addEventListener('keyup',e=>{const control=controlFromKey(e);if(control==='left'||control==='right'){keys[control]=false;keyButton(control).classList.remove('on');}});
+addEventListener('blur',()=>{keys.left=keys.right=false;document.querySelectorAll('[data-key]').forEach(btn=>btn.classList.remove('on'));});
+updateHud();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
