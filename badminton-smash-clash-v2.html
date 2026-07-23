@@ -852,13 +852,15 @@ function drawPlayerFlat(p, color){
 function drawHumanoidAt(sx, sy, sc, facing, color, swing, stride){
   ctx.save();
   ctx.translate(sx,sy); ctx.scale(sc*facing, sc);
+  const isSmash = swing>0.6;
+  const splitStep = Math.sin(match.time*7 + sx*.02)*0.7;
   // 地面陰影
   ctx.save(); ctx.translate(0, 30);
   ctx.fillStyle='rgba(0,0,0,0.32)'; ctx.beginPath(); ctx.ellipse(0,0,15,5,0,0,7); ctx.fill(); ctx.restore();
 
   // 雙腿：髖部 → 膝蓋 → 腳踝，移動時膝蓋有節奏地彎曲。
-  const kneeL={x:-5+stride*.5,y:20+Math.abs(stride)*.35}, ankleL={x:-10+stride,y:29};
-  const kneeR={x:5-stride*.5,y:20+Math.abs(stride)*.35}, ankleR={x:10-stride,y:29};
+  const kneeL={x:-6+stride*.55,y:isSmash?17:20+Math.abs(stride)*.35}, ankleL={x:isSmash?-13:-10+stride,y:isSmash?29:29+splitStep};
+  const kneeR={x:6-stride*.55,y:isSmash?22:20+Math.abs(stride)*.35}, ankleR={x:isSmash?12:10-stride,y:isSmash?30:29-splitStep};
   ctx.strokeStyle = '#2b2b2b'; ctx.lineWidth = 4.8; ctx.lineCap='round';
   [[[-4,11],kneeL,ankleL],[[4,11],kneeR,ankleR]].forEach(leg=>{ctx.beginPath();ctx.moveTo(...leg[0]);ctx.lineTo(leg[1].x,leg[1].y);ctx.lineTo(leg[2].x,leg[2].y);ctx.stroke();});
   ctx.fillStyle='#263341'; [kneeL,kneeR].forEach(k=>{ctx.beginPath();ctx.arc(k.x,k.y,2.3,0,7);ctx.fill();});
@@ -867,7 +869,7 @@ function drawHumanoidAt(sx, sy, sc, facing, color, swing, stride){
 
   // 短褲
   ctx.fillStyle = '#2b3a4a';
-  ctx.beginPath(); ctx.moveTo(-8,6); ctx.lineTo(8,6); ctx.lineTo(6,15); ctx.lineTo(-6,15); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-9,6); ctx.lineTo(9,6); ctx.lineTo(7,15); ctx.lineTo(-7,15); ctx.closePath(); ctx.fill();
 
   // 上衣（隊伍色運動背心）
   ctx.fillStyle = color;
@@ -878,7 +880,8 @@ function drawHumanoidAt(sx, sy, sc, facing, color, swing, stride){
   ctx.beginPath(); ctx.moveTo(-2,-13); ctx.lineTo(2,-13); ctx.lineTo(3,3); ctx.lineTo(-3,3); ctx.closePath(); ctx.fill();
 
   // 非持拍手：肩 → 肘 → 手腕，保持平衡。
-  const freeElbow={x:-13,y:-3+stride*.6}, freeHand={x:-15,y:7+stride*.9};
+  const freeElbow=isSmash?{x:-13,y:-21}:{x:-13,y:-3+stride*.6};
+  const freeHand=isSmash?{x:-6,y:-33}:{x:-15,y:7+stride*.9};
   ctx.strokeStyle = '#ffcf9e'; ctx.lineWidth=4; ctx.lineCap='round';
   ctx.beginPath();ctx.moveTo(-7,-9);ctx.lineTo(freeElbow.x,freeElbow.y);ctx.lineTo(freeHand.x,freeHand.y);ctx.stroke();
   ctx.fillStyle='#ffcf9e'; [freeElbow,freeHand].forEach(j=>{ctx.beginPath();ctx.arc(j.x,j.y,2.35,0,7);ctx.fill();});
@@ -895,8 +898,8 @@ function drawHumanoidAt(sx, sy, sc, facing, color, swing, stride){
   ctx.beginPath(); ctx.arc(0,-19,7.6,Math.PI*1.1,Math.PI*1.9); ctx.stroke();
 
   // 持拍手：肩 → 肘 → 手腕。上手殺球會抬肘後向下壓拍。
-  const elbow={x:14+Math.cos(swing)*4,y:-6+swing*10};
-  const wrist={x:24+Math.sin(swing)*6,y:-4+swing*20};
+  const elbow={x:isSmash?12:14+Math.cos(swing)*4,y:isSmash?-24:-6+swing*10};
+  const wrist={x:isSmash?22:24+Math.sin(swing)*6,y:isSmash?-7:-4+swing*20};
   ctx.strokeStyle = '#ffcf9e'; ctx.lineWidth=4.2; ctx.lineCap='round';
   ctx.beginPath();ctx.moveTo(8,-9);ctx.lineTo(elbow.x,elbow.y);ctx.lineTo(wrist.x,wrist.y);ctx.stroke();
   ctx.fillStyle='#ffcf9e'; [elbow,wrist].forEach(j=>{ctx.beginPath();ctx.arc(j.x,j.y,2.55,0,7);ctx.fill();});
