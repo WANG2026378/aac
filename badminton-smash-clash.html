@@ -56,23 +56,19 @@
   #touch-controls { position:absolute; bottom:10px; left:0; right:0; display:flex; justify-content:space-between; align-items:flex-end; padding:0 16px; z-index:15; }
   .dpad { display:flex; gap:10px; width:210px; }
   .dbtn { width:100px; min-height:64px; border-radius:18px; background:rgba(20,30,40,.65); border:2px solid rgba(255,255,255,.6);
-    color:#fff; font-size:17px; font-weight:800; display:flex; align-items:center; justify-content:center; touch-action:none; box-shadow:0 3px 8px rgba(0,0,0,.4); }
-  .dbtn:active, .dbtn.pressed { background:#ffe259; color:#222; border-color:#ffe259; }
+    color:#fff; font-size:17px; font-weight:800; display:flex; align-items:center; justify-content:center; touch-action:none; }
+  .dbtn:active, .dbtn.pressed { background:#ffe259; color:#222; }
   .shotpad { display:flex; gap:10px; width:268px; }
   .sbtn { width:129px; min-height:82px; border-radius:18px; border:2px solid rgba(255,255,255,.65); color:#fff;
-    font-size:15px; font-weight:800; display:flex; align-items:center; justify-content:center; text-align:center; touch-action:none;
-    line-height:1.25; box-shadow:0 3px 10px rgba(0,0,0,.45); background:rgba(20,30,40,.55); }
+    font-size:15px; font-weight:800; display:flex; align-items:center; justify-content:center; text-align:center; touch-action:none; line-height:1.25; }
   .sbtn:active, .sbtn.pressed { transform:scale(0.92); filter:brightness(1.3); }
-  .s-lift { background:rgba(120,200,255,.52); }
-  .s-smash { background:rgba(255,100,100,.55); }
-  .s-smash.ready { animation:ultglow 0.8s infinite; background:rgba(220,90,255,.78); }
-  .s-smash.locked { opacity:.46; filter:grayscale(.45); }
-  @keyframes ultglow { 0%,100%{box-shadow:0 0 6px #fff;} 50%{box-shadow:0 0 24px #ffe259;} }
+  .s-lift { background:rgba(120,200,255,.52); }.s-smash { background:rgba(255,100,100,.55); }
+  .s-smash.ready { animation:ultglow .8s infinite; background:rgba(220,90,255,.78); }.s-smash.locked { opacity:.46; filter:grayscale(.45); }
+  @keyframes ultglow { 0%,100%{box-shadow:0 0 6px #fff;} 50%{box-shadow:0 0 22px #ffe259;} }
 
   #gameover-box { z-index:30; }
   .footer-note { position:absolute; bottom:6px; font-size:10px; color:rgba(255,255,255,.4); }
   #homeBtn { position:fixed; top:10px; left:10px; z-index:30; width:42px; height:42px; border:1px solid rgba(255,255,255,.6); border-radius:50%; background:rgba(0,0,0,.45); color:#fff; font-size:19px; cursor:pointer; }
-  @media (max-width:600px) { #touch-controls { padding:0 8px; } .dpad { width:154px; gap:6px; } .dbtn { width:74px; min-height:58px; font-size:14px; } .shotpad { width:204px; gap:6px; } .sbtn { width:99px; min-height:74px; font-size:13px; } }
 </style>
 </head>
 <body>
@@ -107,8 +103,7 @@
   <!-- Touch Controls -->
   <div id="touch-controls">
     <div class="dpad">
-      <div class="dbtn" data-k="back">◀ 後退</div>
-      <div class="dbtn" data-k="front">前進 ▶</div>
+      <div class="dbtn" data-k="back">◀ 後退</div><div class="dbtn" data-k="front">前進 ▶</div>
     </div>
     <div class="shotpad">
       <div class="sbtn s-lift" data-k="lift">由下往上拍<br><small>發球／接球</small></div>
@@ -121,7 +116,7 @@
     <div class="title">超能羽球 SMASH CLASH</div>
     <div class="subtitle">戰鬥系列第四彈・戰鬥對決 × 正規羽球</div>
     <button class="btn-big" onclick="goScreen('team')">開始遊戲</button>
-    <div class="footer-note">操作：左右鍵前後移動；空白鍵下往上拍（發球／接球）；Enter 上往下絕招殺球（技巧滿）</div>
+    <div class="footer-note">左右鍵前後移動；空白鍵下往上拍；Enter 上往下絕招殺球（技巧滿）</div>
   </div>
 
   <div class="screen" id="screen-team">
@@ -268,6 +263,7 @@ const ctx = canvas.getContext('2d');
 let match = null; // 建立於 startMatch()
 
 function startMatch(){
+ try{
   const teamData = TEAMS.find(t=>t.id===picked.team) || TEAMS[0];
   const racketData = RACKETS.find(r=>r.id===picked.racket) || RACKETS[0];
   const opponentPool = TEAMS.filter(t=>t.id!==teamData.id);
@@ -305,6 +301,10 @@ function startMatch(){
   lastTime = 0;
   const myMatch = match; // 綁定這一局的參照，避免重玩時舊迴圈疊加造成雙倍速度
   requestAnimationFrame((ts)=>loop(ts, myMatch));
+ } catch(err){
+  console.error('比賽啟動失敗：', err);
+  alert('遊戲啟動時發生錯誤，請重新整理頁面再試一次。\n(錯誤訊息：'+err.message+')');
+ }
 }
 function mkPlayer(side,x,d,team,racket,isAI){
   return { side, x, d, fixedD:d, h:0, vh:0, team, racket, isAI, reach:56,
@@ -313,8 +313,11 @@ function mkPlayer(side,x,d,team,racket,isAI){
 function resetServe(){
   const s = match; const serverSide = s.servingSide;
   const p = s.players[serverSide===0?'A':'B'][0];
-  p.x = s.isDouble ? (serverSide===0? -60 : 60) : 0;
-  p.d = serverSide===0? 80 : 520;
+  if(s.isDouble){
+    p.x = serverSide===0? -60 : 60; p.d = serverSide===0? 80 : 520;
+  } else {
+    p.x = 0; p.d = p.fixedD;
+  }
   s.ball.x = p.x; s.ball.d = p.d + (serverSide===0? 20:-20); s.ball.h=8; s.ball.vx=0; s.ball.vd=0; s.ball.vh=0;
   s.ball.inPlay = false; s.ball.lastHitSide = serverSide;
   s.ball.ghostFlag=false; s.ball.phantomFlag=false; s.ball.hitterRacket=null;
@@ -324,11 +327,12 @@ function resetServe(){
 /* ================= 輸入 ================= */
 const keys = {};
 window.addEventListener('keydown', e=>{
-  const map = {'arrowleft':'back','arrowright':'front','a':'back','d':'front',' ':'lift','enter':'smash'};
-  const k = map[e.key.toLowerCase()]; if(k){ keys[k]=true; if(k!=='back'&&k!=='front') handleAction(k); e.preventDefault(); }
+  const map = {'arrowup':'up','arrowdown':'down','arrowleft':'left','arrowright':'right',
+    'w':'up','s':'down','a':'left','d':'right',' ':'serve','1':'clear','2':'smash','3':'drop','4':'ult'};
+  const k = map[e.key.toLowerCase()]; if(k){ keys[k]=true; if(k!=='up'&&k!=='down'&&k!=='left'&&k!=='right') handleAction(k); e.preventDefault(); }
 });
 window.addEventListener('keyup', e=>{
-  const map = {'arrowleft':'back','arrowright':'front','a':'back','d':'front'};
+  const map = {'arrowup':'up','arrowdown':'down','arrowleft':'left','arrowright':'right','w':'up','s':'down','a':'left','d':'right'};
   const k = map[e.key.toLowerCase()]; if(k) keys[k]=false;
 });
 document.querySelectorAll('[data-k]').forEach(btn=>{
@@ -339,26 +343,23 @@ document.querySelectorAll('[data-k]').forEach(btn=>{
   btn.addEventListener('touchstart', start); btn.addEventListener('touchend', end);
   btn.addEventListener('mousedown', start); btn.addEventListener('mouseup', end); btn.addEventListener('mouseleave', end);
 });
+window.addEventListener('keydown',e=>{
+  const k={arrowleft:'back',a:'back',arrowright:'front',d:'front',' ':'lift',enter:'smash'}[e.key.toLowerCase()];
+  if(!k) return; keys[k]=true; if(k==='lift'||k==='smash') handleAction(k); e.preventDefault();
+});
+window.addEventListener('keyup',e=>{
+  const k={arrowleft:'back',a:'back',arrowright:'front',d:'front'}[e.key.toLowerCase()]; if(k) keys[k]=false;
+});
 
 function handleAction(type){
   if(!match) return;
+  if(!match.isDouble){ flatAction(type); return; }
   if(match.state==='serve' && match.servingSide===0){
-    if(type==='lift') doServe(0);
+    if(type==='serve'||type==='clear') doServe(0);
     return;
   }
   if(match.state!=='rally') return;
-  if(type==='lift') attemptHit(0, 'clear');
-  if(type==='smash'){
-    if(match.enA<100){ showControlHint('技巧尚未集滿！\n先用下往上拍累積技巧'); return; }
-    attemptHit(0, 'ult');
-  }
-}
-function showControlHint(message){
-  const el = document.getElementById('chant-banner');
-  el.textContent = message;
-  el.style.color = '#ffe259';
-  el.style.display = 'block';
-  match.chantTimer = 1.15;
+  attemptHit(0, type==='serve'?'clear':type);
 }
 
 /* ================= 擊球判定 ================= */
@@ -369,12 +370,12 @@ function canReach(p,b){
   return sameSide && distTo(p,b) < p.reach && b.h < 130;
 }
 function doServe(side){
+  if(!match.isDouble){ flatServe(side); return; }
   const s = match; const p = s.players[side===0?'A':'B'][0];
-  const targetX = s.isDouble ? (side===0 ? -s.courtW*0.2 : s.courtW*0.2) : 0;
-  const targetD = side===0 ? NET_D+150 : NET_D-150;
-  launchBall(p, targetX, targetD, 'serve', 1);
-  // 發球採固定高拋軌跡，清楚越過球網且落在對方半場。
-  s.ball.shotType = 'clear';
+  const oppP = s.players[side===0?'B':'A'][0];
+  const targetX = (Math.random()-0.5)*(s.courtW*0.6);
+  const targetD = s.isDouble ? (side===0? 380+Math.random()*160 : 60+Math.random()*160) : oppP.fixedD;
+  launchBall(p, targetX, targetD, 'clear', 0.85);
   s.ball.inPlay = true; s.state='rally'; s.ball.lastHitSide = side;
 }
 function launchBall(fromP, targetX, targetD, shotType, powerMul){
@@ -382,22 +383,22 @@ function launchBall(fromP, targetX, targetD, shotType, powerMul){
   b.x = fromP.x; b.d = fromP.d; b.h = Math.max(fromP.h+30, 24);
   const dx = targetX - b.x, dd = targetD - b.d;
   const dist = Math.hypot(dx,dd);
-  let baseTime = shotType==='serve'? 0.9 : shotType==='smash'? 0.42 : shotType==='drop'? 0.55 : shotType==='ult'? 0.30 : 0.72;
+  let baseTime = shotType==='smash'? 0.42 : shotType==='drop'? 0.55 : shotType==='ult'? 0.30 : 0.72;
   if(fromP.racket && fromP.racket.special==='gale') baseTime *= 0.8;
   const t = Math.max(0.24, baseTime * (0.7+dist/500));
   b.vx = dx/t; b.vd = dd/t;
   const g = 620;
   let apex;
-  if(shotType==='serve') apex = fromP.h+30 + 270;
-  else if(shotType==='smash') apex = fromP.h+30 + 18;
+  if(shotType==='smash') apex = fromP.h+30 + 70;  // 殺球最高點要高於球網(78)才過得了網
   else if(shotType==='drop') apex = fromP.h+30 + 60;
-  else if(shotType==='ult') apex = fromP.h+30 + 40;
+  else if(shotType==='ult') apex = fromP.h+30 + 65;
   else apex = fromP.h+30 + 190;
   apex *= (0.85+ (powerMul||1)*0.3);
   b.vh = (apex - b.h)/(t/2) + 0.5*g*(t/2);
   b._g = g; b._t=0; b._flightT=t; b.shotType=shotType;
 }
 function attemptHit(side, shotType){
+  if(!match.isDouble){ flatAction(shotType==='ult'?'smash':'lift'); return; }
   const s = match; const players = s.players[side===0?'A':'B'];
   let hitter=null;
   for(const p of players){ if(canReach(p,s.ball)){ hitter=p; break; } }
@@ -426,20 +427,25 @@ function attemptHit(side, shotType){
     return;
   }
   let targetX, targetD, powerMul=1;
+  // 準度越高，落點越集中；準度越低，越容易打太用力出界——讓「出界」真的跟擊球好壞有關，不再只靠隱藏機率
+  const spreadMul = 1.3 - racket.acc/10*0.5;
   if(shotType==='smash'){
     targetX = s.isDouble ? (Math.random()-0.5)*halfW*1.6 : 0;
-    targetD = oppSide===0? oppHalfMin+40+Math.random()*80 : oppHalfMax-40-Math.random()*80;
+    const spread = 165*spreadMul;
+    targetD = oppSide===0? (oppHalfMin-25+Math.random()*spread) : (oppHalfMax+25-Math.random()*spread);
     powerMul = 1.15;
   } else if(shotType==='drop'){
     targetX = s.isDouble ? (Math.random()-0.5)*halfW*0.9 : 0;
     targetD = oppSide===0? NET_D-70-Math.random()*40 : NET_D+70+Math.random()*40;
   } else if(shotType==='ult'){
     targetX = s.isDouble ? (Math.random()-0.5)*halfW*1.8 : 0;
-    targetD = oppSide===0? oppHalfMin+30 : oppHalfMax-30;
+    const spread = 80*spreadMul;
+    targetD = oppSide===0? (oppHalfMin-12+Math.random()*spread) : (oppHalfMax+12-Math.random()*spread);
     powerMul = 1.4;
   } else {
     targetX = s.isDouble ? (Math.random()-0.5)*halfW*1.5 : 0;
-    targetD = oppSide===0? oppHalfMax-70-Math.random()*100 : oppHalfMin+70+Math.random()*100;
+    const spread = 220*spreadMul;
+    targetD = oppSide===0? (oppHalfMin-30+Math.random()*spread) : (oppHalfMax+30-Math.random()*spread);
   }
   launchBall(hitter, targetX, targetD, shotType, powerMul);
   s.ball.inPlay = true; s.ball.lastHitSide = side; s.ball.faulting = false;
@@ -461,6 +467,7 @@ function attemptHit(side, shotType){
 /* ================= AI ================= */
 function updateAI(dt){
   const s = match;
+  if(!s.isDouble){ flatUpdateAI(dt); return; }
   for(const teamKey of ['A','B']){
     const side = teamKey==='A'?0:1;
     s.players[teamKey].forEach((p,idx)=>{
@@ -510,13 +517,74 @@ function updateAI(dt){
 }
 function clampNum(v,a,b){ return Math.max(a,Math.min(b,v)); }
 
+/* ================= 單打 2D：獨立、穩定的落點回拍系統 ================= */
+function flatServe(side){
+  const s=match;
+  flatSend(side,'clear');
+  s.state='rally';
+}
+function flatSend(side, shotType){
+  const s=match, b=s.ball, from=s.players[side===0?'A':'B'][0];
+  const targetSide=side===0?1:0;
+  const min=targetSide===0?55:345, max=targetSide===0?255:545;
+  const target=shotType==='ult' ? (targetSide===0?80:520) : min+Math.random()*(max-min);
+  b.flat=true; b.fromD=from.d; b.toD=target; b.t=0; b.duration=shotType==='ult'?0.42:0.95;
+  b.d=from.d; b.x=0; b.h=16; b.inPlay=true; b.targetSide=targetSide; b.lastHitSide=side;
+  b.shotType=shotType; b.faulting=false; b.hitterRacket=from.racket;
+  b.ghostFlag=false; b.phantomFlag=from.racket.special==='phantom'&&shotType==='ult';
+  from.burst=0.45;
+}
+function flatAction(type){
+  const s=match;
+  if(s.state==='serve'&&s.servingSide===0){ if(type==='lift') flatServe(0); return; }
+  if(s.state!=='rally'||type!=='lift'&&type!=='smash') return;
+  const b=s.ball, p=s.players.A[0];
+  if(b.targetSide!==0||b.t<0.45||Math.abs(p.d-b.d)>118) return;
+  if(type==='smash'){
+    if(s.enA<100){ flatHint('技巧尚未滿格！\n先用下往上拍回球'); return; }
+    s.enA=0; flatSend(0,'ult'); triggerUltimateFX(0,p.team);
+  }else{
+    s.enA=Math.min(100,s.enA+25); flatSend(0,'clear');
+  }
+  updateHUDDynamic();
+}
+function flatUpdateAI(dt){
+  const s=match, ai=s.players.B[0], b=s.ball;
+  if(s.state==='serve'&&s.servingSide===1){ s._serveTimer=(s._serveTimer||0)+dt; if(s._serveTimer>.55){s._serveTimer=0;flatServe(1);} return; }
+  if(s.state!=='rally'||b.targetSide!==1) return;
+  ai.d += Math.sign(b.toD-ai.d)*Math.min(ai.speed*90*dt,Math.abs(b.toD-ai.d));
+  if(b.t>.73&&Math.abs(ai.d-b.d)<135){
+    s.enB=Math.min(100,s.enB+22);
+    const shot=s.enB>=100&&Math.random()<.22?'ult':'clear';
+    if(shot==='ult') s.enB=0;
+    flatSend(1,shot); updateHUDDynamic();
+  }
+}
+function flatUpdateBall(dt){
+  const s=match,b=s.ball; if(!b.inPlay) return;
+  b.t=Math.min(1,b.t+dt/b.duration);
+  b.d=b.fromD+(b.toD-b.fromD)*b.t;
+  const peak=b.shotType==='ult'?175:125;
+  b.h=16+4*peak*b.t*(1-b.t);
+  if(b.t<1) return;
+  b.h=0; b.inPlay=false;
+  // 2D 單打沒有出界：球落到接球者半場卻沒被回拍，上一拍得分。
+  endRally(b.lastHitSide,'land');
+}
+function flatHint(message){
+  const el=document.getElementById('chant-banner'); el.textContent=message; el.style.color='#ffe259'; el.style.display='block'; match.chantTimer=1.1;
+}
+
 /* ================= 物理更新 & 得分 ================= */
 function updateBall(dt){
   const s = match, b = s.ball;
+  if(!s.isDouble){ flatUpdateBall(dt); return; }
   if(!b.inPlay) return;
   const prevD = b.d;
   b.vh -= 620*dt;
   b.x += b.vx*dt; b.d += b.vd*dt; b.h += b.vh*dt;
+  // 遊戲化安全限制：球不需要物理完全精確，但不能飄出誇張範圍
+  b.d = clampNum(b.d, -150, COURT_D+150); b.x = clampNum(b.x, -400, 400);
 
   // 過網判定
   if((prevD-NET_D)*(b.d-NET_D) < 0){
@@ -633,9 +701,15 @@ function triggerUltimateFX(side, team){
   banner.style.display='block';
   s.ultBannerTimer = 1.2;
   playSfxUlt();
+  // 閃光效果：用 setTimeout 而不是巢狀 rAF，避免某些瀏覽器沒有正確觸發轉場、導致白屏卡住不退
   const flash = document.getElementById('flash-overlay');
-  flash.style.transition='none'; flash.style.opacity='0.85';
-  requestAnimationFrame(()=>{ flash.style.transition='opacity .5s'; flash.style.opacity='0'; });
+  flash.style.transition = 'none';
+  flash.style.opacity = '0.85'; // 瞬間閃一下
+  setTimeout(()=>{
+    flash.style.transition = 'opacity 0.55s';
+    flash.style.opacity = '0';
+  }, 30);
+  setTimeout(()=>{ flash.style.opacity = '0'; }, 900); // 保險：不管前面發生什麼，0.9秒後強制清掉閃光
 }
 function showChant(scoringSide){
   const s = match;
@@ -668,7 +742,7 @@ function updateHUDDynamic(){
   document.getElementById('enA-fill').style.width = s.enA+'%';
   document.getElementById('enB-fill').style.width = s.enB+'%';
   document.getElementById('score-mid').textContent = s.mode==='battle' ? `${s.hpA} : ${s.hpB}` : `${s.scoreA} : ${s.scoreB}`;
-  const smashBtn = document.getElementById('smash-btn');
+  const smashBtn=document.getElementById('smash-btn');
   smashBtn.classList.toggle('ready', s.enA>=100);
   smashBtn.classList.toggle('locked', s.enA<100);
 }
@@ -677,11 +751,27 @@ function updateHUDDynamic(){
 function updatePlayerMove(dt){
   const s = match; const p = s.players.A[0];
   const spdMul = p.stun>0 ? 0.4 : 1;
-  let md=0;
-  if(keys.back) md-=1;
-  if(keys.front) md+=1;
-  p.x = 0;
-  p.d = clampNum(p.d + md*p.speed*100*dt*spdMul, 15, NET_D-15);
+  if(!s.isDouble){
+    let move=0; if(keys.back||keys.left) move-=1; if(keys.front||keys.right) move+=1;
+    p.x=0; p.d=clampNum(p.d+move*p.speed*115*dt*spdMul,45,270);
+    if(p.burst>0) p.burst-=dt; if(p.stun>0) p.stun-=dt;
+    return;
+  }
+  if(s.isDouble){
+    const halfW = s.courtW/2-20;
+    let mx=0, md=0;
+    if(keys.left) mx-=1; if(keys.right) mx+=1;
+    if(keys.up) md+=1; if(keys.down) md-=1;
+    const len = Math.hypot(mx,md)||1;
+    p.x = clampNum(p.x + (mx/len)*p.speed*100*dt*spdMul, -halfW, halfW);
+    p.d = clampNum(p.d + (md/len)*p.speed*100*dt*spdMul, 10, NET_D-10);
+  } else {
+    // 單打：真平面2D，左右鍵＝靠近／遠離球網（沿唯一的前後場軸線移動）
+    let md=0;
+    if(keys.left) md-=1; if(keys.right) md+=1;
+    p.x = 0;
+    p.d = clampNum(p.d + md*p.speed*100*dt*spdMul, 15, NET_D-15);
+  }
   if(p.burst>0) p.burst -= dt;
   if(p.stun>0) p.stun -= dt;
 }
@@ -693,17 +783,20 @@ function loop(ts, myMatch){
   if(!lastTime) lastTime=ts;
   let dt = (ts-lastTime)/1000; lastTime=ts;
   dt = Math.min(dt, 0.05);
-  const scaledDt = dt*(match.timeScale||1);
-
-  updatePlayerMove(scaledDt);
-  updateAI(scaledDt);
-  updateBall(scaledDt);
-  updateReplay(dt);
-  if(match.chantTimer>0){ match.chantTimer-=dt; if(match.chantTimer<=0) document.getElementById('chant-banner').style.display='none'; }
-  if(match.cheerBurst){ if(match.cheerBurst.A>0) match.cheerBurst.A-=dt; if(match.cheerBurst.B>0) match.cheerBurst.B-=dt; }
-  match.time += scaledDt;
-
-  render();
+  try{
+    const scaledDt = dt*(match.timeScale||1);
+    updatePlayerMove(scaledDt);
+    updateAI(scaledDt);
+    updateBall(scaledDt);
+    updateReplay(dt);
+    if(match.chantTimer>0){ match.chantTimer-=dt; if(match.chantTimer<=0) document.getElementById('chant-banner').style.display='none'; }
+    if(match.cheerBurst){ if(match.cheerBurst.A>0) match.cheerBurst.A-=dt; if(match.cheerBurst.B>0) match.cheerBurst.B-=dt; }
+    match.time += scaledDt;
+    render();
+  } catch(err){
+    // 任何一幀出錯都不該讓整個遊戲卡死——記錄下來，下一幀繼續跑
+    console.error('遊戲畫面更新發生錯誤，已略過這一幀：', err);
+  }
   requestAnimationFrame((ts2)=>loop(ts2, myMatch));
 }
 
@@ -745,7 +838,7 @@ function drawPlayerFig(p, color){
   const facing = p.side===0 ? 1 : -1; // 面向球網
   const stride = Math.sin(match.time*6 + (p.x*0.05)) * 1.5;
   const swing = p.burst>0 ? -1.15 : -0.35;
-  drawHumanoidAt(sx, sy, sc*burstScale, facing, color, swing, stride);
+  drawHumanoidAt(sx, sy, sc*burstScale*1.7, facing, color, swing, stride);
 }
 function drawPlayerFlat(p, color){
   // 單打真平面2D：無遠近透視，兩人同尺寸站在球網左右兩側
@@ -754,7 +847,7 @@ function drawPlayerFlat(p, color){
   const facing = p.side===0 ? 1 : -1; // 面向球網
   const stride = Math.sin(match.time*6 + (p.d*0.05)) * 1.5;
   const swing = p.burst>0 ? -1.15 : -0.35;
-  drawHumanoidAt(sx, sy, 1.35*burstScale, facing, color, swing, stride);
+  drawHumanoidAt(sx, sy, 3.25*burstScale, facing, color, swing, stride);
 }
 function drawHumanoidAt(sx, sy, sc, facing, color, swing, stride){
   ctx.save();
@@ -998,15 +1091,23 @@ function renderFlat(){
 let actx=null, musicOn=true, musicTimer=null, musicStep=0;
 const MELODY = [523,587,659,523, 659,698,784,659, 880,784,698,659, 587,523,587,659]; // 輕快C大調音階小旋律
 const BASSLINE = [262,262,330,330, 349,349,392,392];
-function ensureAudio(){ if(!actx){ actx = new (window.AudioContext||window.webkitAudioContext)(); } if(actx.state==='suspended') actx.resume(); }
+function ensureAudio(){
+  try{
+    if(!actx){ actx = new (window.AudioContext||window.webkitAudioContext)(); }
+    if(actx && actx.state==='suspended') actx.resume();
+  } catch(err){ console.error('音效初始化失敗，遊戲繼續但沒有聲音：', err); actx=null; musicOn=false; }
+}
 function beep(freq, t0, dur, type, gainMax){
-  const o = actx.createOscillator(); const g = actx.createGain();
-  o.type = type||'square'; o.frequency.value = freq;
-  g.gain.setValueAtTime(0.0001, t0);
-  g.gain.exponentialRampToValueAtTime(gainMax||0.06, t0+0.02);
-  g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
-  o.connect(g); g.connect(actx.destination);
-  o.start(t0); o.stop(t0+dur+0.02);
+  if(!actx) return;
+  try{
+    const o = actx.createOscillator(); const g = actx.createGain();
+    o.type = type||'square'; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(gainMax||0.06, t0+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+    o.connect(g); g.connect(actx.destination);
+    o.start(t0); o.stop(t0+dur+0.02);
+  } catch(err){ /* 單一音效失敗不影響遊戲 */ }
 }
 function scheduleMusic(){
   if(!musicOn || !actx) return;
