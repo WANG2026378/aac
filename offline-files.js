@@ -3,7 +3,7 @@ self.AAC_CORE_FILES = [
   "./",
   "aac.html",
   "about.html",
-  "badminton-sky-smash-v10.html",
+  "badminton-sky-smash-v5.html",
   "bookcase.html",
   "doraemon-math-adventure.html",
   "icons/icon-1024.png",
@@ -110,7 +110,7 @@ self.AAC_CORE_FILES = [
   "十二碼足球_3D明星隊長_1.html"
 ];
 self.AAC_OFFLINE_FILES = [
-  "badminton-sky-smash-v10.html",
+  "badminton-sky-smash-v5.html",
   "./",
   "aac.html",
   "about.html",
