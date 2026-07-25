@@ -1,0 +1,1487 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
+<meta name="description" content="超能羽球 S2：蓄力發球、殺球力道分層、邊線深度軸、三段電腦難度與絕招慢動作重播。支援觸控、鍵盤與遊戲手把。">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="超能羽球 S2">
+<meta name="theme-color" content="#071526">
+<link rel="apple-touch-icon" href="icons/portal-180.png?v=1">
+<link rel="icon" type="image/png" href="icons/portal-512.png?v=1">
+<title>超能羽球 S2：發球・力道・邊線</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#030912;font-family:"PingFang TC","Microsoft JhengHei",sans-serif}
+#app{position:fixed;inset:0;display:grid;place-items:center;background:#030912}
+#stage{position:relative;width:min(100vw,177.777vh);height:min(100vh,56.25vw);overflow:hidden;background:#071526}
+#game{position:absolute;inset:0;width:100%;height:100%}
+#home{position:absolute;z-index:12;left:8px;top:8px;width:38px;height:38px;border:1px solid #a8eaff;border-radius:50%;background:#061323cc;color:#fff;font-size:18px}
+#hud{position:absolute;z-index:8;inset:0;pointer-events:none;color:#fff}
+.teams{position:absolute;left:56px;right:56px;top:10px;display:grid;grid-template-columns:1fr 118px 1fr;gap:14px;align-items:start}
+.team{font-size:15px;font-weight:900;text-shadow:0 2px 4px #000}.team.r{text-align:right}
+.bar{height:13px;margin-top:4px;border:2px solid #c9f4ff80;background:#02070dcc;overflow:hidden}.fill{height:100%;width:100%;background:linear-gradient(90deg,#36e28d,#b6ff6d);transition:width .2s}.skill{height:7px;margin-top:4px;border:1px solid #fff6;background:#02070dcc;overflow:hidden}.skill>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#59c8ff,#ffe36d);transition:width .18s}#stage.classic .bar,#stage.classic .skill,#stage.classic .ultimate{display:none}
+#score{text-align:center;font-size:24px;font-weight:1000;color:#ffe36d;text-shadow:0 2px 5px #000}
+#message{position:absolute;left:50%;top:21%;transform:translateX(-50%);font-size:28px;font-weight:1000;text-shadow:0 3px 10px #000,0 0 18px #42d8ff;white-space:nowrap;opacity:0;transition:opacity .16s}
+#stage.showcase #message{top:25%}
+#controls{position:absolute;z-index:10;left:max(12px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom));display:flex;justify-content:flex-start;align-items:end;gap:12px;max-width:calc(100% - 24px)}
+.group,.move-buttons{display:flex;gap:7px;flex:0 0 auto}.control{touch-action:none;border:2px solid #b8edff;border-radius:50%;background:#071525d9;color:#fff;font-weight:900;box-shadow:0 5px 16px #0008,inset 0 0 16px #52bfff33}.move{width:76px;height:76px;font-size:29px}.hit{width:70px;height:70px;font-size:13px}.drop{border-color:#91f0ce;background:#0b5347d9}.clear{border-color:#9ddfff;background:#174d73d9}.smash{border-color:#ffdc76;background:#5b194fd9}.ultimate{border-color:#ff9df1;background:#682c79e6}.ultimate.lock{opacity:.42;filter:grayscale(.7)}.control:active,.control.on{transform:scale(.92);filter:brightness(1.35)}
+.pad-focus{outline:3px solid #ffe36d!important;outline-offset:3px;box-shadow:0 0 0 7px #ffe36d2e,0 0 18px #ffe36d66!important;position:relative;z-index:2}
+#smashMeter{display:none;position:absolute;left:50%;bottom:24%;transform:translateX(-50%);z-index:15;width:min(300px,52vw);text-align:center;pointer-events:none}
+#smashMeter.on{display:block}
+#smashMeter .sb{position:relative;height:13px;border:2px solid #ffdc76;border-radius:8px;background:#1a0d05cc;overflow:hidden}
+#smashMeter .sb i{position:absolute;top:0;bottom:0;left:0;width:0;background:linear-gradient(90deg,#ff7a4d,#ffdc76)}
+#smashMeter .sl{display:flex;justify-content:space-between;margin-top:3px;color:#ffe9a6;font-size:10px;font-weight:900;text-shadow:0 2px 6px #000}
+#smashMeter .st{color:#fff;font-size:13px;font-weight:1000;text-shadow:0 2px 8px #000;margin-bottom:3px}
+#padHint{display:none;position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:60;padding:5px 14px;border:1px solid #ffe36d88;border-radius:10px;background:#04121ee8;color:#ffe9a6;font-size:12px;font-weight:900;white-space:nowrap;pointer-events:none}
+#padHint.on{display:block}
+#padBadge{display:none;position:absolute;right:10px;bottom:8px;z-index:14;padding:4px 10px;border:1px solid #8feaff88;border-radius:9px;background:#04121ecc;color:#a9e9ff;font-size:11px;font-weight:900;letter-spacing:.04em}
+#padBadge.on{display:block}
+#serveMeter{display:none;position:absolute;left:50%;bottom:15%;transform:translateX(-50%);z-index:14;width:min(340px,58vw);padding:8px 12px 9px;border:2px solid #9ddfff;border-radius:12px;background:#04121ee8;box-shadow:0 8px 26px #000a;text-align:center}
+#serveMeter.on{display:block}
+#serveMeter .sm-title{color:#eafcff;font-size:13px;font-weight:1000;letter-spacing:.06em;margin-bottom:5px}
+#serveMeter .sm-title em{font-style:normal;color:#ffe36d}
+#serveMeter .sm-bar{position:relative;height:16px;border:1px solid #8edfff88;border-radius:9px;background:#061c2b;overflow:hidden}
+#serveMeter .sm-sweet{position:absolute;top:0;bottom:0;left:62%;width:24%;background:#ffe36d33;border-left:1px solid #ffe36dcc;border-right:1px solid #ffe36dcc}
+#serveMeter .sm-fill{position:absolute;top:0;bottom:0;left:0;width:0;background:linear-gradient(90deg,#2aa6d8,#8feaff);transition:width .04s linear}
+#serveMeter.sweet .sm-fill{background:linear-gradient(90deg,#c99b1e,#ffe36d)}
+#serveMeter .sm-hint{margin-top:5px;color:#a9e9ffcc;font-size:11px;font-weight:800}
+.joystick.serve .joystick-ring{border-color:#ffe36d}.joystick.serve .joystick-ring::before{content:'\2190 \62c9\6746\767c\7403'; word-spacing:0;font-size:13px}
+.joystick.serve .joystick-thumb{background:#b3801ce8;border-color:#ffe9a6}
+.joystick{display:none;position:relative;width:132px;height:132px;touch-action:none;cursor:grab}.joystick.active{cursor:grabbing}.joystick-ring{position:absolute;inset:6px;border:3px solid #b8edffcc;border-radius:50%;background:#061323cf;box-shadow:0 6px 18px #0009,inset 0 0 28px #39c9ff38}.joystick-ring::before{content:'◀  ▶';position:absolute;inset:0;display:grid;place-items:center;color:#a9e9ff99;font-size:20px;font-weight:1000;word-spacing:43px}.joystick-thumb{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px;border:3px solid #e9fbff;border-radius:50%;background:#1686bde8;box-shadow:0 4px 12px #000a,inset 0 0 18px #8feaff88;transform:translateX(0);will-change:transform}.joystick-label{position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);padding:2px 8px;border-radius:10px;background:#02070cbb;color:#d7f7ff;font-size:11px;font-weight:900;white-space:nowrap}
+#controlTools{display:none;position:absolute;z-index:12;top:48px;right:max(14px,env(safe-area-inset-right));height:34px;align-items:center;gap:6px;padding:4px 7px;border:1px solid #b8edff88;border-radius:17px;background:#02070c99;backdrop-filter:blur(5px)}#controlVisibility{width:25px;height:25px;padding:0;border:0;border-radius:50%;background:#1b526fbf;color:#e9fbff;font-size:16px;font-weight:900}#controlOpacity{width:84px;height:24px;margin:0;accent-color:#63dfff}
+#tactics{display:none;position:absolute;z-index:13;inset:0;pointer-events:none}#tactics.show{display:block}.tactic-title{position:absolute;left:50%;top:16%;transform:translateX(-50%);padding:7px 14px;border:2px solid #ffe36d;background:#071525ed;color:#fff;font-size:16px;font-weight:1000;box-shadow:0 0 18px #42d8ff88;white-space:nowrap}.aim-choice{position:absolute;top:62%;width:62px;height:62px;transform:translate(-50%,-50%);border:3px solid #fff;border-radius:50%;background:#073049d9;color:#fff;font-size:13px;font-weight:1000;pointer-events:auto;box-shadow:0 0 0 5px #46dbff33,0 0 22px #42d8ff}.aim-choice::before{content:'◎';display:block;font-size:18px;line-height:16px;color:#ffe36d}.aim-choice.front{left:64%}.aim-choice.body{left:74%}.aim-choice.back{left:85%}.aim-choice.special{left:50%;top:34%;width:116px;height:48px;border-radius:6px;border-color:#ff9df1;background:#682c79ed}.aim-choice.special::before{content:'✦';display:inline;margin-right:5px}.aim-choice:active{transform:translate(-50%,-50%) scale(.9);filter:brightness(1.4)}
+#start{position:absolute;z-index:20;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;overflow:hidden;background:radial-gradient(125% 80% at 50% 4%,#1c608c 0,#0a2843 40%,#04101c 74%,#01060d 100%)}
+#start.hide{display:none}
+#startFx{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#start::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(72% 58% at 50% 44%,transparent 38%,#01060dc0 100%)}
+.start-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;max-width:min(94%,760px);padding:22px 32px 26px;border-radius:20px;background:linear-gradient(180deg,#0a2033ad,#04101dc7);border:1px solid #57d6ff40;box-shadow:0 0 0 1px #0a2740,0 24px 60px #000a,inset 0 0 42px #1aa7ff1c;backdrop-filter:blur(7px)}
+.brandline{font-size:11px;letter-spacing:.42em;font-weight:900;color:#7fe6ff;text-shadow:0 0 12px #33c9ff99;margin-bottom:9px;padding-left:.42em}
+h1{margin:0;font-size:42px;font-weight:1000;line-height:1.05;letter-spacing:.02em;background:linear-gradient(180deg,#ffffff,#c4f1ff 52%,#5cc8ff);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 10px #0ca8ff88) drop-shadow(0 0 26px #2fd0ff55);animation:titleGlow 3.2s ease-in-out infinite}
+@keyframes titleGlow{0%,100%{filter:drop-shadow(0 2px 10px #0ca8ff77) drop-shadow(0 0 22px #2fd0ff44)}50%{filter:drop-shadow(0 2px 12px #29c2ffcc) drop-shadow(0 0 34px #46d7ff88)}}
+h1 em{display:block;margin-top:6px;font-size:15px;font-style:normal;font-weight:800;letter-spacing:.34em;background:linear-gradient(90deg,#ffe36d,#ff9df1,#5fe6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+h1 .shuttle-ico{-webkit-text-fill-color:initial;color:initial;margin-right:8px;filter:drop-shadow(0 0 12px #ffe36daa)}
+.tag{margin:10px 0 15px;color:#bfeaff;font-weight:600;font-size:13px;letter-spacing:.02em}
+.pick-label{margin:10px 0 6px;font-size:11px;font-weight:900;letter-spacing:.26em;color:#7fd6ff}
+.pick-row{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
+.pick{position:relative;min-width:112px;border:1px solid #6fd3ff55;border-radius:12px;padding:9px 12px;background:linear-gradient(180deg,#0d2c44cc,#071726dd);color:#eaf8ff;font-weight:800;overflow:hidden;transition:transform .12s,box-shadow .18s,border-color .18s}
+.pick::before{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,#5fe6ff,transparent);opacity:.5}
+.pick small{display:block;margin-top:4px;color:#9fc5da;font-weight:600}
+.pick:hover{transform:translateY(-2px);border-color:#8fe3ffcc;box-shadow:0 8px 22px #001420aa,0 0 16px #45d3ff55}
+.pick.sel{border-color:#ffe36d;background:linear-gradient(180deg,#1a4a68,#0c2c44);box-shadow:0 0 0 1px #ffe36d99,0 0 22px #55cfff77,inset 0 0 20px #46d7ff2e;color:#fff}
+.pick.sel::before{background:linear-gradient(90deg,transparent,#ffe36d,transparent);opacity:1}
+.face-pick canvas{box-shadow:0 0 10px #46d7ff66}
+.start-actions{display:flex;align-items:center;gap:10px;margin-top:17px;flex-wrap:wrap;justify-content:center}
+#play,#motionPreview,#shopOpen{position:relative;border:0;border-radius:12px;padding:13px 26px;margin:0;color:#fff;font-size:17px;font-weight:1000;letter-spacing:.05em;transition:transform .1s,box-shadow .18s,filter .18s}
+#play{background:linear-gradient(180deg,#ff8a5c,#ef4f2c);box-shadow:0 6px 0 #8c2716,0 10px 26px #ff5a2e4d}
+#play:hover{filter:brightness(1.08);box-shadow:0 6px 0 #8c2716,0 12px 30px #ff5a2e73}
+#play:active{transform:translateY(4px);box-shadow:0 2px 0 #8c2716}
+#motionPreview{background:linear-gradient(180deg,#2aa6d8,#1173a0);box-shadow:0 6px 0 #08405c,0 10px 24px #21c3ff40}
+#motionPreview:hover{filter:brightness(1.08)}
+#motionPreview:active{transform:translateY(4px);box-shadow:0 2px 0 #08405c}
+#shopOpen{display:none;background:linear-gradient(180deg,#37a76a,#1f7a49);box-shadow:0 6px 0 #124a2c,0 10px 24px #2fd88a3d}
+#shopOpen:active{transform:translateY(4px);box-shadow:0 2px 0 #124a2c}
+#motionDeck{display:none;position:absolute;z-index:14;left:50%;top:54px;transform:translateX(-50%);align-items:center;gap:5px;padding:5px;border:1px solid #9fe9ff88;border-radius:6px;background:#02070cba;backdrop-filter:blur(5px)}#motionDeck.show{display:flex}#motionDeck button{min-width:54px;height:34px;padding:0 8px;border:1px solid #bceeff;border-radius:5px;background:#12344bcf;color:#fff;font-size:12px;font-weight:900}#motionDeck button:active{transform:scale(.94);filter:brightness(1.35)}#motionExit{min-width:34px!important;width:34px;padding:0!important;font-size:20px!important;background:#552d38d9!important}
+#shop{display:none;position:absolute;z-index:30;inset:0;padding:10px 16px 12px;background:#03101bf2;color:#fff}#shop.show{display:grid;grid-template-rows:auto auto 1fr auto;gap:7px}.shop-head{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px}.shop-head h2{margin:0;font-size:24px;color:#eafcff}.coins{padding:5px 10px;border:1px solid #ffe16e;border-radius:6px;background:#443710;color:#fff3a8;font-weight:1000}#shopClose{width:34px;height:34px;border:1px solid #ffb3b3;border-radius:50%;background:#54252d;color:#fff;font-size:22px}.shop-tabs{display:flex;gap:6px}.shop-tabs button{height:32px;padding:0 16px;border:1px solid #9fe9ff;border-radius:5px;background:#102e43;color:#dff8ff;font-weight:900}.shop-tabs button.sel{background:#ffe36d;color:#172331;border-color:#fff}.shop-list{min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;overflow:auto}.gear-card{position:relative;min-height:174px;padding:9px;border:1px solid #76cdeb88;border-radius:6px;background:#092033}.gear-card.equipped{border-color:#ffe36d;box-shadow:inset 0 0 0 1px #ffe36d}.gear-card h3{margin:0 0 3px;font-size:15px;color:#fff}.gear-type{font-size:11px;color:#8ee8ff}.gear-price{position:absolute;right:8px;top:8px;color:#ffe36d;font-size:12px;font-weight:900}.gear-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin:8px 0}.gear-stat{padding:4px 2px;border-radius:4px;background:#020b12;color:#bfeeff;text-align:center;font-size:10px}.gear-stat b{display:block;margin-top:2px;color:#fff;font-size:13px}.gear-actions{display:flex;flex-wrap:wrap;gap:4px}.gear-actions button{min-height:29px;flex:1;padding:3px 6px;border:1px solid #aeeaff;border-radius:4px;background:#164c68;color:#fff;font-size:11px;font-weight:900}.gear-actions button.buy{background:#356b37;border-color:#a8f2a8}.gear-actions button.sell{background:#593039;border-color:#ffb0b0}.gear-actions button:disabled{opacity:.48}.shop-foot{min-height:22px;color:#bfeeff;font-size:12px;text-align:center}
+.face-pick{display:flex;align-items:center;justify-content:center;gap:7px}.face-pick canvas{width:42px;height:42px;border:1px solid #b8edff;border-radius:50%;background:#07111b}.face-pick span{display:block}
+#faceStudio{display:none;position:absolute;z-index:32;inset:0;padding:9px 14px;background:#03101bf5;color:#fff}#faceStudio.show{display:grid;grid-template-rows:auto 1fr auto;gap:7px}.face-head{display:grid;grid-template-columns:1fr auto;align-items:center}.face-head h2{margin:0;font-size:22px;color:#eafcff}.face-head button{width:34px;height:34px;border:1px solid #ffb3b3;border-radius:50%;background:#54252d;color:#fff;font-size:22px}.face-layout{min-height:0;display:grid;grid-template-columns:250px 1fr;gap:12px}.face-preview{display:grid;place-items:center;border-right:1px solid #8edfff55}.face-preview canvas{width:min(225px,100%);height:auto;aspect-ratio:13/15;border:1px solid #8edfff;border-radius:8px;background:#061624}.face-controls{min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:7px 12px;overflow:auto;padding-right:3px}.face-group{min-width:0}.face-group h3{margin:0 0 4px;color:#aeeeff;font-size:12px}.face-name{grid-column:1/-1}.face-name input{width:100%;height:32px;padding:0 9px;border:1px solid #8edfff;border-radius:5px;background:#061624;color:#fff;font-size:15px;font-weight:900;outline:none}.face-name input:focus{border-color:#ffe36d}.face-options{display:flex;flex-wrap:wrap;gap:4px}.face-options button{min-width:52px;height:30px;padding:0 8px;border:1px solid #8fbfd2;border-radius:5px;background:#102b3d;color:#e9f8ff;font-size:11px;font-weight:900}.face-options button.sel{border-color:#ffe36d;background:#3d4c28;color:#fff}.face-options button.swatch{min-width:30px;width:30px;padding:0;border-radius:50%;box-shadow:inset 0 0 0 1px #ffffff55}.face-foot{display:flex;justify-content:flex-end;gap:7px}.face-foot button{height:34px;padding:0 18px;border:1px solid #aeeaff;border-radius:5px;background:#174a67;color:#fff;font-weight:900}#faceRandom{margin-right:auto;background:#594a22;border-color:#ffe08b}#faceSave{background:#327145;border-color:#aef0bc}
+.face-photo{grid-column:1/-1;padding:7px;border:1px solid #51c9ef66;border-radius:6px;background:#071a29}.face-photo-state{margin-left:6px;color:#ffe36d;font-size:11px}.face-photo-workspace{display:grid;grid-template-columns:92px 1fr;gap:8px;margin-top:6px}.face-photo-workspace canvas{width:92px;height:92px;border:1px solid #8edfff;border-radius:50%;background:#04111c}.face-photo-sliders{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:6px}.face-photo-workspace .face-photo-sliders{grid-template-columns:1fr;margin-top:0}.face-photo-sliders label{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:5px;color:#bfeeff;font-size:10px}.face-photo-sliders input{width:100%;margin:0;accent-color:#55d8ff}.face-photo .photo-remove{border-color:#ff9e9e;background:#54252d}.face-photo-note{margin-top:5px;color:#91b9ca;font-size:10px}
+@media(pointer:coarse){.move{width:82px;height:82px}.hit{width:76px;height:76px}.group{gap:8px}#controls{gap:14px}}
+@media(max-height:430px){.teams{top:5px}.move{width:70px;height:70px}.hit{width:66px;height:66px}#controls{bottom:5px;gap:9px}#home{width:32px;height:32px;font-size:15px}}
+@media(max-width:620px){#controls{flex-direction:column-reverse;align-items:flex-start;gap:5px}.move{width:66px;height:66px}.hit{width:60px;height:60px;font-size:12px}.group{gap:6px}}
+@media(max-width:620px) and (orientation:portrait){#stage{width:100vw;height:100vh}#game{inset:auto 0;top:50%;width:100%;height:auto;aspect-ratio:16/9;transform:translateY(-50%)}h1{font-size:32px}.teams{left:48px;right:9px;grid-template-columns:1fr 82px 1fr;gap:6px}.team{font-size:12px}#score{font-size:19px}#message{top:25%;font-size:22px}.aim-choice{top:58%}.aim-choice.special{top:35%}#faceStudio{padding:7px;gap:5px}.face-head h2{font-size:18px}.face-layout{grid-template-columns:128px minmax(0,1fr);gap:7px}.face-preview{align-items:start;border-right:1px solid #8edfff55}.face-preview canvas{width:124px}.face-controls{grid-template-columns:1fr;gap:5px}.face-name,.face-photo{grid-column:1}.face-options button{height:29px;min-width:46px;padding:0 6px}.face-photo-sliders{grid-template-columns:1fr}.face-foot{gap:5px}.face-foot button{height:36px;padding:0 10px;font-size:12px}}
+@media(orientation:landscape) and (max-width:1200px){
+  #stage{width:100vw;height:100vh}
+  #game{inset:0;width:100%;height:100%;transform:none;object-fit:cover}
+  #controls{inset:0;max-width:none;display:block;pointer-events:none}
+  .move-group{position:absolute;left:max(14px,env(safe-area-inset-left));bottom:max(8px,env(safe-area-inset-bottom));display:block;pointer-events:auto;opacity:var(--mobile-control-opacity,.72);transition:opacity .16s}
+  .move-buttons{display:none}
+  .joystick{display:block}
+  .hit-group{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,68px);grid-template-rows:repeat(2,68px);gap:8px;pointer-events:auto;opacity:var(--mobile-control-opacity,.72);transition:opacity .16s}
+  .hit{width:68px;height:68px;font-size:13px}
+  #controlTools{display:flex}
+  #message{top:18%;font-size:24px}
+  #motionDeck{top:42px;gap:4px;padding:4px}#motionDeck button{min-width:50px;height:31px;padding:0 6px;font-size:11px}
+  #shop{padding:6px 10px 8px;gap:5px}.shop-head h2{font-size:19px}.shop-list{grid-template-columns:repeat(4,minmax(150px,1fr));gap:5px}.gear-card{min-height:160px;padding:7px}.gear-stats{margin:5px 0}.shop-tabs button{height:29px}
+  #faceStudio{padding:6px 10px;gap:5px}.face-head h2{font-size:18px}.face-layout{grid-template-columns:200px 1fr;gap:9px}.face-preview canvas{width:178px;height:auto}.face-controls{gap:5px 9px}.face-options button{height:27px;min-width:47px;font-size:10px}
+}
+</style>
+</head>
+<body>
+<div id="app"><div id="stage" tabindex="0" aria-label="超能羽球遊戲區">
+<canvas id="game" width="960" height="540"></canvas>
+<button id="home" aria-label="回教學首頁" onclick="location.href='index.html'">🏠</button>
+<div id="hud">
+  <div class="teams">
+    <div class="team"><span id="nameA">疾風隊</span><div class="bar"><div class="fill" id="hpA"></div></div><div class="skill"><i id="spA"></i></div></div>
+    <div id="score">100 : 100</div>
+    <div class="team r"><span id="nameB">雷光隊</span><div class="bar"><div class="fill" id="hpB"></div></div><div class="skill"><i id="spB"></i></div></div>
+  </div>
+  <div id="message"></div>
+  <div id="padBadge" aria-live="polite"></div>
+  <div id="smashMeter" aria-hidden="true"><div class="st" id="smashLabel">網前壓殺</div><div class="sb"><i id="smashFill"></i></div><div class="sl"><span>壓殺</span><span>中場</span><span>重殺後場</span></div></div>
+  <div id="serveMeter" aria-hidden="true"><div class="sm-title" id="serveTitle">選擇發球</div><div class="sm-bar"><div class="sm-sweet"></div><div class="sm-fill" id="serveFill"></div></div><div class="sm-hint" id="serveHint">按住 J／A鍵 短發 · K／B鍵 長發；或把搖桿（含手把左蘑菇頭）往身後拉：往上=長發、持平=短發，回中即發球</div></div>
+</div>
+<div id="controls">
+  <div class="group move-group">
+    <div class="move-buttons"><button class="control move" data-key="left" aria-keyshortcuts="A">◀</button><button class="control move" data-key="right" aria-keyshortcuts="D">▶</button></div>
+    <div class="joystick" id="joystick" role="slider" aria-label="左右移動搖桿" aria-valuemin="-1" aria-valuemax="1" aria-valuenow="0"><div class="joystick-ring"><div class="joystick-thumb" id="joystickThumb"></div></div><span class="joystick-label">左右移動</span></div>
+  </div>
+  <div class="group hit-group"><button class="control hit drop" data-key="drop" aria-keyshortcuts="J">短球</button><button class="control hit clear" data-key="clear" aria-keyshortcuts="K">長球</button><button class="control hit smash" id="smash" data-key="smash" aria-keyshortcuts="L">殺球</button><button class="control hit ultimate lock" id="ultimate" data-key="ultimate" aria-keyshortcuts="P">角色<br>絕招</button></div>
+</div>
+<div id="controlTools"><button id="controlVisibility" aria-label="顯示或隱藏操作按鍵" title="顯示或隱藏操作按鍵" onclick="toggleControlVisibility()">◐</button><input id="controlOpacity" type="range" min="0" max="100" value="72" aria-label="操作按鍵透明度" oninput="applyControlOpacity(this.value/100)"></div>
+<div id="tactics" aria-hidden="true"><div class="tactic-title">慢鏡戰術・選擇落點 <span id="tacticTime">2.0</span></div><button class="aim-choice front" data-aim="front" aria-keyshortcuts="U" title="鍵盤 U">前點</button><button class="aim-choice body" data-aim="body" aria-keyshortcuts="I" title="鍵盤 I">追身</button><button class="aim-choice back" data-aim="back" aria-keyshortcuts="O" title="鍵盤 O">底線</button><button class="aim-choice special" id="tacticUltimate" data-aim="ultimate">角色大招</button></div>
+<div id="start"><canvas id="startFx" aria-hidden="true"></canvas>
+  <div class="start-inner">
+  <div class="brandline">SUPERSONIC · ARENA</div>
+  <h1><span class="shuttle-ico">🏸</span>超能羽球<em>照片角色編輯器</em></h1><div class="tag">建立高辨識度造型，或使用本機照片模擬角色臉部<br><span style="color:#8feaff">支援遊戲手把：左蘑菇頭移動／拉桿發球，A 短球・B 長球・X 殺球・Y 絕招</span></div>
+  <div class="pick-label">電腦難度</div><div class="pick-row"><button class="pick" data-diff="easy">簡單<small>跑位常跑錯</small></button><button class="pick sel" data-diff="normal">普通<small>勢均力敵</small></button><button class="pick" data-diff="hard">困難<small>搶點快・常打邊線</small></button></div>
+  <div class="pick-label">模式</div><div class="pick-row"><button class="pick sel" data-mode="battle">戰鬥模式<small>血量・能量・絕招</small></button><button class="pick" data-mode="classic">經典模式<small>21 分正式計分</small></button></div>
+  <div class="pick-label">戰鬥風格與外觀</div><div class="pick-row"><button class="pick sel" data-fighter="thunder">蒼雷<small>力量進攻</small></button><button class="pick" data-fighter="mirage">幻羽<small>假動作網前</small></button><button class="pick" data-fighter="aegis">青城<small>防守反擊</small></button><button class="pick face-pick" id="faceOpen"><canvas id="faceMini" width="64" height="64"></canvas><span>編輯外觀<small>角色編輯器</small></span></button></div>
+  <div class="start-actions"><button id="play">開始比賽</button><button id="motionPreview">動作預覽</button><button id="shopOpen">球具商店</button></div>
+  </div>
+</div>
+<div id="motionDeck" aria-label="動作預覽選擇"><button data-motion="split">墊步</button><button data-motion="drop">網前</button><button data-motion="lift">挑高</button><button data-motion="serveShort">短發</button><button data-motion="serveLong">長發</button><button data-motion="clear">後場高遠</button><button data-motion="standingSmash">殺球</button><button data-motion="smash">跳殺</button><button id="motionExit" aria-label="返回模式選單">×</button></div>
+<section id="shop" aria-hidden="true"><header class="shop-head"><h2>球具商店</h2><div class="coins" id="shopCoins">金幣 0</div><button id="shopClose" aria-label="關閉球具商店">×</button></header><nav class="shop-tabs" aria-label="商店分類"><button class="sel" data-shop-tab="rackets">競技球拍</button><button data-shop-tab="strings">羽球線材</button></nav><div class="shop-list" id="shopList"></div><div class="shop-foot" id="shopMessage"></div></section>
+<section id="faceStudio" aria-hidden="true"><header class="face-head"><h2>角色編輯器</h2><button id="faceClose" aria-label="關閉角色編輯器">×</button></header><div class="face-layout"><div class="face-preview"><canvas id="faceCanvas" width="260" height="300" aria-label="自訂選手全身預覽"></canvas></div><div class="face-controls" id="faceControls"></div></div><footer class="face-foot"><button id="faceRandom">隨機造型</button><button id="faceReset">重設</button><button id="faceSave">套用選手</button></footer></section>
+<div id="padHint" aria-live="polite"></div>
+</div></div>
+<script>
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const stageEl=document.getElementById('stage'),hpAEl=document.getElementById('hpA'),hpBEl=document.getElementById('hpB'),spAEl=document.getElementById('spA'),spBEl=document.getElementById('spB'),scoreEl=document.getElementById('score'),smashEl=document.getElementById('smash'),ultimateEl=document.getElementById('ultimate'),nameAEl=document.getElementById('nameA'),nameBEl=document.getElementById('nameB'),tacticsEl=document.getElementById('tactics'),tacticTimeEl=document.getElementById('tacticTime'),tacticUltimateEl=document.getElementById('tacticUltimate'),joystickEl=document.getElementById('joystick'),joystickThumbEl=document.getElementById('joystickThumb'),controlOpacityEl=document.getElementById('controlOpacity'),controlVisibilityEl=document.getElementById('controlVisibility');
+const W=960,H=540,FLOOR=448,NET_X=480,NET_H=168,LEFT=72,RIGHT=888;
+const NET_CLEAR_Y=FLOOR-NET_H+8,SMASH_CONTACT_MAX_Y=NET_CLEAR_Y-18;
+// 固定採用專業羽球拍比例；揮拍時只改變透視寬度，不改變拍框長寬規格。
+const RACKET_SPEC={headWidth:38,headHeight:48,handleLength:22,shaftLength:42,frameWidth:3.2};
+// BWF 13.40m × 6.10m 場地；單打邊線寬 5.18m、短發球線距網 1.98m、雙打後發球線距底線 0.76m。
+const COURT={farY:286,nearY:518,farL:128,farR:832,nearL:72,nearR:888};
+const SHORT_R=(6.70-1.98)/13.40,DOUBLE_LONG_R=.76/13.40,SINGLE_INSET=.46/6.10;
+// 深度軸：lane=-1 遠邊線、0 中路、+1 近邊線。球場是梯形，同一個深度 w 對應一條固定的螢幕 y，
+// 寬度也隨 w 線性變化，所以只要把 lane 換算成 w 就能得到正確的透視位置與縮放。
+// FLOOR(448) 對應的 w 是 (448-286)/(518-286)=.698，也就是選手站的那條線。
+const LANE_W0=.698,LANE_SPAN=.30,LANE_TRACK=.75,LANE_REACH=175;
+const laneW=lane=>clamp(LANE_W0+lane*LANE_SPAN,.05,.99);
+const laneGroundY=lane=>lerp(COURT.farY,COURT.nearY,laneW(lane));
+const laneScale=lane=>lerp(COURT.farR-COURT.farL,COURT.nearR-COURT.nearL,laneW(lane))/lerp(COURT.farR-COURT.farL,COURT.nearR-COURT.nearL,LANE_W0);
+function ballScreen(){
+  const lane=ball.lane||0,sc=laneScale(lane),height=FLOOR-ball.y;
+  return{x:NET_X+(ball.x-NET_X)*sc,y:laneGroundY(lane)-height*sc,s:sc};
+}
+// AI 難度：move=移動速度倍率、react=開始追球的反應延遲（秒）、reach=接球範圍倍率、
+// smash/ultimate=出手機率、err=回球失誤率（打不過網或出界）、power=殺球力道。
+// predict = 預判落點的誤差（px，簡單會跑錯位置）；lazy = 明明在範圍內卻沒揮拍的機率；
+// err = 有回球但品質極差（通常掛網或出界）；reach = 接球容許範圍倍率。
+const DIFFICULTY={
+  easy:  {name:'簡單',desc:'跑位常跑錯、少殺球',move:.62,react:.4, reach:.62,predict:110,lazy:.18, smash:.12,ultimate:.06,err:.24,power:.3, laneChance:.04},
+  normal:{name:'普通',desc:'勢均力敵',          move:.88,react:.2, reach:.78,predict:74, lazy:.11,smash:.28,ultimate:.22,err:.1, power:.6, laneChance:.22},
+  hard:  {name:'困難',desc:'搶點快、常打邊線',  move:1.15,react:.05,reach:.94,predict:24, lazy:0,  smash:.46,ultimate:.4, err:.01,power:.9, laneChance:.3}
+};
+let difficulty='normal';
+const AI=()=>DIFFICULTY[difficulty]||DIFFICULTY.normal;
+const FIGHTERS={
+  thunder:{name:'蒼雷',color:'#34b9ff',style:'power',ultimate:'雷霆貫地'},
+  mirage:{name:'幻羽',color:'#b06cff',style:'trick',ultimate:'鏡花墜網'},
+  aegis:{name:'青城',color:'#31d59a',style:'guard',ultimate:'不落領域'}
+};
+const RACKETS={
+  academy:{name:'學院碳鋒',type:'均衡入門',price:0,weight:'4U',maxTension:26,power:1,control:1,speed:1,frame:'#5b7180',accent:'#d9f4ff'},
+  storm88:{name:'霆風 88 Pro',type:'速度進攻',price:4800,weight:'4U',maxTension:28,power:1.07,control:1.03,speed:1.1,frame:'#151b28',accent:'#41ddff'},
+  aero100:{name:'凌空 100X',type:'重殺競技',price:6200,weight:'3U',maxTension:30,power:1.13,control:1.06,speed:1.03,frame:'#21141f',accent:'#ffcf55'},
+  controlPro:{name:'御界 Control Pro',type:'控球反擊',price:7600,weight:'4U',maxTension:30,power:1.06,control:1.16,speed:1.05,frame:'#10231e',accent:'#57efb3'}
+};
+const STRINGS={
+  durable70:{name:'恆耐 70',type:'耐久均衡',price:0,gauge:'0.70 mm',range:[18,27],power:1,control:1,speed:.98,forgiveness:1.08,durability:1.18,sound:.94,color:'#edf6ff'},
+  repulse65:{name:'疾彈 65',type:'快速回彈',price:450,gauge:'0.65 mm',range:[20,28],power:1.04,control:1.04,speed:1.08,forgiveness:1,durability:.9,sound:1.12,color:'#ffe45f'},
+  speed63:{name:'極速 63',type:'高速彈射',price:620,gauge:'0.63 mm',range:[20,28],power:1.03,control:1.02,speed:1.12,forgiveness:.96,durability:.8,sound:1.18,color:'#79efff'},
+  controlHybrid:{name:'控旋 Hybrid',type:'雙線控球',price:760,gauge:'0.67 / 0.61 mm',range:[20,29],power:1.03,control:1.13,speed:1.04,forgiveness:1.01,durability:.88,sound:1.06,color:'#ff7a7a'},
+  smashBoost:{name:'重殺 Boost',type:'重擊咬球',price:900,gauge:'0.72 / 0.61 mm',range:[22,30],power:1.1,control:1.08,speed:.99,forgiveness:.98,durability:1.02,sound:1.08,color:'#ffb43c'}
+};
+function loadGearState(){
+  const base={coins:12000,ownedRackets:['academy'],ownedStrings:['durable70'],equippedRacket:'academy',equippedString:'durable70',upgrades:{academy:0},tension:24};
+  try{const saved=JSON.parse(localStorage.getItem('badminton-gear-v1')||'null');if(saved&&typeof saved==='object')Object.assign(base,saved);}catch(error){}
+  base.ownedRackets=(base.ownedRackets||[]).filter(id=>RACKETS[id]);base.ownedStrings=(base.ownedStrings||[]).filter(id=>STRINGS[id]);if(!base.ownedRackets.includes('academy'))base.ownedRackets.unshift('academy');if(!base.ownedStrings.includes('durable70'))base.ownedStrings.unshift('durable70');if(!base.ownedRackets.includes(base.equippedRacket))base.equippedRacket='academy';if(!base.ownedStrings.includes(base.equippedString))base.equippedString='durable70';base.coins=Math.max(0,Math.round(Number(base.coins)||0));base.tension=Math.max(18,Math.min(30,Number(base.tension)||24));base.upgrades=base.upgrades||{};return base;
+}
+let gearState=loadGearState(),shopTab='rackets';
+function saveGearState(){try{localStorage.setItem('badminton-gear-v1',JSON.stringify(gearState));}catch(error){}}
+function equipmentStats(p){
+  const racket=RACKETS[p.racketId]||RACKETS.academy,string=STRINGS[p.stringId]||STRINGS.durable70,level=clamp(Number(p.upgradeLevel)||0,0,3),levelBoost=1+level*.025,tension=clamp(Number(p.tension)||24,string.range[0],Math.min(string.range[1],racket.maxTension)),high=(tension-24)/6;
+  return{racket,string,tension,power:racket.power*string.power*levelBoost*(1-high*.018),control:racket.control*string.control*levelBoost*(1+high*.055),speed:racket.speed*string.speed*(1+high*.018),forgiveness:string.forgiveness*(1-high*.075),durability:string.durability*(1-Math.max(0,high)*.16),sound:string.sound*(1+Math.max(0,high)*.1)};
+}
+const AVATAR_DEFAULT={name:'我的選手',face:'oval',skin:'#efb17e',hair:'sweep',hairColor:'#14202c',eyes:'focus',brow:'sharp',mouth:'smile',detail:'none',accessory:'none',headwear:'headband',headSize:'large',body:'athletic',outfit:'panel',photoData:'',photoVariants:null,photoStyle:'game',photoZoom:125,photoX:0,photoY:-4,jerseyColor:'#2da8e8',accentColor:'#eaf8ff',shortsColor:'#172331',headbandColor:'#43cfff'};
+const RIVAL_AVATARS={thunder:{face:'square',skin:'#d99a70',hair:'spike',hairColor:'#172331',eyes:'focus',brow:'sharp'},mirage:{face:'heart',skin:'#f0b58b',hair:'ponytail',hairColor:'#3b2435',eyes:'calm',brow:'soft'},aegis:{face:'round',skin:'#c98762',hair:'short',hairColor:'#18251f',eyes:'bright',brow:'soft'}};
+const AVATAR_OPTIONS={
+  face:[['round','圓臉'],['oval','鵝蛋'],['square','方臉'],['heart','心形'],['long','長臉'],['diamond','菱形'],['softSquare','柔方'],['nordic','北歐硬朗'],['leader','科技領袖']],
+  hair:[['short','短髮'],['crop','俐落短寸'],['sweep','側分'],['spike','刺髮'],['ponytail','馬尾'],['bob','短鮑伯'],['curl','捲髮'],['bun','包頭'],['undercut','削邊'],['slick','後梳'],['braid','長辮']],
+  eyes:[['focus','銳利'],['bright','明亮'],['calm','沉穩'],['round','圓眼'],['fierce','戰意']],
+  brow:[['sharp','英氣'],['soft','柔和'],['straight','平眉'],['arch','挑眉'],['thick','濃眉']],
+  mouth:[['calm','沉著'],['smile','微笑'],['brave','堅毅']],
+  detail:[['none','清爽'],['freckles','雀斑'],['sport','賽場貼']],
+  accessory:[['none','無眼鏡'],['squareGlasses','方框'],['roundGlasses','圓框'],['sportGlasses','運動鏡']],
+  headwear:[['none','不戴'],['headband','頭帶'],['cap','運動帽'],['visor','遮陽帽']],
+  headSize:[['standard','標準'],['large','醒目'],['hero','大頭']],
+  photoStyle:[['natural','柔和卡通'],['game','競技卡通'],['comic','漫畫強化']],
+  body:[['slim','敏捷'],['athletic','均衡'],['power','力量']],
+  outfit:[['classic','素面'],['stripe','中線'],['panel','側拼']],
+  skin:[['#f7c9a2','亮膚'],['#efb17e','暖膚'],['#d99668','健康'],['#b8734e','深膚'],['#89543c','古銅']],
+  hairColor:[['#14202c','墨黑'],['#493329','深棕'],['#7b4a2d','栗棕'],['#d7bd72','淺金'],['#ece4cf','白金'],['#274f63','靛藍'],['#6b3157','莓紫']],
+  jerseyColor:[['#2da8e8','天空藍'],['#20b486','競技綠'],['#ef6548','烈焰紅'],['#7e63dc','電光紫'],['#f2b632','冠軍金'],['#eef5fa','冰川白']],
+  accentColor:[['#eaf8ff','亮白'],['#ffe36d','金黃'],['#56e6d3','薄荷'],['#ff9fcf','桃紅'],['#202a38','深墨']],
+  shortsColor:[['#172331','深藍黑'],['#252525','曜石黑'],['#dfeaf0','冰灰'],['#1d5b69','墨綠'],['#4a294f','深紫']],
+  headbandColor:[['#43cfff','亮藍'],['#ffe36d','金黃'],['#ff685f','鮮紅'],['#eaf8ff','白色'],['#202a38','黑色']]
+};
+function loadAvatarState(){try{const saved=JSON.parse(localStorage.getItem('badminton-avatar-v1')||'null');if(saved&&typeof saved==='object')return{...AVATAR_DEFAULT,...saved};}catch(error){}return{...AVATAR_DEFAULT};}
+let avatarState=loadAvatarState(),faceDraft={...avatarState};
+function saveAvatarState(){try{localStorage.setItem('badminton-avatar-v1',JSON.stringify(avatarState));}catch(error){}}
+const keys={left:false,right:false,up:false,down:false},padKeys={left:false,right:false,up:false,down:false};
+let padPrev=[],padId='',joyLane=0;
+let last=0,running=false,motionShowcase=false,messageTimer=0,shake=0,slow=1,gameMode='battle',selectedMode='battle',selectedFighter='thunder',scoreA=0,scoreB=0,roundToken=0,tacticState=null;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const STROKE_ANIMS=new Set(['swing','clear','lift','drop','smash','standingSmash','serveShort','serveLong']),inStroke=p=>!!p.pending||STROKE_ANIMS.has(p.anim);
+const UPPER_ARM=27.5,FORE_ARM=36.5,D2R=Math.PI/180;
+// 過頂動作改用「關節角度」而不是指定手腕座標再 IK 反解：
+// ua=上臂方向、fa=前臂方向（螢幕角度，度；0=朝球網、-90=正上方），兩者夾角就是肘關節屈曲。
+// 好處：肩膀怎麼位移手臂都不會跳解、肘永遠不會反折、也解不出超過骨長的姿勢。
+function armFromAngles(sh,ua,fa){
+  const u=ua*D2R,f=fa*D2R,el={x:sh.x+Math.cos(u)*UPPER_ARM,y:sh.y+Math.sin(u)*UPPER_ARM};
+  return{el,wr:{x:el.x+Math.cos(f)*FORE_ARM,y:el.y+Math.sin(f)*FORE_ARM}};
+}
+const smooth=t=>{t=clamp(t,0,1);return t*t*(3-2*t);},easeOut=t=>1-Math.pow(1-clamp(t,0,1),3),MOTION_TEMPO=.82,PLAYER_MOVE_SPEED=330,AI_MOVE_SPEED=245,FOOTWORK_CYCLE=10.5;
+const catmull=(a,b,c,d,t)=>.5*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t);
+function motionPoint(frames,t,key){
+  let i=0;while(i<frames.length-2&&t>frames[i+1].t)i++;
+  const a=frames[Math.max(0,i-1)],b=frames[i],c=frames[Math.min(frames.length-1,i+1)],d=frames[Math.min(frames.length-1,i+2)],u=clamp((t-b.t)/Math.max(.001,c.t-b.t),0,1),p0=a[key],p1=b[key],p2=c[key],p3=d[key];
+  return{x:catmull(p0[0],p1[0],p2[0],p3[0],u),y:catmull(p0[1],p1[1],p2[1],p3[1],u)};
+}
+// 2.5D 手位：前臂縮短、手貼臉頰，肘壓低在胸前；拍子上舉與下壓由拍面方向(rv)與拖影表現，擊球瞬間手僅適度前送。
+// 過頂揮拍（殺球・跳殺・高遠共用型態）。a=[上臂角,前臂角]，k=[拍面角,0]，單位皆為度。
+// 拍面角以時鐘對照：-90=12點、-120=11點、-150=10點、-60=1點、-30=2點、0=3點、+30=4點、+90=6點。
+// 引拍逆時針只走到 10 點就折返，接著順時針經 11→12→1 點擊球，再往前下方壓、最後掃到對側藏起來。
+const SMASH_ARM=[
+  {t:0,   sh:[0,0],  a:[-55,-25],  k:[-65,0]},
+  {t:.16, sh:[-2,-2],a:[-68,-78],  k:[-88,0]},
+  {t:.28, sh:[-3,-3],a:[-76,-130], k:[-118,0]},
+  {t:.42, sh:[-4,-3],a:[-80,-175], k:[-150,0]},
+  {t:.50, sh:[-3,-4],a:[-76,-168], k:[-144,0]},
+  {t:.58, sh:[-1,-5],a:[-68,-146], k:[-121,0]},
+  {t:.65, sh:[3,-6], a:[-62,-108], k:[-96,0]},
+  {t:.72, sh:[8,-4], a:[-58,-56],  k:[-62,0]},
+  {t:.79, sh:[8,-1], a:[-40,-22],  k:[-28,0]},
+  {t:.86, sh:[6,1],  a:[-8,32],    k:[20,0]},
+  {t:.93, sh:[4,1],  a:[40,96],    k:[70,0]},
+  {t:1,   sh:[2,0],  a:[110,165],  k:[120,0]}
+];
+// 網前短球：持拍手由右側準備位跨過胸前，拍頭只做短促前送與輕微上刷，不做大幅度繞肩。
+const DROP_ARM=[
+  {t:0,el:[26,-105],wr:[44,-111],rv:[10,-46]},
+  {t:.18,el:[24,-92],wr:[38,-82],rv:[12,-42]},
+  {t:.38,el:[14,-86],wr:[7,-82],rv:[-35,-25]},
+  {t:.56,el:[4,-84],wr:[-27,-78],rv:[-44,-12]},
+  {t:.7,el:[-1,-87],wr:[-39,-86],rv:[-41,-18]},
+  {t:.84,el:[8,-92],wr:[-17,-88],rv:[-25,-32]},
+  {t:1,el:[26,-105],wr:[44,-111],rv:[10,-46]}
+];
+// 後場長球：側身引拍、肘部先行、拍頭落後、最高點伸肘旋前，最後跨身隨揮。
+const CLEAR_ARM=[
+  {t:0,    a:[-55,-25], k:[-65,0]},
+  {t:.15,  a:[-68,-78], k:[-88,0]},
+  {t:.26,  a:[-76,-128],k:[-118,0]},
+  {t:.39,  a:[-80,-173],k:[-150,0]},
+  {t:.46,  a:[-77,-166],k:[-144,0]},
+  {t:.54,  a:[-70,-146],k:[-122,0]},
+  {t:.61,  a:[-64,-110],k:[-98,0]},
+  {t:.667, a:[-60,-60], k:[-70,0]},
+  {t:.75,  a:[-42,-26], k:[-34,0]},
+  {t:.84,  a:[-10,30],  k:[16,0]},
+  {t:.92,  a:[40,96],   k:[70,0]},
+  {t:1,    a:[110,165], k:[120,0]}
+];
+// 挑高球（由下往上拉）：低點引拍 → 拍頭沉到膝下 → 由下往上加速 → 高點跨肩收拍。
+const LIFT_ARM=[
+  {t:0,   el:[26,-105],wr:[44,-111],rv:[10,-46]},
+  {t:.2,  el:[22,-104],wr:[30,-108],rv:[-22,44]},
+  {t:.4,  el:[10,-104],wr:[24,-110],rv:[4,52]},
+  {t:.55, el:[8,-104], wr:[40,-108],rv:[30,44]},
+  {t:.68, el:[20,-116],wr:[50,-124],rv:[26,-44]},
+  {t:.8,  el:[34,-130],wr:[52,-150],rv:[6,-50]},
+  {t:.9,  el:[26,-132],wr:[18,-154],rv:[-32,-38]},
+  {t:1,   el:[25,-103],wr:[42,-108],rv:[11,-44]}
+];
+// 反手網前短發：拍面在身體正前方胸腹之間，肘抬起，只做很短的推送，幾乎不用手腕。
+const SERVE_SHORT_ARM=[
+  {t:0,   el:[24,-88], wr:[36,-100],rv:[22,48]},
+  {t:.28, el:[18,-88], wr:[20,-104],rv:[2,52]},
+  {t:.52, el:[26,-88], wr:[40,-100],rv:[26,46]},
+  {t:.70, el:[32,-92], wr:[54,-104],rv:[44,22]},
+  {t:1,   el:[28,-90], wr:[46,-104],rv:[32,32]}
+];
+// 正手後場長發：側身低引拍 → 拍頭由下往上抽 → 高點跨過對側肩收拍。
+const SERVE_LONG_ARM=[
+  {t:0,   el:[6,-102], wr:[22,-108],rv:[-20,44]},
+  {t:.22, el:[0,-100], wr:[6,-104], rv:[-46,18]},
+  {t:.38, el:[-6,-102],wr:[18,-108],rv:[-2,52]},
+  {t:.50, el:[-4,-100],wr:[26,-97], rv:[24,44]},
+  {t:.62, el:[10,-108],wr:[46,-108],rv:[44,-4]},
+  {t:.76, el:[30,-124],wr:[50,-142],rv:[10,-48]},
+  {t:.88, el:[20,-128],wr:[10,-150],rv:[-34,-34]},
+  {t:1,   el:[14,-108],wr:[26,-106],rv:[-18,44]}
+];
+// 發球時非持拍手在身前托住球，接觸瞬間放開再收回體側。
+const FREE_SERVE=[
+  {t:0,   e:[-6,-102],h:[20,-96]},
+  {t:.46, e:[-8,-100],h:[18,-93]},
+  {t:.60, e:[-14,-98],h:[0,-88]},
+  {t:1,   e:[-16,-104],h:[-24,-112]}
+];
+// 非持拍手：先指向來球拉開肩軸，接觸前用力收回肋側，帶動軀幹旋轉。
+const FREE_OVERHEAD=[
+  {t:0,   e:[-16,-104],h:[-24,-112]},
+  {t:.2,  e:[-8,-118], h:[6,-140]},
+  {t:.42, e:[-6,-122], h:[14,-148]},
+  {t:.56, e:[-9,-120], h:[10,-144]},
+  {t:.66, e:[-16,-110],h:[-4,-126]},
+  {t:.78, e:[-22,-98], h:[-16,-86]},
+  {t:1,   e:[-17,-103],h:[-25,-108]}
+];
+function athlete(side,fighterId){const fighter=FIGHTERS[fighterId]||FIGHTERS.thunder,racketId=side===0?gearState.equippedRacket:'storm88',stringId=side===0?gearState.equippedString:'repulse65',avatar=side===0?{...avatarState}:{...(RIVAL_AVATARS[fighterId]||AVATAR_DEFAULT)};return{side,fighterId,fighter,x:side===0?270:690,home:side===0?270:690,lane:0,vx:0,hp:100,skill:0,anim:'ready',animT:0,jump:0,recoverFrom:'ready',racketTrail:[],racketWorld:null,impactFlash:0,hitOrigin:null,racketId,stringId,tension:side===0?gearState.tension:26,upgradeLevel:side===0?(gearState.upgrades[racketId]||0):1,avatar,color:fighter.color};}
+function displayName(p){return p.side===0&&p.avatar&&p.avatar.name?p.avatar.name:p.fighter.name;}
+// 發球：draw=滿蓄力時的引拍進度，contact=擊球的 animT，dur=整段動作長度。
+const SERVE_SPEC={serveShort:{dur:.62,draw:.16,contact:.32},serveLong:{dur:.9,draw:.2,contact:.45}};
+const SERVE_CHARGE_TIME=1,SERVE_SWEET=[.62,.86];
+// 殺球力道：從按下殺球到拍子碰到球這段時間，還按著就繼續累積。
+// 0 = 網前壓殺（近、極快、陡降、低傷害）；1 = 重殺後場（遠、平快、慢一點但重）。
+const SMASH_CHARGE_TIME=.4;
+let serveState=null;
+let A=athlete(0,'thunder'),B=athlete(1,'mirage'),ball={x:A.x+28,y:FLOOR-98,fromX:A.x,toX:B.x,t:0,dur:1.15,side:1,live:false,shot:'clear'};
+function resetRound(server=0){
+  const token=++roundToken;
+  cancelTactics();releaseJoystick();fx=[];replayBuf=[];
+  A.x=A.home;B.x=B.home;A.jump=B.jump=0;
+  [A,B].forEach(p=>{p.anim='ready';p.animT=0;p.pending=null;p.pendingUltimate=null;p.smashMode=null;p.aimTarget=null;p.tacticalRelease=false;p.hitOrigin=null;p.impactFlash=0;p.laneAim=0;p.lane=0;p.smashCharge=0;p.smashHolding=false;});
+  const p=server===0?A:B;ball={x:p.x+(server===0?28:-28),y:FLOOR-98,fromX:p.x,toX:server===0?B.home:A.home,t:0,dur:1.15,side:1-server,live:false,waiting:false,shot:'clear',server,aiPlan:null,lane:0,fromLane:0,toLane:0};
+  ball.waiting=true;
+  serveState={side:server,type:null,charge:0,pointer:null,
+    ai:server===1?{type:Math.random()<.58?'serveShort':'serveLong',hold:lerp(SERVE_SWEET[0],SERVE_SWEET[1],Math.random()),delay:.45}:null};
+  updateServeMeter();
+  if(server===0)show('選擇發球方式','#9ff5ff');
+}
+const serveMeterEl=()=>document.getElementById('serveMeter');
+const LANE_NAME={'-1':'遠邊線','0':'中路','1':'近邊線'};
+function updateSmashMeter(p){
+  const el=document.getElementById('smashMeter');if(!el)return;
+  const pw=clamp(p.smashCharge||0,0,1);el.classList.add('on');el.setAttribute('aria-hidden','false');
+  document.getElementById('smashFill').style.width=(pw*100).toFixed(0)+'%';
+  const kind=pw<.3?'網前壓殺':pw<.68?'中場快殺':'重殺後場',lane=LANE_NAME[String(p.laneIntent||0)];
+  document.getElementById('smashLabel').textContent=kind+'・'+lane;
+}
+function hideSmashMeter(){const el=document.getElementById('smashMeter');if(el){el.classList.remove('on');el.setAttribute('aria-hidden','true');}}
+function updateServeMeter(){
+  const el=serveMeterEl();if(!el)return;
+  if(joystickEl)joystickEl.classList.toggle('serve',!!serveState&&serveState.side===0);
+  if(!serveState||serveState.side!==0){el.classList.remove('on','sweet');el.setAttribute('aria-hidden','true');return;}
+  const charge=serveState.charge,sweet=charge>=SERVE_SWEET[0]&&charge<=SERVE_SWEET[1];
+  el.classList.add('on');el.classList.toggle('sweet',sweet&&!!serveState.type);el.setAttribute('aria-hidden','false');
+  document.getElementById('serveFill').style.width=(charge*100).toFixed(1)+'%';
+  document.getElementById('serveTitle').innerHTML=serveState.type?(serveState.type==='serveShort'?'網前短發 <em>'+(sweet?'完美區':'蓄力中')+'</em>':'後場長發 <em>'+(sweet?'完美區':'蓄力中')+'</em>'):'選擇發球';
+}
+function startServeCharge(type){
+  if(!serveState||serveState.side!==0||serveState.type)return false;
+  serveState.type=type;serveState.charge=0;updateServeMeter();return true;
+}
+// 蓄力越久引拍越深；放開後動作從當下的引拍位置接著揮完，所以蓄力本身就是可見的預備動作。
+function releaseServe(){
+  if(!serveState||!serveState.type)return;
+  const p=serveState.side===0?A:B,type=serveState.type,charge=serveState.charge,spec=SERVE_SPEC[type];
+  const sweet=charge>=SERVE_SWEET[0]&&charge<=SERVE_SWEET[1];
+  const miss=Math.min(Math.abs(charge-SERVE_SWEET[0]),Math.abs(charge-SERVE_SWEET[1]));
+  const quality=sweet?1:clamp(1-miss*1.9,.3,1);
+  serveState=null;updateServeMeter();releaseJoystick();
+  p.serveCharge=charge;p.anim=type;p.animT=charge*spec.draw;
+  p.pending={type,quality,contactAt:spec.contact,approachFromX:ball.x,approachFromY:ball.y,approachWindow:.12};
+  ball.live=false;ball.waiting=true;
+  if(sweet&&p.side===0)show('完美發球！','#ffe36d');
+  updateHud();
+}
+function launchShot(p,type,quality=0.65,keepAnimation=false){
+  const target=p.side===0?B:A,dir=p.side===0?1:-1,gear=equipmentStats(p),accuracy=clamp(gear.control,.9,1.35),flightType=type==='lift'?'clear':type==='net'?'drop':type==='serveShort'?'serve':type==='serveLong'?'serveHigh':type;
+  if(!keepAnimation){p.anim=type==='smash'?'smash':type==='drop'?'drop':type==='clear'?'clear':type==='serveShort'?'serveShort':type==='serveLong'?'serveLong':(type==='lift'||type==='net')?'lift':'swing';p.animT=0;}
+  if(!target.pending&&(target.anim==='ready'||target.anim==='step'||target.anim==='recover')){target.anim='split';target.animT=0;}
+  let targetX;
+  const charge=clamp(p.serveCharge!==undefined?p.serveCharge:.62,0,1);p.serveCharge=undefined;
+  const smashPower=clamp(p.smashPower!==undefined?p.smashPower:.5,0,1);p.smashPower=undefined;
+  // 短發：蓄力控制「多貼近前發球線」；長發：蓄力控制「多接近底線」。
+  if(flightType==='serve')targetX=NET_X+dir*lerp(58,142,charge)/accuracy;
+  else if(flightType==='serveHigh')targetX=p.side===0?lerp(680,846,charge):lerp(280,114,charge);
+  else if(flightType==='drop')targetX=NET_X+dir*(62+Math.random()*28/accuracy);
+  else if(flightType==='clear')targetX=p.side===0?760+Math.random()*78/accuracy:200-Math.random()*78/accuracy;
+  else if(type==='smash'&&p.aimTarget){
+    const zones=p.side===0?{front:640,body:clamp(target.x,665,765),back:830}:{front:320,body:clamp(target.x,195,295),back:130};targetX=zones[p.aimTarget]||zones.body;p.aimTarget=null;
+  }else if(flightType==='smash'){
+    // 力道直接換算落點深度：壓殺打在對方前場、重殺打到底線附近。
+    const pw=smashPower;
+    targetX=p.side===0?lerp(NET_X+108,842,pw)+Math.random()*22/accuracy:lerp(NET_X-108,118,pw)-Math.random()*22/accuracy;
+  }
+  else if(type==='smash')targetX=clamp(target.x+dir*55+(Math.random()-.5)*50/accuracy,target.side===0?105:535,target.side===0?425:855);
+  else targetX=clamp(target.x+(Math.random()-.5)*55/accuracy,target.side===0?105:535,target.side===0?425:855);
+  const hitOrigin=p.hitOrigin;ball.fromX=hitOrigin?hitOrigin.x:p.x+dir*28;if(hitOrigin)ball.y=hitOrigin.y;p.hitOrigin=null;
+  // 先預測網面高度；一般殺球若會碰網，就改瞄準後場以提早通過網面。
+  if(type==='smash'&&!p.pendingUltimate&&smashNetY(ball.fromX,targetX,ball.y)>NET_CLEAR_Y-3){
+    // 掛網的話沿原方向往後推，找出剛好過得了網的最淺落點，而不是直接丟到底線。
+    const limit=p.side===0?860:100;
+    let safe=null;
+    for(let i=1;i<=14;i++){
+      const probe=lerp(targetX,limit,i/14);
+      if(smashNetY(ball.fromX,probe,ball.y)<=NET_CLEAR_Y-6){safe=probe;break;}
+    }
+    targetX=safe!==null?safe:limit;
+  }
+  ball.toX=targetX;
+  ball.x=ball.fromX;ball.t=0;ball.side=target.side;ball.live=true;ball.waiting=false;ball.shot=flightType;ball.smashMode=p.smashMode||null;ball.ultimate=p.pendingUltimate||null;p.pendingUltimate=null;ball.startY=hitOrigin?hitOrigin.y:type==='lift'?ball.y:flightType==='smash'?ball.y:FLOOR-(flightType==='serve'||flightType==='serveHigh'?58:flightType==='drop'?105:118);ball.y=ball.startY;ball.smashPower=flightType==='smash'?smashPower:0;ball.powerArc=flightType==='smash'&&ball.ultimate&&ball.ultimate.id==='power';ball.peak=flightType==='smash'?null:clearancePeak(flightType,ball.fromX,ball.toX,ball.startY);ball.aiReact=0;ball.aiGuess=undefined;ball.aiLazy=undefined;ball.aiSave=undefined;ball.fromLane=ball.lane||0;ball.toLane=p.laneAim||0;p.laneAim=0;ball.lane=ball.fromLane;ball.angle=0;ball.crossedNet=false;ball.aiPlan=null;ball.gearPower=gear.power;ball.gearSound=gear.sound;
+  ball.dur=(flightType==='smash'?lerp(.33,.6,smashPower):flightType==='drop'?lerp(.82,.62,quality):flightType==='serve'?.86:flightType==='serveHigh'?1.28:lerp(1.12,.84,quality))/clamp(gear.speed,.9,1.28);ball.quality=quality;
+  if(ball.ultimate){shake=1.25;show(ball.ultimate.name+'！',ball.ultimate.color);}
+  else if(type==='smash'){shake=1;show(p.smashMode==='jump'?'飛躍殺球！':'提肘殺球！','#ffe36d');}
+  else if(type==='lift')show('網前挑高球！','#9ff5ff');
+  else if(type==='serveShort')show('反手網前短發','#9ff5ff');
+  else if(type==='serveLong')show('正手後場長發','#9ff5ff');
+  else if(type==='net')show('網前小球！','#9ff5ff');
+  else if(quality>.83)show('完美回擊！','#9ff5ff');
+  updateHud();
+}
+function sendShot(p,type,quality=0.65,smashMode='jump'){
+  if(type==='smash'){
+    const dir=p.side===0?1:-1,isTactical=!!p.tacticalRelease;
+    // 保留來球原本的高點；人物迎向球，不把羽球跟著跳躍再次托高。
+    const contactX=p.side===0?Math.min(NET_X-50,p.x+74):Math.max(NET_X+50,p.x-74);
+    const isJump=smashMode==='jump'||smashMode==='ultimateJump';p.smashMode=smashMode;
+    const leadIn=isTactical?(isJump?.78:.38):p.side===1?(isJump?.62:.28):(isJump?.5:.24);
+    p.anim=isJump?'smash':'standingSmash';p.animT=leadIn;p.pending={type,quality,contactX,contactY:ball.y,contactAt:isJump?1.15:.648,approachFromX:ball.x,approachFromY:ball.y,approachWindow:isJump?.22:.16};p.tacticalRelease=false;slow=isTactical?.78:.95;
+    ball.live=false;ball.waiting=true;ball.x=p.pending.contactX;ball.y=p.pending.contactY;
+    updateHud();return;
+  }
+  const animation=type==='drop'?'drop':type==='clear'?'clear':(type==='lift'||type==='net')?'lift':'swing',contactAt=type==='drop'?.33:type==='clear'?.64:type==='lift'?.43:type==='net'?.4:type==='serve'?.28:.3;
+  p.anim=animation;p.animT=0;p.pending={type,quality,contactAt,approachFromX:ball.x,approachFromY:ball.y,approachWindow:type==='clear'?.18:.13};
+  ball.live=false;ball.waiting=true;updateHud();
+}
+function basePeak(shot){return shot==='serveHigh'?300:shot==='clear'?220:shot==='serve'?104:shot==='drop'?120:138;}
+// 依擊球點與落點反推「保證過網」所需的最小弧高，取 max(基準弧高, 需求弧高)，任何位置回球都必定過網不觸網。
+function clearancePeak(shot,fromX,toX,startY){
+  const k=shot==='drop'||shot==='serve'?1.42:1.12,margin=14,netFlight=clamp((NET_X-fromX)/(toX-fromX),.03,.97),tNet=1-Math.pow(1-netFlight,1/k),s=Math.sin(Math.PI*tNet);
+  const need=s>.05?(startY+(FLOOR-8-startY)*tNet-(NET_CLEAR_Y-margin))/s:0;
+  return clamp(Math.max(basePeak(shot),need),basePeak(shot),330);
+}
+function ballY(t,shot,startY,peak){
+  // 壓殺幾乎是直線俯衝（指數接近 1、幾乎沒有上飄）；重殺初段較平、末段才沉下去。
+  if(shot==='smash'){const pw=clamp(ball.smashPower||0,0,1);return startY+(FLOOR-10-startY)*Math.pow(t,lerp(.88,1.34,pw))-lerp(3,26,pw)*Math.sin(Math.PI*t);}
+  return startY+(FLOOR-8-startY)*t-(peak||basePeak(shot))*Math.sin(Math.PI*t);
+}
+function powerSmashY(progress,startY,fromX,toX){
+  const netProgress=clamp((NET_X-fromX)/(toX-fromX),.03,.97),netY=NET_CLEAR_Y-18;
+  if(progress<=netProgress){const u=progress/netProgress;return lerp(startY,netY,u)-24*Math.sin(Math.PI*u);}
+  const u=(progress-netProgress)/(1-netProgress);return lerp(netY,FLOOR-10,Math.pow(u,.72))-10*Math.sin(Math.PI*u);
+}
+function smashNetY(fromX,toX,startY){
+  const progress=clamp((NET_X-fromX)/(toX-fromX),0,1),t=1-Math.pow(1-progress,1/2.6);
+  return ballY(t,'smash',startY);
+}
+function gainEnergy(p,amount){if(gameMode==='battle')p.skill=clamp(p.skill+amount,0,100);}
+function cancelTactics(){tacticState=null;tacticsEl.classList.remove('show');tacticsEl.setAttribute('aria-hidden','true');}
+function enterTactics(quality){
+  if(tacticState)return;tacticState={quality,remaining:2};keys.left=keys.right=false;slow=1;ball.live=false;ball.waiting=true;A.anim='smash';A.animT=.55;
+  tacticTimeEl.textContent='2.0';tacticUltimateEl.style.display=A.skill>=100?'block':'none';tacticUltimateEl.textContent=A.fighter.ultimate;tacticsEl.classList.add('show');tacticsEl.setAttribute('aria-hidden','false');
+}
+function resolveTactics(choice){
+  if(!tacticState)return;if(choice==='ultimate'&&A.skill<100)return;
+  const state=tacticState;cancelTactics();ball.live=true;ball.waiting=false;ball.side=0;A.tacticalRelease=true;
+  if(choice==='ultimate'){activateUltimate(A);A.tacticalRelease=false;return;}
+  A.skill=clamp(A.skill-50,0,100);A.aimTarget=choice;A.smashCharge=1;A.smashHolding=false;A.laneIntent=A.laneIntent||0;sendShot(A,'smash',Math.max(.9,state.quality),'jump');updateHud();
+}
+function activateUltimate(p){
+  if(gameMode!=='battle'){show('經典模式沒有角色絕招','#d5efff');return;}
+  if(p.skill<100){show('力量值尚未全滿','#ffcf8e');return;}
+  if(!ball.live||ball.side!==p.side){show('等待自己的回球時機','#ffcf8e');return;}
+  p.skill=0;
+  const f=p.fighter,ultimate={id:f.style,name:f.ultimate,color:f.color};p.pendingUltimate=ultimate;
+  ultimateBurst(p,ultimate);show(f.ultimate+'！',f.color);
+  if(f.style==='power'){
+    const mode=ball.y<FLOOR-190?'ultimateJump':'ultimateStanding';p.smashCharge=1;p.smashHolding=false;sendShot(p,'smash',1,mode);
+  }else if(f.style==='trick'){
+    launchShot(p,'drop',1);ball.dur=.46;ball.toX=NET_X+(p.side===0?1:-1)*48;
+  }else{
+    p.hp=clamp(p.hp+28,0,100);launchShot(p,'clear',1);ball.dur=.62;
+  }
+  updateHud();
+}
+function tryHit(type){
+  if(skipReplay())return;
+  if(serveState)return;
+  if(tacticState){if(type==='ultimate')resolveTactics('ultimate');return;}
+  if(type==='ultimate'){activateUltimate(A);return;}
+  if(!running)return;if(!ball.live||ball.side!==0){show('等待對手回球','#d5efff');return;}
+  const isSmash=type==='smash',distance=Math.abs(A.x-ball.x)+Math.abs(A.lane-(ball.lane||0))*LANE_REACH,forgiveness=clamp(equipmentStats(A).forgiveness,.82,1.18);
+  const timing=Math.max(0,1-Math.abs((isSmash?.52:.83)-ball.t)/((isSmash?.23:.32)*forgiveness));
+  if(distance>(isSmash?150:108)||ball.t<(isSmash?.31:.48)){show('移到球下方','#ffb29f');return;}
+  if(type==='smash'&&(ball.y>SMASH_CONTACT_MAX_Y||ball.t>.76)){show('擊球點要高於網口','#ffcf8e');return;}
+  if(type==='smash'){
+    const high=ball.y<FLOOR-190;
+    if(gameMode==='battle'&&high&&A.skill>=50){enterTactics(timing);return;}
+    const mode=high&&gameMode==='classic'?'jump':'standing';gainEnergy(A,10+timing*8);
+    sendShot(A,'smash',1,mode);
+  }else if(type==='drop'){const low=ball.y>FLOOR-175||Math.abs(ball.x-NET_X)<160;gainEnergy(A,14+timing*16);sendShot(A,low?'net':'drop',timing);}
+  else{const action=ball.y>FLOOR-140||Math.abs(ball.x-NET_X)<150?'lift':'clear';gainEnergy(A,18+timing*22);sendShot(A,action,timing);}
+}
+function ai(dt){
+  if(!ball.live||ball.side!==1)return;
+  const D=AI();
+  // 反應延遲：來球剛出手的前 D.react 秒還沒動，簡單難度會慢半拍才起步。
+  ball.aiReact=(ball.aiReact||0)+dt;
+  if(ball.aiReact<D.react)return;
+  // 預判誤差：每顆來球只抽一次，簡單難度會朝著錯的位置跑，因此常常來不及救。
+  if(ball.aiGuess===undefined)ball.aiGuess=(Math.random()-.5)*2*D.predict;
+  const desired=clamp(ball.toX+ball.aiGuess,535,855),travel=desired-B.x;B.x+=Math.sign(travel)*Math.min(Math.abs(travel),AI_MOVE_SPEED*D.move*dt);
+  // 來球瞬間先完成墊步，再進入追球步伐，避免逐幀移動蓋掉預備動作。
+  if(B.anim!=='split'){
+    if(Math.abs(travel)>3&&!inStroke(B)){B.anim='step';B.animT+=dt*FOOTWORK_CYCLE;}else if(B.anim==='step'){B.anim='ready';B.animT=0;}
+  }
+  const distance=Math.abs(B.x-ball.x)+Math.abs(B.lane-(ball.lane||0))*LANE_REACH;
+  // 每次來球只規劃一次，避免用逐幀亂數造成 AI 幾乎每球都殺；發球也只偶爾搶攻。
+  if(!ball.aiPlan&&ball.t>.34){
+    const canAttack=ball.shot!=='drop'&&ball.y<=SMASH_CONTACT_MAX_Y,smashChance=ball.shot==='serve'?D.smash*.4:D.smash;
+    if(gameMode==='battle'&&B.skill>=100&&Math.random()<D.ultimate)ball.aiPlan='ultimate';
+    else ball.aiPlan=canAttack&&Math.random()<smashChance?'smash':'rally';
+  }
+  if(ball.aiPlan==='ultimate'&&ball.t>.4&&distance<145){ball.aiPlan='used';activateUltimate(B);return;}
+  // 反殺要先站到正確的邊線上；來球往遠邊線走而 AI 還沒補到位，就只能被動防守。
+  const laneCovered=Math.abs(B.lane-(ball.toLane||0))<.42;
+  const canSmash=ball.aiPlan==='smash'&&ball.t>.38&&ball.t<.72&&ball.y<=SMASH_CONTACT_MAX_Y&&laneCovered&&distance<150*D.reach;
+  if(canSmash){ball.aiPlan='used';const high=ball.y<FLOOR-190,canJump=gameMode==='classic'||B.skill>=50,mode=high&&canJump?'jump':'standing';if(gameMode==='battle'&&mode==='jump')B.skill-=50;else gainEnergy(B,12);
+    B.smashCharge=clamp(D.power+(Math.random()-.5)*.3,0,1);B.smashHolding=false;B.laneIntent=Math.random()<D.laneChance?(Math.random()<.5?-1:1):0;
+    sendShot(B,'smash',.82,mode);return;}
+  if(ball.t>.79){
+    // 硬門檻會讓結果非 0 即 1（要嘛整場都救到、要嘛整場都救不到）。
+    // 改成極限邊緣漸進失敗：0.85 倍以內穩接，1.75 倍以上完全構不到，中間拼機率。
+    const strain=distance/(112*D.reach);
+    if(strain>1.75)return;
+    if(ball.aiSave===undefined)ball.aiSave=Math.random();
+    if(ball.aiSave>(strain<=.85?1:1-(strain-.85)/.9))return;
+    // 反應不過來：簡單難度就算站得到位也可能整顆放掉。
+    if(ball.aiLazy===undefined)ball.aiLazy=Math.random()<D.lazy;
+    if(ball.aiLazy)return;
+    // 失誤率：抽中就回一顆品質極差的球（通常掛網或出界）。
+    const miss=Math.random()<D.err;
+    const shot=Math.random()<.48?'drop':'clear',action=shot==='clear'&&(ball.y>FLOOR-140||Math.abs(ball.x-NET_X)<150)?'lift':shot;
+    gainEnergy(B,shot==='drop'?18:24);
+    B.laneIntent=Math.random()<D.laneChance?(Math.random()<.5?-1:1):0;
+    sendShot(B,action,miss?.04:.66+Math.random()*.22);
+  }
+}
+function point(winner,shot){
+  if(!ball.live)return;ball.live=false;
+  const token=++roundToken;
+  if(gameMode==='classic'){
+    if(winner===0)scoreA++;else scoreB++;
+    if(winner===0){gearState.coins+=60;saveGearState();}
+    const over=((scoreA>=21||scoreB>=21)&&Math.abs(scoreA-scoreB)>=2)||scoreA>=30||scoreB>=30;
+    updateHud();show(displayName(winner===0?A:B)+' 得分！',winner===0?'#8feaff':'#ff9b8d');
+    if(over)setTimeout(()=>{if(running&&token===roundToken)finish(winner);},700);else setTimeout(()=>{if(running&&token===roundToken)resetRound(winner);},780);
+    return;
+  }
+  const victim=winner===0?B:A,ultimate=ball.ultimate,power=clamp(ball.gearPower||1,.88,1.45);
+  const damage=Math.round((ultimate?(ultimate.id==='power'?42:ultimate.id==='trick'?25:18):shot==='smash'?(ball.smashMode==='jump'?30:22)*lerp(.7,1.32,clamp(ball.smashPower||0,0,1)):shot==='drop'?8:10)*power);
+  if(winner===0){gearState.coins+=80;saveGearState();}
+  victim.hp=clamp(victim.hp-damage,0,100);shake=ultimate?1.35:shot==='smash'?1:.45;padRumble(winner===0?.55:.3,.4,winner===0?180:120);updateHud();
+  show(displayName(winner===0?A:B)+' 得分！',winner===0?'#8feaff':'#ff9b8d');
+  const finishUp=()=>{if(!running||token!==roundToken)return;if(victim.hp<=0)finish(winner);else resetRound(winner);};
+  // 絕招直接打下這一分 → 先播重播，播完才進下一回合。
+  if(ultimate&&startReplay(ultimate,winner)){pendingAfterReplay=finishUp;replayBuf=[];return;}
+  setTimeout(()=>{if(running&&token===roundToken)finishUp();},780);
+}
+function update(dt){
+  if(!running)return;
+  if(tacticState){
+    tacticState.remaining=Math.max(0,tacticState.remaining-dt);tacticTimeEl.textContent=tacticState.remaining.toFixed(1);A.anim='smash';A.animT=.55;
+    if(tacticState.remaining<=0)resolveTactics('body');return;
+  }
+  if(serveState){
+    const server=serveState.side===0?A:B,spec=serveState.type?SERVE_SPEC[serveState.type]:null;
+    if(serveState.ai){serveState.ai.delay-=dt;if(serveState.ai.delay<=0&&!serveState.type)serveState.type=serveState.ai.type;}
+    if(serveState.type){
+      if(!serveState.pointer&&!serveState.pad)serveState.charge=clamp(serveState.charge+dt/SERVE_CHARGE_TIME,0,1);
+      server.anim=serveState.type;server.animT=serveState.charge*SERVE_SPEC[serveState.type].draw;server.pending=null;
+      if(serveState.ai&&serveState.charge>=serveState.ai.hold)releaseServe();
+    }else{server.anim='ready';server.animT=0;}
+    if(serveState){ball.x=server.x+(serveState.side===0?26:-26);ball.y=FLOOR-96;updateServeMeter();}
+  }
+  // 發球啟動後就站定，不能再左右跑（規則上發球時雙腳必須著地不動）。
+  // 邊線意圖：上=遠邊線、下=近邊線，於擊球瞬間結算。
+  A.laneIntent=(keys.up||padKeys.up)?-1:(keys.down||padKeys.down)?1:Math.abs(joyLane)>.45?Math.sign(joyLane):0;
+  const move=(serveState&&serveState.type)?0:((keys.right||padKeys.right)?1:0)-((keys.left||padKeys.left)?1:0);A.x=clamp(A.x+move*PLAYER_MOVE_SPEED*dt,105,425);
+  // 揮拍進行中不改成移動步伐：否則 anim 每幀被覆寫成 step，animT 又被步伐速度衝過接觸點，
+  // 結果就是「按下去球飛出去、拍子卻沒動」。移動本身仍照常，只是不搶動作。
+  if(move){if(!inStroke(A)){A.anim='step';A.animT+=dt*FOOTWORK_CYCLE;}}else if(A.anim==='step'){A.anim='ready';A.animT=0;}
+  if(A.pending&&A.pending.type==='smash')A.x=A.smashAnchor!==undefined?A.smashAnchor:(A.smashAnchor=A.x);else A.smashAnchor=undefined;
+  const animationRate=motionShowcase?.28:MOTION_TEMPO;
+  [A,B].forEach(p=>{
+    if(p.impactFlash>0)p.impactFlash=Math.max(0,p.impactFlash-dt);
+    // 引拍→接觸的振拍加速：越接近擊球點越快（鞭打末端加速），消除「球在手邊停頓」的僵硬感。
+    let rate=animationRate;
+    if(p.pending&&!motionShowcase){
+      if(p.pending.type==='smash'){const isJump=p.smashMode==='jump'||p.smashMode==='ultimateJump';rate*=isJump?1:1.12;
+        // 還按著就繼續灌力道，放開就定格；結算點是拍子碰到球的那一刻。
+        if(p.smashHolding)p.smashCharge=clamp((p.smashCharge||0)+dt/SMASH_CHARGE_TIME,0,1);
+        if(p.side===0)updateSmashMeter(p);}
+      else{const prog=clamp(p.animT/Math.max(.001,p.pending.contactAt),0,1);rate*=lerp(1.64,2.56,prog);}
+    }
+    const charging=!!serveState&&!!serveState.type&&(serveState.side===p.side);
+    if(p.anim!=='ready'&&p.anim!=='step'&&!charging)p.animT+=dt*rate;
+    if(p.pending){
+      const pending=p.pending,contact=p.racketWorld||{x:pending.contactX||p.x+(p.side===0?82:-82),y:pending.contactY||ball.y},windowSize=pending.approachWindow||.14,approach=smooth(clamp((p.animT-(pending.contactAt-windowSize))/windowSize,0,1));ball.x=lerp(pending.approachFromX,contact.x,approach);ball.y=lerp(pending.approachFromY,contact.y,approach);
+      if(p.animT>=pending.contactAt){
+        if(pending.type==='smash'){p.smashPower=clamp(p.smashCharge||0,0,1);p.laneAim=p.laneIntent||0;p.smashHolding=false;p.smashCharge=0;if(p.side===0)hideSmashMeter();}
+        p.pending=null;p.hitOrigin={x:contact.x,y:contact.y};p.impactFlash=.18;shake=Math.max(shake,pending.type==='smash'?.82:.32);
+        if(p.side===0)padRumble(pending.type==='smash'?.7:.28,pending.type==='smash'?.45:.18,pending.type==='smash'?130:70);launchShot(p,pending.type,pending.quality,true);slow=pending.type==='smash'?.52:.72;}
+    }
+    const completed=(p.anim==='swing'&&p.animT>.66)||(p.anim==='serveShort'&&p.animT>SERVE_SPEC.serveShort.dur)||(p.anim==='serveLong'&&p.animT>SERVE_SPEC.serveLong.dur)||(p.anim==='clear'&&p.animT>.96)||(p.anim==='lift'&&p.animT>.78)||(p.anim==='drop'&&p.animT>.58)||(p.anim==='standingSmash'&&p.animT>.9)||(p.anim==='smash'&&p.animT>1.64);
+    if(!p.pending&&completed){p.recoverFrom=p.anim;p.anim='recover';p.animT=0;}
+    else if(p.anim==='split'&&p.animT>.31){p.anim='ready';p.animT=0;}
+    else if(p.anim==='recover'&&p.animT>.38){p.anim='ready';p.animT=0;p.recoverFrom='ready';}
+  });
+  ai(dt);
+  if(ball.live){
+    const oldX=ball.x,oldY=ball.y;ball.t=clamp(ball.t+dt/ball.dur,0,1);
+    const flight=ball.shot==='smash'?1-Math.pow(1-ball.t,lerp(3.1,2.15,clamp(ball.smashPower||0,0,1))):(ball.shot==='drop'||ball.shot==='serve')?1-Math.pow(1-ball.t,1.42):1-Math.pow(1-ball.t,1.12);
+    ball.x=lerp(ball.fromX,ball.toX,flight);ball.y=ball.powerArc?powerSmashY(flight,ball.startY,ball.fromX,ball.toX):ballY(ball.t,ball.shot,ball.startY,ball.peak);
+    ball.lane=lerp(ball.fromLane||0,ball.toLane||0,smooth(clamp(ball.t*1.15,0,1)));
+    ball.angle=Math.atan2(ball.y-oldY,ball.x-oldX);
+    if(!ball.crossedNet&&(oldX-NET_X)*(ball.x-NET_X)<=0){ball.crossedNet=true;if(ball.y>NET_CLEAR_Y){point(ball.side,'net');return;}}
+    if(ball.t>=1)point(1-ball.side,ball.shot);
+  }
+  // 深度跑位：接球方朝來球的邊線橫移，移動速度有限，所以快球打邊線真的來不及補。
+  if(ball.live){
+    const receiver=ball.side===0?A:B,rate=LANE_TRACK*(receiver.side===1?AI().move:1.35)*dt,goal=ball.toLane||0,gap=goal-receiver.lane;
+    receiver.lane+=Math.sign(gap)*Math.min(Math.abs(gap),rate);
+    const other=ball.side===0?B:A;other.lane+=(0-other.lane)*Math.min(1,dt*2.2);
+  }
+  updateFx(dt);ultimateTrail();recordReplay();
+  if(slow<1)slow=Math.min(1,slow+dt*.45);if(shake>0)shake=Math.max(0,shake-dt*2.8);
+  if(messageTimer>0){messageTimer-=dt;if(messageTimer<=0)document.getElementById('message').style.opacity=0;}
+}
+function line(x1,y1,x2,y2,w,c){ctx.strokeStyle=c;ctx.lineWidth=w;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();}
+function joint(x,y,r,c){ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();}
+function limbPoint(from,to,minLength,maxLength){const dx=to.x-from.x,dy=to.y-from.y,d=Math.hypot(dx,dy)||1,length=clamp(d,minLength,maxLength);return{x:from.x+dx/d*length,y:from.y+dy/d*length};}
+function solveTwoBoneChain(shoulder,target,upperLength,foreLength,elbowHint){
+  const dx=target.x-shoulder.x,dy=target.y-shoulder.y,rawDistance=Math.hypot(dx,dy)||1,minReach=Math.abs(foreLength-upperLength)+.8,maxReach=upperLength+foreLength-.6,distance=clamp(rawDistance,minReach,maxReach),ux=dx/rawDistance,uy=dy/rawDistance;
+  const wrist={x:shoulder.x+ux*distance,y:shoulder.y+uy*distance},along=(upperLength*upperLength-foreLength*foreLength+distance*distance)/(2*distance),height=Math.sqrt(Math.max(0,upperLength*upperLength-along*along)),base={x:shoulder.x+ux*along,y:shoulder.y+uy*along},normal={x:-uy,y:ux},candidateA={x:base.x+normal.x*height,y:base.y+normal.y*height},candidateB={x:base.x-normal.x*height,y:base.y-normal.y*height};
+  const distanceToHint=point=>Math.hypot(point.x-elbowHint.x,point.y-elbowHint.y),elbow=distanceToHint(candidateA)<=distanceToHint(candidateB)?candidateA:candidateB;
+  return{elbow,wrist};
+}
+function racketHeadPath(halfWidth,halfHeight){
+  const w=halfWidth,h=halfHeight;
+  ctx.beginPath();
+  ctx.moveTo(0,-h);
+  // 圓弧冠頂接到較寬的肩部，不使用水平線段，避免拍頭像被削平。
+  ctx.bezierCurveTo(w*.30,-h*.99,w*.72,-h*.84,w*.91,-h*.48);
+  ctx.bezierCurveTo(w*1.05,-h*.20,w*1.02,h*.33,w*.76,h*.69);
+  ctx.bezierCurveTo(w*.57,h*.91,w*.25,h,0,h);
+  ctx.bezierCurveTo(-w*.25,h,-w*.57,h*.91,-w*.76,h*.69);
+  ctx.bezierCurveTo(-w*1.02,h*.33,-w*1.05,-h*.20,-w*.91,-h*.48);
+  ctx.bezierCurveTo(-w*.72,-h*.84,-w*.30,-h*.99,0,-h);
+  ctx.closePath();
+}
+function shadeHex(hex,amount){const value=parseInt(String(hex).replace('#',''),16),shift=v=>clamp(Math.round(v+255*amount),0,255),r=shift((value>>16)&255),g=shift((value>>8)&255),b=shift(value&255);return`#${[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('')}`;}
+function avatarFacePath(g,shape){
+  g.beginPath();
+  if(shape==='square'){
+    g.moveTo(-14,-16);g.quadraticCurveTo(0,-20,14,-16);g.lineTo(16,9);g.quadraticCurveTo(10,18,0,19);g.quadraticCurveTo(-10,18,-16,9);g.closePath();
+  }else if(shape==='softSquare'){
+    g.moveTo(-12,-18);g.quadraticCurveTo(0,-21,12,-18);g.quadraticCurveTo(18,-13,17,6);g.quadraticCurveTo(16,18,3,20);g.quadraticCurveTo(-12,20,-17,8);g.quadraticCurveTo(-19,-10,-12,-18);g.closePath();
+  }else if(shape==='heart'){
+    g.moveTo(0,-18);g.bezierCurveTo(17,-20,20,-5,16,7);g.quadraticCurveTo(10,17,0,20);g.quadraticCurveTo(-10,17,-16,7);g.bezierCurveTo(-20,-5,-17,-20,0,-18);g.closePath();
+  }else if(shape==='diamond'){
+    g.moveTo(0,-20);g.quadraticCurveTo(16,-18,19,-2);g.quadraticCurveTo(16,11,1,21);g.quadraticCurveTo(-14,12,-18,-2);g.quadraticCurveTo(-15,-18,0,-20);g.closePath();
+  }else if(shape==='nordic'){
+    g.moveTo(-11,-21);g.quadraticCurveTo(1,-24,13,-19);g.quadraticCurveTo(19,-11,18,2);g.lineTo(16,13);g.quadraticCurveTo(8,22,0,23);g.quadraticCurveTo(-10,20,-16,11);g.lineTo(-17,-4);g.quadraticCurveTo(-17,-17,-11,-21);g.closePath();
+  }else if(shape==='leader'){
+    g.moveTo(-13,-21);g.quadraticCurveTo(0,-25,13,-20);g.quadraticCurveTo(18,-12,17,5);g.lineTo(16,12);g.quadraticCurveTo(10,20,0,20);g.quadraticCurveTo(-12,19,-17,10);g.lineTo(-18,-5);g.quadraticCurveTo(-18,-16,-13,-21);g.closePath();
+  }else if(shape==='long')g.ellipse(0,1,15.5,22,0,0,Math.PI*2);
+  else if(shape==='round')g.ellipse(0,0,18.5,18.5,0,0,Math.PI*2);
+  else g.ellipse(0,0,16.5,19.5,0,0,Math.PI*2);
+}
+const avatarPhotoCache=new Map();
+function getAvatarPhotoImage(data){
+  if(!data)return null;if(avatarPhotoCache.has(data))return avatarPhotoCache.get(data);
+  const image=new Image();avatarPhotoCache.set(data,image);image.onload=()=>requestAnimationFrame(()=>{if(typeof drawFacePreviews==='function')drawFacePreviews();});image.src=data;return image;
+}
+function drawAvatarPhotoFace(g,avatar){
+  const style=avatar.photoStyle||'game',source=avatar.photoVariants&&avatar.photoVariants[style]||avatar.photoData,image=getAvatarPhotoImage(source);if(!image||!image.complete||!image.naturalWidth)return false;
+  const zoom=clamp((Number(avatar.photoZoom)||125)/100,1,2.2),size=Math.min(image.naturalWidth,image.naturalHeight)/zoom,maxX=(image.naturalWidth-size)/2,maxY=(image.naturalHeight-size)/2,sx=clamp((image.naturalWidth-size)/2+(Number(avatar.photoX)||0)/50*maxX,0,image.naturalWidth-size),sy=clamp((image.naturalHeight-size)/2+(Number(avatar.photoY)||0)/50*maxY,0,image.naturalHeight-size);
+  g.save();avatarFacePath(g,avatar.face);g.clip();g.filter=style==='comic'?'contrast(1.18) saturate(.92)':style==='natural'?'contrast(1.07) saturate(1.06)':'contrast(1.12) saturate(1.2)';g.drawImage(image,sx,sy,size,size,-22,-24,44,48);g.filter='none';g.globalCompositeOperation='source-atop';g.globalAlpha=style==='comic'?.1:.055;g.fillStyle=style==='comic'?'#ffd27c':'#48cfff';g.fillRect(-23,-25,46,50);g.restore();g.strokeStyle='#101a24b8';g.lineWidth=1.25;avatarFacePath(g,avatar.face);g.stroke();return true;
+}
+function drawAvatarAccessory(g,avatar,bandColor){
+  if(!avatar.accessory||avatar.accessory==='none')return;g.strokeStyle=avatar.accessory==='sportGlasses'?bandColor:'#172331';g.lineWidth=avatar.accessory==='sportGlasses'?2.6:1.7;g.beginPath();
+  if(avatar.accessory==='roundGlasses')g.arc(9,5,5,0,Math.PI*2);
+  else if(avatar.accessory==='sportGlasses'){g.moveTo(3,2);g.quadraticCurveTo(9,0,15,3);g.lineTo(13,8);g.quadraticCurveTo(8,10,4,7);g.closePath();}
+  else{g.moveTo(6,1);g.lineTo(12,1);g.quadraticCurveTo(14,1,14,3);g.lineTo(14,7);g.quadraticCurveTo(14,9,12,9);g.lineTo(6,9);g.quadraticCurveTo(4,9,4,7);g.lineTo(4,3);g.quadraticCurveTo(4,1,6,1);g.closePath();}g.stroke();g.beginPath();g.moveTo(14,4);g.lineTo(19,6);g.stroke();
+}
+function drawAvatarHeadwear(g,avatar,color){
+  const style=avatar.headwear||'headband';if(style==='none')return;g.save();g.lineCap='round';
+  if(style==='cap'){g.fillStyle=color;g.beginPath();g.moveTo(-18,-7);g.quadraticCurveTo(-12,-24,4,-25);g.quadraticCurveTo(16,-23,19,-10);g.quadraticCurveTo(4,-15,-18,-7);g.fill();g.fillStyle=shadeHex(color,-.16);g.beginPath();g.moveTo(8,-11);g.quadraticCurveTo(22,-10,29,-5);g.quadraticCurveTo(20,-2,9,-5);g.closePath();g.fill();}
+  else if(style==='visor'){g.strokeStyle=color;g.lineWidth=5;g.beginPath();g.moveTo(-14,-7);g.lineTo(14,-7);g.stroke();g.fillStyle=color;g.beginPath();g.moveTo(8,-8);g.quadraticCurveTo(24,-8,29,-3);g.quadraticCurveTo(19,0,8,-3);g.closePath();g.fill();}
+  else{g.strokeStyle=color;g.lineWidth=4;g.beginPath();g.moveTo(-13,-1);g.lineTo(13,-1);g.stroke();}g.restore();
+}
+function drawAvatarHead(g,avatar,bandColor,depth=0){
+  const skin=avatar.skin||AVATAR_DEFAULT.skin,hair=avatar.hairColor||AVATAR_DEFAULT.hairColor,profileScale=1-depth*.26;g.save();g.scale(profileScale,1);
+  g.fillStyle=hair;
+  if(avatar.hair==='ponytail'){g.beginPath();g.arc(-17,-5,7,0,Math.PI*2);g.fill();g.beginPath();g.moveTo(-19,-1);g.quadraticCurveTo(-30,9,-21,19);g.quadraticCurveTo(-12,9,-13,-1);g.fill();}
+  else if(avatar.hair==='braid'){g.beginPath();g.arc(-17,-6,6,0,Math.PI*2);g.fill();for(let i=0;i<4;i++){g.beginPath();g.ellipse(-19-(i%2)*2,2+i*7,5-i*.45,6,(-.18+i*.12),0,Math.PI*2);g.fill();}}
+  else if(avatar.hair==='bun'){g.beginPath();g.arc(-11,-20,9,0,Math.PI*2);g.fill();g.beginPath();g.arc(-15,-14,6,0,Math.PI*2);g.fill();}
+  else if(avatar.hair==='bob'){g.beginPath();g.ellipse(-2,-1,20,24,-.08,0,Math.PI*2);g.fill();}
+  g.fillStyle=skin;avatarFacePath(g,avatar.face);g.fill();const photoDrawn=drawAvatarPhotoFace(g,avatar);if(!photoDrawn){g.fillStyle=shadeHex(skin,-.13);g.beginPath();g.arc(-14,4,3.5,0,Math.PI*2);g.fill();}
+  g.fillStyle=hair;
+  if(avatar.hair==='spike'){g.beginPath();g.moveTo(-17,-7);g.lineTo(-13,-20);g.lineTo(-6,-14);g.lineTo(0,-24);g.lineTo(6,-14);g.lineTo(14,-21);g.lineTo(18,-5);g.quadraticCurveTo(0,-15,-17,-7);g.fill();}
+  else if(avatar.hair==='sweep'){g.beginPath();g.arc(0,-5,18.5,Math.PI,Math.PI*2);g.lineTo(17,-3);g.quadraticCurveTo(10,-15,-2,-7);g.quadraticCurveTo(-10,-16,-17,-5);g.closePath();g.fill();}
+  else if(avatar.hair==='bob'){g.beginPath();g.arc(0,-7,18.8,Math.PI,Math.PI*2);g.lineTo(17,5);g.quadraticCurveTo(12,-8,2,-9);g.quadraticCurveTo(-8,-15,-18,-3);g.lineTo(-18,10);g.quadraticCurveTo(-13,4,-10,-5);g.closePath();g.fill();}
+  else if(avatar.hair==='curl'){for(const [x,y,r] of [[-14,-9,8],[-7,-17,8],[2,-19,8],[11,-15,8],[16,-7,7],[-17,-1,6]]){g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill();}}
+  else if(avatar.hair==='undercut'){g.beginPath();g.moveTo(-16,-5);g.quadraticCurveTo(-8,-20,7,-21);g.quadraticCurveTo(15,-19,18,-10);g.quadraticCurveTo(7,-14,-2,-7);g.lineTo(-8,-3);g.closePath();g.fill();g.fillStyle=shadeHex(hair,.12);g.fillRect(-15,-7,8,3);}
+  else if(avatar.hair==='slick'){g.beginPath();g.moveTo(-18,-5);g.quadraticCurveTo(-15,-20,1,-22);g.quadraticCurveTo(12,-24,18,-13);g.quadraticCurveTo(4,-17,-6,-9);g.quadraticCurveTo(-13,-5,-18,-5);g.closePath();g.fill();g.strokeStyle=shadeHex(hair,.22);g.lineWidth=1.2;g.beginPath();g.moveTo(-8,-15);g.quadraticCurveTo(1,-20,12,-17);g.stroke();}
+  else if(avatar.hair==='crop'){g.beginPath();g.arc(0,-7,18.3,Math.PI,Math.PI*2);g.lineTo(17,-7);g.quadraticCurveTo(8,-11,0,-10);g.quadraticCurveTo(-9,-12,-17,-6);g.closePath();g.fill();g.fillStyle=shadeHex(hair,.16);for(let x=-12;x<=12;x+=6){g.fillRect(x,-15+(Math.abs(x)*.18),2,5);}}
+  else{g.beginPath();g.arc(0,-6,18.5,Math.PI,Math.PI*2);g.lineTo(15,-4);g.lineTo(10,-12);g.lineTo(3,-7);g.lineTo(-5,-13);g.lineTo(-15,-5);g.closePath();g.fill();}
+  drawAvatarHeadwear(g,avatar,bandColor);
+  if(photoDrawn){drawAvatarAccessory(g,avatar,bandColor);g.restore();return;}
+  g.strokeStyle=shadeHex(hair,-.05);g.lineWidth=avatar.brow==='thick'?2.7:1.7;g.beginPath();
+  if(avatar.brow==='sharp'){g.moveTo(4,0);g.lineTo(12,-2);}
+  else if(avatar.brow==='straight'||avatar.brow==='thick'){g.moveTo(4,-1);g.lineTo(12,-1);}
+  else if(avatar.brow==='arch'){g.moveTo(4,0);g.quadraticCurveTo(8,-5,13,-1);}
+  else{g.moveTo(4,0);g.quadraticCurveTo(8,-2,12,0);}g.stroke();
+  g.fillStyle='#15202a';
+  if(avatar.eyes==='bright'||avatar.eyes==='round'){g.beginPath();g.arc(9,4,avatar.eyes==='round'?3:2.5,0,Math.PI*2);g.fill();g.fillStyle='#fff';g.beginPath();g.arc(10,3,0.85,0,Math.PI*2);g.fill();}
+  else if(avatar.eyes==='calm'){g.strokeStyle='#15202a';g.lineWidth=1.8;g.beginPath();g.moveTo(5,4);g.quadraticCurveTo(9,7,13,4);g.stroke();}
+  else if(avatar.eyes==='fierce'){g.strokeStyle='#15202a';g.lineWidth=2.2;g.beginPath();g.moveTo(5,2);g.lineTo(13,5);g.stroke();g.beginPath();g.moveTo(7,5);g.lineTo(12,5);g.stroke();}
+  else{g.beginPath();g.ellipse(9,4,2.2,1.7,-.15,0,Math.PI*2);g.fill();}
+  drawAvatarAccessory(g,avatar,bandColor);
+  if(avatar.detail==='freckles'){g.fillStyle=shadeHex(skin,-.3);for(const [x,y] of [[5,9],[9,10],[13,9]]){g.beginPath();g.arc(x,y,.75,0,Math.PI*2);g.fill();}}
+  else if(avatar.detail==='sport'){g.strokeStyle=bandColor;g.lineWidth=2.1;g.beginPath();g.moveTo(5,9);g.lineTo(14,11);g.stroke();}
+  g.strokeStyle=shadeHex(skin,-.28);g.lineWidth=1.4;g.beginPath();g.moveTo(16,5);g.lineTo(20,8);g.lineTo(16,10);g.stroke();g.beginPath();
+  if(avatar.mouth==='brave'){g.moveTo(7,14);g.lineTo(14,14);}
+  else if(avatar.mouth==='calm'){g.moveTo(8,13);g.quadraticCurveTo(11,12,14,13);}
+  else{g.moveTo(7,12);g.quadraticCurveTo(11,16,15,12);}g.stroke();g.restore();
+}
+function avatarHeadScale(avatar){return avatar.headSize==='hero'?1.18:avatar.headSize==='standard'?.95:1.06;}
+function drawAvatarPortrait(canvasEl,avatar,bandColor){const g=canvasEl.getContext('2d'),w=canvasEl.width,h=canvasEl.height,gradient=g.createLinearGradient(0,0,0,h),jersey=avatar.jerseyColor||bandColor,headband=avatar.headbandColor||bandColor;gradient.addColorStop(0,'#12344b');gradient.addColorStop(1,'#04101a');g.clearRect(0,0,w,h);g.fillStyle=gradient;g.fillRect(0,0,w,h);const scale=w/62;g.save();g.translate(w*.5,h*.42);g.scale(scale,scale);g.fillStyle=jersey;g.beginPath();g.moveTo(-20,22);g.quadraticCurveTo(0,12,20,22);g.lineTo(24,40);g.lineTo(-24,40);g.closePath();g.fill();g.fillStyle=avatar.skin;g.fillRect(-5,15,10,10);g.save();g.scale(Math.min(avatarHeadScale(avatar),1.18),Math.min(avatarHeadScale(avatar),1.18));drawAvatarHead(g,avatar,headband,.36);g.restore();g.restore();}
+function drawAvatarFullPreview(canvasEl,avatar,fallbackColor){
+  const g=canvasEl.getContext('2d'),w=canvasEl.width,h=canvasEl.height,jersey=avatar.jerseyColor||fallbackColor,accent=avatar.accentColor||'#eaf8ff',shorts=avatar.shortsColor||'#172331',band=avatar.headbandColor||fallbackColor,skin=avatar.skin||AVATAR_DEFAULT.skin,build=avatar.body==='power'?1.14:avatar.body==='slim'?.9:1;
+  g.clearRect(0,0,w,h);const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#071323');bg.addColorStop(.58,'#0d3850');bg.addColorStop(1,'#0b8291');g.fillStyle=bg;g.fillRect(0,0,w,h);
+  g.fillStyle='#20b8c8';g.beginPath();g.moveTo(18,h*.68);g.lineTo(w-18,h*.68);g.lineTo(w-4,h);g.lineTo(4,h);g.closePath();g.fill();g.strokeStyle='#ddfbffb0';g.lineWidth=2;g.beginPath();g.moveTo(18,h*.68);g.lineTo(w-18,h*.68);g.lineTo(w-4,h);g.lineTo(4,h);g.closePath();g.stroke();g.beginPath();g.moveTo(w*.5,h*.68);g.lineTo(w*.5,h);g.stroke();
+  g.fillStyle='#00131d66';g.beginPath();g.ellipse(w*.5,h*.88,43,10,0,0,Math.PI*2);g.fill();
+  const stroke=(x1,y1,x2,y2,width,color)=>{g.strokeStyle=color;g.lineWidth=width;g.lineCap='round';g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();};
+  g.save();g.translate(w*.5,h*.83);const limb=build>1.05?9:build<.95?7:8,shoulder=25*build,hip=15*build;
+  stroke(-hip,-62,-18,-30,limb,'#162332');stroke(-18,-30,-23,0,limb-1,shadeHex(skin,-.13));stroke(hip,-62,18,-28,limb,'#1c2a38');stroke(18,-28,27,0,limb-1,skin);stroke(-23,0,-36,2,7,'#f4fbff');stroke(27,0,42,2,7,'#f4fbff');
+  g.fillStyle=shorts;g.beginPath();g.moveTo(-hip-3,-82);g.lineTo(hip+3,-82);g.lineTo(hip+5,-57);g.lineTo(3,-54);g.lineTo(0,-69);g.lineTo(-3,-54);g.lineTo(-hip-5,-57);g.closePath();g.fill();
+  g.fillStyle=jersey;g.beginPath();g.moveTo(-shoulder,-133);g.quadraticCurveTo(0,-142,shoulder,-133);g.lineTo(hip+5,-81);g.lineTo(-hip-5,-81);g.closePath();g.fill();
+  if(avatar.outfit==='stripe'){g.fillStyle=accent;g.beginPath();g.moveTo(-5,-138);g.lineTo(7,-138);g.lineTo(6,-82);g.lineTo(-5,-82);g.closePath();g.fill();}
+  else if(avatar.outfit==='panel'){g.fillStyle=accent;g.globalAlpha=.85;g.beginPath();g.moveTo(-shoulder,-133);g.lineTo(-10,-137);g.lineTo(-4,-82);g.lineTo(-hip-5,-81);g.closePath();g.fill();g.globalAlpha=1;}
+  stroke(-shoulder+2,-126,-38,-101,limb,shadeHex(skin,-.12));stroke(-38,-101,-29,-79,limb-1,shadeHex(skin,-.12));
+  stroke(shoulder-2,-128,40,-154,limb+1,skin);stroke(40,-154,56,-168,limb,skin);g.fillStyle=skin;g.beginPath();g.arc(57,-169,5,0,Math.PI*2);g.fill();
+  stroke(58,-170,74,-194,7,'#111820');stroke(74,-194,82,-227,3,'#c9ecf8');g.strokeStyle='#ffe36d';g.lineWidth=4;g.beginPath();g.ellipse(84,-244,18,25,.24,0,Math.PI*2);g.stroke();g.strokeStyle='#dff8ff99';g.lineWidth=1;for(let i=-2;i<=2;i++){g.beginPath();g.moveTo(76+i*4,-263);g.lineTo(88+i*4,-226);g.stroke();}
+  g.fillStyle=skin;g.fillRect(-6,-151,12,21);g.save();g.translate(0,-172);const previewHeadScale=avatarHeadScale(avatar);g.scale(previewHeadScale,previewHeadScale);drawAvatarHead(g,avatar,band,.22);g.restore();
+  g.strokeStyle=accent;g.lineWidth=2;g.beginPath();g.moveTo(-shoulder+5,-126);g.lineTo(shoulder-5,-126);g.stroke();g.restore();
+  g.fillStyle='#03101bd9';g.fillRect(22,h-30,w-44,22);g.fillStyle='#effcff';g.font='900 13px "PingFang TC","Microsoft JhengHei",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText((avatar.name||'我的選手').slice(0,8),w*.5,h-19);
+}
+function drawArena(){
+  const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#040914');bg.addColorStop(.58,'#102c46');bg.addColorStop(1,'#087991');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#02050bcc';ctx.fillRect(0,92,W,122);
+  for(let i=0;i<34;i++){const x=12+i*29,y=128+(i%3)*20,bob=Math.sin(performance.now()/380+i)*3;ctx.fillStyle=i%7===0?'#35c5ff':i%9===0?'#ff6c5e':'#8ea6b8';joint(x,y+bob,5,ctx.fillStyle);ctx.fillRect(x-7,y+6,14,22);}
+  const C=COURT,court=ctx.createLinearGradient(0,C.farY,0,C.nearY);court.addColorStop(0,'#18ced4');court.addColorStop(1,'#087f99');ctx.fillStyle=court;ctx.beginPath();ctx.moveTo(C.farL,C.farY);ctx.lineTo(C.farR,C.farY);ctx.lineTo(C.nearR,C.nearY);ctx.lineTo(C.nearL,C.nearY);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#e7ffff';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(C.farL,C.farY);ctx.lineTo(C.farR,C.farY);ctx.lineTo(C.nearR,C.nearY);ctx.lineTo(C.nearL,C.nearY);ctx.closePath();ctx.stroke();
+  const across=(r,w=2,c='#e7ffffcc')=>line(lerp(C.farL,C.farR,r),C.farY,lerp(C.nearL,C.nearR,r),C.nearY,w,c);
+  const lengthwise=(w,wid=2,c='#e7ffffcc')=>line(lerp(C.farL,C.nearL,w),lerp(C.farY,C.nearY,w),lerp(C.farR,C.nearR,w),lerp(C.farY,C.nearY,w),wid,c);
+  // 網線、短發球線、雙打後發球線。
+  across(.5,2.5);across(SHORT_R);across(1-SHORT_R);across(DOUBLE_LONG_R,1.5,'#e7ffffaa');across(1-DOUBLE_LONG_R,1.5,'#e7ffffaa');
+  // 單打內邊線（外框仍保留雙打邊線）。
+  lengthwise(SINGLE_INSET,2.5);lengthwise(1-SINGLE_INSET,2.5);
+  // 左右發球區中央線，只存在於底線與短發球線之間。
+  const midW=.5,midY=lerp(C.farY,C.nearY,midW),leftBaseX=lerp(C.farL,C.nearL,midW),rightBaseX=lerp(C.farR,C.nearR,midW),leftShortX=lerp(lerp(C.farL,C.farR,SHORT_R),lerp(C.nearL,C.nearR,SHORT_R),midW),rightShortX=lerp(lerp(C.farL,C.farR,1-SHORT_R),lerp(C.nearL,C.nearR,1-SHORT_R),midW);
+  line(leftBaseX,midY,leftShortX,midY,2,'#e7ffffcc');line(rightShortX,midY,rightBaseX,midY,2,'#e7ffffcc');
+}
+function drawNet(){
+  const C=COURT,farTop=C.farY-NET_H*.58,nearTop=C.nearY-NET_H;
+  ctx.fillStyle='#d8f8ff20';ctx.beginPath();ctx.moveTo(NET_X,farTop);ctx.lineTo(NET_X,nearTop);ctx.lineTo(NET_X,C.nearY);ctx.lineTo(NET_X,C.farY);ctx.closePath();ctx.fill();
+  line(NET_X,C.farY,NET_X,farTop,4,'#1b2c38');line(NET_X,C.nearY,NET_X,nearTop,6,'#1b2c38');line(NET_X,farTop,NET_X,nearTop,4,'#f5ffff');
+  for(let i=1;i<10;i++){const t=i/10,yTop=lerp(farTop,nearTop,t),yBottom=lerp(C.farY,C.nearY,t);line(NET_X,yTop,NET_X,yBottom,1,'#dffaff77');}
+  for(let i=1;i<7;i++){const t=i/7;line(NET_X,lerp(farTop,C.farY,t),NET_X,lerp(nearTop,C.nearY,t),1,'#dffaff77');}
+}
+function pose(p){
+  const t=p.animT,jumpSmash=p.anim==='smash',standingSmash=p.anim==='standingSmash',sm=jumpSmash||standingSmash,cl=p.anim==='clear',lift=p.anim==='lift',sw=p.anim==='swing',dr=p.anim==='drop',step=p.anim==='step',split=p.anim==='split',recover=p.anim==='recover',svS=p.anim==='serveShort',svL=p.anim==='serveLong',sv=svS||svL;
+  const q=jumpSmash?clamp(t/1.6,0,1):standingSmash?clamp(t/.9,0,1):cl?clamp(t/.96,0,1):svS?clamp(t/SERVE_SPEC.serveShort.dur,0,1):svL?clamp(t/SERVE_SPEC.serveLong.dur,0,1):lift?clamp(t/.78,0,1):sw?clamp(t/.66,0,1):dr?clamp(t/.58,0,1):split?clamp(t/.31,0,1):recover?clamp(t/.38,0,1):0;
+  const readyClock=performance.now()/1000+p.side*.43,readyPulse=p.anim==='ready'?Math.sin(readyClock*4.2)*.5+.5:0;
+  let jump=0,lean=0,turn=0,headTilt=0,squat=p.anim==='ready'?4.5+readyPulse*1.6:0;
+  if(jumpSmash){
+    const load=clamp(q/.2,0,1),air=clamp((q-.1)/.84,0,1);
+    // 先蹲(load)蓄力 → 起跳 → 空中身體後弓(負lean) → 擊球瞬間鞭向前(正lean) → 屈膝落地。
+    jump=Math.sin(Math.PI*air)*150;squat=(1-smooth(load))*18+(q>.84?smooth((q-.84)/.16)*13:0);
+    lean=q<.56?lerp(-.10,-.34,smooth(q/.56)):q<.72?lerp(-.34,.2,(q-.56)/.16):lerp(.2,0,(q-.72)/.28);
+    turn=q<.52?lerp(-.18,-.52,q/.52):q<.72?lerp(-.52,.5,(q-.52)/.2):lerp(.5,0,(q-.72)/.28);headTilt=-.13;
+  }else if(standingSmash){squat=q<.28?Math.sin(Math.PI*q/.28)*7:q>.76?Math.sin(Math.PI*(q-.76)/.24)*6:2;lean=q<.5?lerp(-.05,-.14,smooth(q/.5)):lerp(-.14,.16,smooth((q-.5)/.5));turn=q<.5?lerp(-.12,-.42,smooth(q/.5)):lerp(-.42,.42,smooth((q-.5)/.5));headTilt=-.12;}
+  else if(cl){squat=Math.sin(Math.PI*q)*4;jump=Math.sin(Math.PI*clamp((q-.28)/.5,0,1))*11;lean=q<.44?lerp(0,-.17,smooth(q/.44)):lerp(-.17,.1,smooth((q-.44)/.56));turn=q<.5?lerp(-.1,-.38,smooth(q/.5)):lerp(-.38,.34,smooth((q-.5)/.5));headTilt=-.18;}
+  // 反手短發：身體幾乎正對球網、重心穩定，只做很小的前送。
+  else if(svS){squat=2+Math.sin(Math.PI*clamp(q/.7,0,1))*3;lean=q<.28?lerp(.02,-.05,smooth(q/.28)):lerp(-.05,.09,smooth((q-.28)/.5));turn=lerp(.04,-.1,smooth(q));headTilt=.06;}
+  // 正手長發：側身引拍蓄勢，由下往上抽出後把胸口轉向球網。
+  else if(svL){squat=Math.sin(Math.PI*clamp(q/.8,0,1))*6;lean=q<.34?lerp(.02,-.12,smooth(q/.34)):lerp(-.12,.14,smooth((q-.34)/.46));turn=q<.4?lerp(-.12,-.34,smooth(q/.4)):lerp(-.34,.3,smooth((q-.4)/.5));headTilt=q<.5?.1:-.08;}
+  else if(sw){lean=q<.46?-.06:lerp(-.06,.10,(q-.46)/.54);}
+  // 挑高球：下蹲到球下方，由下往上把球拉起後身體跟著拔高。
+  else if(lift){const load=Math.sin(Math.PI*clamp(q/.9,0,1));squat=load*14-smooth(clamp((q-.6)/.4,0,1))*6;lean=q<.55?lerp(.04,.24,smooth(q/.55)):lerp(.24,-.06,smooth((q-.55)/.45));turn=q<.55?lerp(-.06,-.2,smooth(q/.55)):lerp(-.2,.16,smooth((q-.55)/.45));headTilt=.06;}
+  else if(dr){const reach=Math.sin(Math.PI*smooth(q));squat=reach*11;lean=reach*.22;turn=-reach*.12;headTilt=-.06;}
+  else if(split){const landing=smooth(clamp((q-.38)/.62,0,1));jump=Math.sin(Math.PI*clamp(q/.72,0,1))*6;squat=landing*9;lean=-.02;}
+  else if(recover){const r=smooth(q),from=p.recoverFrom||'ready';squat=Math.sin(Math.PI*q)*7;if(from==='drop'||from==='lift')lean=lerp(.18,0,r);else if(from==='clear'||from==='smash'||from==='standingSmash'){lean=lerp(.13,0,r);turn=lerp(.28,0,r);}else lean=lerp(.08,0,r);}
+  // 待機時只做極輕微的上下呼吸沉降，不加左右搖擺，避免站姿飄動。
+  if(p.anim==='ready'){squat+=(Math.sin(readyClock*2.2)*.5+.5)*.6;lean+=.07;}
+  // 姿態低通濾波只用於過渡狀態（ready↔step↔recover）以消除切換跳動；
+  // 一切打擊動作（sm/cl/lift/sw/dr）維持原始曲線不平滑，保留瞬間發力手感。
+  if(p.sLean===undefined){p.sLean=lean;p.sTurn=turn;p.sTilt=headTilt;p.sSquat=squat;}
+  const active=sm||cl||lift||sw||dr||sv,respA=active?1:.34,turnA=active?1:.42,squatA=active?1:.5;
+  p.sLean=lerp(p.sLean,lean,respA);p.sTilt=lerp(p.sTilt,headTilt,respA);p.sSquat=lerp(p.sSquat,squat,squatA);p.sTurn=lerp(p.sTurn,turn,turnA);
+  lean=p.sLean;headTilt=p.sTilt;squat=p.sSquat;turn=p.sTurn;
+  const stride=step?Math.sin(t)*12:0,stepLift=step?Math.abs(Math.sin(t))*6:0;
+  return{jump,lean,turn,headTilt,stride,stepLift,squat,readyPulse,split,recover,sm,jumpSmash,standingSmash,cl,lift,sw,dr,svS,svL,sv,q};
+}
+function drawPlayer(p){
+  const f=p.side===0?1:-1,P=pose(p),ls=laneScale(p.lane||0),x=NET_X+(p.x-NET_X)*ls,y=laneGroundY(p.lane||0)-P.jump*ls,s=1.22*ls,avatar=p.avatar||AVATAR_DEFAULT,skin=avatar.skin||AVATAR_DEFAULT.skin,farSkin=shadeHex(skin,-.13),jersey=avatar.jerseyColor||p.color,accent=avatar.accentColor||'#eaf8ff',shorts=avatar.shortsColor||'#172331',headband=avatar.headbandColor||p.color,build=avatar.body==='power'?1.14:avatar.body==='slim'?.9:1,limbBuild=avatar.body==='power'?1.08:avatar.body==='slim'?.94:1;
+  ctx.save();ctx.translate(x,y);ctx.scale(f*s,s);
+  ctx.fillStyle='#00101955';ctx.beginPath();ctx.ellipse(0,4+P.jump,31,8,0,0,Math.PI*2);ctx.fill();
+  ctx.rotate(P.lean);
+  // 剪刀腳：起跳時持拍側腿後收，擊球後前後腿交換並以屈膝吸收落地。
+  let legScissor=0,landing=0;
+  if(P.jumpSmash){legScissor=P.q<.62?Math.sin(Math.PI*clamp(P.q/.62,0,1))*16:lerp(16,-12,clamp((P.q-.62)/.38,0,1));landing=P.q>.84?(P.q-.84)/.16:0;}
+  else if(P.standingSmash){const load=smooth(clamp(P.q/.48,0,1)),release=smooth(clamp((P.q-.48)/.52,0,1));legScissor=load*9-release*13;}
+  // 網前跨步時前膝深彎、後腿拉長；高遠球則先向後撤到球的後方。
+  const action=Math.sin(Math.PI*P.q),lunge=P.dr?action*26:P.lift?Math.sin(Math.PI*clamp(P.q/.9,0,1))*30:P.svL?smooth(clamp((P.q-.34)/.4,0,1))*12:P.cl?smooth(clamp((P.q-.60)/.32,0,1))*13:0,rearStep=P.cl?Math.sin(Math.PI*clamp(P.q/.76,0,1))*24:0;
+  const splitWidth=P.split?Math.sin(Math.PI*P.q)*12:0,stepForward=Math.sin(p.animT),leftLift=P.stepLift*(stepForward>0?1:.16),rightLift=P.stepLift*(stepForward<0?1:.16),bodyDrop=P.squat+landing*5+lunge*.19;
+  const hip={x:lunge*.1,y:-55+bodyDrop},
+        k1={x:-12+P.stride*.35-legScissor*.45-rearStep*.55-lunge*.28-splitWidth*.35,y:-28+bodyDrop*.72+lunge*.11-leftLift*.22},
+        k2={x:11-P.stride*.35+legScissor*.45+lunge*.72+rearStep*.12+splitWidth*.35,y:-31+bodyDrop*.8+lunge*.47-rightLift*.22},
+        a1={x:-16+P.stride-legScissor-rearStep-lunge*.34-splitWidth,y:-leftLift-lunge*.08},
+        a2={x:15-P.stride+legScissor+lunge*1.45+rearStep*.1+splitWidth,y:-rightLift};
+  // 遠腿較細、較暗並先畫；近腿保留完整亮度，建立側身前後深度。
+  line(hip.x-6,hip.y,k1.x,k1.y,6.5*limbBuild,shadeHex(shorts,-.08));line(k1.x,k1.y,a1.x,a1.y,5.8*limbBuild,farSkin);line(hip.x+6,hip.y,k2.x,k2.y,8*limbBuild,shorts);line(k2.x,k2.y,a2.x,a2.y,7*limbBuild,skin);
+  // 前腳落地時先踩外側再穩住；後腳跟在跨步與後撤時微抬，讓腳步有推蹬感。
+  const rearHeel=lunge*.11+Math.max(0,rearStep*.08),frontHeel=P.jumpSmash&&P.q>.84?0:Math.max(0,rightLift*.25);
+  line(a1.x,a1.y-rearHeel,a1.x-11,a1.y+1,6,'#fff');line(a1.x-11,a1.y+1,a1.x-15,a1.y+1,3,accent);
+  line(a2.x,a2.y-frontHeel,a2.x+12,a2.y+1,6,'#fff');line(a2.x+2,a2.y+1,a2.x+15,a2.y+1,3,accent);
+  joint(k1.x,k1.y,3.2,farSkin);joint(k2.x,k2.y,3.7,skin);
+  ctx.save();ctx.translate(lunge*.08,bodyDrop);
+  // 基本站姿維持四分之三側身；揮拍時再由背對球網轉到胸口送向擊球方向。
+  // 純側面視角第一步：提高站姿偏航（更側身），並讓側身時軀幹更薄。
+  const stanceYaw=P.svS?.16:P.svL?.58:P.sm?.42:.62,yaw=clamp(stanceYaw+P.turn*(P.sm?1.9:1.1),-.86,.86),depth=.3+Math.abs(yaw)*.66,bodyWidth=(1-depth*.5)*build,shoulderShift=yaw*10,hipShift=-yaw*5,farShoulder={x:-20*bodyWidth+shoulderShift,y:-108+depth*4},nearShoulder={x:20*bodyWidth+shoulderShift,y:-111-depth*2},dominantSign=p.side===0?1:-1;
+  // 遠側非持拍手位於軀幹後方，顏色與線寬降低，避免兩隻手看起來同時朝向觀眾。
+  // 預備姿勢：非持拍手抬到胸前協助平衡，持拍手同時立拍等待來球。
+  let freeE={x:-16,y:-104},freeH={x:-24,y:-112};
+  if(P.sv){
+    freeE=motionPoint(FREE_SERVE,P.q,'e');freeH=motionPoint(FREE_SERVE,P.q,'h');
+  }else if(P.sm||P.cl){
+    freeE=motionPoint(FREE_OVERHEAD,P.q,'e');freeH=motionPoint(FREE_OVERHEAD,P.q,'h');
+  }else if(P.dr||P.lift){const z=action;freeE={x:-28-z*10,y:-88+z*7};freeH={x:-42-z*12,y:-70+z*10};}
+  if(dominantSign<0){freeE.x=-freeE.x;freeH.x=-freeH.x;}
+  const freeShoulder=dominantSign>0?farShoulder:nearShoulder,freeSh={x:freeShoulder.x+2*dominantSign,y:freeShoulder.y+7},freeChain=solveTwoBoneChain(freeSh,freeH,25,32.5,freeE);freeE=freeChain.elbow;freeH=freeChain.wrist;
+  const drawFreeArm=()=>{line(freeSh.x,freeSh.y,freeE.x,freeE.y,6*limbBuild,shadeHex(skin,-.18));line(freeE.x,freeE.y,freeH.x,freeH.y,5.2*limbBuild,farSkin);joint(freeH.x,freeH.y,3.6*limbBuild,farSkin);};
+  if(dominantSign>0)drawFreeArm();
+  // 肩線與髖線反向位移；軀幹可在跨身收拍時再次覆畫，形成正確遮擋。
+  const drawTorsoShell=(alpha=1)=>{ctx.save();ctx.globalAlpha=alpha;
+    ctx.fillStyle=shorts;ctx.beginPath();ctx.moveTo(-16*bodyWidth+hipShift,-66);ctx.lineTo(17*bodyWidth+hipShift,-66);ctx.lineTo(12,-48);ctx.lineTo(-12,-48);ctx.closePath();ctx.fill();
+    ctx.fillStyle=jersey;ctx.beginPath();ctx.moveTo(farShoulder.x,farShoulder.y);ctx.quadraticCurveTo(shoulderShift,-121,nearShoulder.x,nearShoulder.y);ctx.lineTo(15*bodyWidth+hipShift,-64);ctx.lineTo(-15*bodyWidth+hipShift,-64);ctx.closePath();ctx.fill();
+    if(avatar.outfit==='stripe'){ctx.fillStyle=accent;ctx.globalAlpha*=.88;ctx.beginPath();ctx.moveTo(shoulderShift-4,-119);ctx.lineTo(shoulderShift+5,-119);ctx.lineTo(hipShift+5,-64);ctx.lineTo(hipShift-4,-64);ctx.closePath();ctx.fill();ctx.globalAlpha=alpha;}
+    else if(avatar.outfit==='panel'){ctx.fillStyle=accent;ctx.globalAlpha*=.82;ctx.beginPath();ctx.moveTo(farShoulder.x,farShoulder.y);ctx.lineTo(shoulderShift-5,-118);ctx.lineTo(hipShift-4,-64);ctx.lineTo(-15*bodyWidth+hipShift,-64);ctx.closePath();ctx.fill();ctx.globalAlpha=alpha;}
+    ctx.fillStyle='#06111d55';ctx.beginPath();ctx.moveTo(farShoulder.x,farShoulder.y);ctx.lineTo(shoulderShift-1,-110);ctx.lineTo(hipShift-1,-64);ctx.lineTo(-15*bodyWidth+hipShift,-64);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#ffffff42';ctx.beginPath();ctx.moveTo(shoulderShift+1,-112);ctx.lineTo(nearShoulder.x,nearShoulder.y);ctx.lineTo(15*bodyWidth+hipShift,-64);ctx.lineTo(hipShift+1,-64);ctx.closePath();ctx.fill();
+    line(farShoulder.x+2,farShoulder.y+7,nearShoulder.x-2,nearShoulder.y+7,2,accent+'99');ctx.restore();
+  };
+  drawTorsoShell();
+  // 右側人物的非持拍手靠近鏡頭，會在持拍手、胸口與頭部完成後才畫到最前層。
+
+  // 準備殺球時，右手和前臂收在右耳後方；加速揮拍後才切到頭部前景。
+  const overheadStroke=P.sm||P.cl,smashRecover=p.side===0&&P.recover&&(p.recoverFrom==='smash'||p.recoverFrom==='standingSmash'||p.recoverFrom==='clear'),crossBodyDepth=P.sm?smooth(clamp((P.q-.86)/.12,0,1)):P.cl?smooth(clamp((P.q-.82)/.12,0,1)):0,leftFarDepth=p.side===0?(overheadStroke?crossBodyDepth:smashRecover?1-smooth(P.q):0):0,armBehindHead=dominantSign>0&&overheadStroke&&P.q>=.24&&P.q<(P.sm?.66:.62),headTrack=ball.live?clamp((ball.y-(y-132*s))/420,-.1,.1):0;
+  const drawHeadLayer=()=>{ctx.save();ctx.translate(shoulderShift*.42,-136);ctx.rotate(P.headTilt+headTrack+yaw*.05);const gameHeadScale=avatarHeadScale(avatar);ctx.scale(gameHeadScale,gameHeadScale);drawAvatarHead(ctx,avatar,headband,depth);ctx.restore();};
+  // 左側角色的右持拍手靠近鏡頭：一般時頭先畫、手臂留前景；
+  // 但引拍把拍子沉到背後那一段，手與拍框必須被頭擋住，否則會出現「手臂橫過臉」。
+  if(dominantSign>0&&!armBehindHead)drawHeadLayer();
+
+  // 持拍手分段：抬肘後引 → 肘部領先 → 最高點伸直 → 前臂旋前下壓 → 跨身收拍。
+  let el={x:26,y:-105},wr={x:44,y:-111},rv={x:10,y:-46},angleDriven=false;
+  const shoulderMotion=P.sm?motionPoint(SMASH_ARM,P.q,'sh'):{x:0,y:0};if(dominantSign<0)shoulderMotion.x=-shoulderMotion.x;
+  const racketShoulder=dominantSign>0?nearShoulder:farShoulder,sh={x:racketShoulder.x-2*dominantSign+shoulderMotion.x,y:racketShoulder.y+7+shoulderMotion.y};
+  if(P.sm||P.cl){
+    // 鏡像不是把 x 取負，而是把角度沿垂直軸反射（180-角），這樣右側角色的肘也是往正確方向彎。
+    const table=P.sm?SMASH_ARM:CLEAR_ARM,a=motionPoint(table,P.q,'a'),k=motionPoint(table,P.q,'k');
+    const ua=dominantSign>0?a.x:180-a.x,fa=dominantSign>0?a.y:180-a.y,rk=(dominantSign>0?k.x:180-k.x)*D2R;
+    const chain=armFromAngles(sh,ua,fa);el=chain.el;wr=chain.wr;
+    rv={x:Math.cos(rk)*50,y:Math.sin(rk)*50};angleDriven=true;
+  }else if(smashRecover){
+    // 由跨身收拍（拍頭垂在遠側腰際）繞回胸前預備，接續 SMASH_ARM/CLEAR_ARM 的最後一格。
+    const z=smooth(P.q);el={x:lerp(9,26,z),y:lerp(-79,-104,z)};wr={x:lerp(-26,44,z),y:lerp(-70,-111,z)};rv={x:lerp(-25,11,z),y:lerp(43,-45,z)};
+  }else if(P.lift){
+    el=motionPoint(LIFT_ARM,P.q,'el');wr=motionPoint(LIFT_ARM,P.q,'wr');rv=motionPoint(LIFT_ARM,P.q,'rv');
+  }else if(P.svS){
+    el=motionPoint(SERVE_SHORT_ARM,P.q,'el');wr=motionPoint(SERVE_SHORT_ARM,P.q,'wr');rv=motionPoint(SERVE_SHORT_ARM,P.q,'rv');
+  }else if(P.svL){
+    el=motionPoint(SERVE_LONG_ARM,P.q,'el');wr=motionPoint(SERVE_LONG_ARM,P.q,'wr');rv=motionPoint(SERVE_LONG_ARM,P.q,'rv');
+  }else if(P.sw){const z=P.q<.45?P.q/.45:(P.q-.45)/.55;if(P.q<.45){el={x:lerp(28,30,z),y:lerp(-96,-119,z)};wr={x:lerp(45,17,z),y:lerp(-82,-130,z)};rv={x:lerp(18,-8,z),y:lerp(-42,-44,z)};}else{el={x:lerp(30,27,z),y:lerp(-119,-98,z)};wr={x:lerp(17,48,z),y:lerp(-130,-91,z)};rv={x:lerp(-8,26,z),y:lerp(-44,-34,z)};}}
+  else if(P.dr){el=motionPoint(DROP_ARM,P.q,'el');wr=motionPoint(DROP_ARM,P.q,'wr');rv=motionPoint(DROP_ARM,P.q,'rv');}
+  if(!angleDriven){
+    if(dominantSign<0){el.x=-el.x;wr.x=-wr.x;rv.x=-rv.x;}
+    const armChain=solveTwoBoneChain(sh,wr,UPPER_ARM,FORE_ARM,el);el=armChain.elbow;wr=armChain.wrist;
+  }
+  // 上臂短、前臂長；跨到左側後縮成遠側手臂，稍微變細、變暗，再由胸口遮住交叉段。
+  const racketDepth=dominantSign>0?leftFarDepth:crossBodyDepth,frontArmScale=dominantSign>0?lerp(1.08,.92,leftFarDepth):1,racketArmSkin=shadeHex(skin,-.14*racketDepth);line(sh.x,sh.y,el.x,el.y,7.8*frontArmScale*(1-racketDepth*.18),racketArmSkin);line(el.x,el.y,wr.x,wr.y,6.3*frontArmScale*(1-racketDepth*.28),racketArmSkin);
+  // 接觸前由手指瞬間收握，手腕帶動前臂旋前；拍框會短暫由正面轉成較窄的側面。
+  let wristRoll=0,grip=.28,pronation=0;
+  if(P.sm){
+    // 鞭打鏈：肩先轉、肘先行，前臂保持落後；接觸前才旋前並快速收指握拍。
+    if(P.q<.58)wristRoll=lerp(-.28,-.42,smooth(P.q/.58));
+    else if(P.q<.68)wristRoll=lerp(-.42,-.18,smooth((P.q-.58)/.1));
+    else if(P.q<.75)wristRoll=lerp(-.18,1.18,easeOut((P.q-.68)/.07));
+    else if(P.q<.9)wristRoll=lerp(1.18,.42,smooth((P.q-.75)/.15));
+    else wristRoll=lerp(.42,.3,smooth((P.q-.9)/.1));
+    grip=clamp((P.q-.66)/.06,0,1);pronation=Math.sin(Math.PI*clamp((P.q-.60)/.24,0,1));
+  }
+  else if(P.cl){
+    if(P.q<.5)wristRoll=lerp(-.18,-.38,smooth(P.q/.5));
+    else if(P.q<.69)wristRoll=lerp(-.38,1.02,easeOut((P.q-.5)/.19));
+    else wristRoll=lerp(1.02,.28,smooth((P.q-.69)/.31));
+    grip=clamp((P.q-.55)/.12,0,1);pronation=Math.sin(Math.PI*clamp((P.q-.5)/.35,0,1))*.82;
+  }
+  else if(P.lift){wristRoll=P.q<.4?lerp(-.14,-.4,smooth(P.q/.4)):P.q<.68?lerp(-.4,.8,easeOut((P.q-.4)/.28)):lerp(.8,.2,smooth((P.q-.68)/.32));grip=clamp((P.q-.4)/.14,0,1);pronation=Math.sin(Math.PI*clamp((P.q-.4)/.44,0,1))*.5;}
+  else if(P.svS){const push=smooth(clamp((P.q-.3)/.28,0,1));wristRoll=lerp(-.05,.16,push);grip=.34+push*.4;pronation=push*.16;}
+  else if(P.svL){wristRoll=P.q<.38?lerp(-.1,-.34,smooth(P.q/.38)):P.q<.62?lerp(-.34,.74,easeOut((P.q-.38)/.24)):lerp(.74,.22,smooth((P.q-.62)/.38));grip=clamp((P.q-.36)/.14,0,1);pronation=Math.sin(Math.PI*clamp((P.q-.36)/.46,0,1))*.52;}
+  else if(P.dr){
+    const touch=smooth(clamp((P.q-.36)/.24,0,1)),release=smooth(clamp((P.q-.68)/.25,0,1));
+    wristRoll=lerp(-.08,.24,touch)-release*.12;grip=.28+touch*.52-release*.28;pronation=touch*.2;
+  }
+  const armMag=Math.hypot(wr.x-el.x,wr.y-el.y)||1,armNx=-(wr.y-el.y)/armMag,armNy=(wr.x-el.x)/armMag,rollMark=Math.sin(wristRoll)*2.2;
+  line(lerp(el.x,wr.x,.38)+armNx*rollMark,lerp(el.y,wr.y,.38)+armNy*rollMark,lerp(el.x,wr.x,.9)+armNx*rollMark,lerp(el.y,wr.y,.9)+armNy*rollMark,1.5,'#ffd1a9aa');
+  const mag=Math.hypot(rv.x,rv.y)||1,ux=rv.x/mag,uy=rv.y/mag,headDistance=RACKET_SPEC.handleLength+RACKET_SPEC.shaftLength,headX=wr.x+ux*headDistance,headY=wr.y+uy*headDistance,ang=Math.atan2(uy,ux)+Math.PI/2,racket=RACKETS[p.racketId]||RACKETS.academy,string=STRINGS[p.stringId]||STRINGS.durable70,worldMatrix=ctx.getTransform();p.racketWorld={x:worldMatrix.a*headX+worldMatrix.c*headY+worldMatrix.e,y:worldMatrix.b*headX+worldMatrix.d*headY+worldMatrix.f};
+  // 拍頭只有在加速、接觸與收拍前段留下短殘影，速度越快，風切線越明顯。
+  const now=performance.now(),trailActive=(P.sm&&P.q>.58&&P.q<.9)||(P.cl&&P.q>.46&&P.q<.86)||(P.lift&&P.q>.4&&P.q<.88)||(P.svL&&P.q>.36&&P.q<.8)||(P.dr&&P.q>.34&&P.q<.73);
+  p.racketTrail=(p.racketTrail||[]).filter(mark=>now-mark.time<185);
+  const newest=p.racketTrail[0],travel=newest?Math.hypot(headX-newest.x,headY-newest.y):0;
+  if(trailActive&&(!newest||now-newest.time>15)){p.racketTrail.unshift({x:headX,y:headY,ang,width:15*(1-.52*pronation),time:now,speed:travel});if(p.racketTrail.length>10)p.racketTrail.length=10;}
+  if(p.racketTrail.length>1){
+    const marks=p.racketTrail;ctx.save();ctx.lineCap='round';
+    for(let i=marks.length-1;i>0;i--){const age=clamp(1-(now-marks[i].time)/185,0,1),speed=clamp((marks[i-1].speed||0)/15,0,1);ctx.globalAlpha=age*(.14+speed*.42);ctx.strokeStyle=speed>.55?'#fff4a8':'#7fe9ff';ctx.lineWidth=2+speed*7;ctx.beginPath();ctx.moveTo(marks[i].x,marks[i].y);ctx.lineTo(marks[i-1].x,marks[i-1].y);ctx.stroke();}
+    for(let i=2;i<marks.length;i+=3){const mark=marks[i],age=clamp(1-(now-mark.time)/185,0,1);ctx.globalAlpha=age*.24;ctx.strokeStyle='#d8f8ff';ctx.lineWidth=2;ctx.save();ctx.translate(mark.x,mark.y);ctx.rotate(mark.ang);ctx.beginPath();ctx.ellipse(0,0,mark.width,22,0,0,Math.PI*2);ctx.stroke();ctx.restore();}
+    ctx.restore();
+  }
+  const gripStart={x:wr.x-ux*4,y:wr.y-uy*4},gripEnd={x:wr.x+ux*RACKET_SPEC.handleLength,y:wr.y+uy*RACKET_SPEC.handleLength},shaftEnd={x:headX-ux*RACKET_SPEC.headHeight*.46,y:headY-uy*RACKET_SPEC.headHeight*.46},shaftAngle=Math.atan2(uy,ux);
+  line(gripEnd.x,gripEnd.y,shaftEnd.x,shaftEnd.y,2.7,'#101923');line(gripEnd.x+1,gripEnd.y+1,shaftEnd.x+1,shaftEnd.y+1,1,'#a9e8ff99');line(gripStart.x,gripStart.y,gripEnd.x,gripEnd.y,7,'#111820');
+  for(let i=0;i<5;i++){const t=i/5+.08,cx=lerp(gripStart.x,gripEnd.x,t),cy=lerp(gripStart.y,gripEnd.y,t),nx=-uy*3.3,ny=ux*3.3;line(cx-nx,cy-ny,cx+nx,cy+ny,1,i%2?racket.accent:'#e8f3f8');}
+  joint(gripStart.x,gripStart.y,3.5,racket.accent);
+  const handX=wr.x+ux*6,handY=wr.y+uy*6,fingerGap=lerp(3,1.8,grip);
+  ctx.save();ctx.translate(handX,handY);ctx.rotate(shaftAngle+wristRoll*.12);ctx.scale(frontArmScale*(1-racketDepth*.12),frontArmScale*(1-racketDepth*.12));ctx.fillStyle=racketArmSkin;ctx.beginPath();ctx.ellipse(0,0,8,5,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle=shadeHex(skin,-.28);ctx.lineWidth=1;[-1,0,1].forEach(i=>{ctx.beginPath();ctx.moveTo(i*fingerGap-1,-4);ctx.quadraticCurveTo(i*fingerGap+1,0,i*fingerGap,4);ctx.stroke();});ctx.strokeStyle='#fff1dcaa';ctx.beginPath();ctx.moveTo(-5,-1);ctx.lineTo(4+grip*2,2);ctx.stroke();ctx.restore();
+  const faceWidth=RACKET_SPEC.headWidth*.5*(1-.5*pronation),faceHeight=RACKET_SPEC.headHeight*.5;ctx.save();ctx.translate(headX,headY);ctx.rotate(ang+wristRoll*.08);ctx.lineJoin='round';racketHeadPath(faceWidth,faceHeight);ctx.strokeStyle='#050a0e';ctx.lineWidth=5.5;ctx.stroke();const framePaint=ctx.createLinearGradient(-faceWidth,-faceHeight,faceWidth,faceHeight);framePaint.addColorStop(0,racket.frame);framePaint.addColorStop(.48,racket.accent);framePaint.addColorStop(1,racket.frame);racketHeadPath(faceWidth,faceHeight);ctx.strokeStyle=framePaint;ctx.lineWidth=RACKET_SPEC.frameWidth;ctx.stroke();ctx.save();racketHeadPath(Math.max(3,faceWidth-2.5),faceHeight-2.5);ctx.clip();ctx.strokeStyle=string.color;ctx.globalAlpha=.8;ctx.lineWidth=.75;for(let i=-3;i<=3;i++)line(i*faceWidth/4,-faceHeight,i*faceWidth/4,faceHeight,.75,string.color);for(let i=-4;i<=4;i++)line(-faceWidth,i*faceHeight/5,faceWidth,i*faceHeight/5,.75,string.color);ctx.restore();ctx.fillStyle=racket.accent;[[0,-.96],[-.71,-.66],[.71,-.66],[-.96,-.02],[.96,-.02],[-.57,.72],[.57,.72]].forEach(([gx,gy])=>joint(gx*faceWidth,gy*faceHeight,1.15,racket.accent));ctx.restore();
+  if(p.impactFlash>0){const power=clamp(p.impactFlash/.18,0,1);ctx.save();ctx.globalAlpha=power;ctx.strokeStyle='#fff3a0';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(headX,headY,lerp(26,8,power),0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#8feaff';ctx.lineWidth=2;for(let i=0;i<8;i++){const angle=i*Math.PI/4,length=lerp(22,38,1-power);ctx.beginPath();ctx.moveTo(headX+Math.cos(angle)*19,headY+Math.sin(angle)*19);ctx.lineTo(headX+Math.cos(angle)*length,headY+Math.sin(angle)*length);ctx.stroke();}ctx.restore();}
+  if(dominantSign>0&&armBehindHead)drawHeadLayer();
+  if(dominantSign>0&&leftFarDepth>0){
+    // 左側角色收拍末段轉到遠側，由胸口遮住；恢復時再逐漸回到前景準備姿勢。
+    drawTorsoShell(leftFarDepth);
+  }else if(dominantSign<0){
+    // 右側角色：持拍手臂在後，胸口與頭覆在前，非持拍手最後畫到近螢幕側。
+    drawTorsoShell(1);drawHeadLayer();drawFreeArm();
+  }
+  ctx.restore();ctx.restore();
+}
+// ===================== 絕招特效 =====================
+let fx=[];
+function spawnFx(kind,x,y,color,count,opts={}){
+  for(let i=0;i<count;i++){
+    const a=opts.angle!==undefined?opts.angle+(Math.random()-.5)*(opts.spread||6.28):Math.random()*6.28;
+    const sp=lerp(opts.minSpeed||40,opts.maxSpeed||220,Math.random());
+    fx.push({kind,x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0,max:opts.life||.6,color,
+             size:lerp(opts.minSize||2,opts.maxSize||7,Math.random()),spin:(Math.random()-.5)*9,rot:Math.random()*6.28,grav:opts.grav===undefined?260:opts.grav});
+  }
+  if(fx.length>420)fx.splice(0,fx.length-420);
+}
+function updateFx(dt){
+  for(let i=fx.length-1;i>=0;i--){
+    const f=fx[i];f.life+=dt;
+    if(f.life>=f.max){fx.splice(i,1);continue;}
+    f.x+=f.vx*dt;f.y+=f.vy*dt;f.vy+=f.grav*dt;f.vx*=1-2.1*dt;f.rot+=f.spin*dt;
+  }
+}
+function drawFx(){
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  for(const f of fx){
+    const k=1-f.life/f.max;ctx.globalAlpha=k*k;
+    ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.rot);
+    if(f.kind==='bolt'){ctx.strokeStyle=f.color;ctx.lineWidth=f.size*.5;ctx.beginPath();ctx.moveTo(-f.size*2,0);ctx.lineTo(0,-f.size*.7);ctx.lineTo(f.size*.6,f.size*.4);ctx.lineTo(f.size*2.4,-f.size*.3);ctx.stroke();}
+    else if(f.kind==='shard'){ctx.fillStyle=f.color;ctx.beginPath();ctx.moveTo(0,-f.size*1.7);ctx.lineTo(f.size*.7,0);ctx.lineTo(0,f.size*1.7);ctx.lineTo(-f.size*.7,0);ctx.closePath();ctx.fill();}
+    else if(f.kind==='ring'){ctx.strokeStyle=f.color;ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,f.size*(1+(1-k)*7),0,Math.PI*2);ctx.stroke();}
+    else{ctx.fillStyle=f.color;ctx.beginPath();ctx.arc(0,0,f.size*k,0,Math.PI*2);ctx.fill();}
+    ctx.restore();
+  }
+  ctx.restore();ctx.globalAlpha=1;
+}
+// 三種絕招的持續演出：雷霆貫地＝電弧＋地面裂光；鏡花墜網＝殘影碎鏡；不落領域＝護盾圓頂。
+function ultimateTrail(){
+  if(!ball.live||!ball.ultimate)return;
+  const S=ballScreen(),id=ball.ultimate.id,c=ball.ultimate.color;
+  if(id==='power'){
+    if(Math.random()<.85)spawnFx('bolt',S.x,S.y,'#ffe36d',2,{life:.32,minSpeed:20,maxSpeed:120,grav:40,minSize:4,maxSize:9});
+    spawnFx('spark',S.x,S.y,'#fff6c8',1,{life:.4,minSpeed:10,maxSpeed:90,grav:120,minSize:2,maxSize:4});
+  }else if(id==='trick'){
+    spawnFx('shard',S.x,S.y,c,2,{life:.55,minSpeed:15,maxSpeed:110,grav:60,minSize:3,maxSize:7});
+  }else{
+    spawnFx('spark',S.x,S.y,c,2,{life:.5,minSpeed:12,maxSpeed:70,grav:-40,minSize:2,maxSize:5});
+  }
+}
+function ultimateBurst(p,ultimate){
+  const x=p.x,y=FLOOR-110;
+  if(ultimate.id==='power'){
+    spawnFx('ring',x,y,'#ffe36d',3,{life:.6,minSpeed:0,maxSpeed:0,grav:0,minSize:6,maxSize:9});
+    spawnFx('bolt',x,y,'#fff6c8',26,{life:.7,minSpeed:120,maxSpeed:420,grav:180,minSize:4,maxSize:10});
+    shake=Math.max(shake,1.5);
+  }else if(ultimate.id==='trick'){
+    spawnFx('ring',x,y,ultimate.color,2,{life:.7,minSpeed:0,maxSpeed:0,grav:0,minSize:5,maxSize:8});
+    spawnFx('shard',x,y,ultimate.color,30,{life:.85,minSpeed:80,maxSpeed:320,grav:210,minSize:3,maxSize:9});
+    shake=Math.max(shake,.9);
+  }else{
+    spawnFx('ring',x,y,ultimate.color,4,{life:.9,minSpeed:0,maxSpeed:0,grav:0,minSize:4,maxSize:10});
+    spawnFx('spark',x,y,'#d7fff0',34,{life:.9,minSpeed:40,maxSpeed:190,grav:-70,minSize:2,maxSize:6});
+    shake=Math.max(shake,.7);
+  }
+  slow=Math.min(slow,.42);
+}
+
+// ===================== 錄影式重播 =====================
+// 每幀存下球與雙方的完整可繪狀態；絕招得分時把最後 ~1.9 秒拉回來慢速重放。
+const REPLAY_MAX=110;
+let replayBuf=[],replay=null,pendingAfterReplay=null;
+function snapshot(p){return{x:p.x,lane:p.lane,anim:p.anim,animT:p.animT,smashMode:p.smashMode,recoverFrom:p.recoverFrom,hp:p.hp,skill:p.skill,impactFlash:p.impactFlash,sLean:p.sLean,sTurn:p.sTurn,sTilt:p.sTilt,sSquat:p.sSquat};}
+function restore(p,f){Object.assign(p,f);}
+function recordReplay(){
+  if(replay)return;
+  replayBuf.push({a:snapshot(A),b:snapshot(B),
+    ball:{x:ball.x,y:ball.y,lane:ball.lane,t:ball.t,angle:ball.angle,live:ball.live,waiting:ball.waiting,shot:ball.shot,
+          fromX:ball.fromX,toX:ball.toX,toLane:ball.toLane,side:ball.side,smashPower:ball.smashPower,ultimate:ball.ultimate}});
+  if(replayBuf.length>REPLAY_MAX)replayBuf.shift();
+}
+function startReplay(ultimate,winner){
+  if(replayBuf.length<20)return false;
+  replay={frames:replayBuf.slice(-92),i:0,rate:.46,name:ultimate.name,color:ultimate.color,
+          who:winner===0?displayName(A):displayName(B),intro:.5,outro:0};
+  return true;
+}
+function skipReplay(){
+  if(!replay)return false;
+  replay=null;const fn=pendingAfterReplay;pendingAfterReplay=null;if(fn)fn();return true;
+}
+function stepReplay(dt){
+  if(!replay)return;
+  if(replay.intro>0){replay.intro-=dt;return;}
+  replay.i+=dt*60*replay.rate;
+  // 特效不逐幀錄，改用重播中的球位置即時重生，畫面一樣但沒有每幀複製整個粒子陣列的開銷。
+  const f=replay.frames[clamp(Math.floor(replay.i),0,replay.frames.length-1)],keep={...ball};
+  Object.assign(ball,f.ball);ultimateTrail();Object.assign(ball,keep);
+  updateFx(dt*replay.rate);
+  if(replay.i>=replay.frames.length-1){
+    replay.outro+=dt;
+    if(replay.outro>.55){replay=null;const fn=pendingAfterReplay;pendingAfterReplay=null;if(fn)fn();}
+  }
+}
+function drawReplayFrame(){
+  const f=replay.frames[clamp(Math.floor(replay.i),0,replay.frames.length-1)];
+  const keepA=snapshot(A),keepB=snapshot(B),keepBall={...ball};
+  restore(A,f.a);restore(B,f.b);Object.assign(ball,f.ball);
+  drawArena();[A,B].slice().sort((m,n)=>(m.lane||0)-(n.lane||0)).forEach(drawPlayer);drawNet();drawBall();drawFx();
+  restore(A,keepA);restore(B,keepB);Object.assign(ball,keepBall);
+}
+function drawReplayOverlay(){
+  const bar=H*.13;
+  ctx.save();ctx.fillStyle='#000';ctx.fillRect(0,0,W,bar);ctx.fillRect(0,H-bar,W,bar);
+  const g=ctx.createRadialGradient(W/2,H/2,H*.3,W/2,H/2,H*.78);g.addColorStop(0,'#0000');g.addColorStop(1,'#000a');ctx.fillStyle=g;ctx.fillRect(0,bar,W,H-bar*2);
+  ctx.textAlign='left';ctx.fillStyle='#ff5f5f';ctx.font='900 20px system-ui,sans-serif';
+  if(Math.floor(performance.now()/380)%2===0){ctx.beginPath();ctx.arc(38,bar+34,8,0,Math.PI*2);ctx.fill();}
+  ctx.fillStyle='#fff';ctx.fillText('REPLAY',56,bar+41);
+  ctx.textAlign='center';ctx.fillStyle=replay.color;ctx.font='1000 44px system-ui,sans-serif';
+  ctx.shadowColor=replay.color;ctx.shadowBlur=26;ctx.fillText(replay.name,W/2,H-bar-46);ctx.shadowBlur=0;
+  ctx.fillStyle='#eafcff';ctx.font='900 18px system-ui,sans-serif';ctx.fillText(replay.who+'　絕招得分',W/2,H-bar-20);
+  ctx.fillStyle='#a9e9ff99';ctx.font='800 12px system-ui,sans-serif';ctx.fillText('任意鍵跳過',W/2,bar+40);
+  ctx.textAlign='start';ctx.restore();
+}
+function drawBall(){
+  if(!ball.live&&!ball.waiting)return;const dir=ball.live?Math.sign(ball.toX-ball.fromX)||1:(ball.x<NET_X?1:-1);
+  const S=ballScreen(),sx=S.x,sy=S.y,sc=S.s;
+  // 落點指示：邊線殺時先在地面畫出目標，讓玩家看得懂球往哪一條邊線走。
+  if(ball.live&&Math.abs(ball.toLane||0)>.15){
+    const tw=laneScale(ball.toLane),tx=NET_X+(ball.toX-NET_X)*tw,ty=laneGroundY(ball.toLane),fade=clamp(ball.t*1.6,0,1);
+    ctx.save();ctx.globalAlpha=.22+fade*.4;ctx.strokeStyle=ball.shot==='smash'?'#ffe36d':'#a9edff';ctx.lineWidth=2;
+    ctx.beginPath();ctx.ellipse(tx,ty,20*tw,7*tw,0,0,Math.PI*2);ctx.stroke();ctx.restore();
+  }
+  if(ball.live){const tail=(ball.shot==='smash'?145:65)*sc,grad=ctx.createLinearGradient(sx-dir*tail,sy,sx,sy);grad.addColorStop(0,'#8defff00');grad.addColorStop(1,ball.shot==='smash'?'#ffe268':'#bdf7ff');line(sx-dir*tail,sy+5,sx,sy,(ball.shot==='smash'?12:5)*sc,grad);}
+  if(ball.live&&ball.side===0){const timing=Math.max(0,1-Math.abs(.83-ball.t)/.32),r=(31-timing*15)*sc;ctx.globalAlpha=.3+timing*.65;ctx.strokeStyle=timing>.78?'#ffe36d':'#a9edff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(sx,sy,r,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;}
+  // 軟木球頭朝飛行方向，羽裙拖在後方；下降時會隨軌跡轉向。
+  const angle=ball.live?ball.angle||0:(dir>0?0:Math.PI);ctx.save();ctx.translate(sx,sy);ctx.rotate(angle);ctx.scale(sc,sc);
+  ctx.fillStyle='#f6fbff';ctx.beginPath();ctx.moveTo(-4,-3);ctx.lineTo(-18,-9);ctx.lineTo(-14,0);ctx.lineTo(-18,9);ctx.lineTo(-4,3);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#a9cbd8';ctx.lineWidth=1;[-14,-10,-6].forEach(x=>line(x,-6,x,6,1,'#a9cbd8'));joint(2,0,6,'#fff1d2');ctx.restore();
+}
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  if(replay){
+    // 重播時鏡頭往場中推近一點，動作看起來更有壓迫感。
+    const zoom=1.16;ctx.save();ctx.translate(W/2,H*.56);ctx.scale(zoom,zoom);ctx.translate(-W/2,-H*.56);
+    drawReplayFrame();ctx.restore();drawReplayOverlay();return;
+  }
+  ctx.save();if(shake>0)ctx.translate(Math.sin(performance.now()*.08)*shake*5,Math.cos(performance.now()*.07)*shake*3);
+  drawArena();[A,B].slice().sort((m,n)=>(m.lane||0)-(n.lane||0)).forEach(drawPlayer);drawNet();drawBall();drawFx();ctx.restore();
+}
+function loop(ts){
+  if(!last)last=ts;let dt=Math.min(.035,(ts-last)/1000);last=ts;
+  pollGamepad();
+  if(replay){stepReplay(dt);draw();requestAnimationFrame(loop);return;}
+  update(dt*slow);draw();requestAnimationFrame(loop);
+}
+function show(text,color='#fff'){const m=document.getElementById('message');m.textContent=text;m.style.color=color;m.style.opacity=1;messageTimer=1.05;}
+function updateHud(){
+  const classic=gameMode==='classic';document.getElementById('stage').classList.toggle('classic',classic);
+  hpAEl.style.width=A.hp+'%';hpBEl.style.width=B.hp+'%';spAEl.style.width=A.skill+'%';spBEl.style.width=B.skill+'%';
+  nameAEl.textContent=displayName(A);nameBEl.textContent=displayName(B);scoreEl.textContent=classic?scoreA+' : '+scoreB:Math.round(A.hp)+' : '+Math.round(B.hp);
+  smashEl.classList.remove('lock');ultimateEl.classList.toggle('lock',!classic&&A.skill<100);ultimateEl.textContent='絕招';ultimateEl.title=A.fighter.ultimate;ultimateEl.setAttribute('aria-label',A.fighter.ultimate+'（絕招）');
+}
+function finish(winner){
+  serveState=null;updateServeMeter();replay=null;pendingAfterReplay=null;fx=[];replayBuf=[];
+  roundToken++;running=false;motionShowcase=false;if(winner===0){gearState.coins+=250;saveGearState();}stageEl.classList.remove('showcase');document.getElementById('motionDeck').classList.remove('show');cancelTactics();[A,B].forEach(p=>{p.pending=null;p.pendingUltimate=null;});const champion=winner===0?A:B,score=gameMode==='classic'?' '+scoreA+'：'+scoreB:'';show(displayName(champion)+'勝利！'+score,'#ffe36d');
+  setTimeout(()=>{document.getElementById('start').classList.remove('hide');document.getElementById('play').textContent='再戰一場';},900);
+}
+function begin(showcase=false){
+  roundToken++;cancelTactics();messageTimer=0;document.getElementById('message').style.opacity=0;gameMode=selectedMode;scoreA=0;scoreB=0;const rivals=Object.keys(FIGHTERS).filter(id=>id!==selectedFighter),rival=rivals[Math.floor(Math.random()*rivals.length)];
+  A=athlete(0,selectedFighter);B=athlete(1,rival);running=true;motionShowcase=showcase;last=0;stageEl.classList.toggle('showcase',showcase);document.getElementById('start').classList.add('hide');document.getElementById('motionDeck').classList.toggle('show',showcase);updateHud();
+  serveState=null;updateServeMeter();
+  if(showcase){ball.live=false;ball.waiting=false;A.x=300;B.x=690;show('選擇動作查看完整姿態','#9ff5ff');return;}
+  resetRound(0);
+}
+// ===================== 實體手把（Gamepad API）=====================
+// 標準配置：0=A 1=B 2=X 3=Y 4=LB 5=RB 9=Start 12~15=十字鍵，axes[0]=左蘑菇頭 X、axes[1]=Y。
+// 手把不取代鍵盤或螢幕搖桿，三種輸入來源同時有效。
+const PAD_DEADZONE=.34,PAD_SERVE_MIN=.3;
+function activePad(){
+  if(!navigator.getGamepads)return null;
+  const pads=navigator.getGamepads();
+  for(const pad of pads)if(pad&&pad.connected)return pad;
+  return null;
+}
+function padRumble(strong,weak,ms){
+  const pad=activePad();
+  if(pad&&pad.vibrationActuator&&pad.vibrationActuator.playEffect)
+    pad.vibrationActuator.playEffect('dual-rumble',{duration:ms,strongMagnitude:strong,weakMagnitude:weak}).catch(()=>{});
+}
+function flashKey(action){const btn=keyButton(action);if(!btn)return;btn.classList.add('on');clearTimeout(btn.keyFlash);btn.keyFlash=setTimeout(()=>btn.classList.remove('on'),140);}
+// ===================== 手把選單導覽 =====================
+// 依「當下真的顯示在畫面上的面板」決定可聚焦元素，方向鍵用元素外框做二維最近鄰搜尋，
+// 所以按鈕怎麼排（橫列、格狀、可捲動清單）都不必另外寫導覽表。
+const uiFocus={el:null,panel:null,repeat:0,dir:0};
+function activeUIPanel(){
+  const face=document.getElementById('faceStudio');if(face&&face.classList.contains('show'))return face;
+  const shop=document.getElementById('shop');if(shop&&shop.classList.contains('show'))return shop;
+  const start=document.getElementById('start');if(start&&!start.classList.contains('hide')&&!running)return start;
+  return null;
+}
+function uiFocusables(panel){
+  return Array.from(panel.querySelectorAll('button,input')).filter(el=>!el.disabled&&el.offsetParent!==null&&el.getClientRects().length);
+}
+// 角色編輯器每點一個選項就整段 innerHTML 重建，原本的焦點元素會被丟掉。
+// 這裡把焦點記成選擇器，重建後再用同樣的鍵值把焦點接回同一顆按鈕。
+function focusSelector(el){
+  if(!el)return null;
+  const d=el.dataset||{};
+  if(el.id)return '#'+el.id;
+  if(d.avatarKey!==undefined)return `[data-avatar-key="${d.avatarKey}"][data-avatar-value="${d.avatarValue}"]`;
+  if(d.photoKey!==undefined)return `[data-photo-key="${d.photoKey}"]`;
+  if(d.mode!==undefined)return `[data-mode="${d.mode}"]`;
+  if(d.fighter!==undefined)return `[data-fighter="${d.fighter}"]`;
+  if(d.shopTab!==undefined)return `[data-shop-tab="${d.shopTab}"]`;
+  return null;
+}
+function setUIFocus(el){
+  if(uiFocus.el===el)return;
+  if(uiFocus.el)uiFocus.el.classList.remove('pad-focus');
+  uiFocus.el=el||null;uiFocus.sel=focusSelector(el);
+  if(el){el.classList.add('pad-focus');try{el.scrollIntoView({block:'nearest',inline:'nearest'});}catch(err){}}
+}
+function moveUIFocus(dx,dy){
+  const panel=activeUIPanel();if(!panel)return;
+  const list=uiFocusables(panel);if(!list.length)return;
+  if(!uiFocus.el||list.indexOf(uiFocus.el)<0){setUIFocus(list[0]);return;}
+  const a=uiFocus.el.getBoundingClientRect(),ax=a.left+a.width/2,ay=a.top+a.height/2;
+  let best=null,bestScore=Infinity,wrap=null,wrapScore=-Infinity;
+  for(const el of list){
+    if(el===uiFocus.el)continue;
+    const r=el.getBoundingClientRect(),vx=r.left+r.width/2-ax,vy=r.top+r.height/2-ay;
+    const along=vx*dx+vy*dy,off=Math.abs(vx*dy-vy*dx);
+    if(along>4){const score=along+off*2.4;if(score<bestScore){bestScore=score;best=el;}}
+    else if(-along>wrapScore){wrapScore=-along;wrap=el;}
+  }
+  setUIFocus(best||wrap||uiFocus.el);
+}
+function nudgeRange(el,dir){
+  const step=Number(el.step)||1,min=Number(el.min)||0,max=Number(el.max)||100;
+  el.value=String(clamp(Number(el.value)+dir*step*Math.max(1,Math.round((max-min)/40)),min,max));
+  el.dispatchEvent(new Event('input',{bubbles:true}));
+}
+function activateUIFocus(){
+  const el=uiFocus.el;if(!el)return;
+  if(el.tagName==='INPUT'&&el.type!=='range'){el.focus();if(el.type==='file')el.click();return;}
+  if(el.tagName==='INPUT')return;
+  el.click();
+}
+function updatePadHint(panel){
+  const hint=document.getElementById('padHint');if(!hint)return;
+  if(!panel||!padId){hint.classList.remove('on');return;}
+  hint.classList.add('on');
+  hint.textContent=panel.id==='faceStudio'?'十字鍵/蘑菇頭 移動　A 確定　X 隨機造型　Y 套用選手　B 關閉'
+    :panel.id==='shop'?'十字鍵/蘑菇頭 移動　A 確定　LB/RB 切換分頁　B 關閉'
+    :'十字鍵/蘑菇頭 移動　A 確定　Start 直接開賽';
+}
+function pollGamepadUI(panel,hit,navX,navY,dt){
+  if(uiFocus.panel!==panel){uiFocus.panel=panel;setUIFocus(null);uiFocus.repeat=0;}
+  let list=uiFocusables(panel);
+  if(!uiFocus.el||!panel.contains(uiFocus.el)||list.indexOf(uiFocus.el)<0){
+    let restored=null;
+    if(uiFocus.sel){try{restored=panel.querySelector(uiFocus.sel);}catch(err){restored=null;}}
+    uiFocus.el=null;setUIFocus(restored&&list.indexOf(restored)>=0?restored:list[0]);
+  }
+  updatePadHint(panel);
+  // 方向：第一次立刻反應，按住 0.4 秒後每 0.13 秒重複一次。
+  const dir=navX+','+navY,moving=!!(navX||navY);
+  if(dir!==uiFocus.dir){uiFocus.dir=dir;uiFocus.repeat=moving?.4:0;if(moving)step();}
+  else if(moving){uiFocus.repeat-=dt;if(uiFocus.repeat<=0){uiFocus.repeat=.13;step();}}
+  function step(){
+    const el=uiFocus.el;
+    if(el&&el.tagName==='INPUT'&&el.type==='range'&&navX&&!navY){nudgeRange(el,navX);return;}
+    moveUIFocus(navX,navY);
+  }
+  if(hit(0))activateUIFocus();
+  if(hit(1)){
+    if(panel.id==='faceStudio'){const b=document.getElementById('faceClose');if(b)b.click();}
+    else if(panel.id==='shop'){const b=document.getElementById('shopClose');if(b)b.click();}
+  }
+  if(hit(2)){
+    if(panel.id==='faceStudio'){const b=document.getElementById('faceRandom');if(b)b.click();}
+    else if(panel.id==='shop'){const tabs=Array.from(panel.querySelectorAll('[data-shop-tab]')),i=tabs.findIndex(t=>t.classList.contains('sel'));if(tabs.length)tabs[(i+1)%tabs.length].click();}
+  }
+  if(hit(3)&&panel.id==='faceStudio'){const b=document.getElementById('faceSave');if(b)b.click();}
+  if(panel.id==='shop'&&(hit(4)||hit(5))){
+    const tabs=Array.from(panel.querySelectorAll('[data-shop-tab]')),i=Math.max(0,tabs.findIndex(t=>t.classList.contains('sel')));
+    if(tabs.length)tabs[(i+(hit(5)?1:tabs.length-1))%tabs.length].click();
+  }
+  if(panel.id==='start'&&hit(9)){const play=document.getElementById('play');if(play)play.click();}
+}
+function pollGamepad(){
+  const pad=activePad(),badge=document.getElementById('padBadge');
+  if(!pad){
+    if(padId){padId='';padKeys.left=padKeys.right=false;padPrev=[];if(badge)badge.classList.remove('on');}
+    return;
+  }
+  if(padId!==pad.id){padId=pad.id;if(badge){badge.textContent='🎮 '+pad.id.replace(/\(.*?\)/g,'').trim().slice(0,26);badge.classList.add('on');}show('手把已連線','#8feaff');}
+  const down=i=>!!(pad.buttons[i]&&pad.buttons[i].pressed),was=i=>!!padPrev[i],
+        hit=i=>down(i)&&!was(i),lift=i=>!down(i)&&was(i),
+        ax=pad.axes[0]||0,ay=pad.axes[1]||0;
+  // --- 移動：左蘑菇頭或十字鍵 ---
+  padKeys.left=ax<-PAD_DEADZONE||down(14);
+  padKeys.right=ax>PAD_DEADZONE||down(15);
+  padKeys.up=ay<-PAD_DEADZONE||down(12);
+  padKeys.down=ay>PAD_DEADZONE||down(13);
+  // --- 選單／角色編輯器／商店：交給 UI 導覽 ---
+  const panel=activeUIPanel();
+  if(panel){
+    padKeys.left=padKeys.right=false;
+    const navX=ax<-PAD_DEADZONE||down(14)?-1:ax>PAD_DEADZONE||down(15)?1:0,
+          navY=ay<-PAD_DEADZONE||down(12)?-1:ay>PAD_DEADZONE||down(13)?1:0;
+    pollGamepadUI(panel,hit,navX,navY,1/60);
+    padPrev=pad.buttons.map(b=>b.pressed);return;
+  }
+  setUIFocus(null);uiFocus.panel=null;
+  const hintEl=document.getElementById('padHint');if(hintEl)hintEl.classList.remove('on');
+  if(!running&&!motionShowcase){padPrev=pad.buttons.map(b=>b.pressed);return;}
+  // --- 發球：左蘑菇頭往身後拉＝蓄力（上=長發／中下=短發），回中放球；或按住 A/B ---
+  if(serveState&&serveState.side===0){
+    const pull=clamp(-ax,0,1);
+    if(pull>PAD_SERVE_MIN){
+      serveState.pad=true;serveState.type=ay<-.42?'serveLong':'serveShort';
+      serveState.charge=clamp((pull-PAD_SERVE_MIN)/(1-PAD_SERVE_MIN-.06),0,1);
+      padKeys.left=padKeys.right=false;updateServeMeter();
+    }else if(serveState.pad){
+      if(serveState.charge>=.12)releaseServe();
+      else{serveState.pad=false;serveState.type=null;serveState.charge=0;updateServeMeter();}
+    }else{
+      if(hit(0))startServeCharge('serveShort');
+      if(hit(1))startServeCharge('serveLong');
+      if(serveState&&serveState.type==='serveShort'&&lift(0))releaseServe();
+      else if(serveState&&serveState.type==='serveLong'&&lift(1))releaseServe();
+    }
+    padPrev=pad.buttons.map(b=>b.pressed);return;
+  }
+  // --- 慢鏡戰術：X=前點 A=追身 B=底線 Y=絕招 ---
+  if(tacticState){
+    if(hit(2))resolveTactics('front');
+    else if(hit(0))resolveTactics('body');
+    else if(hit(1))resolveTactics('back');
+    else if(hit(3))resolveTactics('ultimate');
+    padPrev=pad.buttons.map(b=>b.pressed);return;
+  }
+  // --- 一般擊球 ---
+  if(replay){if(hit(0)||hit(1)||hit(2)||hit(3)||hit(9))skipReplay();padPrev=pad.buttons.map(b=>b.pressed);return;}
+  if(hit(0)){flashKey('drop');tryHit('drop');}
+  if(hit(1)){flashKey('clear');tryHit('clear');}
+  if(hit(2)||hit(5)){flashKey('smash');A.smashCharge=0;A.smashHolding=true;tryHit('smash');}
+  if(!down(2)&&!down(5))A.smashHolding=false;
+  if(hit(3)||hit(4)){flashKey('ultimate');tryHit('ultimate');}
+  padPrev=pad.buttons.map(b=>b.pressed);
+}
+addEventListener('gamepadconnected',()=>pollGamepad());
+addEventListener('gamepaddisconnected',()=>{padId='';padKeys.left=padKeys.right=false;padPrev=[];const b=document.getElementById('padBadge');if(b)b.classList.remove('on');});
+function focusGame(){try{stageEl.focus({preventScroll:true});}catch(error){stageEl.focus();}}
+const faceStudioEl=document.getElementById('faceStudio'),faceControlsEl=document.getElementById('faceControls'),faceCanvasEl=document.getElementById('faceCanvas'),faceMiniEl=document.getElementById('faceMini');
+function faceGroup(key,title,swatch=false){return`<div class="face-group"><h3>${title}</h3><div class="face-options">${AVATAR_OPTIONS[key].map(([value,label])=>`<button type="button" class="${faceDraft[key]===value?'sel ':''}${swatch?'swatch':''}" data-avatar-key="${key}" data-avatar-value="${value}"${swatch?` style="background:${value}" title="${label}" aria-label="${label}"`:''}>${swatch?'':label}</button>`).join('')}</div></div>`;}
+function facePhotoGroup(){const active=!!faceDraft.photoData;return`<div class="face-group face-photo"><h3>照片模擬臉 <span class="face-photo-state">${active?'已載入・僅存在本機':'尚未選擇'}</span></h3><div class="face-options"><button type="button" id="facePhotoPick">${active?'更換照片':'選擇照片'}</button>${active?'<button type="button" id="facePhotoRemove" class="photo-remove">移除照片</button>':''}</div><input id="facePhotoInput" type="file" accept="image/*" hidden>${active?`<div class="face-photo-workspace"><canvas id="facePhotoCanvas" width="160" height="160" aria-label="照片臉部特寫預覽"></canvas><div class="face-photo-sliders"><label>縮放<input type="range" min="100" max="220" value="${Number(faceDraft.photoZoom)||125}" data-photo-key="photoZoom"></label><label>左右<input type="range" min="-50" max="50" value="${Number(faceDraft.photoX)||0}" data-photo-key="photoX"></label><label>上下<input type="range" min="-50" max="50" value="${Number(faceDraft.photoY)||0}" data-photo-key="photoY"></label></div></div>`:'<div class="face-photo-note">選擇正面或微側面照片，系統會縮圖並嵌入 2.5D 角色；不會傳送到網路。</div>'}</div>`;}
+function cartoonizeAvatarPhoto(source,mode){
+  const out=document.createElement('canvas');out.width=source.width;out.height=source.height;const g=out.getContext('2d'),settings=mode==='comic'?{step:52,edge:30,darken:.36,filter:'contrast(1.28) saturate(.86)'}:mode==='natural'?{step:28,edge:62,darken:.7,filter:'contrast(1.1) saturate(1.08)'}:{step:40,edge:42,darken:.52,filter:'contrast(1.2) saturate(1.28)'};g.filter=settings.filter;g.drawImage(source,0,0);g.filter='none';const frame=g.getImageData(0,0,out.width,out.height),px=frame.data,original=new Uint8ClampedArray(px),w=out.width;
+  const luminance=i=>original[i]*.299+original[i+1]*.587+original[i+2]*.114;
+  for(let y=1;y<out.height-1;y++){for(let x=1;x<w-1;x++){const i=(y*w+x)*4,l=luminance(i),edge=Math.abs(l-luminance(i-4))+Math.abs(l-luminance(i-w*4));if(edge>settings.edge){px[i]=Math.round(px[i]*settings.darken/12)*12;px[i+1]=Math.round(px[i+1]*settings.darken/12)*12;px[i+2]=Math.round(px[i+2]*settings.darken/12)*12;}else{px[i]=clamp(Math.round(px[i]/settings.step)*settings.step,0,255);px[i+1]=clamp(Math.round(px[i+1]/settings.step)*settings.step,0,255);px[i+2]=clamp(Math.round(px[i+2]/settings.step)*settings.step,0,255);}}}
+  g.putImageData(frame,0,0);return out.toDataURL('image/jpeg',mode==='comic'?.8:.84);
+}
+function compressAvatarPhoto(file){return new Promise((resolve,reject)=>{if(!file||!String(file.type||'').startsWith('image/')){reject(new Error('請選擇照片檔'));return;}const reader=new FileReader();reader.onerror=()=>reject(new Error('照片讀取失敗'));reader.onload=()=>{const image=new Image();image.onerror=()=>reject(new Error('照片格式無法使用'));image.onload=()=>{const maxSide=480,ratio=Math.min(1,maxSide/Math.max(image.naturalWidth,image.naturalHeight)),work=document.createElement('canvas');work.width=Math.max(1,Math.round(image.naturalWidth*ratio));work.height=Math.max(1,Math.round(image.naturalHeight*ratio));const workCtx=work.getContext('2d');workCtx.imageSmoothingEnabled=true;workCtx.imageSmoothingQuality='high';workCtx.drawImage(image,0,0,work.width,work.height);resolve({natural:cartoonizeAvatarPhoto(work,'natural'),game:cartoonizeAvatarPhoto(work,'game'),comic:cartoonizeAvatarPhoto(work,'comic')});};image.src=reader.result;};reader.readAsDataURL(file);});}
+function drawAvatarFaceCloseup(canvasEl,avatar,bandColor){if(!canvasEl)return;const g=canvasEl.getContext('2d'),w=canvasEl.width,h=canvasEl.height,bg=g.createRadialGradient(w*.5,h*.45,5,w*.5,h*.5,w*.62);bg.addColorStop(0,'#17465f');bg.addColorStop(1,'#03101b');g.clearRect(0,0,w,h);g.fillStyle=bg;g.fillRect(0,0,w,h);g.save();g.translate(w*.5,h*.54);g.scale(3.25,3.25);drawAvatarHead(g,avatar,bandColor,.08);g.restore();}
+function drawFacePreviews(){const color=(FIGHTERS[selectedFighter]||FIGHTERS.thunder).color;drawAvatarFullPreview(faceCanvasEl,faceDraft,color);drawAvatarPortrait(faceMiniEl,avatarState,avatarState.headbandColor||color);drawAvatarFaceCloseup(document.getElementById('facePhotoCanvas'),faceDraft,faceDraft.headbandColor||color);}
+function renderFaceStudio(){faceControlsEl.innerHTML=`<label class="face-group face-name"><h3>選手名字</h3><input id="faceName" maxlength="8" autocomplete="off" aria-label="選手名字"></label>${facePhotoGroup()}${faceDraft.photoData?faceGroup('photoStyle','照片質感'):''}${faceGroup('body','身形')}${faceGroup('headSize','頭部比例')}${faceGroup('outfit','球衣樣式')}${faceGroup('face','臉型')}${faceGroup('hair','髮型')}${faceGroup('headwear','頭部裝備')}${faceGroup('eyes','眼型')}${faceGroup('brow','眉型')}${faceGroup('mouth','表情')}${faceGroup('detail','臉部特色')}${faceGroup('accessory','眼鏡')}${faceGroup('skin','膚色',true)}${faceGroup('hairColor','髮色',true)}${faceGroup('jerseyColor','球衣主色',true)}${faceGroup('accentColor','球衣飾邊',true)}${faceGroup('shortsColor','短褲',true)}${faceGroup('headbandColor','頭戴顏色',true)}`;document.getElementById('faceName').value=faceDraft.name||'';drawFacePreviews();}
+function openFaceStudio(){faceDraft={...avatarState};renderFaceStudio();faceStudioEl.classList.add('show');faceStudioEl.setAttribute('aria-hidden','false');}
+function closeFaceStudio(){faceStudioEl.classList.remove('show');faceStudioEl.setAttribute('aria-hidden','true');}
+document.getElementById('faceOpen').addEventListener('click',openFaceStudio);
+document.getElementById('faceClose').addEventListener('click',closeFaceStudio);
+document.getElementById('faceReset').addEventListener('click',()=>{faceDraft={...AVATAR_DEFAULT};renderFaceStudio();});
+document.getElementById('faceRandom').addEventListener('click',()=>{const name=faceDraft.name;Object.keys(AVATAR_OPTIONS).forEach(key=>{const options=AVATAR_OPTIONS[key];faceDraft[key]=options[Math.floor(Math.random()*options.length)][0];});faceDraft.name=name;renderFaceStudio();});
+document.getElementById('faceSave').addEventListener('click',()=>{faceDraft.name=(faceDraft.name||'我的選手').trim().slice(0,8)||'我的選手';avatarState={...faceDraft};saveAvatarState();if(A&&A.side===0)A.avatar={...avatarState};drawFacePreviews();updateHud();closeFaceStudio();});
+faceControlsEl.addEventListener('click',e=>{if(e.target.closest('#facePhotoPick')){document.getElementById('facePhotoInput').click();return;}if(e.target.closest('#facePhotoRemove')){faceDraft.photoData='';faceDraft.photoVariants=null;faceDraft.photoZoom=125;faceDraft.photoX=0;faceDraft.photoY=-4;renderFaceStudio();return;}const btn=e.target.closest('[data-avatar-key]');if(!btn)return;faceDraft[btn.dataset.avatarKey]=btn.dataset.avatarValue;renderFaceStudio();});
+faceControlsEl.addEventListener('change',async e=>{if(e.target.id!=='facePhotoInput')return;const file=e.target.files&&e.target.files[0];if(!file)return;try{const variants=await compressAvatarPhoto(file);faceDraft.photoVariants=variants;faceDraft.photoData=variants.game;faceDraft.photoStyle='game';faceDraft.photoZoom=125;faceDraft.photoX=0;faceDraft.photoY=-4;renderFaceStudio();}catch(error){show(error.message||'照片無法載入','#ff9a9a');}});
+faceControlsEl.addEventListener('input',e=>{if(e.target.id==='faceName'){faceDraft.name=e.target.value.slice(0,8);}else if(e.target.dataset.photoKey){faceDraft[e.target.dataset.photoKey]=Number(e.target.value);}else return;drawFacePreviews();});
+document.getElementById('play').addEventListener('click',()=>{begin(false);setTimeout(focusGame,0);});
+document.getElementById('motionPreview').addEventListener('click',()=>{begin(true);setTimeout(focusGame,0);});
+document.querySelectorAll('[data-motion]').forEach(btn=>btn.addEventListener('pointerdown',e=>{e.preventDefault();if(!motionShowcase)return;A.pending=null;A.recoverFrom='ready';A.anim=btn.dataset.motion;A.animT=0;A.smashMode=btn.dataset.motion==='smash'?'jump':btn.dataset.motion==='standingSmash'?'standing':null;show(btn.textContent+'動作','#ffe36d');}));
+document.getElementById('motionExit').addEventListener('click',()=>{roundToken++;running=false;motionShowcase=false;stageEl.classList.remove('showcase');document.getElementById('motionDeck').classList.remove('show');document.getElementById('start').classList.remove('hide');});
+canvas.addEventListener('pointerdown',focusGame);
+document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{selectedMode=btn.dataset.mode;document.querySelectorAll('[data-mode]').forEach(item=>item.classList.toggle('sel',item===btn));}));
+document.querySelectorAll('[data-diff]').forEach(btn=>btn.addEventListener('click',()=>{
+  difficulty=btn.dataset.diff;
+  document.querySelectorAll('[data-diff]').forEach(item=>item.classList.toggle('sel',item===btn));
+  try{localStorage.setItem('badminton-difficulty',difficulty);}catch(err){}
+}));
+try{const saved=localStorage.getItem('badminton-difficulty');if(saved&&DIFFICULTY[saved]){difficulty=saved;document.querySelectorAll('[data-diff]').forEach(item=>item.classList.toggle('sel',item.dataset.diff===saved));}}catch(err){}
+document.querySelectorAll('[data-fighter]').forEach(btn=>btn.addEventListener('click',()=>{selectedFighter=btn.dataset.fighter;document.querySelectorAll('[data-fighter]').forEach(item=>item.classList.toggle('sel',item===btn));A=athlete(0,selectedFighter);drawFacePreviews();updateHud();}));
+document.querySelectorAll('[data-aim]').forEach(btn=>btn.addEventListener('pointerdown',e=>{e.preventDefault();resolveTactics(btn.dataset.aim);}));
+document.querySelectorAll('[data-key]').forEach(btn=>{const k=btn.dataset.key,serveType=k==='drop'?'serveShort':k==='clear'?'serveLong':null,
+  down=e=>{e.preventDefault();btn.classList.add('on');if(k==='left'||k==='right'){keys[k]=true;return;}if(serveState&&serveState.side===0&&serveType){startServeCharge(serveType);return;}if(k==='smash'){A.smashCharge=0;A.smashHolding=true;}tryHit(k);},
+  up=e=>{e.preventDefault();btn.classList.remove('on');if(k==='left'||k==='right'){keys[k]=false;return;}if(k==='smash')A.smashHolding=false;if(serveState&&serveState.side===0&&serveType&&serveState.type===serveType)releaseServe();};btn.addEventListener('pointerdown',down);btn.addEventListener('pointerup',up);btn.addEventListener('pointercancel',up);btn.addEventListener('pointerleave',up);});
+let joystickPointer=null;
+function setJoystick(clientX,clientY){const rect=joystickEl.getBoundingClientRect(),axis=clamp((clientX-(rect.left+rect.width/2))/(rect.width*.34),-1,1),active=Math.abs(axis)>.2;
+  joyLane=clientY===undefined?0:clamp((clientY-(rect.top+rect.height/2))/(rect.height*.34),-1,1);
+  joystickThumbEl.style.transform=`translateX(${axis*42}px) translateY(${joyLane*26}px)`;keys.left=active&&axis<0;keys.right=active&&axis>0;joystickEl.classList.toggle('active',active);joystickEl.setAttribute('aria-valuenow',active?String(Math.sign(axis)):'0');}
+// 發球時搖桿變成「拉弓」：往身後（左）拉＝蓄力，同時往上＝後場長發、往下或持平＝網前短發。
+// 蓄力值直接接手 serveState.charge，所以引拍深度會跟著手指走，放開就出球。
+function setServeJoystick(clientX,clientY){
+  if(!serveState||serveState.side!==0||!serveState.pointer)return;
+  const o=serveState.pointer,pull=clamp((o.x-clientX)/96,0,1),rise=(o.y-clientY);
+  serveState.type=rise>16?'serveLong':'serveShort';
+  serveState.charge=pull;
+  joystickThumbEl.style.transform=`translate(${-pull*40}px,${clamp(-rise,-34,34)}px)`;
+  joystickEl.classList.add('active');updateServeMeter();
+}
+function releaseJoystick(){joystickPointer=null;keys.left=keys.right=false;joyLane=0;joystickThumbEl.style.transform='translateX(0)';joystickEl.classList.remove('active');joystickEl.setAttribute('aria-valuenow','0');joystickEl.classList.toggle('serve',!!serveState&&serveState.side===0);}
+joystickEl.addEventListener('pointerdown',e=>{e.preventDefault();joystickPointer=e.pointerId;joystickEl.setPointerCapture(e.pointerId);
+  if(serveState&&serveState.side===0){serveState.pointer={id:e.pointerId,x:e.clientX,y:e.clientY};setServeJoystick(e.clientX,e.clientY);focusGame();return;}
+  setJoystick(e.clientX,e.clientY);focusGame();});
+joystickEl.addEventListener('pointermove',e=>{if(e.pointerId!==joystickPointer)return;
+  if(serveState&&serveState.pointer&&serveState.pointer.id===e.pointerId){setServeJoystick(e.clientX,e.clientY);return;}
+  setJoystick(e.clientX,e.clientY);});
+joystickEl.addEventListener('pointerup',e=>{if(e.pointerId!==joystickPointer)return;
+  if(serveState&&serveState.pointer&&serveState.pointer.id===e.pointerId){
+    // 拉不到門檻就當作取消，避免手指輕碰就發出爛球。
+    if(serveState.charge>=.12){releaseServe();}else{serveState.pointer=null;serveState.type=null;serveState.charge=0;updateServeMeter();releaseJoystick();}
+    return;}
+  releaseJoystick();});
+joystickEl.addEventListener('pointercancel',releaseJoystick);joystickEl.addEventListener('lostpointercapture',releaseJoystick);
+let lastVisibleControlOpacity=.72;
+function applyControlOpacity(value,save=true){const opacity=clamp(Number(value)||0,0,1);stageEl.style.setProperty('--mobile-control-opacity',String(opacity));controlOpacityEl.value=String(Math.round(opacity*100));controlVisibilityEl.textContent=opacity===0?'○':'◐';controlVisibilityEl.setAttribute('aria-pressed',opacity===0?'true':'false');if(opacity>0)lastVisibleControlOpacity=opacity;if(save){try{localStorage.setItem('badminton-control-opacity',String(opacity));}catch(error){}}}
+let savedControlOpacity=.72;try{const storedValue=localStorage.getItem('badminton-control-opacity');if(storedValue!==null){const stored=Number(storedValue);if(Number.isFinite(stored))savedControlOpacity=stored;}}catch(error){}
+applyControlOpacity(savedControlOpacity,false);
+function toggleControlVisibility(){const current=Number(controlOpacityEl.value)/100;applyControlOpacity(current>0?0:lastVisibleControlOpacity);}
+const keyboardCodes={KeyA:'left',KeyD:'right',ArrowLeft:'left',ArrowRight:'right',KeyW:'up',KeyS:'down',ArrowUp:'up',ArrowDown:'down',KeyJ:'drop',KeyK:'clear',KeyL:'smash',KeyP:'ultimate'},keyboardFallback={a:'left',d:'right',arrowleft:'left',arrowright:'right',w:'up',s:'down',arrowup:'up',arrowdown:'down',j:'drop',k:'clear',l:'smash',p:'ultimate'},tacticKeyboardCodes={KeyU:'front',KeyI:'body',KeyO:'back'},tacticKeyboardFallback={u:'front',i:'body',o:'back'},keyButton=action=>document.querySelector(`[data-key="${action}"]`),controlFromKey=e=>keyboardCodes[e.code]||keyboardFallback[(e.key||'').toLowerCase()]||null,tacticFromKey=e=>tacticKeyboardCodes[e.code]||tacticKeyboardFallback[(e.key||'').toLowerCase()]||null;
+addEventListener('keydown',e=>{const tacticChoice=tacticFromKey(e);if(tacticState&&tacticChoice){e.preventDefault();if(!e.repeat){stageEl.dataset.lastInput=`aim-${tacticChoice}`;resolveTactics(tacticChoice);}return;}const control=controlFromKey(e);if(!control)return;e.preventDefault();stageEl.dataset.lastInput=control;
+  if(control==='up'||control==='down'){keys[control]=true;return;}
+  const move=control==='left'||control==='right';if(move){if(!e.repeat&&running&&!tacticState)A.x=clamp(A.x+(control==='right'?18:-18),105,425);keys[control]=true;keyButton(control).classList.add('on');return;}if(!e.repeat){const btn=keyButton(control);
+    if(serveState&&serveState.side===0&&(control==='drop'||control==='clear')){btn.classList.add('on');startServeCharge(control==='drop'?'serveShort':'serveLong');return;}
+    if(control==='smash'){A.smashCharge=0;A.smashHolding=true;}
+    btn.classList.add('on');clearTimeout(btn.keyFlash);btn.keyFlash=setTimeout(()=>btn.classList.remove('on'),140);tryHit(control);}});
+addEventListener('keyup',e=>{const control=controlFromKey(e);if(!control)return;
+  if(control==='up'||control==='down'){keys[control]=false;return;}
+  if(control==='smash')A.smashHolding=false;
+  if(control==='left'||control==='right'){keys[control]=false;keyButton(control).classList.remove('on');return;}
+  if(serveState&&serveState.type&&serveState.side===0&&serveState.type===(control==='drop'?'serveShort':control==='clear'?'serveLong':null)){keyButton(control).classList.remove('on');releaseServe();}});
+addEventListener('blur',()=>{releaseJoystick();document.querySelectorAll('[data-key]').forEach(btn=>btn.classList.remove('on'));});
+const previewParams=new URLSearchParams(location.search),motionQuery=previewParams.get('motion'),motionSideParam=previewParams.get('side'),motionSide=motionSideParam==='right'?'right':'left',motionBoth=motionSideParam==='both',previewMotions=new Set(['split','drop','lift','clear','standingSmash','smash','serveShort','serveLong']);
+if(previewMotions.has(motionQuery))setTimeout(()=>{
+  begin(true);
+  const previewAthletes=()=>motionBoth?[A,B]:[motionSide==='right'?B:A],replay=()=>{if(!motionShowcase)return;previewAthletes().forEach(athlete=>{athlete.pending=null;athlete.recoverFrom='ready';athlete.anim=motionQuery;athlete.animT=0;athlete.smashMode=motionQuery==='smash'?'jump':motionQuery==='standingSmash'?'standing':null;});};
+  replay();setInterval(()=>{if(motionShowcase&&previewAthletes().every(athlete=>athlete.anim==='ready'))replay();},180);
+},80);
+if(previewParams.get('editor')==='1')setTimeout(openFaceStudio,80);
+// 競技電光風入口特效：霓虹球場、掃射光束、飛行羽球拖影與漂浮火花。
+(function startFx(){
+  const cv=document.getElementById('startFx'),startEl=document.getElementById('start');if(!cv||!cv.getContext)return;
+  const g=cv.getContext('2d'),dpr=Math.min(2,window.devicePixelRatio||1),rand=(a,b)=>a+Math.random()*(b-a);
+  let cw=0,ch=0,shuttles=[],sparks=[],lastT=0;
+  function resize(){const r=cv.getBoundingClientRect();cw=Math.max(2,r.width);ch=Math.max(2,r.height);cv.width=Math.round(cw*dpr);cv.height=Math.round(ch*dpr);g.setTransform(dpr,0,0,dpr,0,0);}
+  function newShuttle(){const dir=Math.random()<.5?1:-1;return{dir,x:dir>0?-70:cw+70,y:rand(ch*.06,ch*.66),vx:rand(70,140)*dir,vy:rand(-16,16),wob:rand(0,6.28),wobSp:rand(1.2,2.6),scale:rand(.7,1.35),trail:[]};}
+  function newSpark(){return{x:rand(0,cw),y:rand(0,ch),vy:rand(-10,-30),r:rand(.6,2.1),tw:rand(0,6.28),twSp:rand(1.2,3),warm:Math.random()<.4};}
+  function reset(){shuttles=[];sparks=[];for(let i=0;i<6;i++){const s=newShuttle();s.x=rand(0,cw);shuttles.push(s);}for(let i=0;i<64;i++)sparks.push(newSpark());}
+  function drawCourt(now){
+    const vx=cw*.5,vy=-ch*.16,baseY=ch*1.02,pulse=Math.sin(now*.0013)*.5+.5;
+    g.save();g.globalCompositeOperation='lighter';g.lineCap='round';
+    g.strokeStyle=`rgba(70,215,255,${.05+pulse*.05})`;g.lineWidth=1;
+    for(let i=-5;i<=5;i++){const fx=vx+i*(cw*.14);g.beginPath();g.moveTo(vx+i*3,vy);g.lineTo(fx,baseY);g.stroke();}
+    for(let j=1;j<=6;j++){const t=j/6,y=lerp(vy,baseY,t*t),spread=lerp(cw*.02,cw*.9,t*t);g.globalAlpha=.16*t;g.beginPath();g.moveTo(vx-spread,y);g.lineTo(vx+spread,y);g.stroke();}
+    g.globalAlpha=1;g.restore();
+  }
+  function drawBeams(now){
+    g.save();g.globalCompositeOperation='lighter';
+    for(let i=0;i<3;i++){const ang=-Math.PI/2+Math.sin(now*.0004+i*2.1)*.55+(i-1)*.4,len=ch*1.4,ox=cw*(.3+i*.2),oy=-ch*.1;
+      g.save();g.translate(ox,oy);g.rotate(ang);const grad=g.createLinearGradient(0,0,0,len);const hue=i===1?'255,227,109':i===0?'95,230,255':'255,157,241';grad.addColorStop(0,`rgba(${hue},0.16)`);grad.addColorStop(.5,`rgba(${hue},0.05)`);grad.addColorStop(1,`rgba(${hue},0)`);g.fillStyle=grad;g.beginPath();g.moveTo(0,0);g.lineTo(-cw*.16,len);g.lineTo(cw*.16,len);g.closePath();g.fill();g.restore();}
+    g.restore();
+  }
+  function drawShuttle(s,now){
+    s.trail.unshift({x:s.x,y:s.y});if(s.trail.length>14)s.trail.length=14;
+    const ang=Math.atan2(s.vy,s.vx);
+    g.save();g.globalCompositeOperation='lighter';g.lineCap='round';
+    for(let i=s.trail.length-1;i>0;i--){const a=(1-i/s.trail.length)*.5;g.strokeStyle=`rgba(120,232,255,${a})`;g.lineWidth=(1-i/s.trail.length)*5*s.scale;g.beginPath();g.moveTo(s.trail[i].x,s.trail[i].y);g.lineTo(s.trail[i-1].x,s.trail[i-1].y);g.stroke();}
+    g.restore();
+    g.save();g.translate(s.x,s.y);g.rotate(ang);g.scale(s.scale,s.scale);
+    g.fillStyle='rgba(255,255,255,.16)';g.beginPath();g.arc(0,0,15,0,Math.PI*2);g.fill();
+    g.fillStyle='#eef9ff';g.beginPath();g.moveTo(6,0);g.lineTo(-13,-8);g.lineTo(-9,0);g.lineTo(-13,8);g.closePath();g.fill();
+    g.strokeStyle='#9fd0df';g.lineWidth=.8;[-10,-6].forEach(x=>{g.beginPath();g.moveTo(x,-5);g.lineTo(x,5);g.stroke();});
+    g.fillStyle='#ffe9c4';g.beginPath();g.arc(7,0,4.6,0,Math.PI*2);g.fill();g.restore();
+  }
+  function frame(now){
+    requestAnimationFrame(frame);
+    if(!startEl||startEl.classList.contains('hide')){lastT=now;return;}
+    const r=cv.getBoundingClientRect();if(Math.abs(r.width-cw)>1||Math.abs(r.height-ch)>1||!shuttles.length){resize();if(!shuttles.length)reset();}
+    let dt=(now-lastT)/1000;if(!lastT||dt>.05)dt=.016;lastT=now;
+    g.clearRect(0,0,cw,ch);
+    drawBeams(now);drawCourt(now);
+    for(const p of sparks){p.y+=p.vy*dt;p.tw+=p.twSp*dt;if(p.y<-6){p.y=ch+6;p.x=rand(0,cw);}const tw=Math.sin(p.tw)*.5+.5;g.globalAlpha=.15+tw*.5;g.fillStyle=p.warm?'#ffe36d':'#7fe6ff';g.beginPath();g.arc(p.x,p.y,p.r,0,Math.PI*2);g.fill();}
+    g.globalAlpha=1;
+    for(const s of shuttles){s.wob+=s.wobSp*dt;s.x+=s.vx*dt;s.y+=s.vy*dt+Math.sin(s.wob)*10*dt;drawShuttle(s,now);if((s.dir>0&&s.x>cw+80)||(s.dir<0&&s.x<-80)||s.y<-60||s.y>ch+60){Object.assign(s,newShuttle());}}
+  }
+  window.addEventListener('resize',()=>{cw=0;});
+  requestAnimationFrame(frame);
+})();
+drawFacePreviews();updateHud();requestAnimationFrame(loop);
+</script>
+<script src="offline-register.js" defer></script>
+</body>
+</html>
