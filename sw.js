@@ -1,7 +1,7 @@
 /* iPad offline pack for the teaching portal. */
 importScripts('offline-files.js');
 
-var VERSION = '20260723-badminton-mobile-joystick-v3';
+var VERSION = '20260725-badminton-super-smash-s2';
 var CACHE_PREFIX = 'aac-teaching-';
 var STATIC_CACHE = CACHE_PREFIX + 'static-' + VERSION;
 var RUNTIME_CACHE = CACHE_PREFIX + 'runtime-' + VERSION;
