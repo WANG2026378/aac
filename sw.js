@@ -1,7 +1,7 @@
 /* iPad offline pack for the teaching portal. */
 importScripts('offline-files.js');
 
-var VERSION = '20260726-badminton-s2-joints-out';
+var VERSION = '20260728-gyro-aim-3d';
 var CACHE_PREFIX = 'aac-teaching-';
 var STATIC_CACHE = CACHE_PREFIX + 'static-' + VERSION;
 var RUNTIME_CACHE = CACHE_PREFIX + 'runtime-' + VERSION;
