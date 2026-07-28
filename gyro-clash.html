@@ -59,6 +59,10 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
 .skb:disabled{opacity:.4}
 #centerMsg{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);font-size:46px;font-weight:900;letter-spacing:6px;text-shadow:0 0 24px rgba(120,160,255,.8),0 2px 4px #000;pointer-events:none;text-align:center;white-space:pre-line}
 #scoreBoard{position:absolute;left:50%;top:10px;transform:translateX(-50%);font-size:22px;font-weight:800;background:rgba(10,14,40,.75);border:1px solid #3a417a;border-radius:14px;padding:6px 22px;letter-spacing:2px}
+#aimUI{position:absolute;left:0;right:0;bottom:16px;display:none;flex-direction:column;align-items:center;gap:10px;z-index:8}
+#aimUI.on{display:flex}
+#aimHint{background:rgba(10,14,40,.82);border:1px solid #5a63b8;color:#dfe4ff;border-radius:12px;padding:8px 18px;font-size:15px;letter-spacing:1px}
+#aimBtn{min-width:220px;min-height:58px;font-size:19px;touch-action:none}
 #chargeUI{position:absolute;inset:0;display:none;align-items:center;justify-content:center;gap:80px;background:rgba(5,7,25,.55);border-radius:14px}
 #chargeUI.on{display:flex}
 .chCol{text-align:center;width:200px}
@@ -132,6 +136,9 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
  #battleWrap.mobile-fill .hud .skBtns{margin-top:6px;gap:5px}
  #battleWrap.mobile-fill .hud .skb{min-height:46px;padding:8px 11px;font-size:13px}
  #battleWrap.mobile-fill #scoreBoard{top:calc(env(safe-area-inset-top) + 10px);padding:5px 16px;font-size:19px;opacity:.8;background:rgba(10,14,40,.56)}
+ #battleWrap.mobile-fill #aimUI{bottom:calc(env(safe-area-inset-bottom) + 12px)}
+ #battleWrap.mobile-fill #aimBtn{min-width:min(80vw,320px);min-height:72px;font-size:21px}
+ #battleWrap.mobile-fill #aimHint{font-size:14px;text-align:center;max-width:92vw}
  #battleWrap.mobile-fill #chargeUI{gap:10px;align-items:center}
  #battleWrap.mobile-fill #chargeUI .chCol{width:calc(50vw - 16px);zoom:var(--battle-ui-scale,1)}
  #battleWrap.mobile-fill #chargeUI .lcv{width:100%;height:auto;margin-bottom:4px}
@@ -287,7 +294,11 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
     </div>
     <div id="centerMsg"></div>
     <div id="shout"></div>
-    <div id="chargeUI">
+    <div id="aimUI">
+  <div id="aimHint">① 決定切入方向</div>
+  <button class="btn" id="aimBtn">🎯 決定方向</button>
+</div>
+<div id="chargeUI">
       <div class="chCol">
         <div class="who" id="chNameL" style="color:#ffb92e">P1</div>
         <canvas class="lcv" id="lcvL" width="200" height="110"></canvas>
@@ -1358,11 +1369,15 @@ function makeGyro(pi,power,perfect){
     sta:s.sta+(tf.sta||0)+(df.sta||0),spd:Math.max(1,s.spd+(tf.spd||0)+(df.spd||0))};
  const L=launcherOf(pi),lf=L.fx;
  const side=pi===0?-1:1;
+ const plan=(battle.aimPlan&&battle.aimPlan[pi])||null;
+ const pr=plan?battle.arena.R*(.95-plan.dep*.6):0;
  const spinMax=100*(0.55+0.45*power/100)*(lf.spin||1)*(perfect?1.1:1);
  return{
   pi,id,t,evo:o.evo,ch,
-  x:CX+side*130+rnd(-20,20),y:CY+rnd(-60,60),
-  vx:-side*rnd(2,4)*(1+power/150)*(lf.kick||1),vy:rnd(-2,2)*(lf.kick||1),
+  x:plan?CX+Math.cos(plan.ang)*pr:CX+side*130+rnd(-20,20),
+  y:plan?CY+Math.sin(plan.ang)*pr:CY+rnd(-60,60),
+  vx:plan?-Math.cos(plan.ang)*rnd(2.8,4.4)*(1+power/150)*(lf.kick||1):-side*rnd(2,4)*(1+power/150)*(lf.kick||1),
+  vy:plan?-Math.sin(plan.ang)*rnd(2.8,4.4)*(1+power/150)*(lf.kick||1):rnd(-2,2)*(lf.kick||1),
   spin:spinMax,spinMax,
   hp:100*(b.hp||1),hpMax:100*(b.hp||1),
   energy:clamp(lf.energy||0,0,100),angle:0,r:30+t.tier*2,tip,disc,tipE:(tf.energy||1)*(df.energy||1),tipDrain:(tf.drain||0),
@@ -1385,11 +1400,79 @@ function startRound(){
  crystals=[];crystalT=rnd(4,7);eventT=rnd(10,15);fieldFx={k:null,t:0};
  $("resultOverlay").classList.remove("on");
  $("centerMsg").textContent="";
- setupCharge();
+ setupAim();
  if(!raf){lastTime=performance.now();raf=requestAnimationFrame(loop);}
 }
 
 /* ---- 蓄力 ---- */
+/* ===== 落點瞄準階段 ===== */
+let aimState=null;
+function setupAim(){
+ aimState={
+  ang:[rnd(0,6.28),rnd(0,6.28)],
+  dep:[.5,.5],depDir:[1,1],
+  step:[0,0],locked:[false,false],elapsed:0
+ };
+ if(battle.mode===1)aiPickAim(1);
+ phase="aim";
+ $("aimUI").classList.add("on");
+ aimHintUpdate();
+}
+function aimOwner(){
+ if(battle.mode===3)return net.myIdx;
+ if(battle.mode===2)return aimState.locked[0]?1:0;
+ return 0;
+}
+function aimHintUpdate(){
+ const A=aimState;if(!A)return;
+ const who=aimOwner(),tag=battle.mode===2?("P"+(who+1)+":"):"";
+ if(A.step[who]===0){
+  $("aimHint").innerHTML=tag+"① 轉動準星,按鍵決定<b>切入方向</b>";
+  $("aimBtn").textContent="🎯 決定方向";
+ }else{
+  $("aimHint").innerHTML=tag+"② 按鍵決定<b>落點深度</b>(靠中心穩、靠邊猛)";
+  $("aimBtn").textContent="🎯 決定落點";
+ }
+}
+function aiPickAim(pi){
+ const skill=[.45,.7,.92][battle.diff]||.7;
+ aimState.ang[pi]=rnd(0,6.28);
+ aimState.dep[pi]=clamp(rnd(.3,1)*skill+rnd(0,.12),.15,1);
+ aimState.locked[pi]=true;aimState.step[pi]=2;
+}
+function aimAdvance(){
+ const A=aimState;if(!A)return;
+ const who=aimOwner();
+ if(A.locked[who])return;
+ if(A.step[who]===0){A.step[who]=1;aimHintUpdate();return;}
+ A.locked[who]=true;A.step[who]=2;
+ if(battle.mode===3)net.send({t:"aim",ang:A.ang[who],dep:A.dep[who]});
+ if(!A.locked[0]||!A.locked[1]){aimHintUpdate();return;}
+ finishAim();
+}
+function finishAim(){
+ const A=aimState;if(!A)return;
+ if(!A.locked[0]||!A.locked[1])return;
+ battle.aimPlan=[{ang:A.ang[0],dep:A.dep[0]},{ang:A.ang[1],dep:A.dep[1]}];
+ aimState=null;
+ $("aimUI").classList.remove("on");
+ phase="charge";
+ setupCharge();
+}
+function aimTick(dt){
+ const A=aimState;if(!A)return;
+ A.elapsed+=dt;
+ const who=aimOwner();
+ if(!A.locked[who]){
+  if(A.step[who]===0){A.ang[who]+=1.45*dt;if(A.ang[who]>6.283)A.ang[who]-=6.283;}
+  else{
+   A.dep[who]+=A.depDir[who]*.8*dt;
+   if(A.dep[who]>=1){A.dep[who]=1;A.depDir[who]=-1;}
+   if(A.dep[who]<=.12){A.dep[who]=.12;A.depDir[who]=1;}
+  }
+ }
+ if(A.elapsed>15){A.locked=[true,true];A.step=[2,2];finishAim();}
+}
 function setupCharge(){
  const chargeUI=$("chargeUI");
  chargeUI.classList.add("on");
@@ -1611,6 +1694,7 @@ function loop(t){
  const rdt=Math.min(.033,(t-lastTime)/1000);lastTime=t;
  if(!$("scr-battle").classList.contains("on"))return;
  const dt=rdt*slowMo;
+ if(phase==="aim")aimTick(rdt);
  if(phase==="charge")chargeTick(rdt);
  if(phase==="fight"){
   if(battle.mode===3&&net.role==="guest"){/* 房主端模擬,本端顯示 */}
@@ -2098,6 +2182,45 @@ function render(){
  if(fieldFx.k==="grav"&&Math.floor(performance.now()/250)%2){
   ctx.beginPath();ctx.arc(CX,CY,R-8,0,7);ctx.strokeStyle="rgba(255,80,180,.5)";ctx.lineWidth=6;ctx.stroke();
  }
+ /* ===== 瞄準指示(新功能) ===== */
+ if(phase==="aim"&&aimState){
+  const A2=aimState;
+  for(let pi=0;pi<2;pi++){
+   const isMe=(battle.mode===3)?pi===net.myIdx:(battle.mode===2?true:pi===0);
+   if(battle.mode===1&&pi===1)continue;
+   const col=pi===0?"#ffd24d":"#31d2ff";
+   const rr=R*(.95-A2.dep[pi]*.6);
+   const ex=CX+Math.cos(A2.ang[pi])*rr, ey=CY+Math.sin(A2.ang[pi])*rr;
+   const done=A2.locked[pi];
+   ctx.save();
+   ctx.globalAlpha=done?.55:.95;
+   /* 入場軌跡線 */
+   ctx.setLineDash([9,9]);
+   ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(CX,CY);
+   ctx.strokeStyle=col;ctx.lineWidth=2.6;ctx.stroke();
+   ctx.setLineDash([]);
+   /* 落點圈 */
+   ctx.beginPath();ctx.arc(ex,ey,26,0,7);
+   ctx.strokeStyle=col;ctx.lineWidth=3;ctx.stroke();
+   ctx.beginPath();ctx.arc(ex,ey,26*(.4+.25*Math.sin(performance.now()/180)),0,7);
+   ctx.globalAlpha=(done?.3:.5);ctx.fillStyle=col;ctx.fill();
+   /* 十字準星 */
+   ctx.globalAlpha=done?.6:1;
+   ctx.beginPath();
+   ctx.moveTo(ex-34,ey);ctx.lineTo(ex-14,ey);ctx.moveTo(ex+14,ey);ctx.lineTo(ex+34,ey);
+   ctx.moveTo(ex,ey-34);ctx.lineTo(ex,ey-14);ctx.moveTo(ex,ey+14);ctx.lineTo(ex,ey+34);
+   ctx.strokeStyle=col;ctx.lineWidth=2.4;ctx.stroke();
+   /* 標籤 */
+   ctx.font="bold 15px sans-serif";ctx.textAlign="center";ctx.fillStyle=col;
+   ctx.fillText((battle.mode===2?("P"+(pi+1)):(pi===0?"你":"對手"))+(done?" ✔":""),ex,ey-42);
+   ctx.restore();
+  }
+  /* 中央提示環 */
+  ctx.save();ctx.globalAlpha=.25;
+  ctx.beginPath();ctx.arc(CX,CY,R*.35,0,7);ctx.setLineDash([6,12]);
+  ctx.strokeStyle="#8fa0ff";ctx.lineWidth=2;ctx.stroke();ctx.setLineDash([]);
+  ctx.restore();
+ }
  /* 陀螺 */
  for(const g of gyros){
   if(g.fx.dead)continue;
@@ -2244,6 +2367,10 @@ function setHold(i,v){
 window.addEventListener("keydown",e=>{
  if(e.repeat)return;
  const k=e.key.toLowerCase();
+ if(phase==="aim"){
+  if(k===" "||k==="enter"||k==="a"){e.preventDefault();aimAdvance();return;}
+  if(k==="l"&&battle.mode===2){aimAdvance();return;}
+ }
  if(phase==="charge"){
   if(k===" "||k==="a"){e.preventDefault();setHold(0,true);}
   if(k==="l"&&battle.mode===2)setHold(1,true);
@@ -2271,6 +2398,12 @@ function bindHold(btn,i){
  btn.addEventListener("contextmenu",e=>e.preventDefault());
 }
 bindHold($("holdL"),0);bindHold($("holdR"),1);
+/* 瞄準階段按鈕 */
+(function(){
+ const ab=$("aimBtn");if(!ab)return;
+ ab.addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();if(phase==="aim")aimAdvance();});
+ ab.addEventListener("contextmenu",e=>e.preventDefault());
+})();
 
 /* 畫布縮放適應視窗 */
 let battleUiScale=1;
@@ -2356,6 +2489,7 @@ function onNet(d){
   case"sel":{const o=1-net.myIdx;battle.charP[o]=d.ch;battle.picks[o]=d.picks;net.theirSel=true;
    if(net.role==="host"&&net.mySel)renderArena();break;}
   case"arena":{battle.arena=ARENAS.find(a=>a.id===d.id);startMatch();break;}
+  case"aim":{const o=1-net.myIdx;if(aimState){aimState.ang[o]=d.ang;aimState.dep[o]=d.dep;aimState.locked[o]=true;aimState.step[o]=2;finishAim();}break;}
   case"cv":{const cs=chargeState;if(cs&&!cs.locked[1-net.myIdx]){cs.v[1-net.myIdx]=d.v;}break;}
   case"lock":{const cs=chargeState;if(cs){cs.v[1-net.myIdx]=d.v;cs.perfect[1-net.myIdx]=d.p;cs.locked[1-net.myIdx]=true;
    (1-net.myIdx===0?$("chTipL"):$("chTipR")).innerHTML="<b style='color:#7dffa9'>✔ 已鎖定 "+Math.round(d.v)+"%</b>";
