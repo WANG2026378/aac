@@ -1,7 +1,7 @@
 /* iPad offline pack for the teaching portal. */
 importScripts('offline-files.js');
 
-var VERSION = '20260728-gyro-skillbar';
+var VERSION = '20260731-gyro-zodiac';
 var CACHE_PREFIX = 'aac-teaching-';
 var STATIC_CACHE = CACHE_PREFIX + 'static-' + VERSION;
 var RUNTIME_CACHE = CACHE_PREFIX + 'runtime-' + VERSION;
