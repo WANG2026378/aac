@@ -2083,7 +2083,7 @@ function drawFX(layer){
       ctx.globalAlpha=a*.9; ctx.translate(f.x,f.y);
       const rr=f.r*(0.2+k*1.05);
       const gg=ctx.createRadialGradient(0,0,rr*.4,0,0,rr);
-      gg.addColorStop(0,'transparent'); gg.addColorStop(.75,(f.c||'#7fe9ff')+'cc'); gg.addColorStop(1,'transparent');
+      gg.addColorStop(0,'transparent'); gg.addColorStop(.75,(f.c||'#7fe9ff')); gg.addColorStop(1,'transparent');
       ctx.fillStyle=gg; ctx.beginPath(); ctx.ellipse(0,0,rr,rr*.62,0,0,TAU); ctx.fill();
       ctx.strokeStyle=(f.c||'#ffffff'); ctx.lineWidth=4*(1-k);
       ctx.beginPath(); ctx.ellipse(0,0,rr,rr*.62,0,0,TAU); ctx.stroke();
@@ -2590,7 +2590,7 @@ function startBattle(){
 }
 
 (function(){
-  var tag='build 20260802-v7　武將 '+HEROES.length+' 名　專屬招式 '+Object.keys(HERO_COMBAT).length+' 種　配樂 3 首';
+  var tag='build 20260802-v7.1　武將 '+HEROES.length+' 名　專屬招式 '+Object.keys(HERO_COMBAT).length+' 種　配樂 3 首';
   document.getElementById('build').textContent=tag;
   document.title='走卒傳 V7・武將無雙篇';
 })();
