@@ -61,19 +61,38 @@
   /* ---- 開場 ---- */
   #gate{position:fixed;inset:0;z-index:9;display:block;
     overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;
-    padding:20px 20px calc(16px + env(safe-area-inset-bottom));
-    background:radial-gradient(120% 90% at 50% 0%,#241d47 0%,#0b0a14 68%);}
-  #gate .box{max-width:430px;margin:0 auto;text-align:center;}
-  #gate h1{font-size:clamp(26px,7.5vw,40px);letter-spacing:.2em;font-weight:400;line-height:1.2;
-    background:linear-gradient(180deg,#fff,#7fe9ff 62%,#4a7ad0);-webkit-background-clip:text;background-clip:text;color:transparent;}
-  #gate .sub{margin-top:8px;font-size:12px;letter-spacing:.42em;color:#7d86ad;}
+    padding:22px 20px calc(16px + env(safe-area-inset-bottom));
+    background:
+      linear-gradient(90deg,rgba(5,4,8,.84),rgba(5,4,8,.2) 36%,rgba(5,4,8,.2) 64%,rgba(5,4,8,.84)),
+      radial-gradient(110% 72% at 50% 20%,#5b201a 0%,#25151a 38%,#09080e 78%);}
+  #gate:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.2;
+    background-image:repeating-linear-gradient(112deg,transparent 0 17px,rgba(255,237,188,.08) 18px 19px);}
+  #gate .box{position:relative;max-width:980px;margin:0 auto;text-align:center;}
+  .cover-stage{position:relative;height:clamp(230px,36vh,390px);margin:-8px auto 0;overflow:hidden;
+    border-bottom:1px solid rgba(229,192,74,.34);}
+  .cover-warrior{position:absolute;bottom:-12%;height:118%;width:auto;filter:drop-shadow(0 18px 18px rgba(0,0,0,.58));
+    -webkit-mask-image:linear-gradient(#000 78%,transparent 99%);mask-image:linear-gradient(#000 78%,transparent 99%);}
+  .cover-warrior.left{left:max(-34px,calc(50% - 480px));transform:rotate(-2deg);}
+  .cover-warrior.right{right:max(-34px,calc(50% - 480px));transform:scaleX(-1) rotate(-2deg);}
+  .cover-title{position:absolute;inset:6% 22% auto;display:grid;place-items:center;z-index:2;}
+  #gate h1{position:relative;font-size:clamp(54px,10vw,104px);letter-spacing:.08em;font-weight:900;line-height:.98;
+    text-shadow:0 5px 0 #5d260f,0 10px 24px rgba(0,0,0,.9);
+    background:linear-gradient(180deg,#fff7d5 2%,#e8c65a 42%,#8e3c19 92%);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  #gate h1:after{content:"武";position:absolute;right:-34px;bottom:-14px;width:34px;height:34px;display:grid;place-items:center;
+    font-size:20px;letter-spacing:0;color:#f8e8c4;background:#9e2b2b;border:2px solid #d7b45b;transform:rotate(5deg);
+    -webkit-text-fill-color:#f8e8c4;text-shadow:none;}
+  #gate .sub{margin-top:14px;font-size:clamp(11px,2vw,15px);letter-spacing:.52em;color:#f0dcaa;text-shadow:0 2px 5px #000;}
+  .cover-kicker{margin-bottom:8px;font-size:11px;letter-spacing:.42em;color:#db9c61;}
+  .cover-rank{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:3;display:flex;align-items:center;
+    width:min(540px,74vw);font-size:10px;color:#d8caac;letter-spacing:.08em;}
+  .cover-rank span{white-space:nowrap}.cover-rank i{height:1px;flex:1;margin:0 10px;background:linear-gradient(90deg,#9e2b2b,#e5c04a);}
   #gate .story{margin-top:16px;font-size:13px;line-height:1.95;color:#a9b1d0;text-align:left;
-    padding:12px 14px;border-left:3px solid #9e2b2b;background:rgba(158,43,43,.08);}
+    max-width:620px;margin-left:auto;margin-right:auto;padding:12px 14px;border-left:3px solid #9e2b2b;background:rgba(8,7,12,.58);}
   #gate .story b{color:#e5c04a;font-weight:400;}
-  #gate ul{list-style:none;margin:18px 0 0;text-align:left;font-size:13px;line-height:1.85;color:#b9c2e2;}
+  #gate ul{list-style:none;max-width:620px;margin:18px auto 0;text-align:left;font-size:13px;line-height:1.85;color:#b9c2e2;}
   #gate ul b{color:var(--qi);font-weight:400;letter-spacing:.08em;}
   #gate ul i{font-style:normal;color:var(--sakura);}
-  #goWrap{position:sticky;bottom:0;margin-top:18px;padding:12px 0 6px;
+  #goWrap{position:sticky;bottom:0;max-width:620px;margin:18px auto 0;padding:12px 0 6px;
     background:linear-gradient(180deg,rgba(11,10,20,0),rgba(11,10,20,.92) 40%);}
   #go{width:100%;padding:15px 20px;font:inherit;font-size:17px;letter-spacing:.3em;color:#0b0a14;
     background:linear-gradient(100deg,var(--qi),#fff);border:0;border-radius:2px;cursor:pointer;
@@ -99,6 +118,7 @@
     background:linear-gradient(160deg,#241d2e,#14111d);}
   .hero .nm{padding:6px 4px 3px;font-size:15px;color:#f0e6ff;}
   .hero .rl{padding:0 4px 7px;font-size:10.5px;color:#8fa3c8;line-height:1.5;}
+  .hero .sig{display:block;margin-top:3px;color:#e5c04a;font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .hero .fc{display:inline-block;margin-right:4px;padding:0 4px;border-radius:2px;
     font-size:10px;color:#0b0a14;}
   #pickGo{position:sticky;bottom:0;display:block;width:100%;max-width:520px;margin:16px auto 0;
@@ -109,20 +129,20 @@
     color:#0b0a14;background:var(--gold);border-radius:2px;font-weight:700;}
 
   /* ---- 難度（主題化稱呼） ---- */
-  #modes{display:flex;gap:8px;justify-content:center;margin-top:16px;}
+  #modes{display:flex;gap:8px;justify-content:center;max-width:620px;margin:16px auto 0;}
   .mode{flex:1;padding:11px 6px;border:1px solid rgba(143,163,200,.34);border-radius:2px;
     background:rgba(21,18,40,.5);font-size:13.5px;letter-spacing:.1em;cursor:pointer;color:#b9c2e2;}
   .mode.sel{border-color:var(--qi);color:#0b0a14;background:linear-gradient(100deg,var(--qi),#bfeaff);}
   .mode small{display:block;font-size:10px;opacity:.65;margin-top:3px;letter-spacing:0;}
-  .row{margin-top:13px;text-align:left;}
+  .row{max-width:620px;margin:13px auto 0;text-align:left;}
   .row .lb{font-size:12px;letter-spacing:.14em;color:#7d86ad;margin-bottom:6px;}
   .segs{display:flex;gap:6px;}
   .seg{flex:1;padding:9px 4px;text-align:center;font-size:14px;border-radius:2px;cursor:pointer;
     border:1px solid rgba(143,163,200,.3);background:rgba(21,18,40,.5);color:#b9c2e2;}
   .seg.sel{border-color:var(--gold);color:#0b0a14;background:var(--gold);}
-  #bankToggle{margin-top:14px;font-size:12px;letter-spacing:.1em;color:#7d86ad;
+  #bankToggle{max-width:620px;margin:14px auto 0;font-size:12px;letter-spacing:.1em;color:#7d86ad;
     text-decoration:underline;cursor:pointer;}
-  #bankBox{display:none;margin-top:10px;}
+  #bankBox{display:none;max-width:620px;margin:10px auto 0;}
   #bankBox textarea{width:100%;height:96px;padding:9px;font:inherit;font-size:13px;line-height:1.6;
     color:#e9e6ff;background:rgba(11,10,20,.7);border:1px solid rgba(143,163,200,.3);border-radius:2px;}
   #bankBox .tip{font-size:11px;color:#5d668c;margin-top:6px;line-height:1.6;}
@@ -131,9 +151,31 @@
   #topbar{position:fixed;top:max(8px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));
     right:max(10px,env(safe-area-inset-right));display:flex;justify-content:space-between;
     pointer-events:none;z-index:5;}
-  #homeBtn,#fullscreenBtn{pointer-events:auto;display:inline-block;padding:7px 13px;font:inherit;font-size:13px;
+  .top-actions{display:flex;gap:7px;pointer-events:auto;}
+  #homeBtn,#fullscreenBtn,#musicBtn{pointer-events:auto;display:inline-block;padding:7px 13px;font:inherit;font-size:13px;
     letter-spacing:.08em;color:#b9c2e2;text-decoration:none;border:1px solid rgba(143,163,200,.3);
     border-radius:2px;background:rgba(11,10,20,.55);backdrop-filter:blur(3px);cursor:pointer;}
+  #musicBtn{min-width:114px;color:#f0dcaa;border-color:rgba(229,192,74,.38);}
+  #bossHud{position:fixed;z-index:6;left:50%;top:max(136px,calc(env(safe-area-inset-top) + 128px));transform:translateX(-50%);
+    width:min(520px,calc(100vw - 36px));display:none;pointer-events:none;text-align:center;}
+  #bossHud.on{display:block;}
+  #bossName{font-size:13px;letter-spacing:.22em;color:#fff3cf;text-shadow:0 2px 5px #000;}
+  #bossMove{margin-top:3px;font-size:11px;color:#e0aa78;letter-spacing:.12em;}
+  .boss-meter{height:13px;margin-top:6px;padding:2px;border:1px solid rgba(255,239,187,.7);background:rgba(5,4,8,.75);}
+  #bossHp{height:100%;width:100%;transform-origin:left;background:linear-gradient(90deg,#9e2b2b,#ef6a3c,#f5cf62);transition:width .12s linear;}
+  .music-seg .seg{position:relative;padding:12px 4px 10px;}
+  .music-seg .seg small{display:block;margin-top:3px;font-size:9px;letter-spacing:.08em;opacity:.68;}
+  @media(max-width:680px){
+    .cover-stage{height:278px}.cover-warrior{height:104%;bottom:-4%}.cover-warrior.left{left:-78px}.cover-warrior.right{right:-78px}
+    .cover-title{inset:13% 16% auto}.cover-kicker{font-size:9px}.cover-rank{width:84vw}
+    #musicBtn{min-width:44px;width:44px;font-size:0;padding:7px}#musicBtn:before{content:"樂";font-size:13px}
+    #bossHud{top:max(130px,calc(env(safe-area-inset-top) + 118px));}
+  }
+  @media(max-height:500px){
+    #bossHud{top:max(6px,env(safe-area-inset-top));width:min(350px,43vw);}
+    #bossName{font-size:10px;letter-spacing:.1em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    #bossMove{display:none}.boss-meter{height:9px;margin-top:3px;padding:1px;}
+  }
   #errBar{display:none;position:fixed;left:0;right:0;top:0;z-index:99;padding:10px 14px;
     background:#ff5a5a;color:#fff;font-size:13px;line-height:1.5;}
 </style>
@@ -142,7 +184,15 @@
 <div id="errBar"></div>
 <div id="topbar">
   <a id="homeBtn" href="index.html">← 教學首頁</a>
-  <button id="fullscreenBtn">全螢幕</button>
+  <div class="top-actions">
+    <button id="musicBtn" aria-label="切換配樂">樂・破陣</button>
+    <button id="fullscreenBtn">全螢幕</button>
+  </div>
+</div>
+<div id="bossHud">
+  <div id="bossName">敵將來襲</div>
+  <div id="bossMove"></div>
+  <div class="boss-meter"><div id="bossHp"></div></div>
 </div>
 
 <div id="pick">
@@ -167,15 +217,24 @@
 </div>
 
 <div id="gate"><div class="box">
-  <h1>走卒傳</h1>
-  <div class="sub">三國・識字無雙</div>
+  <div class="cover-stage">
+    <img class="cover-warrior left" src="assets/sanguo-portraits/guan-yu.webp" alt="關羽">
+    <img class="cover-warrior right" src="assets/sanguo-portraits/lu-bu.webp" alt="呂布">
+    <div class="cover-title">
+      <div class="cover-kicker">亂世起於微末</div>
+      <h1>走卒傳</h1>
+      <div class="sub">三國・識字無雙</div>
+    </div>
+    <div class="cover-rank"><span>無名走卒</span><i></i><span>一字破軍</span><i></i><span>天下名將</span></div>
+  </div>
   <p class="story">黃巾亂起，你是軍中最末的一名走卒。<br>
   軍令寫在旗上，看不懂字的兵，一輩子只能扛旗。<br>
   <b>認得一個字，就升一階。</b>從走卒到大將軍，共七階。</p>
   <ul>
-    <li><b>A → A → B</b>　疾風迴旋斬<i>（旋風推飛）</i></li>
-    <li><b>A → A → A → S</b>　瞬身・裂空斬<i>（挑空・空中 A 亂舞・B 下砸）</i></li>
-    <li><b>D → A → B</b>　閃神・一閃破<i>（拔刀穿透・收刀連環爆）</i></li>
+    <li><b>A → A → A</b>　兵器連段<i>（弓、槍、刀、扇各有不同射程）</i></li>
+    <li><b>B</b>　武將專屬招式<i>（60 名武將、60 種招式）</i></li>
+    <li><b>S → 空中 A / B</b>　破陣追擊<i>（挑空連舞或下砸）</i></li>
+    <li><b>D → A → B</b>　閃身反擊<i>（穿透・收招連環爆）</i></li>
     <li><b>奧</b>　學會的字＝一招奧義，字越多招越多</li>
   </ul>
   <div id="modes">
@@ -183,6 +242,12 @@
     <div class="mode" data-m="1">出征<small>一般</small></div>
     <div class="mode" data-m="2">死戰<small>敵多且快</small></div>
   </div>
+  <div class="row"><div class="lb">古風戰場配樂</div>
+    <div class="segs music-seg" id="musicSeg">
+      <div class="seg sel" data-track="0">破陣<small>戰鼓・箏</small></div>
+      <div class="seg" data-track="1">月下行軍<small>簫・琴</small></div>
+      <div class="seg" data-track="2">赤壁烈火<small>鼓陣・銅鑼</small></div>
+    </div></div>
   <div class="row"><div class="lb">同時練習幾個字</div>
     <div class="segs" id="segPool">
       <div class="seg" data-v="1">1</div><div class="seg sel" data-v="3">3</div>
@@ -268,6 +333,83 @@ const SFX = {
   hurt(){ tone(180,.2,'square',.09,.5); }
 };
 
+/* ---------------- 三首原創古風配樂（離線 WebAudio） ---------------- */
+const MUSIC_TRACKS=[
+  {name:'破陣',bpm:104,root:50,lead:'zither',seq:[0,2,4,2,5,4,2,1,0,2,4,5,4,2,1,-1],bass:[0,-1,0,-1,3,-1,4,-1]},
+  {name:'月下行軍',bpm:78,root:55,lead:'flute',seq:[4,-1,5,-1,4,2,-1,1,0,-1,2,-1,4,2,1,-1],bass:[0,-1,-1,-1,4,-1,-1,-1]},
+  {name:'赤壁烈火',bpm:118,root:48,lead:'zither',seq:[0,4,5,4,2,4,5,7,5,4,2,1,0,2,4,5],bass:[0,-1,3,-1,4,-1,3,-1]}
+];
+const PENTA=[0,2,5,7,9,12,14,17];
+let musicTrack=0,musicTimer=null,musicNext=0,musicStep=0,musicBus=null,musicPlaying=false;
+function hzMidi(n){return 440*Math.pow(2,(n-69)/12);}
+function ensureMusicBus(){
+  if(musicBus||!AC)return;
+  musicBus=AC.createGain(); musicBus.gain.value=.24; musicBus.connect(AC.destination);
+}
+function musicNote(freq,when,dur,kind,vol){
+  if(!AC||!musicBus)return;
+  const o=AC.createOscillator(),g=AC.createGain(),f=AC.createBiquadFilter();
+  o.type=kind==='flute'?'sine':'triangle'; o.frequency.setValueAtTime(freq,when);
+  if(kind==='flute'){
+    o.frequency.linearRampToValueAtTime(freq*1.006,when+dur*.45);
+    o.frequency.linearRampToValueAtTime(freq,when+dur);
+    f.type='lowpass';f.frequency.value=2400;
+  }else{
+    o.frequency.exponentialRampToValueAtTime(freq*.997,when+dur);
+    f.type='bandpass';f.frequency.value=Math.min(4200,freq*4);f.Q.value=.8;
+  }
+  g.gain.setValueAtTime(.0001,when);g.gain.exponentialRampToValueAtTime(vol,when+.016);
+  g.gain.exponentialRampToValueAtTime(.0001,when+dur);
+  o.connect(f).connect(g).connect(musicBus);o.start(when);o.stop(when+dur+.03);
+}
+function musicDrum(when,kind,vol){
+  if(!AC||!musicBus)return;
+  const o=AC.createOscillator(),g=AC.createGain();
+  o.type='sine';o.frequency.setValueAtTime(kind==='gong'?210:kind==='rim'?170:92,when);
+  o.frequency.exponentialRampToValueAtTime(kind==='gong'?82:48,when+(kind==='gong'?.9:.24));
+  g.gain.setValueAtTime(vol,when);g.gain.exponentialRampToValueAtTime(.0001,when+(kind==='gong'?.95:.28));
+  o.connect(g).connect(musicBus);o.start(when);o.stop(when+(kind==='gong'?1:.3));
+}
+function scheduleMusic(){
+  if(!musicPlaying||!AC)return;
+  const tr=MUSIC_TRACKS[musicTrack],unit=60/tr.bpm/2;
+  while(musicNext<AC.currentTime+.24){
+    const i=musicStep%tr.seq.length,degree=tr.seq[i];
+    if(degree>=0){
+      const midi=tr.root+PENTA[degree%PENTA.length]+(degree>=PENTA.length?12:0);
+      musicNote(hzMidi(midi),musicNext,unit*(tr.lead==='flute'?1.7:.86),tr.lead,tr.lead==='flute'?.048:.035);
+    }
+    const bd=tr.bass[musicStep%tr.bass.length];
+    if(bd>=0) musicNote(hzMidi(tr.root-12+PENTA[bd]),musicNext,unit*1.8,'zither',.026);
+    if(i%4===0) musicDrum(musicNext,'drum',tr.name==='赤壁烈火'?.12:.085);
+    if(tr.name==='赤壁烈火'&&i===12) musicDrum(musicNext,'gong',.045);
+    else if(tr.name==='破陣'&&i%8===6) musicDrum(musicNext,'rim',.04);
+    musicNext+=unit;musicStep++;
+  }
+}
+function updateMusicUI(){
+  const b=document.getElementById('musicBtn');
+  if(b)b.textContent=musicPlaying?'樂・'+MUSIC_TRACKS[musicTrack].name:'樂・靜音';
+  document.querySelectorAll('#musicSeg .seg').forEach((el,i)=>el.classList.toggle('sel',i===musicTrack));
+}
+function startMusic(index){
+  audioOn();ensureMusicBus();musicTrack=(index+MUSIC_TRACKS.length)%MUSIC_TRACKS.length;
+  if(musicTimer)clearInterval(musicTimer);
+  musicPlaying=true;musicStep=0;musicNext=AC.currentTime+.05;
+  musicBus.gain.cancelScheduledValues(AC.currentTime);musicBus.gain.setTargetAtTime(.24,AC.currentTime,.08);
+  scheduleMusic();musicTimer=setInterval(scheduleMusic,80);updateMusicUI();
+}
+function stopMusic(){
+  musicPlaying=false;if(musicTimer){clearInterval(musicTimer);musicTimer=null;}
+  if(AC&&musicBus)musicBus.gain.setTargetAtTime(.0001,AC.currentTime,.08);updateMusicUI();
+}
+document.querySelectorAll('#musicSeg .seg').forEach(el=>el.addEventListener('click',()=>{
+  musicTrack=Number(el.dataset.track)||0;updateMusicUI();if(musicPlaying)startMusic(musicTrack);
+}));
+document.getElementById('musicBtn').addEventListener('click',()=>{
+  if(!musicPlaying)startMusic(musicTrack);else if(musicTrack<MUSIC_TRACKS.length-1)startMusic(musicTrack+1);else stopMusic();
+});
+
 /* ---------------- 輸入 ---------------- */
 const keys = {};
 const held = {A:false,B:false,S:false,D:false};
@@ -318,6 +460,7 @@ function moveInput(){
 const P = { x:W/2, y:H/2, z:0, vx:0, vy:0, vz:0, face:0, hp:100, maxhp:100,
             state:'idle', act:null, t:0, chain:[], chainT:-9, inv:0, airHits:0, marked:[] };
 let mobs=[], fx=[], pops=[], petals=[], kills=0;
+let boss=null,bossStage=0,nextBossAt=12,bossBannerT=0;
 let T=0, hitStop=0, shake=0, combo=0, comboT=0, best=0, dead=false;
 let MODE=0;                                   // 0 見習（不會倒下） 1 一刀流 2 劍聖
 const MODES=[{cap:34,sp:.62,dmg:0,invincible:true},
@@ -476,6 +619,78 @@ function spawnMob(){
   mobs.push({x:clamp(x,50,W-50),y:clamp(y,50,H-50),z:0,vx:0,vy:0,vz:0,hp:3,
              r:15,flash:0,air:false,mark:0,dead:false,atkCd:rnd(.6,2),wob:rnd(0,TAU)});
 }
+const BOSS_POOL=['呂布','關羽','趙雲','黃忠','許褚','典韋','黃蓋','貂蟬','祝融夫人','諸葛亮','孫尚香','張角','大喬','小喬','徐晃'];
+function updateBossHud(m){
+  const hud=document.getElementById('bossHud');
+  if(!m||m.dead){if(hud)hud.classList.remove('on');return;}
+  const p=combatProfile(m.hero);
+  document.getElementById('bossName').textContent='敵將・'+m.hero.n+'　'+m.hero.t;
+  document.getElementById('bossMove').textContent=p.move;
+  document.getElementById('bossHp').style.width=(clamp(m.hp/m.max,0,1)*100)+'%';
+  hud.classList.add('on');
+}
+function spawnBoss(){
+  if(boss)return;
+  let name=BOSS_POOL[bossStage%BOSS_POOL.length];
+  if(HERO&&name===HERO.n)name=BOSS_POOL[(bossStage+1)%BOSS_POOL.length];
+  const h=HEROES.find(x=>x.n===name)||HEROES[43];
+  const a=rnd(0,TAU),r=clamp(Math.min(VW,VH)*.72,430,650),hp=34+bossStage*8+(MODE*8);
+  boss={boss:true,hero:h,x:clamp(P.x+Math.cos(a)*r,80,W-80),y:clamp(P.y+Math.sin(a)*r*.72,80,H-80),
+    z:0,vx:0,vy:0,vz:0,hp,max:hp,r:34,flash:0,air:false,mark:0,dead:false,deadT:0,
+    atkCd:1.1,wob:rnd(0,TAU),attackState:'approach',attackT:0,did:false,face:0};
+  mobs.push(boss);bossBannerT=2.8;updateBossHud(boss);SFX.boom();shakeIt(12);
+  pop('敵將 '+h.n+' 來襲',boss.x,boss.y-150,'#ffcf6b',32,1.8);
+}
+function bossHitPlayer(m,range,arc){
+  const d=dist(m,P);if(d>range)return false;
+  if(arc<TAU){const a=Math.atan2(P.y-m.y,P.x-m.x),df=Math.abs(((a-m.face+Math.PI*3)%TAU)-Math.PI);if(df>arc/2)return false;}
+  const away=Math.atan2(P.y-m.y,P.x-m.x);
+  if(M().invincible){P.vx+=Math.cos(away)*320;P.vy+=Math.sin(away)*220;shakeIt(8);return true;}
+  if(P.inv>0)return false;
+  const dg=M().dmg+3+Math.floor(bossStage*.5);P.hp=Math.max(0,P.hp-dg);P.inv=.65;SFX.hurt();shakeIt(13);combo=0;comboT=0;
+  P.vx+=Math.cos(away)*430;P.vy+=Math.sin(away)*300;pop('-'+dg,P.x,P.y-120,'#ff5a5a',23,.75);
+  if(P.hp<=0)dead=true;return true;
+}
+function executeBossAttack(m){
+  const p=combatProfile(m.hero),d=dist(m,P);
+  let range=185,arc=2.1;
+  if(p.kind==='bow'||p.kind==='knife'){range=610;arc=.42;}
+  else if(p.kind==='spear'||p.kind==='halberd'||p.kind==='glaive'){range=275;arc=1.45;}
+  else if(p.kind==='dance'||p.kind==='whip'||p.kind==='instrument'){range=260;arc=TAU;}
+  else if(p.kind==='fan'||p.kind==='scroll'||p.kind==='staff'){range=350;arc=2.7;}
+  else if(p.kind==='hammer'||p.kind==='axe'){range=245;arc=TAU;}
+  addFX({k:'weaponfx',style:p.kind,x:m.x,y:m.y-30,face:m.face,r:range,life:.62,c:p.color});
+  pop(p.move,m.x,m.y-132,p.color,23,1.05);SFX.heavy();
+  if(d<range+24)bossHitPlayer(m,range,arc);
+}
+function updateBoss(m,dt){
+  const p=combatProfile(m.hero),d=dist(m,P);m.wob+=dt*2.4;m.face=Math.atan2(P.y-m.y,P.x-m.x);
+  if(m.attackState==='windup'){
+    m.attackT+=dt;m.vx*=Math.pow(.04,dt);m.vy*=Math.pow(.04,dt);
+    if(!m.did&&m.attackT>=.48){m.did=true;executeBossAttack(m);}
+    if(m.attackT>=.92){m.attackState='approach';m.attackT=0;m.atkCd=Math.max(.72,1.65-bossStage*.06);}
+  }else{
+    m.atkCd-=dt;
+    const ranged=['bow','knife','fan','scroll','staff'].indexOf(p.kind)>=0,ideal=ranged?300:125;
+    let drive=0;if(d>ideal+35)drive=1;else if(d<ideal-45)drive=-.65;
+    const sp=(ranged?150:185)*(1+MODE*.12+bossStage*.025);
+    m.vx+=(Math.cos(m.face)*sp*drive-m.vx)*Math.min(1,dt*4.4);
+    m.vy+=(Math.sin(m.face)*sp*.78*drive-m.vy)*Math.min(1,dt*4.4);
+    if(m.atkCd<=0&&d<(ranged?570:300)){
+      m.attackState='windup';m.attackT=0;m.did=false;
+      addFX({k:'weaponfx',style:p.kind,x:m.x,y:m.y-28,face:m.face,r:ranged?520:220,life:.52,c:'#ffb26b'});
+    }
+  }
+  m.x=clamp(m.x+m.vx*dt,50,W-50);m.y=clamp(m.y+m.vy*dt,50,H-50);
+  updateBossHud(m);
+}
+function defeatBoss(m){
+  if(boss!==m)return;
+  bossStage++;nextBossAt=kills+18+bossStage*3;charges=Math.min(9,charges+2);renderArtBar();
+  freeze(.18);shakeIt(28);addFX({k:'dome',x:m.x,y:m.y,r:330,life:.8,c:combatProfile(m.hero).color});
+  pop('擊破 '+m.hero.n,m.x,m.y-150,'#ffcf6b',34,1.5);boss=null;
+  setTimeout(()=>{if(!boss)document.getElementById('bossHud').classList.remove('on');},550);
+}
 for(let i=0;i<40;i++) spawnMob();
 
 /* ---------------- 效果 ---------------- */
@@ -579,14 +794,17 @@ function hurtMob(m,dmg,kx,ky,kz,chain){
   if(m.dead) return false;
   if(m.word){ if(pendingWord.indexOf(m)<0) pendingWord.push(m); return true; }
   m.hp-=dmg; m.flash=.14;
-  m.vx+=kx; m.vy+=ky; m.vz+=kz;
-  if(kz>0) m.air=true;
-  addCombo(1);
+  const resist=m.boss?.16:1;
+  m.vx+=kx*resist; m.vy+=ky*resist; m.vz+=kz*resist;
+  if(kz>0&&!m.boss) m.air=true;
+  addCombo(m.boss?2:1);
   addFX({k:'spark',x:m.x,y:m.y-m.z-16,life:.26,a:Math.atan2(ky,kx)});
   if(m.hp<=0){
     m.dead=true; m.deadT=0; kills++;
     addFX({k:'burst',x:m.x,y:m.y-m.z-16,life:.4});
+    if(m.boss) defeatBoss(m);
   }
+  if(m.boss) updateBossHud(m);
   return true;
 }
 // 命中判定：扇形／圓形
@@ -605,6 +823,57 @@ function hitArea(cx,cy,radius,arc,face,opt){
     hurtMob(m,o.dmg||1,Math.cos(ang)*(o.kb||120),Math.sin(ang)*(o.kb||120)*.7,o.kz||0);
     n++;
   }
+  return n;
+}
+
+function hitLine(cx,cy,face,len,width,opt){
+  const o=opt||{},dx=Math.cos(face),dy=Math.sin(face);let n=0;
+  for(const m of mobs){
+    if(m.dead)continue;
+    const rx=m.x-cx,ry=m.y-cy,along=rx*dx+ry*dy,side=Math.abs(-rx*dy+ry*dx);
+    if(along<-18||along>len||side>width+m.r)continue;
+    hurtMob(m,o.dmg||1,dx*(o.kb||180),dy*(o.kb||180)*.72,o.kz||0);n++;
+  }
+  return n;
+}
+
+/* 武將的兵器會改變真正的射程、命中區與擊退，不只是換圖。 */
+function heroStrike(tier,step){
+  const p=combatProfile(HERO),k=rating().k;
+  const dmg=tier==='heavy'?3:tier==='launch'?2:1;
+  const color=p.color,face=P.face;
+  let n=0,range=145*k;
+  if(p.kind==='bow'||p.kind==='knife'){
+    const shots=tier==='heavy'?3:(p.kind==='knife'&&step===3?2:1);
+    range=(tier==='heavy'?620:500)*k;
+    for(let i=0;i<shots;i++){
+      const spread=(i-(shots-1)/2)*(p.kind==='bow'?.11:.2),a=face+spread;
+      n+=hitLine(P.x,P.y,a,range,p.kind==='bow'?24:34,{dmg,kb:280,kz:tier==='launch'?380:30});
+      addFX({k:'weaponfx',style:p.kind,x:P.x,y:P.y-58,face:a,r:range,life:.34,c:color});
+    }
+  }else if(p.kind==='dance'||p.kind==='whip'||p.kind==='instrument'){
+    range=(tier==='heavy'?250:178)*k;
+    n=hitArea(P.x,P.y,range,TAU,face,{dmg,kb:tier==='heavy'?680:230,kz:tier==='launch'?480:80});
+    addFX({k:'weaponfx',style:p.kind,x:P.x,y:P.y,r:range,face,life:.58,c:color});
+  }else if(p.kind==='scroll'||p.kind==='fan'||p.kind==='staff'){
+    range=(tier==='heavy'?330:225)*k;
+    n=hitArea(P.x,P.y,range,tier==='heavy'?4.8:2.55,face,{dmg,kb:420,kz:tier==='launch'?560:120});
+    addFX({k:'weaponfx',style:p.kind,x:P.x,y:P.y,r:range,face,life:.52,c:color});
+  }else if(p.kind==='hammer'||p.kind==='axe'){
+    range=(tier==='heavy'?245:158)*k;
+    n=hitArea(P.x,P.y,range,tier==='heavy'?TAU:2.15,face,{dmg:dmg+(tier==='heavy'?1:0),kb:760,kz:tier==='launch'?620:250});
+    addFX({k:'weaponfx',style:p.kind,x:P.x+Math.cos(face)*80,y:P.y+Math.sin(face)*64,r:range,face,life:.55,c:color});
+  }else if(p.kind==='spear'||p.kind==='glaive'||p.kind==='halberd'){
+    range=(tier==='heavy'?265:205)*k;
+    n=hitArea(P.x,P.y,range,p.kind==='spear'?1.25:2.25,face,{dmg,kb:tier==='heavy'?760:300,kz:tier==='launch'?640:100});
+    addFX({k:'weaponfx',style:p.kind,x:P.x,y:P.y-18,r:range,face,life:.42,c:color});
+  }else{
+    range=(tier==='heavy'?218:150+step*8)*k;
+    n=hitArea(P.x,P.y,range,p.kind==='dual'?3.6:2.65,face,{dmg,kb:tier==='heavy'?690:190+step*35,kz:tier==='launch'?590:70});
+    addFX({k:'weaponfx',style:p.kind,x:P.x,y:P.y,r:range,face,life:.34,c:color,flip:step%2});
+  }
+  if(n){freeze(tier==='heavy'?.1:.045);shakeIt(tier==='heavy'?13:4+step);}
+  if(tier!=='light')pop(p.move,P.x,P.y-125,color,25,1);
   return n;
 }
 
@@ -634,39 +903,17 @@ function nextAction(key){
 
 const ACT = {
   l1:{dur:.26,hit:.10,name:'',run(){ SFX.slash();
-      const k=rating().k, n=hitArea(P.x,P.y,124*k,2.3,P.face,{dmg:1,kb:150});
-      if(n){freeze(.045);shakeIt(3);} addFX({k:'arc',x:P.x,y:P.y,face:P.face,r:88*k,arc:2.0,life:.2,c:'#dff6ff'}); }},
+      heroStrike('light',1); }},
   l2:{dur:.24,hit:.08,name:'',run(){ SFX.slash();
-      const k=rating().k, n=hitArea(P.x,P.y,132*k,2.5,P.face,{dmg:1,kb:170});
-      if(n){freeze(.05);shakeIt(4);} addFX({k:'arc',x:P.x,y:P.y,face:P.face,r:94*k,arc:2.2,life:.2,c:'#dff6ff',flip:1}); }},
+      heroStrike('light',2); }},
   l3:{dur:.3,hit:.11,name:'',run(){ SFX.slash();
-      const k=rating().k, n=hitArea(P.x,P.y,146*k,2.7,P.face,{dmg:1,kb:220});
-      if(n){freeze(.06);shakeIt(5);} addFX({k:'arc',x:P.x,y:P.y,face:P.face,r:104*k,arc:2.4,life:.22,c:'#bfeaff'}); }},
+      heroStrike('light',3); }},
 
-  spin:{dur:.62,hit:.20,name:'疾風迴旋斬',run(){ SFX.heavy();
-      const k=rating().k, R=210*k;
-      let n=0;
-      for(const m of mobs){ if(m.dead)continue;
-        const d=dist(m,P); if(d>R+m.r) continue;
-        const a=Math.atan2(m.y-P.y,m.x-P.x);
-        hurtMob(m,3,Math.cos(a)*760,Math.sin(a)*560,240); n++;
-      }
-      freeze(n ? .13 : .04); shakeIt(n ? 16 : 5);
-      addFX({k:'storm',x:P.x,y:P.y,r:R,life:.55});
-      pop('疾風迴旋斬',P.x,P.y-120,'#7fe9ff',26);
-      for(let i=0;i<26;i++) addFX({k:'petal',x:P.x,y:P.y,a:rnd(0,TAU),sp:rnd(240,620),life:.7}); }},
+  spin:{dur:.62,hit:.20,name:'武將絕技',run(){ SFX.heavy();
+      heroStrike('heavy',1); }},
 
   launch:{dur:.44,hit:.13,name:'瞬身・裂空斬',run(){ SFX.launch();
-      const k=rating().k, R=150*k;
-      let n=0;
-      for(const m of mobs){ if(m.dead)continue;
-        const d=dist(m,P); if(d>R+m.r) continue;
-        const a=Math.atan2(m.y-P.y,m.x-P.x);
-        hurtMob(m,2,Math.cos(a)*90,Math.sin(a)*70,620); n++;
-      }
-      freeze(n ? .09 : .03); shakeIt(10);
-      addFX({k:'rift',x:P.x,y:P.y,r:R,life:.5});
-      pop('裂空斬',P.x,P.y-120,'#ffcf6b',26);
+      heroStrike('launch',1);
       P.vz=760; P.state='air'; P.airHits=0; }},
 
   airslash:{dur:.17,hit:.05,name:'',air:true,run(){ SFX.slash();
@@ -702,6 +949,7 @@ const ACT = {
         const along=rx*dx+ry*dy, perp=Math.abs(-rx*dy+ry*dx);
         if(along<-20||along>L||perp>Wd) continue;
         if(m.word){ if(along<wordD){ wordD=along; wordHit=m; } continue; }
+        if(m.boss){hurtMob(m,3,dx*180,dy*130,0);continue;}
         m.mark=1; m.hp=Math.max(m.hp,1); P.marked.push(m);
         addFX({k:'cut',x:m.x,y:m.y-m.z-16,a:P.face,life:.9});
       }
@@ -774,6 +1022,8 @@ function update(dt){
   hintT+=dt;
   if(stunt){ stunt.t+=dt; if(stunt.t>=stunt.dur) stunt=null; }
   if(wrongFlash>0) wrongFlash-=dt;
+  if(bossBannerT>0)bossBannerT-=dt;
+  if(!boss&&kills>=nextBossAt)spawnBoss();
   // watchdog：題目或字兵不見了就自動補回，避免畫面卡住沒反應
   if(!target && pool.length){ pickTarget(); spawnWordSet(); }
   if(target && !mobs.some(m=>m.word&&!m.dead)) spawnWordSet();
@@ -867,6 +1117,7 @@ function update(dt){
       m.x=clamp(m.x+m.vx*dt,70,W-70); m.y=clamp(m.y+m.vy*dt,70,H-70);
       continue;
     }
+    if(m.boss){updateBoss(m,dt);continue;}
     const flying=Math.hypot(m.vx,m.vy)>140||m.air;
     if(m.mark>0){ m.vx*=.1; m.vy*=.1; continue; }        // 被拔刀術定住
     if(!flying){
@@ -1412,6 +1663,34 @@ const HEROES=[
  {n:"貂蟬",f:"群",z:"閉月",t:"連環計・四大美人",wp:"歌舞",wu:34,zh:94,ld:92,p:{sk:"#f8e0bc",ey:"gentle",br:"thin",bd:"none",bc:"#1a1208",ht:"bun",hc:"#c9a227",ac:"#8a3b5a",at:"robe",ex:["fem"]}},
  {n:"祝融夫人",f:"群",z:"火神後裔",t:"南蠻女王・飛刀絕技",wp:"飛刀",wu:90,zh:60,ld:83,p:{sk:"#d9a06b",ey:"sharp",br:"angry",bd:"none",bc:"#160f08",ht:"goldhelm",hc:"#b85a2a",ac:"#8a4a2a",at:"scale",ex:["fem"]}}
 ];
+const HERO_COMBAT={
+ "劉備":["dual","仁德雙龍劍"],"關羽":["glaive","青龍偃月"],"張飛":["spear","蛇矛震八方"],
+ "趙雲":["spear","七探盤蛇槍"],"諸葛亮":["fan","八陣天風"],"馬超":["spear","錦馬流星槍"],
+ "黃忠":["bow","百步穿楊"],"魏延":["glaive","子午裂山刀"],"姜維":["spear","麒麟回馬槍"],
+ "龐統":["fan","鳳雛燎原扇"],"馬岱":["glaive","斷後飛燕斬"],"關平":["glaive","青龍新月斬"],
+ "徐庶":["sword","劍影歸心"],"法正":["scroll","定軍奇策"],"嚴顏":["glaive","老將斷頭刀"],
+ "曹操":["sword","倚天霸業劍"],"司馬懿":["scroll","冢虎幽雷策"],"張遼":["halberd","逍遙津月牙戟"],
+ "夏侯惇":["glaive","獨眼怒濤斬"],"夏侯淵":["bow","神速連珠箭"],"許褚":["hammer","虎痴撼地錘"],
+ "典韋":["dual","惡來雙戟舞"],"徐晃":["axe","開山旋風斧"],"張郃":["spear","巧變百鳥槍"],
+ "郭嘉":["scroll","鬼才寒星策"],"荀彧":["scroll","王佐清風卷"],"曹仁":["spear","天人鐵壁槍"],
+ "于禁":["glaive","毅重斷流刀"],"樂進":["dual","先登疾影刃"],"賈詡":["scroll","毒士蝕魂策"],
+ "孫堅":["glaive","江東虎嘯刀"],"孫策":["spear","小霸王裂江槍"],"孫權":["sword","白虹帝王劍"],
+ "周瑜":["sword","赤壁流火劍"],"陸遜":["sword","夷陵焚風劍"],"呂蒙":["glaive","白衣破陣刀"],
+ "甘寧":["dual","錦帆鈴影刀"],"太史慈":["bow","神亭追風箭"],"黃蓋":["whip","苦肉鐵鞭輪"],
+ "程普":["spear","鐵脊蛇矛花"],"周泰":["glaive","不屈傷痕斬"],"凌統":["dual","雙刃飛燕舞"],
+ "魯肅":["scroll","合縱定海卷"],"呂布":["halberd","無雙方天亂舞"],"董卓":["hammer","暴君壓城擊"],
+ "袁紹":["sword","四世名門劍"],"袁術":["staff","仲家金璽震"],"張角":["staff","黃天雷杖"],
+ "華雄":["glaive","汜水狂刀"],"公孫瓚":["spear","白馬銀槍陣"],"黃月英":["fan","木牛流馬機關"],
+ "關銀屏":["dual","虎女雙刀花"],"甄宓":["dance","洛神凌波舞"],"王異":["sword","貞烈追魂劍"],
+ "張春華":["scroll","冷月機心策"],"孫尚香":["bow","弓腰姬連環箭"],"大喬":["instrument","江東琴潮"],
+ "小喬":["dance","花扇旋舞"],"貂蟬":["dance","閉月花影舞"],"祝融夫人":["knife","火神飛刀陣"]
+};
+function heroHue(name){let n=0;for(let i=0;i<name.length;i++)n=(n*33+name.charCodeAt(i))%360;return n;}
+function combatProfile(h){
+  const s=HERO_COMBAT[h.n]||['sword',h.n+'無雙'];
+  const base={"蜀":116,"魏":205,"吳":9,"群":282}[h.f]||45;
+  return {kind:s[0],move:s[1],color:`hsl(${(base+heroHue(h.n)%34-17+360)%360} 82% 67%)`};
+}
 const FAC={'蜀':'shu','魏':'wei','吳':'wu','群':'qun'};
 const FAC_COLOR={'蜀':'#70b17f','魏':'#78a4cb','吳':'#d6755d','群':'#a57ac2'};
 let HERO=HEROES[0];
@@ -1429,11 +1708,16 @@ function shade(hex, amt){
 function limb(c,x1,y1,x2,y2,w,color){c.strokeStyle='#120f0b';c.lineWidth=w+2.4;c.lineCap='round';
   c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
   c.strokeStyle=color;c.lineWidth=w;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke()}
-function pose(type,t){
+function pose(type,t,style){
   const q={bob:0,walk:0,attack:0,recoil:0};
   if(type==='march'){q.walk=Math.sin(t*6);q.bob=Math.abs(Math.sin(t*6))*1.7}
-  if(type==='attack'){const s=(t%1.55)/1.55;
-    q.attack=s<.3?ease(s/.3):s<.5?1-ease((s-.3)/.2)*.22:s<.82?.78*(1-ease((s-.5)/.32)):0}
+  if(type==='attack'){
+    const fast=style&&(style.kind==='bow'||style.kind==='knife'||style.kind==='dual'),cycle=fast?1.02:1.42;
+    const s=(t%cycle)/cycle;
+    if(style&&(style.kind==='dance'||style.kind==='whip')) q.attack=s<.58?ease(s/.58):1-ease((s-.58)/.42);
+    else if(style&&(style.kind==='hammer'||style.kind==='axe')) q.attack=s<.5?ease(s/.5):1-ease((s-.5)/.3);
+    else q.attack=s<.28?ease(s/.28):s<.48?1-ease((s-.28)/.2)*.16:s<.82?.84*(1-ease((s-.48)/.34)):0;
+  }
   return q;
 }
 
@@ -1445,12 +1729,17 @@ function wpKind(wp){
   if(wp.indexOf('弓')>=0||wp.indexOf('弩')>=0) return 'bow';
   if(wp.indexOf('扇')>=0||wp.indexOf('塵尾')>=0) return 'fan';
   if(wp.indexOf('偃月')>=0) return 'glaive';
+  if(wp.indexOf('鞭')>=0) return 'whip';
+  if(wp.indexOf('斧')>=0) return 'axe';
+  if(wp.indexOf('琴')>=0) return 'instrument';
+  if(wp.indexOf('卷')>=0||wp.indexOf('謀略')>=0||wp.indexOf('詩賦')>=0) return 'scroll';
+  if(wp.indexOf('飛刀')>=0) return 'knife';
   if(wp.indexOf('矛')>=0||wp.indexOf('槍')>=0||wp.indexOf('戟')>=0||wp.indexOf('尖')>=0
      ||wp.indexOf('杖')>=0) return 'spear';
   return 'sword';
 }
 function drawHeroP(c,h,x,y,dir,scale,motion,ri){
-  const p=h.p, q=pose(motion,time+h.n.length*.31);
+  const p=h.p, style=combatProfile(h),q=pose(motion,time+h.n.length*.31,style);
   const gold='#e5c04a', dark='#120f0b';
   c.save(); c.translate(x,y); c.scale(dir*scale,scale);
   // 影子
@@ -1516,10 +1805,14 @@ function drawHeroP(c,h,x,y,dir,scale,motion,ri){
   }
 
   // 手臂與兵器：弧度拉大到約 240 度，並帶殘影
-  const sw=q.attack, wk=wpKind(h.wp);
-  const swingA=-2.35+sw*4.35;
-  const hx=9+sw*20, hy=-44-sw*26;
-  if(sw>0.06 && (wk==='glaive'||wk==='spear'||wk==='sword')){
+  const sw=q.attack, wk=style.kind;
+  let swingA=-2.35+sw*4.35,hx=9+sw*20,hy=-44-sw*26;
+  if(wk==='bow'){swingA=-1.2+sw*.55;hx=11+sw*7;hy=-48-sw*7;}
+  else if(wk==='spear'||wk==='halberd'){swingA=-1.55+sw*2.55;hx=8+sw*28;hy=-48-sw*14;}
+  else if(wk==='glaive'){swingA=-2.15+sw*3.85;hx=8+sw*20;hy=-46-sw*24;}
+  else if(wk==='hammer'||wk==='axe'){swingA=-2.6+sw*4.65;hx=7+sw*18;hy=-50-sw*29;}
+  else if(wk==='dance'||wk==='whip'||wk==='instrument'){swingA=-2.2+sw*TAU;hx=7+Math.sin(sw*TAU)*14;hy=-47-Math.sin(sw*Math.PI)*20;}
+  if(sw>0.06 && ['glaive','spear','halberd','sword','dual','axe','hammer'].indexOf(wk)>=0){
     c.save(); c.translate(9,-50);
     const rr2=(wk==='sword'?52:64)+ri*3;
     const gg2=c.createLinearGradient(-rr2,0,rr2,0);
@@ -1531,12 +1824,13 @@ function drawHeroP(c,h,x,y,dir,scale,motion,ri){
     c.restore();
   }
   c.save(); c.translate(hx,hy); c.rotate(swingA);
-  if(wk==='glaive'||wk==='spear'){
+  if(wk==='glaive'||wk==='spear'||wk==='halberd'){
     c.strokeStyle='#5b4426'; c.lineWidth=4;
     c.beginPath(); c.moveTo(-26,14); c.lineTo(34,-16); c.stroke();
     c.fillStyle='#dfe8f2'; c.strokeStyle=dark; c.lineWidth=1.4;
     c.beginPath();
     if(wk==='glaive'){ c.moveTo(34,-16); c.quadraticCurveTo(52,-30,44,-6); c.quadraticCurveTo(40,-8,34,-16); }
+    else if(wk==='halberd'){c.moveTo(34,-16);c.lineTo(51,-25);c.lineTo(42,-12);c.lineTo(52,-8);c.lineTo(37,-8);}
     else { c.moveTo(34,-16); c.lineTo(50,-24); c.lineTo(36,-10); }
     c.closePath(); c.fill(); c.stroke();
   } else if(wk==='bow'){
@@ -1544,15 +1838,33 @@ function drawHeroP(c,h,x,y,dir,scale,motion,ri){
     c.beginPath(); c.moveTo(6,-16); c.quadraticCurveTo(20,0,6,16); c.stroke();
     c.strokeStyle='#efe0bf'; c.lineWidth=.9;
     c.beginPath(); c.moveTo(6,-16); c.lineTo(8+sw*8,0); c.lineTo(6,16); c.stroke();
-  } else if(wk==='fan'){
+    c.strokeStyle='#dfe8f2';c.lineWidth=1.3;c.beginPath();c.moveTo(-13,0);c.lineTo(31,0);c.stroke();
+  } else if(wk==='fan'||wk==='scroll'||wk==='staff'){
     c.fillStyle='#f0ead8'; c.strokeStyle=dark; c.lineWidth=1.3;
-    c.beginPath(); c.moveTo(4,4); c.quadraticCurveTo(26,-16,30,4); c.quadraticCurveTo(18,12,4,4);
-    c.closePath(); c.fill(); c.stroke();
+    if(wk==='fan'){c.beginPath(); c.moveTo(4,4); c.quadraticCurveTo(26,-16,30,4); c.quadraticCurveTo(18,12,4,4);c.closePath();c.fill();c.stroke();}
+    else if(wk==='scroll'){c.fillStyle='#e8d7a9';c.fillRect(1,-8,31,16);c.strokeRect(1,-8,31,16);c.fillStyle='#7d3c2b';c.fillRect(0,-11,3,22);c.fillRect(31,-11,3,22);}
+    else{c.strokeStyle='#8a623a';c.lineWidth=4;c.beginPath();c.moveTo(-12,13);c.lineTo(36,-20);c.stroke();c.fillStyle=style.color;c.beginPath();c.arc(38,-22,7,0,TAU);c.fill();}
+  } else if(wk==='hammer'||wk==='axe'){
+    c.strokeStyle='#60462b';c.lineWidth=5;c.beginPath();c.moveTo(-13,12);c.lineTo(31,-14);c.stroke();
+    c.fillStyle='#79869a';c.strokeStyle=dark;c.lineWidth=1.5;
+    if(wk==='hammer'){c.fillRect(23,-27,25,18);c.strokeRect(23,-27,25,18);}
+    else{c.beginPath();c.moveTo(26,-18);c.quadraticCurveTo(47,-35,48,-8);c.lineTo(31,-5);c.closePath();c.fill();c.stroke();}
+  } else if(wk==='whip'){
+    c.strokeStyle='#b77b43';c.lineWidth=3;c.beginPath();c.moveTo(0,0);c.bezierCurveTo(19,-25,46,-15,42,8);c.bezierCurveTo(38,25,15,20,16,5);c.stroke();
+  } else if(wk==='instrument'){
+    c.fillStyle='#8b543d';c.strokeStyle='#e4c179';c.lineWidth=1.5;c.beginPath();c.ellipse(17,0,17,11,0,0,TAU);c.fill();c.stroke();
+    c.fillStyle='#68402e';c.fillRect(28,-3,22,6);c.strokeStyle='#f3dfb4';c.beginPath();c.moveTo(1,-4);c.lineTo(46,-4);c.moveTo(1,2);c.lineTo(46,2);c.stroke();
+  } else if(wk==='dance'){
+    c.fillStyle=style.color;c.strokeStyle='#f6e6c2';c.lineWidth=1.2;c.beginPath();c.moveTo(2,3);c.quadraticCurveTo(24,-17,31,3);c.quadraticCurveTo(18,12,2,3);c.fill();c.stroke();
+    c.strokeStyle=style.color;c.lineWidth=3;c.beginPath();c.moveTo(4,5);c.bezierCurveTo(28,24,48,-4,54,18);c.stroke();
+  } else if(wk==='knife'){
+    c.fillStyle='#e8f6ff';c.strokeStyle=dark;c.lineWidth=1.2;c.beginPath();c.moveTo(0,-3);c.lineTo(35,-6);c.lineTo(43,0);c.lineTo(35,6);c.lineTo(0,3);c.closePath();c.fill();c.stroke();c.fillStyle='#7d3c2b';c.fillRect(-9,-4,10,8);
   } else {
     const gg=c.createLinearGradient(0,0,44,0);
     gg.addColorStop(0,'#8fa3c8'); gg.addColorStop(.6,'#e8f6ff'); gg.addColorStop(1,'#7fe9ff');
     c.fillStyle=gg; c.fillRect(0,-2.6,44+ri*3,5.2);
     c.fillStyle=dark; c.fillRect(-10,-3,11,6);
+    if(wk==='dual'){c.save();c.translate(4,9);c.fillStyle='#dfe8f2';c.fillRect(0,-2.1,37,4.2);c.fillStyle=dark;c.fillRect(-8,-2.5,9,5);c.restore();}
   }
   c.restore();
   limb(c,6,-56,hx,hy,5,p.sk);
@@ -1715,7 +2027,31 @@ function drawFX(layer){
   for(const f of fx){
     const k=f.t/f.life, a=1-k;
     ctx.save();
-    if(f.k==='arc'&&layer===1){
+    if(f.k==='weaponfx'&&layer===1){
+      ctx.globalAlpha=a;ctx.translate(f.x,f.y);ctx.rotate(f.face||0);ctx.strokeStyle=f.c||'#fff';ctx.fillStyle=f.c||'#fff';
+      if(f.style==='bow'||f.style==='knife'){
+        const x=f.r*Math.min(1,k*1.45);ctx.lineWidth=f.style==='bow'?3:5;
+        ctx.beginPath();ctx.moveTo(Math.max(0,x-110),0);ctx.lineTo(x,0);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x-14,-7);ctx.lineTo(x-10,0);ctx.lineTo(x-14,7);ctx.closePath();ctx.fill();
+      }else if(f.style==='dance'||f.style==='whip'||f.style==='instrument'){
+        ctx.scale(1,.58);ctx.lineWidth=f.style==='whip'?7:4;
+        for(let i=0;i<3;i++){const rr=f.r*(.28+k*.82)-i*22;if(rr<2)continue;ctx.globalAlpha=a*(1-i*.2);ctx.beginPath();ctx.arc(0,0,rr,k*5+i, k*5+i+4.8);ctx.stroke();}
+        if(f.style==='dance')for(let i=0;i<9;i++){const an=i*TAU/9+k*4,rr=f.r*(.2+k*.7);ctx.save();ctx.translate(Math.cos(an)*rr,Math.sin(an)*rr);ctx.rotate(an);ctx.beginPath();ctx.ellipse(0,0,7,3,0,0,TAU);ctx.fill();ctx.restore();}
+      }else if(f.style==='fan'||f.style==='scroll'||f.style==='staff'){
+        ctx.scale(1,.62);ctx.lineWidth=4*(1-k)+1;ctx.beginPath();ctx.arc(0,0,f.r*(.25+k*.8),-1.2,1.2);ctx.stroke();
+        for(let i=-2;i<=2;i++){ctx.globalAlpha=a*.7;ctx.beginPath();ctx.moveTo(20,i*10);ctx.lineTo(f.r*(.55+k*.35),i*18);ctx.stroke();}
+      }else if(f.style==='hammer'||f.style==='axe'){
+        ctx.scale(1,.52);ctx.lineWidth=9*(1-k)+2;ctx.beginPath();ctx.arc(0,0,f.r*(.18+k*.9),0,TAU);ctx.stroke();
+        for(let i=0;i<7;i++){const an=i*TAU/7;ctx.beginPath();ctx.moveTo(Math.cos(an)*30,Math.sin(an)*30);ctx.lineTo(Math.cos(an)*f.r*k,Math.sin(an)*f.r*k);ctx.stroke();}
+      }else if(f.style==='spear'||f.style==='glaive'||f.style==='halberd'){
+        ctx.lineWidth=f.style==='spear'?6:12;ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(f.r*(.42+k*.58),0);ctx.stroke();
+        if(f.style!=='spear'){ctx.globalAlpha=a*.6;ctx.scale(1,.55);ctx.beginPath();ctx.arc(0,0,f.r*(.65+k*.18),-.9,.9);ctx.stroke();}
+      }else{
+        ctx.scale(1,.62);ctx.lineWidth=(f.style==='dual'?12:9)*(1-k)+3;ctx.beginPath();ctx.arc(0,0,f.r*(.55+k*.42),-1.35,1.35);ctx.stroke();
+        if(f.style==='dual'){ctx.rotate(.28);ctx.beginPath();ctx.arc(0,0,f.r*(.42+k*.38),-1.2,1.2);ctx.stroke();}
+      }
+    }
+    else if(f.k==='arc'&&layer===1){
       ctx.globalAlpha=a*.95; ctx.translate(f.x,f.y);
       ctx.rotate(f.face); ctx.scale(1,.62);
       ctx.lineWidth=16*(1-k*.5); ctx.lineCap='round';
@@ -1840,8 +2176,22 @@ function drawShadow(x,y,z,r){
   ctx.beginPath(); ctx.ellipse(x,y,r*s,r*.42*s,0,0,TAU); ctx.fill();
 }
 
+function drawBossMob(m){
+  const sy=m.y-m.z,p=combatProfile(m.hero);time=T;
+  drawShadow(m.x,m.y,m.z,38);
+  ctx.save();ctx.translate(m.x,m.y+4);ctx.scale(1,.5);ctx.globalAlpha=.48+.16*Math.sin(T*4);
+  ctx.strokeStyle=p.color;ctx.lineWidth=5;ctx.beginPath();ctx.arc(0,0,52+Math.sin(T*3)*4,0,TAU);ctx.stroke();ctx.restore();
+  ctx.save();
+  if(m.dead){const k=m.deadT/.5;ctx.globalAlpha=1-k;ctx.translate(0,k*18);}
+  if(m.flash>0)ctx.globalAlpha=.62+.38*Math.sin(T*45);
+  const dir=Math.cos(m.face)<0?-1:1,motion=m.attackState==='windup'?'attack':(Math.hypot(m.vx,m.vy)>30?'march':'idle');
+  drawHeroP(ctx,m.hero,m.x,sy,dir,1.38,motion,6);
+  ctx.restore();
+}
+
 function drawMob(m){
   if(m.word) return drawWordMob(m);
+  if(m.boss) return drawBossMob(m);
   const sy=m.y-m.z;
   drawShadow(m.x,m.y,m.z,15);
   ctx.save(); ctx.translate(m.x,sy);
@@ -1938,6 +2288,13 @@ function drawPlayer(){
 /* ---------------- HUD ---------------- */
 function drawHUD(){
   const pad=Math.max(14,(VW-VH)*0);
+  if(bossBannerT>0&&boss){
+    const a=clamp(bossBannerT/.7,0,1),p=combatProfile(boss.hero),compact=VH<500;
+    const yy=compact?132:VH*.36,hh=compact?48:96;
+    ctx.save();ctx.globalAlpha=Math.min(1,bossBannerT)*a;ctx.fillStyle='rgba(5,4,8,.78)';ctx.fillRect(0,yy,VW,hh);
+    ctx.fillStyle='#ffcf6b';ctx.font=(compact?'9':'12')+'px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText('ENEMY GENERAL',VW/2,yy+(compact?14:23));
+    ctx.font='700 '+(compact?20:34)+'px "Hiragino Mincho ProN",serif';ctx.fillStyle='#fff3cf';ctx.fillText(boss.hero.n+'・'+p.move,VW/2,yy+(compact?38:66));ctx.restore();
+  }
   // HP
   // 字兵在畫面外時，邊緣顯示指向箭頭與字，避免學生找不到
   if(target && !dead && !showLearned){
@@ -2204,7 +2561,7 @@ function renderHeroGrid(){
       el.innerHTML='<div class="pic">'+drawPortrait(h,96)+'</div>'+
         '<div class="nm">'+h.n+'</div>'+
         '<div class="rl"><span class="fc" style="background:'+FAC_COLOR[h.f]+'">'+h.f+'</span>'+
-        h.z+'<br>'+h.wp+'</div>';
+        h.z+'<br>'+h.wp+'<em class="sig">'+combatProfile(h).move+'</em></div>';
       var im=el.querySelector('img');
       if(im){
         im.setAttribute('alt','');                 // 破圖時不要再吐出一次名字
@@ -2224,19 +2581,23 @@ function renderHeroGrid(){
 
 function startBattle(){
   document.getElementById('pick').classList.remove('on');
+  boss=null;bossStage=0;kills=0;nextBossAt=new URLSearchParams(location.search).has('boss')?0:12;
+  document.getElementById('bossHud').classList.remove('on');
+  P.hp=P.maxhp;P.x=W/2;P.y=H/2;P.z=0;P.state='idle';P.act=null;dead=false;
   mobs=[]; for(var q=0;q<M().cap;q++) spawnMob();
   initLearning();
   last=performance.now(); running=true;
 }
 
 (function(){
-  var tag='build 20260802-a　武將 '+HEROES.length+' 名　頭像 '+Object.keys(PORTRAIT_FILES).length+' 張';
+  var tag='build 20260802-v7　武將 '+HEROES.length+' 名　專屬招式 '+Object.keys(HERO_COMBAT).length+' 種　配樂 3 首';
   document.getElementById('build').textContent=tag;
-  document.title='走卒傳（武將 '+HEROES.length+' 名）';
+  document.title='走卒傳 V7・武將無雙篇';
 })();
 
 document.getElementById('go').addEventListener('click',()=>{
   audioOn();
+  startMusic(musicTrack);
   var custom=parseBank();
   WORDS = custom.length>=2 ? custom : DEFAULT_WORDS.slice();
   document.getElementById('gate').style.display='none';
