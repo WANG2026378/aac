@@ -1,0 +1,2250 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>走卒傳・三國識字無雙</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="走卒傳">
+<meta name="theme-color" content="#0b0a14">
+<link rel="apple-touch-icon" href="icons/portal-180.png">
+<link rel="icon" href="icons/portal-512.png">
+<style>
+  :root{
+    --ink:#0b0a14;
+    --void:#151228;
+    --steel:#8fa3c8;
+    --qi:#7fe9ff;
+    --sakura:#ff8fc0;
+    --gold:#ffcf6b;
+    --blood:#ff5a5a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;overflow:hidden;background:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK TC","Songti TC",serif;
+    color:#e9e6ff;user-select:none;touch-action:none;}
+  #c{display:block;width:100%;height:100%;}
+
+  /* ---- 觸控操作 ---- */
+  #pad{position:fixed;inset:0;pointer-events:none;}
+  #stick{position:absolute;left:max(18px,env(safe-area-inset-left));bottom:calc(24px + env(safe-area-inset-bottom));
+    width:132px;height:132px;border-radius:50%;
+    border:1px solid rgba(143,163,200,.28);background:rgba(21,18,40,.34);
+    pointer-events:auto;backdrop-filter:blur(3px);}
+  #knob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,rgba(127,233,255,.85),rgba(90,120,200,.5));
+    box-shadow:0 0 18px rgba(127,233,255,.45);}
+  #btns{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));
+    width:206px;height:206px;pointer-events:auto;}
+  .kb{position:absolute;width:70px;height:70px;border-radius:50%;display:grid;place-items:center;
+    font-size:19px;letter-spacing:.06em;color:#dfe7ff;
+    border:1px solid rgba(143,163,200,.34);background:rgba(21,18,40,.5);backdrop-filter:blur(3px);
+    transition:transform .06s ease,background .06s ease;}
+  .kb small{display:block;font-size:10px;opacity:.6;letter-spacing:.14em;margin-top:1px;}
+  .kb.on{transform:scale(.9);background:rgba(127,233,255,.26);}
+  #bU{right:150px;bottom:126px;background:rgba(255,207,107,.16);border-color:rgba(255,207,107,.5);}
+  #bU .cnt{position:absolute;top:-4px;right:-4px;min-width:22px;height:22px;border-radius:11px;
+    background:var(--gold);color:#0b0a14;font-size:12px;display:grid;place-items:center;padding:0 5px;}
+  #bU.off{opacity:.32;}
+  #artBar{position:absolute;left:0;right:0;bottom:calc(212px + env(safe-area-inset-bottom));
+    display:none;gap:8px;padding:6px 14px;pointer-events:auto;
+    overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;}
+  #artBar.on{display:flex;}
+  .art{flex:0 0 auto;width:56px;height:56px;display:grid;place-items:center;font-size:28px;color:#0b0a14;
+    background:linear-gradient(180deg,#fff,#ffcf6b);border-radius:3px;
+    box-shadow:0 0 16px rgba(255,207,107,.5);cursor:pointer;}
+  .art .k{position:absolute;margin:34px 0 0 34px;font-size:10px;color:#6b5a2a;}
+  #bA{right:78px;bottom:0}  #bB{right:0;bottom:64px}
+  #bS{right:78px;bottom:112px} #bD{right:150px;bottom:44px;background:rgba(255,143,192,.14)}
+
+  /* ---- 開場 ---- */
+  #gate{position:fixed;inset:0;z-index:9;display:block;
+    overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;
+    padding:20px 20px calc(16px + env(safe-area-inset-bottom));
+    background:radial-gradient(120% 90% at 50% 0%,#241d47 0%,#0b0a14 68%);}
+  #gate .box{max-width:430px;margin:0 auto;text-align:center;}
+  #gate h1{font-size:clamp(26px,7.5vw,40px);letter-spacing:.2em;font-weight:400;line-height:1.2;
+    background:linear-gradient(180deg,#fff,#7fe9ff 62%,#4a7ad0);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  #gate .sub{margin-top:8px;font-size:12px;letter-spacing:.42em;color:#7d86ad;}
+  #gate .story{margin-top:16px;font-size:13px;line-height:1.95;color:#a9b1d0;text-align:left;
+    padding:12px 14px;border-left:3px solid #9e2b2b;background:rgba(158,43,43,.08);}
+  #gate .story b{color:#e5c04a;font-weight:400;}
+  #gate ul{list-style:none;margin:18px 0 0;text-align:left;font-size:13px;line-height:1.85;color:#b9c2e2;}
+  #gate ul b{color:var(--qi);font-weight:400;letter-spacing:.08em;}
+  #gate ul i{font-style:normal;color:var(--sakura);}
+  #goWrap{position:sticky;bottom:0;margin-top:18px;padding:12px 0 6px;
+    background:linear-gradient(180deg,rgba(11,10,20,0),rgba(11,10,20,.92) 40%);}
+  #go{width:100%;padding:15px 20px;font:inherit;font-size:17px;letter-spacing:.3em;color:#0b0a14;
+    background:linear-gradient(100deg,var(--qi),#fff);border:0;border-radius:2px;cursor:pointer;
+    box-shadow:0 0 30px rgba(127,233,255,.4);}
+  /* ---- 選將畫面：沿用漫畫頭像 ---- */
+  #pick{position:fixed;inset:0;z-index:10;display:none;overflow-y:auto;touch-action:pan-y;
+    overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+    padding:20px 16px calc(20px + env(safe-area-inset-bottom));
+    background:radial-gradient(120% 90% at 50% 0%,#2a1a1a 0%,#0b0a14 68%);}
+  #pick.on{display:block;}
+  #pick h2{text-align:center;font-size:22px;font-weight:400;letter-spacing:.3em;color:#e5c04a;}
+  #pick .note{text-align:center;font-size:12px;color:#7d86ad;margin-top:6px;letter-spacing:.1em;}
+  #heroGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px;
+    max-width:520px;margin:18px auto 0;}
+  .hero{border:1px solid rgba(143,163,200,.28);border-radius:3px;overflow:hidden;cursor:pointer;
+    background:rgba(11,10,20,.6);text-align:center;}
+  .hero.sel{border-color:var(--gold);box-shadow:0 0 18px rgba(255,207,107,.45);}
+  .hero .pic{width:100%;display:flex;justify-content:center;align-items:center;background:#1a1208;padding:4px 0;}
+  .hero .pic svg,.hero .pic img{width:100%;height:auto;display:block;}
+  .hero-portrait,.portrait-art{width:100%;height:auto;display:block;
+    min-height:60px;background:#1a1208;color:transparent;font-size:0;}
+  .hero .ph{width:100%;aspect-ratio:1/1;display:grid;place-items:center;font-size:34px;color:#e5c04a;
+    background:linear-gradient(160deg,#241d2e,#14111d);}
+  .hero .nm{padding:6px 4px 3px;font-size:15px;color:#f0e6ff;}
+  .hero .rl{padding:0 4px 7px;font-size:10.5px;color:#8fa3c8;line-height:1.5;}
+  .hero .fc{display:inline-block;margin-right:4px;padding:0 4px;border-radius:2px;
+    font-size:10px;color:#0b0a14;}
+  #pickGo{position:sticky;bottom:0;display:block;width:100%;max-width:520px;margin:16px auto 0;
+    padding:15px 20px;font:inherit;font-size:17px;letter-spacing:.3em;color:#0b0a14;
+    background:linear-gradient(100deg,var(--gold),#fff3cf);border:0;border-radius:2px;cursor:pointer;}
+  #gate .kbd{margin-top:10px;font-size:11px;letter-spacing:.16em;color:#5d668c;line-height:1.6;}
+  #build{margin-top:12px;padding:8px 10px;font-size:12px;letter-spacing:.08em;
+    color:#0b0a14;background:var(--gold);border-radius:2px;font-weight:700;}
+
+  /* ---- 難度（主題化稱呼） ---- */
+  #modes{display:flex;gap:8px;justify-content:center;margin-top:16px;}
+  .mode{flex:1;padding:11px 6px;border:1px solid rgba(143,163,200,.34);border-radius:2px;
+    background:rgba(21,18,40,.5);font-size:13.5px;letter-spacing:.1em;cursor:pointer;color:#b9c2e2;}
+  .mode.sel{border-color:var(--qi);color:#0b0a14;background:linear-gradient(100deg,var(--qi),#bfeaff);}
+  .mode small{display:block;font-size:10px;opacity:.65;margin-top:3px;letter-spacing:0;}
+  .row{margin-top:13px;text-align:left;}
+  .row .lb{font-size:12px;letter-spacing:.14em;color:#7d86ad;margin-bottom:6px;}
+  .segs{display:flex;gap:6px;}
+  .seg{flex:1;padding:9px 4px;text-align:center;font-size:14px;border-radius:2px;cursor:pointer;
+    border:1px solid rgba(143,163,200,.3);background:rgba(21,18,40,.5);color:#b9c2e2;}
+  .seg.sel{border-color:var(--gold);color:#0b0a14;background:var(--gold);}
+  #bankToggle{margin-top:14px;font-size:12px;letter-spacing:.1em;color:#7d86ad;
+    text-decoration:underline;cursor:pointer;}
+  #bankBox{display:none;margin-top:10px;}
+  #bankBox textarea{width:100%;height:96px;padding:9px;font:inherit;font-size:13px;line-height:1.6;
+    color:#e9e6ff;background:rgba(11,10,20,.7);border:1px solid rgba(143,163,200,.3);border-radius:2px;}
+  #bankBox .tip{font-size:11px;color:#5d668c;margin-top:6px;line-height:1.6;}
+
+  /* ---- 頁首列 ---- */
+  #topbar{position:fixed;top:max(8px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));
+    right:max(10px,env(safe-area-inset-right));display:flex;justify-content:space-between;
+    pointer-events:none;z-index:5;}
+  #homeBtn,#fullscreenBtn{pointer-events:auto;display:inline-block;padding:7px 13px;font:inherit;font-size:13px;
+    letter-spacing:.08em;color:#b9c2e2;text-decoration:none;border:1px solid rgba(143,163,200,.3);
+    border-radius:2px;background:rgba(11,10,20,.55);backdrop-filter:blur(3px);cursor:pointer;}
+  #errBar{display:none;position:fixed;left:0;right:0;top:0;z-index:99;padding:10px 14px;
+    background:#ff5a5a;color:#fff;font-size:13px;line-height:1.5;}
+</style>
+</head>
+<body>
+<div id="errBar"></div>
+<div id="topbar">
+  <a id="homeBtn" href="index.html">← 教學首頁</a>
+  <button id="fullscreenBtn">全螢幕</button>
+</div>
+
+<div id="pick">
+  <h2>選　將</h2>
+  <div class="note" id="pickNote">選定的武將會以 2.5D 立繪上陣</div>
+  <div id="heroGrid"></div>
+  <button id="pickGo">出　陣</button>
+</div>
+
+<canvas id="c"></canvas>
+
+<div id="pad">
+  <div id="stick"><div id="knob"></div></div>
+  <div id="btns">
+    <div class="kb" id="bD">閃<small>DASH</small></div>
+    <div class="kb" id="bA">輕<small>A</small></div>
+    <div class="kb" id="bB">重<small>B</small></div>
+    <div class="kb" id="bS">挑<small>S</small></div>
+    <div class="kb off" id="bU">奧<small>ART</small><span class="cnt">0</span></div>
+  </div>
+  <div id="artBar"></div>
+</div>
+
+<div id="gate"><div class="box">
+  <h1>走卒傳</h1>
+  <div class="sub">三國・識字無雙</div>
+  <p class="story">黃巾亂起，你是軍中最末的一名走卒。<br>
+  軍令寫在旗上，看不懂字的兵，一輩子只能扛旗。<br>
+  <b>認得一個字，就升一階。</b>從走卒到大將軍，共七階。</p>
+  <ul>
+    <li><b>A → A → B</b>　疾風迴旋斬<i>（旋風推飛）</i></li>
+    <li><b>A → A → A → S</b>　瞬身・裂空斬<i>（挑空・空中 A 亂舞・B 下砸）</i></li>
+    <li><b>D → A → B</b>　閃神・一閃破<i>（拔刀穿透・收刀連環爆）</i></li>
+    <li><b>奧</b>　學會的字＝一招奧義，字越多招越多</li>
+  </ul>
+  <div id="modes">
+    <div class="mode sel" data-m="0">操練場<small>不會倒下</small></div>
+    <div class="mode" data-m="1">出征<small>一般</small></div>
+    <div class="mode" data-m="2">死戰<small>敵多且快</small></div>
+  </div>
+  <div class="row"><div class="lb">同時練習幾個字</div>
+    <div class="segs" id="segPool">
+      <div class="seg" data-v="1">1</div><div class="seg sel" data-v="3">3</div>
+      <div class="seg" data-v="5">5</div><div class="seg" data-v="7">7</div>
+    </div></div>
+  <div class="row"><div class="lb">答對幾次算學會</div>
+    <div class="segs" id="segHits">
+      <div class="seg" data-v="3">3 次</div><div class="seg sel" data-v="5">5 次</div>
+      <div class="seg" data-v="8">8 次</div>
+    </div></div>
+  <div class="row"><div class="lb">場上同時幾個選項</div>
+    <div class="segs" id="segChoice">
+      <div class="seg" data-v="2">2</div><div class="seg sel" data-v="3">3</div>
+      <div class="seg" data-v="4">4</div>
+    </div></div>
+  <div id="bankToggle">使用自訂詞庫</div>
+  <div id="bankBox">
+    <textarea id="bankText" placeholder="山,高山&#10;水,喝水&#10;火,火車"></textarea>
+    <div class="tip">一行一組：字,語詞。逗號可用全形，空白會自動去掉。留空則用內建 30 個常用字。</div>
+  </div>
+  <div id="goWrap"><button id="go">出　陣</button></div>
+  <div class="kbd">鍵盤：WASD 移動　J 輕　K 重　L 挑空　空白 閃避　U 奧義</div>
+  <div class="kbd" id="build"></div>
+</div></div>
+
+<script>
+"use strict";
+window.onerror=function(msg,src,line){
+  var b=document.getElementById("errBar");
+  if(b){b.style.display="block";b.textContent="程式錯誤："+msg+"（第 "+line+" 行）請把這行字告訴老師/開發者";}
+  return false;
+};
+/* ============================================================
+   魔導劍士・割草原型
+   2.5D：x 橫向、y 縱深、z 高度；畫面 Y = y - z
+   ============================================================ */
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+let VW = 0, VH = 0, DPR = 1;
+function resize(){
+  DPR = Math.min(devicePixelRatio || 1, 2);
+  VW = innerWidth; VH = innerHeight;
+  cv.width = VW * DPR; cv.height = VH * DPR;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+addEventListener('resize', resize); resize();
+
+const W = 2400, H = 1500;                 // 戰場大小
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const TAU = Math.PI*2;
+
+/* ---------------- 音效（WebAudio 合成） ---------------- */
+let AC=null;
+function audioOn(){ if(!AC) AC = new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended')AC.resume(); }
+function tone(freq,dur,type,vol,slide){
+  if(!AC) return; const t=AC.currentTime;
+  const o=AC.createOscillator(), g=AC.createGain();
+  o.type=type||'triangle'; o.frequency.setValueAtTime(freq,t);
+  if(slide) o.frequency.exponentialRampToValueAtTime(Math.max(30,freq*slide),t+dur);
+  g.gain.setValueAtTime(vol||.12,t); g.gain.exponentialRampToValueAtTime(.0008,t+dur);
+  o.connect(g).connect(AC.destination); o.start(t); o.stop(t+dur+.02);
+}
+let noiseBuf=null;
+function noise(dur,vol,lp){
+  if(!AC) return; const t=AC.currentTime;
+  if(!noiseBuf){ noiseBuf=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);
+    const d=noiseBuf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; }
+  const s=AC.createBufferSource(); s.buffer=noiseBuf; s.loop=true;
+  const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.setValueAtTime(lp||2200,t);
+  f.frequency.exponentialRampToValueAtTime(200,t+dur);
+  const g=AC.createGain(); g.gain.setValueAtTime(vol||.1,t); g.gain.exponentialRampToValueAtTime(.0008,t+dur);
+  s.connect(f).connect(g).connect(AC.destination); s.start(t); s.stop(t+dur+.02);
+}
+const SFX = {
+  slash(){ tone(rnd(900,1250),.11,'triangle',.07,.35); noise(.07,.05,4200); },      // 鏘
+  heavy(){ tone(120,.5,'sine',.16,.35); noise(.42,.13,1400); },                      // 轟
+  launch(){ tone(340,.34,'sawtooth',.09,3.4); noise(.2,.06,3000); },
+  slam(){ tone(70,.7,'sine',.2,.4); noise(.6,.16,900); },
+  iai(){ noise(.14,.09,6000); tone(1700,.12,'triangle',.05,.25); },
+  sheath(){ tone(2400,.05,'square',.05,.6); },                                       // 喀噠
+  boom(){ tone(rnd(80,140),.45,'sine',.11,.35); noise(.35,.09,1200); },
+  hurt(){ tone(180,.2,'square',.09,.5); }
+};
+
+/* ---------------- 輸入 ---------------- */
+const keys = {};
+const held = {A:false,B:false,S:false,D:false};
+let queued = null, queuedAt = -9;
+function press(k){
+  held[k]=true; audioOn();
+  if(k==='D'){ tryDash(); } else { queued=k; queuedAt=T; }
+}
+function release(k){ held[k]=false; }
+const KMAP={KeyJ:'A',KeyK:'B',KeyL:'S',Space:'D'};
+addEventListener('keydown',e=>{
+  if(KMAP[e.code]){ e.preventDefault(); if(!e.repeat) press(KMAP[e.code]); }
+  keys[e.code]=true;
+});
+addEventListener('keyup',e=>{ if(KMAP[e.code]) release(KMAP[e.code]); keys[e.code]=false; });
+
+// 觸控按鈕
+[['bA','A'],['bB','B'],['bS','S'],['bD','D']].forEach(([id,k])=>{
+  const el=document.getElementById(id);
+  el.addEventListener('pointerdown',e=>{e.preventDefault();el.classList.add('on');press(k);});
+  const off=e=>{el.classList.remove('on');release(k);};
+  el.addEventListener('pointerup',off); el.addEventListener('pointercancel',off); el.addEventListener('pointerleave',off);
+});
+// 虛擬搖桿
+const stick=document.getElementById('stick'), knob=document.getElementById('knob');
+let stickId=null, sx=0, sy=0;
+stick.addEventListener('pointerdown',e=>{ e.preventDefault(); audioOn(); stickId=e.pointerId; stick.setPointerCapture(e.pointerId); moveStick(e); });
+stick.addEventListener('pointermove',e=>{ if(e.pointerId===stickId) moveStick(e); });
+const endStick=e=>{ if(e.pointerId===stickId){ stickId=null; sx=sy=0; knob.style.transform='translate(0,0)'; } };
+stick.addEventListener('pointerup',endStick); stick.addEventListener('pointercancel',endStick);
+function moveStick(e){
+  const r=stick.getBoundingClientRect();
+  let dx=e.clientX-(r.left+r.width/2), dy=e.clientY-(r.top+r.height/2);
+  const m=Math.hypot(dx,dy), lim=r.width*0.36;
+  if(m>lim){ dx=dx/m*lim; dy=dy/m*lim; }
+  knob.style.transform=`translate(${dx}px,${dy}px)`;
+  sx=dx/lim; sy=dy/lim;
+}
+function moveInput(){
+  let mx=sx, my=sy;
+  if(keys.KeyA||keys.ArrowLeft) mx-=1; if(keys.KeyD||keys.ArrowRight) mx+=1;
+  if(keys.KeyW||keys.ArrowUp) my-=1;   if(keys.KeyS||keys.ArrowDown) my+=1;
+  const m=Math.hypot(mx,my); if(m>1){mx/=m;my/=m;}
+  return {x:mx,y:my,m:Math.min(1,m)};
+}
+
+/* ---------------- 實體 ---------------- */
+const P = { x:W/2, y:H/2, z:0, vx:0, vy:0, vz:0, face:0, hp:100, maxhp:100,
+            state:'idle', act:null, t:0, chain:[], chainT:-9, inv:0, airHits:0, marked:[] };
+let mobs=[], fx=[], pops=[], petals=[], kills=0;
+let T=0, hitStop=0, shake=0, combo=0, comboT=0, best=0, dead=false;
+let MODE=0;                                   // 0 見習（不會倒下） 1 一刀流 2 劍聖
+const MODES=[{cap:34,sp:.62,dmg:0,invincible:true},
+             {cap:46,sp:1,  dmg:3,invincible:false},
+             {cap:64,sp:1.35,dmg:5,invincible:false}];
+function M(){ return MODES[MODE]; }
+
+/* ================= 識字層 =================
+   題面 ↔ 答案 ↔ 類別 的通用格式：{w:字, h:語詞提示}
+   老師可在開場貼自訂詞庫（一行一組：字,語詞）          */
+const DEFAULT_WORDS=[
+ {w:'山',h:'高山'},{w:'水',h:'喝水'},{w:'火',h:'火車'},{w:'木',h:'木頭'},
+ {w:'日',h:'日出'},{w:'月',h:'月亮'},{w:'土',h:'土地'},{w:'石',h:'石頭'},
+ {w:'手',h:'手心'},{w:'口',h:'開口'},{w:'目',h:'目光'},{w:'耳',h:'耳朵'},
+ {w:'牛',h:'牛奶'},{w:'羊',h:'綿羊'},{w:'魚',h:'魚缸'},{w:'鳥',h:'小鳥'},
+ {w:'花',h:'花朵'},{w:'草',h:'草地'},{w:'雨',h:'下雨'},{w:'風',h:'風吹'},
+ {w:'刀',h:'菜刀'},{w:'門',h:'大門'},{w:'車',h:'汽車'},{w:'人',h:'好人'},
+ {w:'大',h:'大家'},{w:'小',h:'小心'},{w:'上',h:'上車'},{w:'下',h:'下課'},
+ {w:'中',h:'中間'},{w:'天',h:'天空'}
+];
+let WORDS=DEFAULT_WORDS.slice();
+let poolSize=3, needHits=5, choices=3;
+let pool=[], bank=[], target=null, learnedList=[];
+let hintT=0, wrongFlash=0, showLearned=null, correctTotal=0;
+
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; const x=a[i];a[i]=a[j];a[j]=x; } return a; }
+
+function speak(s){
+  try{
+    if(!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(s);
+    u.lang='zh-TW'; u.rate=.75; u.pitch=1.05;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ---- 把字光柵化成光點：字傷斬與奧義都靠這個「用劍畫出字」 ---- */
+const glyphCache={};
+function glyphPoints(ch){
+  if(glyphCache[ch]) return glyphCache[ch];
+  let pts=[];
+  try{
+    const S=64, oc=document.createElement('canvas'); oc.width=S; oc.height=S;
+    const o=oc.getContext('2d');
+    o.fillStyle='#fff'; o.font='54px "Hiragino Mincho ProN",serif';
+    o.textAlign='center'; o.textBaseline='middle'; o.fillText(ch,S/2,S/2);
+    const d=o.getImageData(0,0,S,S).data;
+    for(let y=0;y<S;y+=3) for(let x=0;x<S;x+=3){
+      if(d[(y*S+x)*4+3]>110) pts.push({x:(x-S/2)/(S/2), y:(y-S/2)/(S/2), a:rnd(0,TAU)});
+    }
+  }catch(e){ pts=[]; }
+  glyphCache[ch]=pts; return pts;
+}
+
+/* ---- 奧義：學會的字才會進到這裡，字越多招越多 ---- */
+const ART_MAP={火:'burst',日:'burst',中:'burst',天:'rain',雨:'rain',月:'rain',鳥:'rain',
+  水:'wave',風:'wave',大:'wave',刀:'pillar',車:'pillar',山:'pillar',木:'pillar',
+  石:'burst',土:'wave',花:'orbit',草:'orbit',魚:'orbit',人:'orbit',小:'orbit'};
+const ART_NAME={burst:'爆',rain:'降',wave:'波',pillar:'貫',orbit:'環'};
+function artOf(ch){
+  if(ART_MAP[ch]) return ART_MAP[ch];
+  const keys=['burst','rain','wave','pillar','orbit'];
+  return keys[ch.charCodeAt(0)%5];            // 自訂詞庫的字也一定有招
+}
+let arts=[], charges=0, artOpen=false;
+
+/* ---- 軍階：從走卒一路爬上去，門檻＝學會的字數 ----
+   欄位沿用三國畫像設定的命名：ac 甲色 / hc 頭飾色 / ht 頭飾      */
+const RANKS=[
+ {n:'走卒',  need:0,  ac:'#4b4650', hc:'#6b6250', ht:'巾', cape:0, line:'你連名字都沒有，只有一把缺口的刀。'},
+ {n:'什長',  need:2,  ac:'#5c5344', hc:'#8a7a52', ht:'巾', cape:0, line:'管十個人，也是管人。'},
+ {n:'屯長',  need:4,  ac:'#6d5c3c', hc:'#b04a3a', ht:'盔', cape:0, line:'認得字的兵，才能傳令。'},
+ {n:'軍侯',  need:7,  ac:'#7c6a46', hc:'#c94b4b', ht:'盔', cape:1, line:'這件披風是你自己搶回來的。'},
+ {n:'校尉',  need:11, ac:'#8d7a4c', hc:'#e0553f', ht:'盔', cape:1, line:'有人開始記得你的名字了。'},
+ {n:'牙門將',need:16, ac:'#a89040', hc:'#e0553f', ht:'纓', cape:1, line:'牙門旗立在你身後。'},
+ {n:'大將軍',need:22, ac:'#e5c04a', hc:'#ffcf6b', ht:'纓', cape:1, line:'從走卒到這裡，你只是一直沒有停下來。'}
+];
+function rankIdx(){
+  let i=0; for(let k=0;k<RANKS.length;k++) if(arts.length>=RANKS[k].need) i=k;
+  return i;
+}
+function rankK(){ return 1+rankIdx()*0.045; }   // 軍階越高，劍氣越廣
+
+function castArt(ch){
+  if(charges<=0||!running||dead||showLearned) return;
+  charges--; artOpen=false; renderArtBar();
+  setStunt('ult',1.0);
+  const kind=artOf(ch), pw=1+arts.length*0.12;   // 學會越多字，威力越高
+  speak(ch); freeze(.2); shakeIt(26); SFX.slam();
+  addFX({k:'wordslash',x:P.x,y:P.y-150,ch:ch,pts:glyphPoints(ch),life:1.25,big:1});
+  pop('奧義・'+ch+ART_NAME[kind],P.x,P.y-250,'#ffcf6b',26,1.2);
+  const hit=(cx,cy,R,dmg,kb,kz)=>{
+    for(const m of mobs){ if(m.dead||m.word) continue;
+      const d=Math.hypot(m.x-cx,m.y-cy); if(d>R) continue;
+      const a=Math.atan2(m.y-cy,m.x-cx);
+      hurtMob(m,dmg*pw,Math.cos(a)*kb,Math.sin(a)*kb*.7,kz);
+    }
+    addFX({k:'dome',x:cx,y:cy,r:R,life:.55,c:'#ffcf6b'});
+  };
+  if(kind==='burst') hit(P.x,P.y,400,8,900,300);
+  else if(kind==='wave'){ hit(P.x,P.y,340,5,1250,120); addFX({k:'storm',x:P.x,y:P.y,r:360,life:.6}); }
+  else if(kind==='rain'){
+    for(let i=0;i<9;i++){ const a=rnd(0,TAU), r=rnd(60,430);
+      const cx=P.x+Math.cos(a)*r, cy=P.y+Math.sin(a)*r*.8;
+      addFX({k:'delayhit',x:cx,y:cy,delay:i*.07,R:130,dmg:5*pw,life:i*.07+.5}); }
+  }
+  else if(kind==='pillar'){
+    const dx=Math.cos(P.face), dy=Math.sin(P.face);
+    for(let i=1;i<=6;i++) hit(P.x+dx*i*100,P.y+dy*i*100,110,7,700,180);
+    addFX({k:'beam',x:P.x,y:P.y,face:P.face,len:640,life:.4});
+  }
+  else { for(let i=0;i<3;i++) addFX({k:'delayhit',x:P.x,y:P.y,delay:i*.12,R:250,dmg:4*pw,life:i*.12+.5}); }
+}
+
+function initLearning(){
+  bank=shuffle(WORDS.slice()); pool=[]; learnedList=[]; correctTotal=0;
+  arts=[]; charges=0; artOpen=false;
+  while(pool.length<Math.min(poolSize,bank.length)) pool.push(Object.assign({c:0},bank.shift()));
+  pickTarget(); spawnWordSet();
+}
+function pickTarget(){
+  if(!pool.length){ target=null; return; }
+  // 優先挑練習次數最少的，確保重複而不是一直換新
+  let min=1e9; for(const w of pool) min=Math.min(min,w.c);
+  const cand=pool.filter(w=>w.c===min);
+  target=cand[(Math.random()*cand.length)|0];
+  hintT=0; speak(target.w);
+}
+function spawnWordSet(){
+  for(const m of mobs) if(m.word) m.gone=true;
+  mobs=mobs.filter(m=>!m.gone);
+  if(!target) return;
+  const others=pool.concat(bank.slice(0,6)).filter(w=>w.w!==target.w);
+  shuffle(others);
+  const set=[target].concat(others.slice(0,Math.max(0,choices-1)));
+  shuffle(set);
+  const base=Math.random()*TAU, step=TAU/set.length;
+  for(let i=0;i<set.length;i++){
+    const a=base+step*i+rnd(-.15,.15), r=rnd(240,330);
+    mobs.push({x:clamp(P.x+Math.cos(a)*r,90,W-90), y:clamp(P.y+Math.sin(a)*r*.8,90,H-90),
+      z:0,vx:0,vy:0,vz:0,hp:99,r:24,flash:0,air:false,mark:0,dead:false,atkCd:99,
+      wob:rnd(0,TAU),word:set[i].w,ref:set[i]});
+  }
+}
+let cam={x:P.x,y:P.y};
+
+for(let i=0;i<70;i++) petals.push({x:rnd(0,W),y:rnd(0,H),z:rnd(0,400),s:rnd(2,5),vx:rnd(-14,-4),vz:rnd(-16,-6),r:rnd(0,TAU)});
+
+function spawnMob(){
+  const edge=(Math.random()*4)|0; let x,y;
+  if(edge===0){x=rnd(60,W-60);y=60;} else if(edge===1){x=W-60;y=rnd(60,H-60);}
+  else if(edge===2){x=rnd(60,W-60);y=H-60;} else {x=60;y=rnd(60,H-60);}
+  // 靠近玩家的一側優先，避免雜兵從天邊慢慢走
+  if(dist({x,y},P)>1400){ x=P.x+rnd(-700,700); y=P.y+rnd(-500,500); }
+  mobs.push({x:clamp(x,50,W-50),y:clamp(y,50,H-50),z:0,vx:0,vy:0,vz:0,hp:3,
+             r:15,flash:0,air:false,mark:0,dead:false,atkCd:rnd(.6,2),wob:rnd(0,TAU)});
+}
+for(let i=0;i<40;i++) spawnMob();
+
+/* ---------------- 效果 ---------------- */
+function addFX(o){ o.t=0; fx.push(o); }
+function pop(text,x,y,color,size,life){ pops.push({text,x,y,c:color||'#fff',s:size||22,t:0,life:life||.9}); }
+function shakeIt(v){ shake=Math.max(shake,v); }
+function freeze(v){ hitStop=Math.max(hitStop,v); }
+
+function addCombo(n){
+  combo+=n; comboT=2.6; best=Math.max(best,combo);
+}
+function ratingBase(){
+  if(combo>=250) return {t:'SSS',c:'#ff6bd6',k:1.35};
+  if(combo>=120) return {t:'S',c:'#ffcf6b',k:1.24};
+  if(combo>=60)  return {t:'A',c:'#7fe9ff',k:1.15};
+  if(combo>=25)  return {t:'B',c:'#a8ffb0',k:1.07};
+  if(combo>=8)   return {t:'C',c:'#c9d3f0',k:1.0};
+  return {t:'',c:'#8fa3c8',k:1.0};
+}
+function rating(){ const r=ratingBase(); return {t:r.t,c:r.c,k:r.k*rankK()}; }
+
+/* ---------------- 傷害 ---------------- */
+/* ---- 特技：旋身、翻筋斗、躍起，讓大招有肢體語言 ---- */
+let stunt=null;
+function setStunt(k,dur){ stunt={k:k,t:0,dur:dur}; }
+function stuntPose(){
+  const o={rot:0,lift:0,sq:1};
+  if(!stunt) return o;
+  const k=clamp(stunt.t/stunt.dur,0,1), e=ease(k);
+  if(stunt.k==='spin'){                       // 疾風迴旋斬：兩圈旋身
+    o.rot=e*Math.PI*4; o.lift=Math.sin(k*Math.PI)*26;
+  } else if(stunt.k==='rise'){                // 裂空斬：仰身上挑
+    o.rot=-e*0.75; o.lift=e*18;
+  } else if(stunt.k==='flip'){                // 下砸：後空翻一圈再落下
+    o.rot=-e*Math.PI*2; o.lift=Math.sin(k*Math.PI)*64;
+  } else if(stunt.k==='lunge'){               // 一閃破：壓低前衝
+    o.rot=-0.55*Math.sin(k*Math.PI); o.lift=Math.sin(k*Math.PI)*12; o.sq=1-0.1*Math.sin(k*Math.PI);
+  } else if(stunt.k==='ult'){                 // 奧義：蓄力下蹲 → 高躍 → 兩圈翻身 → 落地
+    if(k<.16){ const kk=k/.16; o.sq=1-0.28*kk; o.lift=0; }
+    else if(k<.9){ const kk=(k-.16)/.74;
+      o.lift=Math.sin(kk*Math.PI)*165; o.rot=-ease(kk)*Math.PI*4; o.sq=1.06; }
+    else { const kk=(k-.9)/.1; o.lift=0; o.sq=1-0.22*(1-kk); }
+  }
+  return o;
+}
+
+let pendingWord=[];
+function flushWordHits(){
+  if(!pendingWord.length) return;
+  let best=null,bd=1e9;
+  for(const m of pendingWord){ if(m.dead) continue; const d=dist(m,P); if(d<bd){bd=d;best=m;} }
+  pendingWord=[];
+  if(best) judgeWord(best);
+}
+
+function judgeWord(m){
+  if(!target) return;
+  if(m.ref===target || m.word===target.w){
+    // ── 答對：定格特寫 + 語音 + 周圍雜兵被震飛（獎勵爽感）
+    m.dead=true; m.deadT=0; kills++;
+    addCombo(20); freeze(.25); shakeIt(24); SFX.slam(); speak(m.word);
+    charges=Math.min(9,charges+1); renderArtBar();
+    addFX({k:'wordslash',x:m.x,y:m.y-90,ch:m.word,pts:glyphPoints(m.word),life:1.1,big:0});
+    pop('正確！',m.x,m.y-140,'#ffcf6b',26,1.1);
+    for(const o of mobs){ if(o.dead||o.word) continue; const d=dist(o,m); if(d>340) continue;
+      const a=Math.atan2(o.y-m.y,o.x-m.x); hurtMob(o,3,Math.cos(a)*700,Math.sin(a)*520,220); }
+    addFX({k:'dome',x:m.x,y:m.y,r:340,life:.6,c:'#ffcf6b'});
+    target.c++; correctTotal++;
+    if(target.c>=needHits){
+      // ── 習得：放大發光的成就時刻
+      learnedList.push(target.w);
+      const beforeRank=rankIdx();
+      if(arts.indexOf(target.w)<0) arts.push(target.w);
+      renderArtBar();
+      const afterRank=rankIdx();
+      showLearned={w:target.w,h:target.h,t:0,
+                   rank:afterRank>beforeRank?RANKS[afterRank]:null};
+      if(afterRank>beforeRank){ P.maxhp=100+afterRank*12; P.hp=P.maxhp; }
+      pool=pool.filter(x=>x!==target);
+      if(bank.length) pool.push(Object.assign({c:0},bank.shift()));
+      if(!pool.length){                       // 全部學會 → 循環複習，不會卡住
+        for(const lw of learnedList){
+          const src=WORDS.filter(x=>x.w===lw)[0];
+          pool.push({w:lw,h:src?src.h:lw,c:0});
+        }
+        learnedList=[];
+      }
+      target=null;                            // 由 showLearned 結束時接手
+    } else { pickTarget(); spawnWordSet(); }
+  } else {
+    // ── 答錯：只彈開，不扣血、不中斷連擊
+    const a=Math.atan2(m.y-P.y,m.x-P.x);
+    m.vx=Math.cos(a)*420; m.vy=Math.sin(a)*320; m.flash=.2;
+    wrongFlash=.35; shakeIt(6); tone(200,.25,'square',.09,.5);
+    pop('再看一次',m.x,m.y-100,'#ff8fc0',20,.9);
+    hintT=99; speak(target.w);
+  }
+}
+
+function hurtMob(m,dmg,kx,ky,kz,chain){
+  if(m.dead) return false;
+  if(m.word){ if(pendingWord.indexOf(m)<0) pendingWord.push(m); return true; }
+  m.hp-=dmg; m.flash=.14;
+  m.vx+=kx; m.vy+=ky; m.vz+=kz;
+  if(kz>0) m.air=true;
+  addCombo(1);
+  addFX({k:'spark',x:m.x,y:m.y-m.z-16,life:.26,a:Math.atan2(ky,kx)});
+  if(m.hp<=0){
+    m.dead=true; m.deadT=0; kills++;
+    addFX({k:'burst',x:m.x,y:m.y-m.z-16,life:.4});
+  }
+  return true;
+}
+// 命中判定：扇形／圓形
+function hitArea(cx,cy,radius,arc,face,opt){
+  const o=opt||{}; let n=0;
+  for(const m of mobs){
+    if(m.dead) continue;
+    if(o.airOnly && !m.air) continue;
+    const d=Math.hypot(m.x-cx,m.y-cy);
+    if(d>radius+m.r) continue;
+    if(arc<TAU && d>46){          // 貼身時不判角度，避免站太近反而砍不到
+      let a=Math.atan2(m.y-cy,m.x-cx), df=Math.abs(((a-face+Math.PI*3)%TAU)-Math.PI);
+      if(df>arc/2) continue;
+    }
+    const ang=Math.atan2(m.y-cy,m.x-cx);
+    hurtMob(m,o.dmg||1,Math.cos(ang)*(o.kb||120),Math.sin(ang)*(o.kb||120)*.7,o.kz||0);
+    n++;
+  }
+  return n;
+}
+
+/* ---------------- 連招表 ---------------- */
+const CHAIN_WINDOW = .52;
+function chainStr(){ return P.chain.join(''); }
+
+function nextAction(key){
+  const c = chainStr();
+  if(P.state==='air'){
+    if(key==='A' && P.airHits<6) return 'airslash';
+    if(key==='B') return 'slam';
+    return null;
+  }
+  if(c==='D'){ if(key==='A') return 'iai'; }
+  if(c==='DA'){ if(key==='B') return 'sheath'; }
+  if(c===''){ if(key==='A') return 'l1'; if(key==='S') return 'launch'; if(key==='B') return 'spin'; }
+  if(c==='A'){ if(key==='A') return 'l2'; if(key==='B') return 'spin'; }
+  if(c==='AA'){ if(key==='A') return 'l3'; if(key==='B') return 'spin'; }
+  if(c==='AAA'){ if(key==='S') return 'launch'; if(key==='B') return 'spin'; }
+  // 任何時候 S 都能挑空、B 都能旋斬（低門檻，符合「亂按都很帥」）
+  if(key==='S') return 'launch';
+  if(key==='B') return 'spin';
+  if(key==='A') return 'l1';
+  return null;
+}
+
+const ACT = {
+  l1:{dur:.26,hit:.10,name:'',run(){ SFX.slash();
+      const k=rating().k, n=hitArea(P.x,P.y,124*k,2.3,P.face,{dmg:1,kb:150});
+      if(n){freeze(.045);shakeIt(3);} addFX({k:'arc',x:P.x,y:P.y,face:P.face,r:88*k,arc:2.0,life:.2,c:'#dff6ff'}); }},
+  l2:{dur:.24,hit:.08,name:'',run(){ SFX.slash();
+      const k=rating().k, n=hitArea(P.x,P.y,132*k,2.5,P.face,{dmg:1,kb:170});
+      if(n){freeze(.05);shakeIt(4);} addFX({k:'arc',x:P.x,y:P.y,face:P.face,r:94*k,arc:2.2,life:.2,c:'#dff6ff',flip:1}); }},
+  l3:{dur:.3,hit:.11,name:'',run(){ SFX.slash();
+      const k=rating().k, n=hitArea(P.x,P.y,146*k,2.7,P.face,{dmg:1,kb:220});
+      if(n){freeze(.06);shakeIt(5);} addFX({k:'arc',x:P.x,y:P.y,face:P.face,r:104*k,arc:2.4,life:.22,c:'#bfeaff'}); }},
+
+  spin:{dur:.62,hit:.20,name:'疾風迴旋斬',run(){ SFX.heavy();
+      const k=rating().k, R=210*k;
+      let n=0;
+      for(const m of mobs){ if(m.dead)continue;
+        const d=dist(m,P); if(d>R+m.r) continue;
+        const a=Math.atan2(m.y-P.y,m.x-P.x);
+        hurtMob(m,3,Math.cos(a)*760,Math.sin(a)*560,240); n++;
+      }
+      freeze(n ? .13 : .04); shakeIt(n ? 16 : 5);
+      addFX({k:'storm',x:P.x,y:P.y,r:R,life:.55});
+      pop('疾風迴旋斬',P.x,P.y-120,'#7fe9ff',26);
+      for(let i=0;i<26;i++) addFX({k:'petal',x:P.x,y:P.y,a:rnd(0,TAU),sp:rnd(240,620),life:.7}); }},
+
+  launch:{dur:.44,hit:.13,name:'瞬身・裂空斬',run(){ SFX.launch();
+      const k=rating().k, R=150*k;
+      let n=0;
+      for(const m of mobs){ if(m.dead)continue;
+        const d=dist(m,P); if(d>R+m.r) continue;
+        const a=Math.atan2(m.y-P.y,m.x-P.x);
+        hurtMob(m,2,Math.cos(a)*90,Math.sin(a)*70,620); n++;
+      }
+      freeze(n ? .09 : .03); shakeIt(10);
+      addFX({k:'rift',x:P.x,y:P.y,r:R,life:.5});
+      pop('裂空斬',P.x,P.y-120,'#ffcf6b',26);
+      P.vz=760; P.state='air'; P.airHits=0; }},
+
+  airslash:{dur:.17,hit:.05,name:'',air:true,run(){ SFX.slash();
+      P.airHits++;
+      const k=rating().k;
+      // 次元斬：瞬移到最近空中敵人旁
+      let tgt=null,bd=1e9;
+      for(const m of mobs){ if(m.dead||!m.air)continue; const d=dist(m,P); if(d<bd){bd=d;tgt=m;} }
+      if(tgt && bd<420){ const a=Math.atan2(tgt.y-P.y,tgt.x-P.x);
+        addFX({k:'trail',x1:P.x,y1:P.y-P.z,x2:tgt.x,y2:tgt.y-tgt.z,life:.22});
+        P.x=tgt.x-Math.cos(a)*40; P.y=tgt.y-Math.sin(a)*40; P.z=tgt.z+rnd(-10,26); P.face=a; }
+      P.vz=Math.max(P.vz,-40)*0.2+60;
+      let n=0;
+      for(const m of mobs){ if(m.dead)continue;
+        if(Math.abs((m.y-m.z)-(P.y-P.z))>150) continue;
+        if(dist(m,P)>130*k) continue;
+        const a=Math.atan2(m.y-P.y,m.x-P.x);
+        hurtMob(m,1,Math.cos(a)*60,Math.sin(a)*40,110); m.air=true; m.vz=Math.max(m.vz,40); n++;
+      }
+      if(n){freeze(.055);shakeIt(6);}
+      addFX({k:'dim',x:P.x,y:P.y-P.z,life:.22,a:rnd(0,TAU)}); }},
+
+  slam:{dur:.7,hit:0,name:'下砸重擊',air:true,run(){ P.slamming=true; P.vz=-1500; }},
+
+  iai:{dur:.34,hit:.06,name:'閃神・一閃破',run(){ SFX.iai();
+      const k=rating().k, L=520, Wd=64*k;
+      const dx=Math.cos(P.face), dy=Math.sin(P.face);
+      const sxp=P.x, syp=P.y;
+      P.marked=[];
+      let wordHit=null, wordD=1e9;
+      for(const m of mobs){ if(m.dead)continue;
+        const rx=m.x-sxp, ry=m.y-syp;
+        const along=rx*dx+ry*dy, perp=Math.abs(-rx*dy+ry*dx);
+        if(along<-20||along>L||perp>Wd) continue;
+        if(m.word){ if(along<wordD){ wordD=along; wordHit=m; } continue; }
+        m.mark=1; m.hp=Math.max(m.hp,1); P.marked.push(m);
+        addFX({k:'cut',x:m.x,y:m.y-m.z-16,a:P.face,life:.9});
+      }
+      if(wordHit) judgeWord(wordHit);
+      addFX({k:'beam',x:sxp,y:syp,face:P.face,len:L,life:.3});
+      P.x=clamp(sxp+dx*L*.86,40,W-40); P.y=clamp(syp+dy*L*.86,40,H-40);
+      P.inv=.3; freeze(.08); shakeIt(9);
+      pop('一閃',P.x,P.y-120,'#fff',26); }},
+
+  sheath:{dur:.5,hit:.2,name:'收刀・連環爆',run(){ SFX.sheath();
+      const list=P.marked.slice(); P.marked=[];
+      let i=0;
+      for(const m of list){
+        const delay=i*0.045; i++;
+        addFX({k:'delaybomb',x:m.x,y:m.y,m,delay,life:delay+.5});
+      }
+      pop('喀噠',P.x+40,P.y-80,'#ffcf6b',18,.6); }}
+};
+
+const STUNT_OF={spin:'spin',launch:'rise',slam:'flip',iai:'lunge',airslash:'spin'};
+function startAct(name){
+  const a=ACT[name]; if(!a) return;
+  if(STUNT_OF[name]) setStunt(STUNT_OF[name], name==='slam'?.55:(name==='airslash'?.17:a.dur));
+  P.act={n:name,d:a.dur,t:0,fired:false,hit:a.hit};
+  if(P.state!=='air') P.state='atk';
+  P.t=0;
+  // 記錄連段鏈
+  if(P.state==='air'){ /* 空中不記地面鏈 */ }
+  else {
+    if(name==='l1') P.chain=['A'];
+    else if(name==='l2') P.chain=['A','A'];
+    else if(name==='l3') P.chain=['A','A','A'];
+    else if(name==='iai') P.chain=['D','A'];
+    else if(name==='sheath') P.chain=[];
+    else P.chain=[];
+  }
+  P.chainT=T;
+  // 攻擊時朝向搖桿方向或最近敵人
+  const mi=moveInput();
+  if(mi.m>.2) P.face=Math.atan2(mi.y,mi.x);
+  else{
+    let bd=1e9,tg=null;
+    for(const m of mobs){ if(m.dead)continue; const d=dist(m,P); if(d<bd){bd=d;tg=m;} }
+    if(tg&&bd<300) P.face=Math.atan2(tg.y-P.y,tg.x-P.x);
+  }
+}
+
+function tryDash(){
+  if(P.state==='dash') return;
+  const mi=moveInput();
+  if(mi.m>.2) P.face=Math.atan2(mi.y,mi.x);
+  P.state='dash'; P.act=null; P.t=0; P.inv=.24; P.chain=['D']; P.chainT=T;
+  P.vx=Math.cos(P.face)*1150; P.vy=Math.sin(P.face)*1150;
+  if(P.z>0){ P.vz=Math.max(P.vz,120); }
+  addFX({k:'ghost',x:P.x,y:P.y-P.z,face:P.face,life:.3});
+  noise(.09,.045,3200);
+}
+
+/* ---------------- 更新 ---------------- */
+function update(dt){
+  T+=dt;
+  if(showLearned){
+    showLearned.t+=dt;
+    const dur=showLearned.rank?3.2:2.0;
+    if(showLearned.t>dur){ showLearned=null; if(!target){ pickTarget(); spawnWordSet(); } }
+    return;
+  }
+  if(hitStop>0){ hitStop-=dt; return; }
+  if(dead) return;
+  hintT+=dt;
+  if(stunt){ stunt.t+=dt; if(stunt.t>=stunt.dur) stunt=null; }
+  if(wrongFlash>0) wrongFlash-=dt;
+  // watchdog：題目或字兵不見了就自動補回，避免畫面卡住沒反應
+  if(!target && pool.length){ pickTarget(); spawnWordSet(); }
+  if(target && !mobs.some(m=>m.word&&!m.dead)) spawnWordSet();
+
+  if(comboT>0){ comboT-=dt; if(comboT<=0) combo=0; }
+  if(P.inv>0) P.inv-=dt;
+  if(shake>0) shake=Math.max(0,shake-dt*60);
+
+  /* --- 玩家 --- */
+  const mi=moveInput();
+  if(P.state==='idle'||P.state==='run'){
+    const sp=430;
+    P.vx=mi.x*sp; P.vy=mi.y*sp*.78;
+    if(mi.m>.15){ P.face=Math.atan2(mi.y,mi.x); P.state='run'; } else P.state='idle';
+  } else if(P.state==='dash'){
+    P.t+=dt; P.vx*=Math.pow(.006,dt); P.vy*=Math.pow(.006,dt);
+    if(P.t>.22){ P.state='idle'; }
+  }
+
+  // 連段輸入
+  if(queued && T-queuedAt<.35){
+    const busy = P.act && P.act.t < P.act.d*0.62 && !(P.state==='air');
+    if(!busy){
+      // 鏈超時 → 重置
+      if(T-P.chainT>CHAIN_WINDOW && P.state!=='air') P.chain=[];
+      const nx=nextAction(queued);
+      if(nx){ startAct(nx); queued=null; }
+    }
+  } else if(queued && T-queuedAt>=.35) queued=null;
+
+  // 動作推進
+  if(P.act){
+    const a=P.act; a.t+=dt;
+    if(!a.fired && a.t>=a.hit){ a.fired=true; ACT[a.n].run(); }
+    if(P.state!=='air'){ P.vx*=Math.pow(.02,dt); P.vy*=Math.pow(.02,dt); }
+    if(a.t>=a.d){
+      P.act=null;
+      if(P.state==='atk') P.state='idle';
+    }
+  }
+
+  // 空中物理
+  if(P.state==='air'){
+    P.vz-=(P.slamming?4200:1750)*dt;
+    P.z+=P.vz*dt;
+    if(!P.act){ P.vx*=Math.pow(.35,dt); P.vy*=Math.pow(.35,dt);
+      P.vx+=mi.x*260*dt*3; P.vy+=mi.y*200*dt*3; }
+    if(P.z<=0){
+      P.z=0;
+      if(P.slamming){
+        SFX.slam(); freeze(.16); shakeIt(30);
+        const k=rating().k, R=300*k; let n=0;
+        for(const m of mobs){ if(m.dead)continue; const d=dist(m,P); if(d>R+m.r)continue;
+          const a2=Math.atan2(m.y-P.y,m.x-P.x);
+          hurtMob(m,4,Math.cos(a2)*820,Math.sin(a2)*600,320); n++; }
+        addFX({k:'dome',x:P.x,y:P.y,r:R,life:.6});
+        pop('魔力爆碎',P.x,P.y-120,'#ff8fc0',28);
+        for(let i=0;i<20;i++) addFX({k:'rock',x:P.x,y:P.y,a:rnd(0,TAU),sp:rnd(200,520),life:.7});
+        P.slamming=false;
+      }
+      P.vz=0; P.state='idle'; P.act=null; P.airHits=0; P.chain=[];
+    }
+  }
+
+  P.x=clamp(P.x+P.vx*dt,40,W-40);
+  P.y=clamp(P.y+P.vy*dt,40,H-40);
+
+  /* --- 雜兵 --- */
+  for(const m of mobs){
+    if(m.flash>0) m.flash-=dt;
+    if(m.dead){ m.deadT+=dt; continue; }
+    if(m.word){                       // 字兵會慢慢走向玩家，停在看得清楚的距離
+      m.wob+=dt*2.2;
+      const dp=dist(m,P);
+      if(dp>200){
+        const a=Math.atan2(P.y-m.y,P.x-m.x);
+        m.vx+=(Math.cos(a)*150-m.vx)*Math.min(1,dt*2.5);
+        m.vy+=(Math.sin(a)*150*.8-m.vy)*Math.min(1,dt*2.5);
+      } else {
+        m.vx*=Math.pow(.08,dt); m.vy*=Math.pow(.08,dt);
+      }
+      // 字牌之間互相推開，才不會疊在一起看不清楚
+      for(const o of mobs){
+        if(o===m||o.dead||!o.word) continue;
+        const dd=dist(o,m);
+        if(dd<230&&dd>1){
+          const a2=Math.atan2(m.y-o.y,m.x-o.x), push=(230-dd)*3;
+          m.vx+=Math.cos(a2)*push*dt; m.vy+=Math.sin(a2)*push*dt;
+        }
+      }
+      m.x=clamp(m.x+m.vx*dt,70,W-70); m.y=clamp(m.y+m.vy*dt,70,H-70);
+      continue;
+    }
+    const flying=Math.hypot(m.vx,m.vy)>140||m.air;
+    if(m.mark>0){ m.vx*=.1; m.vy*=.1; continue; }        // 被拔刀術定住
+    if(!flying){
+      const d=dist(m,P);
+      m.wob+=dt*3;
+      const a=Math.atan2(P.y-m.y,P.x-m.x)+Math.sin(m.wob)*.25;
+      const sp = d>70 ? 128*M().sp : 0;
+      m.vx+=(Math.cos(a)*sp-m.vx)*Math.min(1,dt*6);
+      m.vy+=(Math.sin(a)*sp*.8-m.vy)*Math.min(1,dt*6);
+      m.atkCd-=dt;
+      if(d<52 && m.atkCd<=0 && P.inv<=0 && P.z<40){
+        m.atkCd=1.5;
+        if(M().invincible){
+          const a2=Math.atan2(P.y-m.y,P.x-m.x);
+          P.vx+=Math.cos(a2)*180; P.vy+=Math.sin(a2)*140; shakeIt(4);
+        } else {
+          const dg=M().dmg; P.hp-=dg; SFX.hurt(); shakeIt(7); combo=0; comboT=0;
+          pop('-'+dg,P.x+rnd(-20,20),P.y-110,'#ff5a5a',18,.6);
+          if(P.hp<=0){ P.hp=0; dead=true; }
+        }
+      }
+    } else {
+      m.vx*=Math.pow(.35,dt); m.vy*=Math.pow(.35,dt);
+    }
+    if(m.air||m.z>0){
+      m.vz-=2000*dt; m.z+=m.vz*dt;
+      if(m.z<=0){ m.z=0; m.vz=0; m.air=false;
+        if(Math.hypot(m.vx,m.vy)>420){ m.hp-=1; addFX({k:'spark',x:m.x,y:m.y-10,life:.2,a:0});
+          if(m.hp<=0&&!m.dead){m.dead=true;m.deadT=0;kills++;addCombo(1);addFX({k:'burst',x:m.x,y:m.y-16,life:.4});} }
+      }
+    }
+    const nx=m.x+m.vx*dt, ny=m.y+m.vy*dt;
+    // 撞牆
+    if(nx<30||nx>W-30){ if(Math.abs(m.vx)>380){ wallHit(m); } m.vx*=-.45; }
+    if(ny<30||ny>H-30){ if(Math.abs(m.vy)>300){ wallHit(m); } m.vy*=-.45; }
+    m.x=clamp(nx,30,W-30); m.y=clamp(ny,30,H-30);
+    // 連鎖碰撞
+    if(Math.hypot(m.vx,m.vy)>430){
+      for(const o of mobs){
+        if(o===m||o.dead||o.word) continue;
+        if(Math.abs(o.x-m.x)>34||Math.abs(o.y-m.y)>34) continue;
+        if(Math.hypot(o.vx,o.vy)>380) continue;
+        const a=Math.atan2(o.y-m.y,o.x-m.x);
+        hurtMob(o,1,Math.cos(a)*Math.hypot(m.vx,m.vy)*.62,Math.sin(a)*Math.hypot(m.vx,m.vy)*.45,150);
+        m.vx*=.72; m.vy*=.72;
+      }
+    }
+  }
+  function wallHit(m){
+    m.hp-=2; m.flash=.14; shakeIt(3);
+    addFX({k:'spark',x:m.x,y:m.y-16,life:.25,a:rnd(0,TAU)});
+    if(m.hp<=0&&!m.dead){ m.dead=true;m.deadT=0;kills++;addCombo(1);addFX({k:'burst',x:m.x,y:m.y-16,life:.4}); }
+  }
+
+  mobs=mobs.filter(m=>!(m.dead&&m.deadT>.5));
+  while(mobs.length<M().cap) spawnMob();
+
+  /* --- 特效 --- */
+  for(const f of fx){
+    f.t+=dt;
+    if(f.k==='delaybomb' && !f.done && f.t>=f.delay){
+      f.done=true; SFX.boom(); shakeIt(11); freeze(.03);
+      const m=f.m;
+      addFX({k:'dome',x:m.x,y:m.y,r:120,life:.4,c:'#ffcf6b'});
+      m.mark=0;
+      if(!m.dead){ m.dead=true;m.deadT=0;kills++;addCombo(2); }
+      for(const o of mobs){ if(o.dead||o.word)continue; const d=dist(o,m); if(d<130){
+        const a=Math.atan2(o.y-m.y,o.x-m.x); hurtMob(o,2,Math.cos(a)*520,Math.sin(a)*380,220); } }
+    }
+    if(f.k==='delayhit' && !f.done && f.t>=f.delay){
+      f.done=true; shakeIt(10); freeze(.03); SFX.boom();
+      for(const o of mobs){ if(o.dead||o.word) continue;
+        const d=dist(o,f); if(d>f.R) continue;
+        const a2=Math.atan2(o.y-f.y,o.x-f.x);
+        hurtMob(o,f.dmg,Math.cos(a2)*700,Math.sin(a2)*500,240); }
+      addFX({k:'dome',x:f.x,y:f.y,r:f.R,life:.4,c:'#ffcf6b'});
+    }
+    if((f.k==='petal'||f.k==='rock')&&f.sp!==undefined){ f.x+=Math.cos(f.a)*f.sp*dt; f.y+=Math.sin(f.a)*f.sp*.6*dt; f.sp*=Math.pow(.25,dt); }
+  }
+  fx=fx.filter(f=>f.t<f.life);
+  for(const p of pops) p.t+=dt;
+  pops=pops.filter(p=>p.t<p.life);
+
+  for(const p of petals){
+    p.x+=p.vx*dt; p.z+=p.vz*dt; p.r+=dt*1.4;
+    if(p.z<0){ p.z=420; p.x=rnd(0,W); p.y=rnd(0,H); }
+    if(p.x<0) p.x=W;
+  }
+
+  flushWordHits();
+
+  // 攝影機
+  cam.x+=((P.x)-cam.x)*Math.min(1,dt*5.5);
+  cam.y+=((P.y-P.z*.5)-cam.y)*Math.min(1,dt*5.5);
+}
+
+
+/* ================= 武將畫像 =================
+   PORTRAIT_FILES / drawPortrait / drawVectorPortrait 原封不動取自
+   sanguo-shizi-dazhan.html（三國識字攻城戰），選將畫面直接呼叫，不重畫。 */
+let _pid = 0;
+const FCOLOR = {"蜀":"#2f7d4f","魏":"#2f5b8e","吳":"#a33b2e","群":"#6b5b95"};
+const FBG = {
+ "蜀":["#2a4a33","#0e1a12"], "魏":["#243450","#0c1220"],
+ "吳":["#4a251d","#1c0d0a"], "群":["#3a3046","#171226"]
+};
+const PORTRAIT_FILES = {
+ "劉備":"assets/sanguo-portraits/liu-bei.webp",
+ "關羽":"assets/sanguo-portraits/guan-yu.webp",
+ "張飛":"assets/sanguo-portraits/zhang-fei.webp",
+ "趙雲":"assets/sanguo-portraits/zhao-yun.webp",
+ "諸葛亮":"assets/sanguo-portraits/zhuge-liang.webp",
+ "馬超":"assets/sanguo-portraits/ma-chao.webp",
+ "黃忠":"assets/sanguo-portraits/huang-zhong.webp",
+ "魏延":"assets/sanguo-portraits/wei-yan.webp",
+ "姜維":"assets/sanguo-portraits/jiang-wei.webp",
+ "龐統":"assets/sanguo-portraits/pang-tong.webp",
+ "馬岱":"assets/sanguo-portraits/ma-dai.webp",
+ "關平":"assets/sanguo-portraits/guan-ping.webp",
+ "徐庶":"assets/sanguo-portraits/xu-shu.webp",
+ "法正":"assets/sanguo-portraits/fa-zheng.webp",
+ "嚴顏":"assets/sanguo-portraits/yan-yan.webp",
+ "曹操":"assets/sanguo-portraits/cao-cao.webp",
+ "司馬懿":"assets/sanguo-portraits/sima-yi.webp",
+ "張遼":"assets/sanguo-portraits/zhang-liao.webp",
+ "夏侯惇":"assets/sanguo-portraits/xiahou-dun.webp",
+ "夏侯淵":"assets/sanguo-portraits/xiahou-yuan.webp",
+ "許褚":"assets/sanguo-portraits/xu-chu.webp",
+ "典韋":"assets/sanguo-portraits/dian-wei.webp",
+ "徐晃":"assets/sanguo-portraits/xu-huang.webp",
+ "張郃":"assets/sanguo-portraits/zhang-he.webp",
+ "郭嘉":"assets/sanguo-portraits/guo-jia.webp",
+ "荀彧":"assets/sanguo-portraits/xun-yu.webp",
+ "曹仁":"assets/sanguo-portraits/cao-ren.webp",
+ "于禁":"assets/sanguo-portraits/yu-jin.webp",
+ "樂進":"assets/sanguo-portraits/yue-jin.webp",
+ "賈詡":"assets/sanguo-portraits/jia-xu.webp",
+ "孫堅":"assets/sanguo-portraits/sun-jian.webp",
+ "孫策":"assets/sanguo-portraits/sun-ce.webp",
+ "孫權":"assets/sanguo-portraits/sun-quan.webp",
+ "周瑜":"assets/sanguo-portraits/zhou-yu.webp",
+ "陸遜":"assets/sanguo-portraits/lu-xun.webp",
+ "呂蒙":"assets/sanguo-portraits/lu-meng.webp",
+ "甘寧":"assets/sanguo-portraits/gan-ning.webp",
+ "太史慈":"assets/sanguo-portraits/taishi-ci.webp",
+ "黃蓋":"assets/sanguo-portraits/huang-gai.webp",
+ "程普":"assets/sanguo-portraits/cheng-pu.webp",
+ "周泰":"assets/sanguo-portraits/zhou-tai.webp",
+ "凌統":"assets/sanguo-portraits/ling-tong.webp",
+ "魯肅":"assets/sanguo-portraits/lu-su.webp",
+ "呂布":"assets/sanguo-portraits/lu-bu.webp",
+ "董卓":"assets/sanguo-portraits/dong-zhuo.webp",
+ "袁紹":"assets/sanguo-portraits/yuan-shao.webp",
+ "袁術":"assets/sanguo-portraits/yuan-shu.webp",
+ "張角":"assets/sanguo-portraits/zhang-jiao.webp",
+ "華雄":"assets/sanguo-portraits/hua-xiong.webp",
+ "公孫瓚":"assets/sanguo-portraits/gongsun-zan.webp",
+ "黃月英":"assets/sanguo-portraits/huang-yueying.webp",
+ "關銀屏":"assets/sanguo-portraits/guan-yinping.webp",
+ "甄宓":"assets/sanguo-portraits/zhen-mi.webp",
+ "王異":"assets/sanguo-portraits/wang-yi.webp",
+ "張春華":"assets/sanguo-portraits/zhang-chunhua.webp",
+ "孫尚香":"assets/sanguo-portraits/sun-shangxiang.webp",
+ "大喬":"assets/sanguo-portraits/da-qiao.webp",
+ "小喬":"assets/sanguo-portraits/xiao-qiao.webp",
+ "貂蟬":"assets/sanguo-portraits/diao-chan.webp",
+ "祝融夫人":"assets/sanguo-portraits/zhu-rong.webp"
+};
+function drawPortrait(w, size){
+  const src = PORTRAIT_FILES[w.n];
+  if(src){
+    const width = size ? ` width="${size}"` : "";
+    return `<img class="portrait-art" src="${src}" alt="${w.n}"${width} loading="lazy" decoding="async">`;
+  }
+  return drawVectorPortrait(w, size);
+}
+function drawVectorPortrait(w, size){
+  const p = w.p, uid = "pg" + (_pid++);
+  const wide = p.ex.includes("wide");
+  const rx = wide ? 50 : 43, ry = wide ? 50 : 54;
+  const cx = 100, cy = 112;
+  const sk = p.sk, dark = shade(sk, -28), darker = shade(sk, -55);
+  const bg = FBG[w.f];
+  const faction = FCOLOR[w.f], weapon = weaponIcon(w.wp);
+  let s = `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" ${size?`width="${size}"`:""}>`;
+  s += `<defs>
+   <radialGradient id="${uid}bg" cx="50%" cy="38%" r="75%">
+     <stop offset="0%" stop-color="${bg[0]}"/><stop offset="100%" stop-color="${bg[1]}"/>
+   </radialGradient>
+   <radialGradient id="${uid}stage" cx="50%" cy="40%" r="62%">
+     <stop offset="0%" stop-color="${shade(faction,54)}" stop-opacity=".5"/>
+     <stop offset="48%" stop-color="${faction}" stop-opacity=".18"/>
+     <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+   </radialGradient>
+   <linearGradient id="${uid}fa" x1="0" y1="0" x2="0" y2="1">
+     <stop offset="0%" stop-color="${shade(sk,14)}"/><stop offset="100%" stop-color="${dark}"/>
+   </linearGradient>
+   <linearGradient id="${uid}ar" x1="0" y1="0" x2="0" y2="1">
+     <stop offset="0%" stop-color="${shade(p.ac,26)}"/><stop offset="100%" stop-color="${shade(p.ac,-30)}"/>
+   </linearGradient>
+   <linearGradient id="${uid}ht" x1="0" y1="0" x2="0" y2="1">
+     <stop offset="0%" stop-color="${shade(p.hc,30)}"/><stop offset="100%" stop-color="${shade(p.hc,-25)}"/>
+   </linearGradient>
+   <linearGradient id="${uid}frame" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0%" stop-color="#fff0a8"/><stop offset="45%" stop-color="#c9a227"/><stop offset="100%" stop-color="#7a5c22"/>
+   </linearGradient>
+   <filter id="${uid}drop" x="-30%" y="-30%" width="160%" height="170%">
+     <feDropShadow dx="0" dy="8" stdDeviation="5" flood-color="#000" flood-opacity=".5"/>
+   </filter>
+   <filter id="${uid}glow" x="-45%" y="-45%" width="190%" height="190%">
+     <feGaussianBlur stdDeviation="5" result="blur"/>
+     <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+   </filter>
+  </defs>`;
+  s += `<rect width="200" height="240" fill="url(#${uid}bg)"/>`;
+  s += `<rect width="200" height="240" fill="url(#${uid}stage)"/>`;
+  s += `<text x="100" y="132" text-anchor="middle" font-size="112" font-weight="900" fill="#fff4c8" opacity=".055"
+    font-family="Noto Serif TC, BiauKai, DFKai-SB, serif">${w.f}</text>`;
+  s += `<path d="M20 52 C54 28 146 28 180 52 L168 74 C136 56 64 56 32 74 Z" fill="${faction}" opacity=".18"/>`;
+  s += `<path d="M28 182 C64 205 136 205 172 182" stroke="${shade(faction,50)}" stroke-width="16" stroke-linecap="round" opacity=".13" fill="none"/>`;
+  s += `<circle cx="100" cy="105" r="78" fill="none" stroke="${faction}" stroke-opacity=".42" stroke-width="3" filter="url(#${uid}glow)"/>`;
+  s += `<circle cx="100" cy="105" r="63" fill="none" stroke="#fff4c8" stroke-opacity=".12" stroke-width="1.4"/>`;
+  /* 身體/鎧甲或袍服 */
+  s += `<g filter="url(#${uid}drop)">` + body(uid, p, wide) + `</g>`;
+  s += `<g filter="url(#${uid}drop)">`;
+  /* 長鬚(垂胸,畫在身體上、頭之下) */
+  if(p.bd === "long") s += `<path d="M78 150 Q74 190 84 226 Q100 236 116 226 Q126 190 122 150 Q100 168 78 150" fill="${p.bc}" opacity=".96"/>
+    <path d="M88 160 Q86 195 92 222 M100 165 Q100 200 100 228 M112 160 Q114 195 108 222" stroke="${shade(p.bc,25)}" stroke-width="1.6" fill="none" opacity=".5"/>`;
+  /* 頸 */
+  s += `<path d="M86 142 L86 172 Q100 182 114 172 L114 142 Z" fill="${dark}"/>`;
+  /* 女性長髮(後髮,墊在頭與耳後方) */
+  const fem = p.ex.includes("fem");
+  if(fem) s += `<path d="M${cx-rx-8} ${cy-10} Q${cx-rx-16} ${cy+60} ${cx-rx+2} ${cy+118} L${cx+rx-2} ${cy+118} Q${cx+rx+16} ${cy+60} ${cx+rx+8} ${cy-10} Q${cx} ${cy-ry-26} ${cx-rx-8} ${cy-10}" fill="${p.bc}"/>
+    <path d="M${cx-rx-4} ${cy+10} Q${cx-rx-8} ${cy+70} ${cx-rx+6} ${cy+112} M${cx+rx+4} ${cy+10} Q${cx+rx+8} ${cy+70} ${cx+rx-6} ${cy+112}" stroke="${shade(p.bc,28)}" stroke-width="1.6" fill="none" opacity=".55"/>`;
+  /* 耳 */
+  const el = p.ex.includes("bigears") ? 15 : 10;
+  s += `<ellipse cx="${cx-rx+1}" cy="${cy+6}" rx="7" ry="${el}" fill="url(#${uid}fa)" stroke="${darker}" stroke-width="1"/>`;
+  s += `<ellipse cx="${cx+rx-1}" cy="${cy+6}" rx="7" ry="${el}" fill="url(#${uid}fa)" stroke="${darker}" stroke-width="1"/>`;
+  /* 頭 */
+  s += `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#${uid}fa)" stroke="${darker}" stroke-width="1.4"/>`;
+  /* 顴骨陰影 */
+  s += `<path d="M${cx-rx*0.62} ${cy+18} Q${cx} ${cy+30} ${cx+rx*0.62} ${cy+18}" stroke="${dark}" stroke-width="2" fill="none" opacity=".25"/>`;
+  /* 鬢角髮 */
+  s += `<path d="M${cx-rx+3} ${cy-14} Q${cx-rx-2} ${cy+8} ${cx-rx+6} ${cy+22} L${cx-rx+9} ${cy-16} Z" fill="#221609" opacity=".85"/>`;
+  s += `<path d="M${cx+rx-3} ${cy-14} Q${cx+rx+2} ${cy+8} ${cx+rx-6} ${cy+22} L${cx+rx-9} ${cy-16} Z" fill="#221609" opacity=".85"/>`;
+  /* 女性瀏海與腮紅 */
+  if(fem){
+    s += `<path d="M${cx-rx+2} ${cy-8} Q${cx-rx} ${cy-ry-6} ${cx} ${cy-ry-8} Q${cx+rx} ${cy-ry-6} ${cx+rx-2} ${cy-8} Q${cx+rx-10} ${cy-24} ${cx} ${cy-26} Q${cx-rx+10} ${cy-24} ${cx-rx+2} ${cy-8}" fill="${p.bc}"/>`;
+    s += `<circle cx="${cx-26}" cy="${cy+16}" r="7" fill="#e8a0a0" opacity=".4"/><circle cx="${cx+26}" cy="${cy+16}" r="7" fill="#e8a0a0" opacity=".4"/>`;
+  }
+  /* 五官 */
+  s += brows(p, cx, cy);
+  s += eyes(p, cx, cy);
+  s += nose(cx, cy, dark);
+  s += mouth(p, cx, cy);
+  /* 女性唇色 */
+  if(fem) s += `<path d="M${cx-6} ${cy+30} Q${cx} ${cy+34} ${cx+6} ${cy+30}" stroke="#b8485a" stroke-width="3.2" fill="none" stroke-linecap="round" opacity=".85"/>`;
+  /* 鬍鬚 */
+  s += beard(p, cx, cy, rx, ry);
+  /* 老年紋 */
+  if(p.ex.includes("oldlines")) s += `
+    <path d="M${cx-30} ${cy-2} q6 5 13 3 M${cx+30} ${cy-2} q-6 5 -13 3" stroke="${darker}" stroke-width="1.2" fill="none" opacity=".55"/>
+    <path d="M${cx-14} ${cy+24} q4 3 9 2 M${cx+14} ${cy+24} q-4 3 -9 2" stroke="${darker}" stroke-width="1.1" fill="none" opacity=".45"/>`;
+  /* 疤痕 */
+  if(p.ex.includes("scar")) s += `<path d="M${cx+16} ${cy-10} l10 22 M${cx+14} ${cy-4} l7 3 M${cx+19} ${cy+4} l7 3" stroke="#7a3b2e" stroke-width="2" fill="none" opacity=".8" stroke-linecap="round"/>`;
+  /* 頭飾 */
+  s += headgear(uid, p, cx, cy, rx, ry);
+  /* 眼罩(夏侯惇)— 蓋在頭飾之下、眼之上,最後畫確保可見 */
+  if(p.ex.includes("eyepatch")) s += `
+    <path d="M${cx-rx} ${cy-16} L${cx+rx} ${cy-2}" stroke="#241a10" stroke-width="4"/>
+    <ellipse cx="${cx-17}" cy="${cy-6}" rx="14" ry="11" fill="#241a10" stroke="#0f0a05" stroke-width="1.5"/>`;
+  /* 羽扇(諸葛亮) */
+  if(p.ex.includes("fan")) s += fan(cx);
+  s += `</g>`;
+  s += `<rect x="5" y="5" width="190" height="230" rx="16" fill="none" stroke="url(#${uid}frame)" stroke-width="4"/>
+    <rect x="10" y="10" width="180" height="220" rx="12" fill="none" stroke="#1a120a" stroke-opacity=".55" stroke-width="1.5"/>
+    <path d="M15 18 H58 M142 18 H185 M15 222 H58 M142 222 H185" stroke="#fff0a8" stroke-opacity=".55" stroke-width="2" stroke-linecap="round"/>
+    <g transform="translate(28 30)">
+      <path d="M0 -13 L14 -5 L14 12 L0 20 L-14 12 L-14 -5 Z" fill="${faction}" stroke="#fff0a8" stroke-width="1.4" opacity=".94"/>
+      <text x="0" y="7" text-anchor="middle" font-size="20" font-weight="900" fill="#fff8d8" font-family="Noto Serif TC, BiauKai, DFKai-SB, serif">${w.f}</text>
+    </g>
+    <g transform="translate(164 202)">
+      <circle cx="0" cy="0" r="20" fill="#1a120a" opacity=".78"/>
+      <circle cx="0" cy="0" r="16" fill="${shade(faction,12)}" stroke="#fff0a8" stroke-width="1.2"/>
+      <text x="0" y="6" text-anchor="middle" font-size="14" font-weight="900" fill="#fff8d8" font-family="Noto Serif TC, BiauKai, DFKai-SB, serif">${weapon}</text>
+    </g>`;
+  s += `</svg>`;
+  return s;
+}
+function body(uid, p, wide){
+  const ac = p.ac, w = wide ? 14 : 0;
+  let s = "";
+  if(p.at === "robe"){
+    s += `<path d="M${34-w} 240 Q${40-w} 186 ${66-w} 172 L100 186 L${134+w} 172 Q${160+w} 186 ${166+w} 240 Z" fill="url(#${uid}ar)" stroke="${shade(ac,-45)}" stroke-width="2"/>`;
+    s += `<path d="M100 186 L${66-w} 172 L84 226 L100 186 L116 226 L${134+w} 172 Z" fill="${shade(ac,-18)}"/>`;
+    s += `<path d="M86 170 L100 188 L114 170" fill="none" stroke="${shade(ac,40)}" stroke-width="3"/>`;
+    s += `<path d="M100 188 L96 240 M100 188 L104 240" stroke="${shade(ac,-40)}" stroke-width="2" fill="none"/>`;
+  }else{
+    /* 鎧甲 */
+    s += `<path d="M${36-w} 240 Q${38-w} 192 ${64-w} 176 L100 184 L${136+w} 176 Q${162+w} 192 ${164+w} 240 Z" fill="url(#${uid}ar)" stroke="${shade(ac,-45)}" stroke-width="2"/>`;
+    /* 肩甲 */
+    s += `<path d="M${64-w} 176 Q${44-w} 178 ${40-w} 196 Q${58-w} 204 ${74-w} 196 Q${72-w} 182 ${64-w} 176" fill="${shade(ac,18)}" stroke="${shade(ac,-40)}" stroke-width="1.6"/>`;
+    s += `<path d="M${136+w} 176 Q${156+w} 178 ${160+w} 196 Q${142+w} 204 ${126+w} 196 Q${128+w} 182 ${136+w} 176" fill="${shade(ac,18)}" stroke="${shade(ac,-40)}" stroke-width="1.6"/>`;
+    /* 護心鏡 */
+    s += `<circle cx="100" cy="212" r="15" fill="${shade(ac,30)}" stroke="${shade(ac,-40)}" stroke-width="2"/>`;
+    s += `<circle cx="100" cy="212" r="8" fill="${shade(ac,50)}" opacity=".8"/>`;
+    if(p.at === "scale"){
+      for(let yy=188; yy<236; yy+=10)
+        s += `<path d="M${52} ${yy} q8 6 16 0 q8 6 16 0 q8 6 16 0 q8 6 16 0 q8 6 16 0 q8 6 16 0" stroke="${shade(ac,-32)}" stroke-width="1.4" fill="none" opacity=".65"/>`;
+    }else{
+      s += `<circle cx="66" cy="196" r="2.4" fill="${shade(ac,45)}"/><circle cx="134" cy="196" r="2.4" fill="${shade(ac,45)}"/>
+            <circle cx="60" cy="222" r="2.4" fill="${shade(ac,45)}"/><circle cx="140" cy="222" r="2.4" fill="${shade(ac,45)}"/>`;
+    }
+    /* 領甲 */
+    s += `<path d="M80 174 L100 188 L120 174 L114 166 L100 174 L86 166 Z" fill="${shade(ac,-24)}" stroke="${shade(ac,-45)}" stroke-width="1.4"/>`;
+  }
+  return s;
+}
+function brows(p, cx, cy){
+  const y = cy - 18, c = "#241a10";
+  switch(p.br){
+    case "angry": return `<path d="M${cx-32} ${y-2} L${cx-8} ${y+7} L${cx-9} ${y+11} L${cx-33} ${y+3} Z" fill="${c}"/>
+                          <path d="M${cx+32} ${y-2} L${cx+8} ${y+7} L${cx+9} ${y+11} L${cx+33} ${y+3} Z" fill="${c}"/>`;
+    case "bushy": return `<path d="M${cx-33} ${y+4} Q${cx-20} ${y-6} ${cx-7} ${y+3} L${cx-8} ${y+9} Q${cx-20} ${y+1} ${cx-32} ${y+9} Z" fill="${c}"/>
+                          <path d="M${cx+33} ${y+4} Q${cx+20} ${y-6} ${cx+7} ${y+3} L${cx+8} ${y+9} Q${cx+20} ${y+1} ${cx+32} ${y+9} Z" fill="${c}"/>`;
+    case "thin":  return `<path d="M${cx-30} ${y+5} Q${cx-19} ${y-1} ${cx-8} ${y+4}" stroke="${c}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+                          <path d="M${cx+30} ${y+5} Q${cx+19} ${y-1} ${cx+8} ${y+4}" stroke="${c}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+    default:      return `<path d="M${cx-31} ${y+2} L${cx-8} ${y+2} L${cx-8} ${y+7} L${cx-31} ${y+7} Z" fill="${c}"/>
+                          <path d="M${cx+31} ${y+2} L${cx+8} ${y+2} L${cx+8} ${y+7} L${cx+31} ${y+7} Z" fill="${c}"/>`;
+  }
+}
+function eyes(p, cx, cy){
+  const y = cy - 5, iris = p.ey === "green" ? "#3f7a4f" : "#241a10";
+  let s = "";
+  const eye = (ex, flip) => {
+    const f = flip ? -1 : 1;
+    switch(p.ey){
+      case "round":
+        return `<circle cx="${ex}" cy="${y}" r="8.5" fill="#f4ede0" stroke="#241a10" stroke-width="1.6"/>
+                <circle cx="${ex}" cy="${y}" r="4" fill="${iris}"/><circle cx="${ex+1.4}" cy="${y-1.6}" r="1.3" fill="#fff"/>`;
+      case "narrow":
+        return `<path d="M${ex-13*f} ${y+2} Q${ex} ${y-6} ${ex+11*f} ${y-2} Q${ex+2*f} ${y+4} ${ex-13*f} ${y+2}" fill="#f4ede0" stroke="#241a10" stroke-width="1.5"/>
+                <circle cx="${ex}" cy="${y-1}" r="2.6" fill="${iris}"/>`;
+      case "sharp":
+        return `<path d="M${ex-11*f} ${y+3} Q${ex} ${y-6} ${ex+11*f} ${y-3} Q${ex} ${y+6} ${ex-11*f} ${y+3}" fill="#f4ede0" stroke="#241a10" stroke-width="1.5"/>
+                <circle cx="${ex}" cy="${y}" r="3.2" fill="${iris}"/><circle cx="${ex+1}" cy="${y-1}" r="1" fill="#fff"/>`;
+      case "gentle":
+        return `<path d="M${ex-10*f} ${y} Q${ex} ${y-7} ${ex+10*f} ${y} Q${ex} ${y+7} ${ex-10*f} ${y}" fill="#f4ede0" stroke="#241a10" stroke-width="1.5"/>
+                <circle cx="${ex}" cy="${y}" r="3.4" fill="${iris}"/><circle cx="${ex+1}" cy="${y-1.2}" r="1.1" fill="#fff"/>`;
+      case "aged":
+        return `<path d="M${ex-10*f} ${y+1} Q${ex} ${y-5} ${ex+10*f} ${y} Q${ex} ${y+5} ${ex-10*f} ${y+1}" fill="#f4ede0" stroke="#241a10" stroke-width="1.5"/>
+                <circle cx="${ex}" cy="${y}" r="3" fill="${iris}"/>
+                <path d="M${ex-8*f} ${y+8} q${8*f} 4 ${14*f} 1" stroke="#00000040" stroke-width="1.2" fill="none"/>`;
+      default: /* calm / green */
+        return `<path d="M${ex-11*f} ${y+1} Q${ex} ${y-7} ${ex+11*f} ${y+1} Q${ex} ${y+6} ${ex-11*f} ${y+1}" fill="#f4ede0" stroke="#241a10" stroke-width="1.5"/>
+                <circle cx="${ex}" cy="${y}" r="3.4" fill="${iris}"/><circle cx="${ex+1.2}" cy="${y-1.2}" r="1.1" fill="#fff"/>`;
+    }
+  };
+  s += eye(cx-19,false) + eye(cx+19,true);
+  return s;
+}
+function nose(cx, cy, dark){
+  return `<path d="M${cx-3} ${cy-2} Q${cx-5} ${cy+12} ${cx-7} ${cy+15} Q${cx} ${cy+20} ${cx+7} ${cy+15} Q${cx+5} ${cy+12} ${cx+3} ${cy-2}" fill="none" stroke="${dark}" stroke-width="1.8" stroke-linecap="round" opacity=".75"/>`;
+}
+function mouth(p, cx, cy){
+  const y = cy + 30;
+  if(["full","long","short"].includes(p.bd)) return "";
+  const shape = (p.ey==="gentle"||p.br==="thin") ?
+    `M${cx-11} ${y} Q${cx} ${y+6} ${cx+11} ${y}` : `M${cx-11} ${y+2} Q${cx} ${y+3} ${cx+11} ${y+2}`;
+  return `<path d="${shape}" stroke="#6b3428" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+}
+function beard(p, cx, cy, rx, ry){
+  if(p.bd === "none") return "";
+  const c = p.bc, lite = shade(c, 30);
+  let s = "";
+  const mo = `<path d="M${cx-4} ${cy+22} Q${cx-16} ${cy+20} ${cx-22} ${cy+30}" stroke="${c}" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <path d="M${cx+4} ${cy+22} Q${cx+16} ${cy+20} ${cx+22} ${cy+30}" stroke="${c}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  switch(p.bd){
+    case "mo": s = mo; break;
+    case "goatee":
+      s = mo + `<path d="M${cx-7} ${cy+38} Q${cx} ${cy+34} ${cx+7} ${cy+38} L${cx+4} ${cy+56} Q${cx} ${cy+60} ${cx-4} ${cy+56} Z" fill="${c}"/>`;
+      break;
+    case "short":
+      s = mo + `<path d="M${cx-rx+8} ${cy+16} Q${cx-rx+4} ${cy+38} ${cx-14} ${cy+48} Q${cx} ${cy+55} ${cx+14} ${cy+48} Q${cx+rx-4} ${cy+38} ${cx+rx-8} ${cy+16} Q${cx+rx-14} ${cy+34} ${cx} ${cy+40} Q${cx-rx+14} ${cy+34} ${cx-rx+8} ${cy+16}" fill="${c}" opacity=".92"/>`;
+      break;
+    case "full":
+      s = `<path d="M${cx-rx+6} ${cy+10} Q${cx-rx+2} ${cy+42} ${cx-12} ${cy+54} Q${cx} ${cy+64} ${cx+12} ${cy+54} Q${cx+rx-2} ${cy+42} ${cx+rx-6} ${cy+10} Q${cx+rx-12} ${cy+30} ${cx+14} ${cy+33} Q${cx} ${cy+36} ${cx-14} ${cy+33} Q${cx-rx+12} ${cy+30} ${cx-rx+6} ${cy+10}" fill="${c}"/>` + mo +
+          `<path d="M${cx-14} ${cy+40} Q${cx} ${cy+47} ${cx+14} ${cy+40}" stroke="${lite}" stroke-width="1.4" fill="none" opacity=".5"/>`;
+      break;
+    case "long":
+      s = `<path d="M${cx-rx+6} ${cy+8} Q${cx-rx+2} ${cy+40} ${cx-14} ${cy+50} Q${cx} ${cy+58} ${cx+14} ${cy+50} Q${cx+rx-2} ${cy+40} ${cx+rx-6} ${cy+8} Q${cx+rx-12} ${cy+28} ${cx+14} ${cy+31} Q${cx} ${cy+34} ${cx-14} ${cy+31} Q${cx-rx+12} ${cy+28} ${cx-rx+6} ${cy+8}" fill="${c}"/>` + mo;
+      break;
+  }
+  return s;
+}
+function headgear(uid, p, cx, cy, rx, ry){
+  const top = cy - ry, hc = p.hc, hd = shade(hc,-30), hl = shade(hc,35);
+  let s = "";
+  switch(p.ht){
+    case "band":
+      s = `<path d="M${cx} ${top-16} Q${cx-12} ${top-12} ${cx-10} ${top+2} L${cx+10} ${top+2} Q${cx+12} ${top-12} ${cx} ${top-16}" fill="#221609"/>
+           <path d="M${cx-rx-2} ${top+24} Q${cx} ${top-4} ${cx+rx+2} ${top+24} L${cx+rx+2} ${top+33} Q${cx} ${top+6} ${cx-rx-2} ${top+33} Z" fill="url(#${uid}ht)" stroke="${hd}" stroke-width="1.4"/>
+           <path d="M${cx-rx} ${top+18} Q${cx} ${top-8} ${cx+rx} ${top+18}" fill="#221609" opacity=".9"/>
+           <path d="M${cx+rx-6} ${top+30} q10 8 8 22" stroke="${hc}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+      break;
+    case "helm":
+      s = `<path d="M${cx-rx-3} ${top+26} Q${cx} ${top-22} ${cx+rx+3} ${top+26} L${cx+rx+3} ${top+34} L${cx-rx-3} ${top+34} Z" fill="url(#${uid}ht)" stroke="${hd}" stroke-width="2"/>
+           <path d="M${cx-rx-5} ${top+32} L${cx+rx+5} ${top+32} L${cx+rx+2} ${top+40} L${cx-rx-2} ${top+40} Z" fill="${hd}"/>
+           <circle cx="${cx}" cy="${top-16}" r="5" fill="${hl}" stroke="${hd}" stroke-width="1.5"/>
+           <path d="M${cx} ${top-11} L${cx} ${top+2}" stroke="${hd}" stroke-width="3"/>
+           <path d="M${cx-26} ${top+14} Q${cx} ${top-2} ${cx+26} ${top+14}" stroke="${hl}" stroke-width="2" fill="none" opacity=".7"/>`;
+      if(p.ex.includes("plume"))
+        s += `<path d="M${cx} ${top-14} Q${cx-20} ${top-34} ${cx-44} ${top-26} Q${cx-24} ${top-18} ${cx-2} ${top-8}" fill="#e8e2d2" stroke="#b8b2a2" stroke-width="1"/>`;
+      break;
+    case "goldhelm":
+      s = `<path d="M${cx-rx-3} ${top+26} Q${cx} ${top-24} ${cx+rx+3} ${top+26} L${cx+rx+3} ${top+34} L${cx-rx-3} ${top+34} Z" fill="url(#${uid}ht)" stroke="${hd}" stroke-width="2"/>
+           <path d="M${cx-14} ${top+2} L${cx} ${top-20} L${cx+14} ${top+2} Z" fill="${hl}" stroke="${hd}" stroke-width="1.4"/>
+           <circle cx="${cx}" cy="${top+14}" r="5.5" fill="#d84335" stroke="${hd}" stroke-width="1.4"/>
+           <path d="M${cx-rx-6} ${top+30} q-8 -20 4 -34 M${cx+rx+6} ${top+30} q8 -20 -4 -34" stroke="${hl}" stroke-width="3" fill="none"/>`;
+      if(p.ex.includes("plume2"))
+        s += `<path d="M${cx-10} ${top-6} Q${cx-30} ${top-60} ${cx-52} ${top-64} Q${cx-34} ${top-34} ${cx-16} ${top-2}" fill="none" stroke="#8a5a3a" stroke-width="5" stroke-linecap="round"/>
+              <path d="M${cx+10} ${top-6} Q${cx+30} ${top-60} ${cx+52} ${top-64} Q${cx+34} ${top-34} ${cx+16} ${top-2}" fill="none" stroke="#8a5a3a" stroke-width="5" stroke-linecap="round"/>`;
+      break;
+    case "cap":
+      s = `<path d="M${cx-rx+2} ${top+22} Q${cx-rx+8} ${top-14} ${cx} ${top-16} Q${cx+rx-8} ${top-14} ${cx+rx-2} ${top+22} Q${cx} ${top+4} ${cx-rx+2} ${top+22}" fill="url(#${uid}ht)" stroke="${hd}" stroke-width="1.8"/>
+           <path d="M${cx-rx+2} ${top+22} Q${cx} ${top+8} ${cx+rx-2} ${top+22}" stroke="${hd}" stroke-width="2" fill="none"/>`;
+      break;
+    case "guanjin":
+      s = `<path d="M${cx-16} ${top-26} L${cx+16} ${top-26} L${cx+24} ${top+2} L${cx-24} ${top+2} Z" fill="url(#${uid}ht)" stroke="${hd}" stroke-width="1.6"/>
+           <path d="M${cx-10} ${top-26} L${cx} ${top-38} L${cx+10} ${top-26}" fill="${shade(hc,12)}" stroke="${hd}" stroke-width="1.4"/>
+           <path d="M${cx-rx-1} ${top+22} Q${cx} ${top-6} ${cx+rx+1} ${top+22} L${cx+rx+1} ${top+30} Q${cx} ${top+6} ${cx-rx-1} ${top+30} Z" fill="${shade(hc,-8)}" stroke="${hd}" stroke-width="1.4"/>
+           <path d="M${cx-8} ${top-26} L${cx-14} ${top+2} M${cx+8} ${top-26} L${cx+14} ${top+2}" stroke="${hd}" stroke-width="1.2" opacity=".7"/>`;
+      break;
+    case "official":
+      s = `<path d="M${cx-20} ${top-24} L${cx+20} ${top-24} L${cx+26} ${top+4} L${cx-26} ${top+4} Z" fill="url(#${uid}ht)" stroke="${hd}" stroke-width="1.8"/>
+           <path d="M${cx-26} ${top-30} L${cx+26} ${top-30} L${cx+29} ${top-22} L${cx-29} ${top-22} Z" fill="${shade(hc,-14)}" stroke="${hd}" stroke-width="1.4"/>
+           <path d="M${cx-rx-1} ${top+22} Q${cx} ${top-4} ${cx+rx+1} ${top+22} L${cx+rx+1} ${top+29} Q${cx} ${top+6} ${cx-rx-1} ${top+29} Z" fill="#221609"/>
+           <circle cx="${cx}" cy="${top-9}" r="3.4" fill="${hl}"/>`;
+      break;
+    case "crown":
+      s = `<path d="M${cx-rx-1} ${top+22} Q${cx} ${top-6} ${cx+rx+1} ${top+22} L${cx+rx+1} ${top+30} Q${cx} ${top+6} ${cx-rx-1} ${top+30} Z" fill="#221609"/>
+           <path d="M${cx-26} ${top+14} L${cx-26} ${top-8} L${cx-13} ${top+2} L${cx} ${top-14} L${cx+13} ${top+2} L${cx+26} ${top-8} L${cx+26} ${top+14} Z" fill="url(#${uid}ht)" stroke="${hd}" stroke-width="1.6"/>
+           <circle cx="${cx}" cy="${top+4}" r="3.6" fill="#d84335"/><circle cx="${cx-17}" cy="${top+6}" r="2.4" fill="#3f7a4f"/><circle cx="${cx+17}" cy="${top+6}" r="2.4" fill="#3f7a4f"/>`;
+      break;
+    case "turban":
+      s = `<path d="M${cx-rx-2} ${top+24} Q${cx-rx} ${top-16} ${cx} ${top-18} Q${cx+rx} ${top-16} ${cx+rx+2} ${top+24} Q${cx} ${top+2} ${cx-rx-2} ${top+24}" fill="url(#${uid}ht)" stroke="${hd}" stroke-width="1.8"/>
+           <path d="M${cx-rx} ${top+14} Q${cx} ${top-8} ${cx+rx} ${top+14} M${cx-rx+6} ${top+2} Q${cx} ${top-16} ${cx+rx-6} ${top+2}" stroke="${hd}" stroke-width="1.6" fill="none" opacity=".7"/>
+           <path d="M${cx+rx-4} ${top+22} q12 4 14 18" stroke="${hc}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+      break;
+    case "bun": /* 女性雙髻髮飾 */
+      s = `<path d="M${cx-rx-1} ${top+22} Q${cx} ${top-8} ${cx+rx+1} ${top+22} L${cx+rx+1} ${top+30} Q${cx} ${top+6} ${cx-rx-1} ${top+30} Z" fill="#1a1208"/>
+           <ellipse cx="${cx-21}" cy="${top-11}" rx="12" ry="11" fill="#1a1208"/>
+           <ellipse cx="${cx+21}" cy="${top-11}" rx="12" ry="11" fill="#1a1208"/>
+           <circle cx="${cx-21}" cy="${top-11}" r="4" fill="${hl}"/>
+           <circle cx="${cx+21}" cy="${top-11}" r="4" fill="${hl}"/>
+           <path d="M${cx+5} ${top+2} L${cx+34} ${top-19}" stroke="${hl}" stroke-width="3" stroke-linecap="round"/>
+           <circle cx="${cx+34}" cy="${top-19}" r="4.5" fill="#d84335"/>
+           <path d="M${cx-30} ${top+6} q-6 -8 2 -13 q7 -3 9 5 q1 8 -11 8" fill="#e88aa0" stroke="#b8485a" stroke-width="1"/>`;
+      break;
+    default: /* topknot 露髻 */
+      s = `<path d="M${cx-rx-1} ${top+24} Q${cx} ${top-10} ${cx+rx+1} ${top+24} L${cx+rx+1} ${top+32} Q${cx} ${top+8} ${cx-rx-1} ${top+32} Z" fill="#221609"/>
+           <path d="M${cx} ${top-18} Q${cx-13} ${top-14} ${cx-10} ${top+2} L${cx+10} ${top+2} Q${cx+13} ${top-14} ${cx} ${top-18}" fill="#221609"/>`;
+  }
+  return s;
+}
+function fan(cx){
+  return `<g transform="translate(26,178) rotate(-18)">
+    <path d="M0 44 L8 10 Q20 -6 34 2 Q30 20 14 40 Z" fill="#f2ede0" stroke="#c9c2ae" stroke-width="1.4"/>
+    <path d="M8 12 L14 38 M14 8 L19 34 M20 4 L24 30 M27 2 L28 26" stroke="#d8d2be" stroke-width="1.2"/>
+    <rect x="-2" y="42" width="7" height="16" rx="3" fill="#8a6b4a"/>
+  </g>`;
+}
+
+function weaponIcon(wp){
+  if(/弓|箭|射/.test(wp)) return "弓";
+  if(/扇/.test(wp)) return "扇";
+  if(/書|卷|詩|賦|謀|策|塵/.test(wp)) return "策";
+  if(/槍|矛|戟/.test(wp)) return "槍";
+  if(/斧/.test(wp)) return "斧";
+  if(/刀|劍|鞭|雙|飛刀/.test(wp)) return "刃";
+  return "兵";
+}
+
+const HEROES=[
+ {n:"劉備",f:"蜀",z:"玄德",t:"蜀漢昭烈皇帝",wp:"雙股劍",wu:76,zh:75,ld:79,p:{sk:"#eec9a0",ey:"gentle",br:"thin",bd:"mo",bc:"#3a2a1a",ht:"official",hc:"#3d5a3a",ac:"#4a6b4a",at:"robe",ex:["bigears"]}},
+ {n:"關羽",f:"蜀",z:"雲長",t:"武聖・五虎上將之首",wp:"青龍偃月刀",wu:97,zh:76,ld:95,p:{sk:"#b25a42",ey:"narrow",br:"angry",bd:"long",bc:"#1d1208",ht:"band",hc:"#2f6b3f",ac:"#2f6b3f",at:"scale",ex:[]}},
+ {n:"張飛",f:"蜀",z:"益德",t:"萬人敵・五虎上將",wp:"丈八蛇矛",wu:98,zh:45,ld:85,p:{sk:"#8a5a3a",ey:"round",br:"bushy",bd:"short",bc:"#151008",ht:"helm",hc:"#3a3a44",ac:"#4a3a2a",at:"armor",ex:[]}},
+ {n:"趙雲",f:"蜀",z:"子龍",t:"常勝將軍・五虎上將",wp:"龍膽亮銀槍",wu:96,zh:76,ld:91,p:{sk:"#efcda6",ey:"calm",br:"flat",bd:"none",bc:"#222",ht:"helm",hc:"#c8ccd8",ac:"#b8bfcf",at:"armor",ex:["plume"]}},
+ {n:"諸葛亮",f:"蜀",z:"孔明",t:"臥龍・蜀漢丞相",wp:"白羽扇",wu:38,zh:100,ld:92,p:{sk:"#f2d8b2",ey:"calm",br:"thin",bd:"goatee",bc:"#2a1d10",ht:"guanjin",hc:"#4a5a7a",ac:"#e8e0cc",at:"robe",ex:["fan"]}},
+ {n:"馬超",f:"蜀",z:"孟起",t:"錦馬超・五虎上將",wp:"龍騎尖",wu:97,zh:44,ld:88,p:{sk:"#efcda6",ey:"sharp",br:"flat",bd:"none",bc:"#222",ht:"goldhelm",hc:"#d8d2c2",ac:"#e3ddd0",at:"armor",ex:["plume"]}},
+ {n:"黃忠",f:"蜀",z:"漢升",t:"老當益壯・五虎上將",wp:"寶雕弓",wu:93,zh:60,ld:86,p:{sk:"#dfb68e",ey:"aged",br:"bushy",bd:"full",bc:"#e8e4da",ht:"helm",hc:"#8a6b34",ac:"#7a5c2a",at:"armor",ex:["oldlines"]}},
+ {n:"魏延",f:"蜀",z:"文長",t:"漢中太守",wp:"大刀",wu:92,zh:69,ld:84,p:{sk:"#a86848",ey:"sharp",br:"angry",bd:"full",bc:"#1d150c",ht:"helm",hc:"#6b3a2a",ac:"#5a3a3a",at:"armor",ex:[]}},
+ {n:"姜維",f:"蜀",z:"伯約",t:"幼麟・蜀漢大將軍",wp:"綠沉槍",wu:89,zh:90,ld:90,p:{sk:"#efcda6",ey:"calm",br:"flat",bd:"mo",bc:"#2a1d10",ht:"helm",hc:"#4a6b6b",ac:"#3f5f5f",at:"armor",ex:[]}},
+ {n:"龐統",f:"蜀",z:"士元",t:"鳳雛",wp:"羽扇",wu:34,zh:97,ld:78,p:{sk:"#c99a6e",ey:"sharp",br:"bushy",bd:"short",bc:"#26190d",ht:"cap",hc:"#4a4a3a",ac:"#6b6b52",at:"robe",ex:[]}},
+ {n:"馬岱",f:"蜀",z:"伯瞻",t:"平北將軍",wp:"大刀",wu:85,zh:60,ld:75,p:{sk:"#dfb68e",ey:"calm",br:"flat",bd:"mo",bc:"#26190d",ht:"helm",hc:"#8a4a3a",ac:"#7a4a3a",at:"armor",ex:[]}},
+ {n:"關平",f:"蜀",z:"坦之",t:"少年虎將",wp:"大刀",wu:82,zh:68,ld:74,p:{sk:"#efcda6",ey:"calm",br:"flat",bd:"none",bc:"#222",ht:"band",hc:"#2f6b3f",ac:"#3f7a4f",at:"armor",ex:[]}},
+ {n:"徐庶",f:"蜀",z:"元直",t:"忠孝軍師",wp:"長劍",wu:62,zh:93,ld:80,p:{sk:"#eec9a0",ey:"calm",br:"flat",bd:"goatee",bc:"#2a1d10",ht:"cap",hc:"#3a3a4a",ac:"#5a5a6b",at:"robe",ex:[]}},
+ {n:"法正",f:"蜀",z:"孝直",t:"奇謀之士",wp:"書卷",wu:45,zh:94,ld:76,p:{sk:"#eec9a0",ey:"sharp",br:"thin",bd:"goatee",bc:"#2a1d10",ht:"official",hc:"#5a4a6b",ac:"#6b5a7a",at:"robe",ex:[]}},
+ {n:"嚴顏",f:"蜀",z:"希伯",t:"斷頭將軍",wp:"大刀",wu:84,zh:62,ld:78,p:{sk:"#d9ad84",ey:"aged",br:"bushy",bd:"full",bc:"#ddd8ce",ht:"helm",hc:"#5a5244",ac:"#6b5c3a",at:"armor",ex:["oldlines"]}},
+ {n:"曹操",f:"魏",z:"孟德",t:"亂世梟雄・魏武帝",wp:"倚天劍",wu:72,zh:91,ld:96,p:{sk:"#e8c398",ey:"narrow",br:"angry",bd:"goatee",bc:"#26190d",ht:"official",hc:"#22283a",ac:"#2a3450",at:"robe",ex:[]}},
+ {n:"司馬懿",f:"魏",z:"仲達",t:"冢虎・晉朝奠基者",wp:"塵尾",wu:63,zh:96,ld:93,p:{sk:"#e8c398",ey:"narrow",br:"thin",bd:"goatee",bc:"#33261a",ht:"official",hc:"#3a2a4a",ac:"#4a3a5a",at:"robe",ex:[]}},
+ {n:"張遼",f:"魏",z:"文遠",t:"五子良將之首",wp:"月牙戟",wu:92,zh:78,ld:93,p:{sk:"#dfb68e",ey:"sharp",br:"flat",bd:"short",bc:"#1d150c",ht:"helm",hc:"#2f4a6b",ac:"#2f4a6b",at:"armor",ex:[]}},
+ {n:"夏侯惇",f:"魏",z:"元讓",t:"獨眼將軍",wp:"大刀",wu:90,zh:58,ld:85,p:{sk:"#dfb68e",ey:"sharp",br:"angry",bd:"full",bc:"#1d150c",ht:"helm",hc:"#2a3450",ac:"#33405e",at:"armor",ex:["eyepatch"]}},
+ {n:"夏侯淵",f:"魏",z:"妙才",t:"虎步關右",wp:"鐵胎弓",wu:91,zh:55,ld:84,p:{sk:"#dfb68e",ey:"sharp",br:"angry",bd:"mo",bc:"#1d150c",ht:"helm",hc:"#3a4a6b",ac:"#3a4a6b",at:"armor",ex:[]}},
+ {n:"許褚",f:"魏",z:"仲康",t:"虎痴",wp:"大刀",wu:96,zh:36,ld:68,p:{sk:"#e0a877",ey:"round",br:"bushy",bd:"short",bc:"#26190d",ht:"band",hc:"#8a6b34",ac:"#7a6b4a",at:"armor",ex:["wide"]}},
+ {n:"典韋",f:"魏",z:"-",t:"古之惡來",wp:"雙鐵戟",wu:95,zh:35,ld:66,p:{sk:"#b57947",ey:"round",br:"bushy",bd:"full",bc:"#151008",ht:"band",hc:"#4a3a2a",ac:"#5a4a3a",at:"armor",ex:["wide"]}},
+ {n:"徐晃",f:"魏",z:"公明",t:"周亞夫之風",wp:"開山大斧",wu:90,zh:68,ld:86,p:{sk:"#dfb68e",ey:"calm",br:"flat",bd:"full",bc:"#26190d",ht:"helm",hc:"#4a5a4a",ac:"#4a5a4a",at:"armor",ex:[]}},
+ {n:"張郃",f:"魏",z:"儁乂",t:"巧變名將",wp:"長槍",wu:89,zh:69,ld:89,p:{sk:"#e8c398",ey:"sharp",br:"flat",bd:"mo",bc:"#26190d",ht:"helm",hc:"#5a4a6b",ac:"#5a4a6b",at:"armor",ex:[]}},
+ {n:"郭嘉",f:"魏",z:"奉孝",t:"鬼才",wp:"書卷",wu:25,zh:98,ld:72,p:{sk:"#f2d8b2",ey:"gentle",br:"thin",bd:"none",bc:"#222",ht:"cap",hc:"#4a5a7a",ac:"#5a6b8a",at:"robe",ex:[]}},
+ {n:"荀彧",f:"魏",z:"文若",t:"王佐之才",wp:"書卷",wu:30,zh:95,ld:80,p:{sk:"#f2d8b2",ey:"calm",br:"thin",bd:"goatee",bc:"#2a1d10",ht:"official",hc:"#6b5a3a",ac:"#e8e0cc",at:"robe",ex:[]}},
+ {n:"曹仁",f:"魏",z:"子孝",t:"天人將軍",wp:"長槍",wu:86,zh:62,ld:89,p:{sk:"#dfb68e",ey:"calm",br:"angry",bd:"full",bc:"#1d150c",ht:"helm",hc:"#33405e",ac:"#33405e",at:"armor",ex:[]}},
+ {n:"于禁",f:"魏",z:"文則",t:"最號毅重",wp:"大刀",wu:79,zh:65,ld:84,p:{sk:"#e8c398",ey:"calm",br:"flat",bd:"goatee",bc:"#26190d",ht:"helm",hc:"#4a4a3a",ac:"#5a5a4a",at:"armor",ex:[]}},
+ {n:"樂進",f:"魏",z:"文謙",t:"先登猛將",wp:"短劍",wu:83,zh:55,ld:80,p:{sk:"#dfb68e",ey:"sharp",br:"angry",bd:"short",bc:"#26190d",ht:"helm",hc:"#6b4a3a",ac:"#6b4a3a",at:"armor",ex:[]}},
+ {n:"賈詡",f:"魏",z:"文和",t:"毒士・算無遺策",wp:"書卷",wu:42,zh:97,ld:78,p:{sk:"#e0bd94",ey:"narrow",br:"thin",bd:"goatee",bc:"#8a8378",ht:"cap",hc:"#3a3a2a",ac:"#4a4a3a",at:"robe",ex:["oldlines"]}},
+ {n:"孫堅",f:"吳",z:"文台",t:"江東之虎",wp:"古錠刀",wu:91,zh:70,ld:89,p:{sk:"#dfb68e",ey:"sharp",br:"angry",bd:"full",bc:"#26190d",ht:"band",hc:"#a33b2e",ac:"#8a3a2e",at:"armor",ex:[]}},
+ {n:"孫策",f:"吳",z:"伯符",t:"小霸王",wp:"霸王槍",wu:92,zh:69,ld:90,p:{sk:"#efcda6",ey:"sharp",br:"flat",bd:"none",bc:"#222",ht:"helm",hc:"#a33b2e",ac:"#a33b2e",at:"armor",ex:["plume"]}},
+ {n:"孫權",f:"吳",z:"仲謀",t:"吳大帝",wp:"白虹劍",wu:67,zh:80,ld:89,p:{sk:"#eec9a0",ey:"green",br:"bushy",bd:"full",bc:"#6b4a5a",ht:"crown",hc:"#8a6b34",ac:"#8a3a2e",at:"robe",ex:[]}},
+ {n:"周瑜",f:"吳",z:"公瑾",t:"美周郎・大都督",wp:"長劍",wu:71,zh:96,ld:94,p:{sk:"#f2d8b2",ey:"calm",br:"thin",bd:"mo",bc:"#2a1d10",ht:"guanjin",hc:"#8a3a2e",ac:"#a34a3a",at:"robe",ex:[]}},
+ {n:"陸遜",f:"吳",z:"伯言",t:"書生都督",wp:"長劍",wu:69,zh:95,ld:93,p:{sk:"#f2d8b2",ey:"calm",br:"thin",bd:"none",bc:"#222",ht:"cap",hc:"#5a6b8a",ac:"#6b7a9a",at:"robe",ex:[]}},
+ {n:"呂蒙",f:"吳",z:"子明",t:"士別三日刮目相看",wp:"大刀",wu:81,zh:89,ld:88,p:{sk:"#dfb68e",ey:"sharp",br:"flat",bd:"short",bc:"#26190d",ht:"helm",hc:"#8a5a3a",ac:"#8a5a3a",at:"armor",ex:[]}},
+ {n:"甘寧",f:"吳",z:"興霸",t:"錦帆賊・百騎劫營",wp:"鑌鐵刀",wu:94,zh:66,ld:82,p:{sk:"#c98a5a",ey:"sharp",br:"angry",bd:"short",bc:"#1d150c",ht:"band",hc:"#2f6b6b",ac:"#2f6b6b",at:"armor",ex:["scar"]}},
+ {n:"太史慈",f:"吳",z:"子義",t:"神射手",wp:"手戟・弓",wu:93,zh:66,ld:82,p:{sk:"#dfb68e",ey:"sharp",br:"flat",bd:"full",bc:"#26190d",ht:"helm",hc:"#4a5a3a",ac:"#5a6b4a",at:"armor",ex:[]}},
+ {n:"黃蓋",f:"吳",z:"公覆",t:"苦肉計老將",wp:"鐵鞭",wu:83,zh:65,ld:80,p:{sk:"#d9ad84",ey:"aged",br:"bushy",bd:"full",bc:"#d8d2c6",ht:"helm",hc:"#8a6b34",ac:"#7a5c2a",at:"armor",ex:["oldlines"]}},
+ {n:"程普",f:"吳",z:"德謀",t:"江東老臣之首",wp:"鐵脊蛇矛",wu:80,zh:74,ld:83,p:{sk:"#d9ad84",ey:"aged",br:"flat",bd:"goatee",bc:"#cfc9bd",ht:"helm",hc:"#5a5244",ac:"#6b6252",at:"armor",ex:["oldlines"]}},
+ {n:"周泰",f:"吳",z:"幼平",t:"渾身是膽的傷疤將軍",wp:"大刀",wu:89,zh:48,ld:76,p:{sk:"#c98a5a",ey:"round",br:"angry",bd:"short",bc:"#1d150c",ht:"band",hc:"#8a3a2e",ac:"#7a3a2e",at:"armor",ex:["scar"]}},
+ {n:"凌統",f:"吳",z:"公績",t:"少年猛將",wp:"雙刀",wu:86,zh:60,ld:77,p:{sk:"#efcda6",ey:"sharp",br:"flat",bd:"none",bc:"#222",ht:"band",hc:"#3a5a8a",ac:"#3a5a8a",at:"armor",ex:[]}},
+ {n:"魯肅",f:"吳",z:"子敬",t:"忠厚長者・大都督",wp:"書卷",wu:56,zh:92,ld:85,p:{sk:"#eec9a0",ey:"gentle",br:"flat",bd:"full",bc:"#33261a",ht:"official",hc:"#4a5a4a",ac:"#5a6b5a",at:"robe",ex:[]}},
+ {n:"呂布",f:"群",z:"奉先",t:"飛將・天下無雙",wp:"方天畫戟",wu:100,zh:26,ld:80,p:{sk:"#efcda6",ey:"sharp",br:"angry",bd:"mo",bc:"#1d150c",ht:"goldhelm",hc:"#c9a227",ac:"#8a3a2e",at:"armor",ex:["plume2"]}},
+ {n:"董卓",f:"群",z:"仲穎",t:"暴虐權臣",wp:"佩劍",wu:85,zh:68,ld:65,p:{sk:"#d9a072",ey:"narrow",br:"bushy",bd:"full",bc:"#26190d",ht:"official",hc:"#3a2a1a",ac:"#4a3020",at:"robe",ex:["wide"]}},
+ {n:"袁紹",f:"群",z:"本初",t:"四世三公",wp:"寶劍",wu:70,zh:70,ld:85,p:{sk:"#eec9a0",ey:"calm",br:"bushy",bd:"full",bc:"#26190d",ht:"crown",hc:"#8a6b34",ac:"#6b5a3a",at:"robe",ex:[]}},
+ {n:"袁術",f:"群",z:"公路",t:"僭號仲家",wp:"佩劍",wu:65,zh:60,ld:65,p:{sk:"#eec9a0",ey:"narrow",br:"thin",bd:"goatee",bc:"#26190d",ht:"crown",hc:"#a08a3a",ac:"#7a6b8a",at:"robe",ex:[]}},
+ {n:"張角",f:"群",z:"-",t:"太平道大賢良師",wp:"九節杖",wu:25,zh:86,ld:82,p:{sk:"#e0bd94",ey:"aged",br:"thin",bd:"long",bc:"#b8b2a6",ht:"turban",hc:"#c9a227",ac:"#b8952e",at:"robe",ex:["oldlines"]}},
+ {n:"華雄",f:"群",z:"-",t:"董卓帳下驍騎校尉",wp:"大刀",wu:90,zh:40,ld:70,p:{sk:"#b57947",ey:"round",br:"bushy",bd:"full",bc:"#151008",ht:"helm",hc:"#3a3a44",ac:"#4a4452",at:"armor",ex:[]}},
+ {n:"公孫瓚",f:"群",z:"伯珪",t:"白馬將軍",wp:"長槍",wu:84,zh:60,ld:80,p:{sk:"#e8c398",ey:"sharp",br:"flat",bd:"mo",bc:"#26190d",ht:"helm",hc:"#cfd4de",ac:"#c8ccd8",at:"armor",ex:[]}},
+ {n:"黃月英",f:"蜀",z:"月英",t:"臥龍之妻・機關巧手",wp:"羽扇・機關",wu:45,zh:96,ld:84,p:{sk:"#f0d0aa",ey:"calm",br:"thin",bd:"none",bc:"#2a1c10",ht:"bun",hc:"#5a8a6b",ac:"#4f7a5f",at:"robe",ex:["fem"]}},
+ {n:"關銀屏",f:"蜀",z:"銀屏",t:"虎女・關家刀法",wp:"雙刀",wu:84,zh:70,ld:78,p:{sk:"#eec89e",ey:"sharp",br:"thin",bd:"none",bc:"#1d150c",ht:"band",hc:"#2f7d4f",ac:"#2f7d4f",at:"armor",ex:["fem"]}},
+ {n:"甄宓",f:"魏",z:"洛神",t:"賢德才女",wp:"詩賦",wu:30,zh:84,ld:88,p:{sk:"#f6ddb8",ey:"gentle",br:"thin",bd:"none",bc:"#241a10",ht:"bun",hc:"#8a9ab8",ac:"#6b7a9a",at:"robe",ex:["fem"]}},
+ {n:"王異",f:"魏",z:"異娘",t:"堅毅巾幗",wp:"長劍",wu:76,zh:85,ld:80,p:{sk:"#eecfa4",ey:"sharp",br:"thin",bd:"none",bc:"#26190d",ht:"helm",hc:"#5a6b8a",ac:"#5a6b8a",at:"armor",ex:["fem"]}},
+ {n:"張春華",f:"魏",z:"春華",t:"沉著機智・司馬懿之妻",wp:"謀略",wu:40,zh:92,ld:82,p:{sk:"#f2d4ae",ey:"narrow",br:"thin",bd:"none",bc:"#241a10",ht:"bun",hc:"#7a6b9a",ac:"#6b5b95",at:"robe",ex:["fem"]}},
+ {n:"孫尚香",f:"吳",z:"弓腰姬",t:"梟姬・文武雙全",wp:"弓・雙劍",wu:86,zh:72,ld:85,p:{sk:"#f2cfa2",ey:"round",br:"thin",bd:"none",bc:"#1d150c",ht:"bun",hc:"#c9a227",ac:"#a33b2e",at:"armor",ex:["fem"]}},
+ {n:"大喬",f:"吳",z:"喬家長女",t:"江東二喬・姊",wp:"古琴",wu:26,zh:78,ld:84,p:{sk:"#f6ddb8",ey:"gentle",br:"thin",bd:"none",bc:"#241a10",ht:"bun",hc:"#a86b8a",ac:"#8a5a7a",at:"robe",ex:["fem"]}},
+ {n:"小喬",f:"吳",z:"喬家次女",t:"江東二喬・妹",wp:"舞扇",wu:28,zh:80,ld:85,p:{sk:"#f8e0bc",ey:"round",br:"thin",bd:"none",bc:"#2a1c10",ht:"bun",hc:"#d88a9a",ac:"#a33b2e",at:"robe",ex:["fem"]}},
+ {n:"貂蟬",f:"群",z:"閉月",t:"連環計・四大美人",wp:"歌舞",wu:34,zh:94,ld:92,p:{sk:"#f8e0bc",ey:"gentle",br:"thin",bd:"none",bc:"#1a1208",ht:"bun",hc:"#c9a227",ac:"#8a3b5a",at:"robe",ex:["fem"]}},
+ {n:"祝融夫人",f:"群",z:"火神後裔",t:"南蠻女王・飛刀絕技",wp:"飛刀",wu:90,zh:60,ld:83,p:{sk:"#d9a06b",ey:"sharp",br:"angry",bd:"none",bc:"#160f08",ht:"goldhelm",hc:"#b85a2a",ac:"#8a4a2a",at:"scale",ex:["fem"]}}
+];
+const FAC={'蜀':'shu','魏':'wei','吳':'wu','群':'qun'};
+const FAC_COLOR={'蜀':'#70b17f','魏':'#78a4cb','吳':'#d6755d','群':'#a57ac2'};
+let HERO=HEROES[0];
+function setHero(h){ HERO=h; }
+let time=0;
+
+/* ---- 動畫與線條工具（沿用 兵種2_5D造型預覽 v2 的寫法）---- */
+function ease(t){return t*t*(3-2*t)}
+function shade(hex, amt){
+  const n = parseInt(hex.slice(1),16);
+  let r=(n>>16)+amt, g=((n>>8)&255)+amt, b=(n&255)+amt;
+  r=Math.max(0,Math.min(255,r)); g=Math.max(0,Math.min(255,g)); b=Math.max(0,Math.min(255,b));
+  return "#"+((r<<16)|(g<<8)|b).toString(16).padStart(6,"0");
+}
+function limb(c,x1,y1,x2,y2,w,color){c.strokeStyle='#120f0b';c.lineWidth=w+2.4;c.lineCap='round';
+  c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+  c.strokeStyle=color;c.lineWidth=w;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke()}
+function pose(type,t){
+  const q={bob:0,walk:0,attack:0,recoil:0};
+  if(type==='march'){q.walk=Math.sin(t*6);q.bob=Math.abs(Math.sin(t*6))*1.7}
+  if(type==='attack'){const s=(t%1.55)/1.55;
+    q.attack=s<.3?ease(s/.3):s<.5?1-ease((s-.3)/.2)*.22:s<.82?.78*(1-ease((s-.5)/.32)):0}
+  return q;
+}
+
+/* ================= 2.5D 側身立繪 =================
+   讀的是跟頭像同一份 p 欄位：sk 膚色 / ey 眼 / br 眉 / bd 鬍 / bc 鬍色
+   / ht 頭飾 / hc 頭飾色 / ac 甲色 / at 服裝 / ex 特徵
+   軍階 ri 只加不換：甲片、肩甲、披風、描金、背纓一層層疊上去。   */
+function wpKind(wp){
+  if(wp.indexOf('弓')>=0||wp.indexOf('弩')>=0) return 'bow';
+  if(wp.indexOf('扇')>=0||wp.indexOf('塵尾')>=0) return 'fan';
+  if(wp.indexOf('偃月')>=0) return 'glaive';
+  if(wp.indexOf('矛')>=0||wp.indexOf('槍')>=0||wp.indexOf('戟')>=0||wp.indexOf('尖')>=0
+     ||wp.indexOf('杖')>=0) return 'spear';
+  return 'sword';
+}
+function drawHeroP(c,h,x,y,dir,scale,motion,ri){
+  const p=h.p, q=pose(motion,time+h.n.length*.31);
+  const gold='#e5c04a', dark='#120f0b';
+  c.save(); c.translate(x,y); c.scale(dir*scale,scale);
+  // 影子
+  const sg=c.createRadialGradient(0,2,2,0,2,17);
+  sg.addColorStop(0,'rgba(0,0,0,.42)'); sg.addColorStop(1,'rgba(0,0,0,0)');
+  c.fillStyle=sg; c.beginPath(); c.ellipse(0,2,17,6,0,0,TAU); c.fill();
+  c.translate(0,-q.bob);
+
+  // 披風（軍侯以上）
+  if(ri>=3){
+    c.fillStyle=shade(p.ac,-45);
+    c.beginPath(); c.moveTo(-4,-58); c.lineTo(-20-q.walk*3,-6); c.lineTo(-2,-8); c.closePath(); c.fill();
+  }
+  // 腿
+  limb(c,-2,-30,-9+q.walk*8,0,5.4,shade(p.ac,-60));
+  limb(c, 3,-30, 8-q.walk*8,0,5.4,shade(p.ac,-40));
+  // 上身隨揮擊前傾，整個人有出力感
+  c.translate(0,-30); c.rotate(-q.attack*0.34); c.translate(0,30);
+  // 軀幹：袍 / 甲 / 鱗甲，fem 體型較纖細
+  const fem=(p.ex||[]).indexOf('fem')>=0;
+  c.fillStyle=p.ac; c.strokeStyle=dark; c.lineWidth=2;
+  c.beginPath();
+  if(p.at==='robe'){
+    if(fem){ c.moveTo(-9,-28); c.lineTo(-6,-58); c.lineTo(8,-58); c.lineTo(11,-28); }
+    else { c.moveTo(-11,-28); c.lineTo(-8,-60); c.lineTo(10,-60); c.lineTo(13,-28); }
+  } else {
+    if(fem){ c.moveTo(-8,-30); c.lineTo(-6,-40); c.lineTo(-7,-58); c.lineTo(9,-58); c.lineTo(8,-40); c.lineTo(10,-30); }
+    else { c.moveTo(-10,-30); c.lineTo(-9,-62); c.lineTo(11,-62); c.lineTo(12,-30); }
+  }
+  c.closePath(); c.fill(); c.stroke();
+  // 鱗甲：畫成交錯的小鱗片而不是橫條
+  if(p.at==='scale'){
+    c.fillStyle='rgba(0,0,0,.18)';
+    for(let r2=0;r2<5;r2++) for(let cc=0;cc<4;cc++){
+      const xx=-8+cc*5+(r2%2?2.5:0), yy=-58+r2*6;
+      c.beginPath(); c.arc(xx,yy,2.2,0,Math.PI); c.fill();
+    }
+  }
+  // 札甲橫片：軍階越高片數越多
+  if(p.at==='armor'){
+    c.strokeStyle='rgba(0,0,0,.4)'; c.lineWidth=1.3;
+    const rowsN=2+Math.min(4,ri);
+    for(let i=0;i<rowsN;i++){ const yy=-58+i*(28/rowsN);
+      c.beginPath(); c.moveTo(-9,yy); c.lineTo(11,yy); c.stroke(); }
+  }
+  // 肩甲（什長以上）
+  if(ri>=1){
+    c.fillStyle=shade(p.ac,34); c.strokeStyle=dark; c.lineWidth=1.6;
+    c.beginPath(); c.ellipse(4,-59,9,6,0,Math.PI,TAU); c.fill(); c.stroke();
+  }
+  // 腰帶（屯長以上）
+  if(ri>=2){ c.fillStyle=ri>=4?gold:shade(p.ac,-30); c.fillRect(-10,-36,22,4); }
+  // 描金（校尉以上）
+  if(ri>=4){
+    c.strokeStyle=gold; c.lineWidth=1.8;
+    c.beginPath(); c.moveTo(-9,-62); c.lineTo(11,-62); c.moveTo(-10,-30); c.lineTo(12,-30); c.stroke();
+  }
+  // 背纓（牙門將以上）
+  if(ri>=5){
+    c.fillStyle=gold;
+    for(let i=0;i<3;i++){ c.beginPath(); c.moveTo(-6,-58);
+      c.lineTo(-16-i*4,-74-Math.sin(time*5+i)*4); c.lineTo(-8,-56); c.closePath(); c.fill(); }
+  }
+
+  // 手臂與兵器：弧度拉大到約 240 度，並帶殘影
+  const sw=q.attack, wk=wpKind(h.wp);
+  const swingA=-2.35+sw*4.35;
+  const hx=9+sw*20, hy=-44-sw*26;
+  if(sw>0.06 && (wk==='glaive'||wk==='spear'||wk==='sword')){
+    c.save(); c.translate(9,-50);
+    const rr2=(wk==='sword'?52:64)+ri*3;
+    const gg2=c.createLinearGradient(-rr2,0,rr2,0);
+    gg2.addColorStop(0,'rgba(127,233,255,0)');
+    gg2.addColorStop(.5,'rgba(223,246,255,'+(0.55*sw)+')');
+    gg2.addColorStop(1,'rgba(127,233,255,0)');
+    c.strokeStyle=gg2; c.lineWidth=13*sw; c.lineCap='round';
+    c.beginPath(); c.arc(0,0,rr2,-2.35,swingA); c.stroke();
+    c.restore();
+  }
+  c.save(); c.translate(hx,hy); c.rotate(swingA);
+  if(wk==='glaive'||wk==='spear'){
+    c.strokeStyle='#5b4426'; c.lineWidth=4;
+    c.beginPath(); c.moveTo(-26,14); c.lineTo(34,-16); c.stroke();
+    c.fillStyle='#dfe8f2'; c.strokeStyle=dark; c.lineWidth=1.4;
+    c.beginPath();
+    if(wk==='glaive'){ c.moveTo(34,-16); c.quadraticCurveTo(52,-30,44,-6); c.quadraticCurveTo(40,-8,34,-16); }
+    else { c.moveTo(34,-16); c.lineTo(50,-24); c.lineTo(36,-10); }
+    c.closePath(); c.fill(); c.stroke();
+  } else if(wk==='bow'){
+    c.strokeStyle='#c99454'; c.lineWidth=2.6;
+    c.beginPath(); c.moveTo(6,-16); c.quadraticCurveTo(20,0,6,16); c.stroke();
+    c.strokeStyle='#efe0bf'; c.lineWidth=.9;
+    c.beginPath(); c.moveTo(6,-16); c.lineTo(8+sw*8,0); c.lineTo(6,16); c.stroke();
+  } else if(wk==='fan'){
+    c.fillStyle='#f0ead8'; c.strokeStyle=dark; c.lineWidth=1.3;
+    c.beginPath(); c.moveTo(4,4); c.quadraticCurveTo(26,-16,30,4); c.quadraticCurveTo(18,12,4,4);
+    c.closePath(); c.fill(); c.stroke();
+  } else {
+    const gg=c.createLinearGradient(0,0,44,0);
+    gg.addColorStop(0,'#8fa3c8'); gg.addColorStop(.6,'#e8f6ff'); gg.addColorStop(1,'#7fe9ff');
+    c.fillStyle=gg; c.fillRect(0,-2.6,44+ri*3,5.2);
+    c.fillStyle=dark; c.fillRect(-10,-3,11,6);
+  }
+  c.restore();
+  limb(c,6,-56,hx,hy,5,p.sk);
+
+  // ===== 頭 =====
+  const hyy=-72, wide=(p.ex||[]).indexOf('wide')>=0;
+  if((p.ex||[]).indexOf('bigears')>=0){
+    c.fillStyle=p.sk; c.beginPath(); c.ellipse(-9,hyy+3,4,7,0,0,TAU); c.fill();
+  }
+  c.fillStyle=p.sk; c.strokeStyle=dark; c.lineWidth=1.8;
+  c.beginPath(); c.ellipse(1,hyy,wide?14:11.5,13.5,0,0,TAU); c.fill(); c.stroke();
+  // 眉
+  c.strokeStyle=p.bc; c.lineCap='round';
+  const brW={angry:3.4,bushy:5,thin:1.8,flat:2.6}[p.br]||2.6;
+  c.lineWidth=brW;
+  c.beginPath();
+  if(p.br==='angry'){ c.moveTo(3,-4+hyy); c.lineTo(11,-1+hyy); }
+  else { c.moveTo(3,-3+hyy); c.lineTo(11,-3.6+hyy); }
+  c.stroke();
+  // 眼（側面只畫一隻）
+  c.fillStyle='#2a1a10'; c.strokeStyle='#2a1a10';
+  if(p.ey==='narrow'){ c.lineWidth=2.6; c.beginPath(); c.moveTo(5,hyy+1); c.lineTo(11,hyy+1); c.stroke(); }
+  else if(p.ey==='sharp'){ c.beginPath(); c.moveTo(5,hyy+2); c.lineTo(12,hyy-1); c.lineTo(11,hyy+2); c.closePath(); c.fill(); }
+  else if(p.ey==='aged'){ c.lineWidth=2.2; c.beginPath(); c.moveTo(5,hyy+1); c.quadraticCurveTo(8,hyy-2,11,hyy+1); c.stroke(); }
+  else if(p.ey==='green'){ c.fillStyle='#3f7a4f'; c.beginPath(); c.ellipse(8,hyy+1,3,2,0,0,TAU); c.fill(); }
+  else { c.beginPath(); c.ellipse(8,hyy+1,2.6,2.4,0,0,TAU); c.fill(); }
+  // 眼罩
+  if((p.ex||[]).indexOf('eyepatch')>=0){ c.fillStyle='#1a1208'; c.fillRect(3,hyy-3,10,7); }
+  // 疤
+  if((p.ex||[]).indexOf('scar')>=0){ c.strokeStyle='#8a3a2e'; c.lineWidth=1.6;
+    c.beginPath(); c.moveTo(10,hyy-4); c.lineTo(8,hyy+5); c.stroke(); }
+  // 鬍
+  c.fillStyle=p.bc;
+  const cy=hyy+11;
+  if(p.bd==='long'){ c.beginPath(); c.moveTo(-2,cy); c.quadraticCurveTo(6,cy+26,2,cy+30);
+    c.quadraticCurveTo(10,cy+18,9,cy-1); c.closePath(); c.fill(); }
+  else if(p.bd==='full'){ c.beginPath(); c.moveTo(-3,cy-3); c.quadraticCurveTo(6,cy+16,10,cy-4);
+    c.quadraticCurveTo(6,cy+2,-3,cy-3); c.closePath(); c.fill();
+    c.beginPath(); c.ellipse(3,cy+5,8,7,0,0,TAU); c.fill(); }
+  else if(p.bd==='short'){ c.beginPath(); c.ellipse(4,cy+2,7,5,0,0,TAU); c.fill(); }
+  else if(p.bd==='goatee'){ c.beginPath(); c.moveTo(2,cy); c.lineTo(7,cy); c.lineTo(4,cy+12); c.closePath(); c.fill(); }
+  else if(p.bd==='mo'){ c.fillRect(3,cy-4,8,2.6); }
+  // 頭飾
+  c.fillStyle=p.hc; c.strokeStyle=dark; c.lineWidth=1.5;
+  if(p.ht==='helm'||p.ht==='goldhelm'){
+    c.beginPath(); c.ellipse(1,hyy-4,wide?15:12.5,10,0,Math.PI,TAU); c.fill(); c.stroke();
+    c.fillRect(-12,hyy-5,26,3.4);
+    if(p.ht==='goldhelm'){ c.fillStyle='#e8c96a'; c.beginPath();
+      c.moveTo(1,hyy-14); c.lineTo(5,hyy-26); c.lineTo(-3,hyy-26); c.closePath(); c.fill(); }
+  } else if(p.ht==='band'){
+    c.beginPath(); c.moveTo(-11,hyy-3); c.quadraticCurveTo(1,hyy-11,13,hyy-3);
+    c.lineTo(13,hyy-7); c.quadraticCurveTo(1,hyy-15,-11,hyy-7); c.closePath(); c.fill(); c.stroke();
+  } else if(p.ht==='guanjin'){
+    c.beginPath(); c.moveTo(-12,hyy-3); c.quadraticCurveTo(1,hyy-20,13,hyy-3); c.lineTo(13,hyy-9);
+    c.quadraticCurveTo(1,hyy-24,-12,hyy-9); c.closePath(); c.fill(); c.stroke();
+  } else if(p.ht==='official'){
+    c.fillRect(-11,hyy-14,24,7); c.fillRect(-6,hyy-20,14,7); c.strokeRect(-11,hyy-14,24,7);
+  } else if(p.ht==='crown'){
+    c.beginPath(); c.moveTo(-11,hyy-6); c.lineTo(13,hyy-6); c.lineTo(10,hyy-20);
+    c.lineTo(4,hyy-13); c.lineTo(-1,hyy-22); c.lineTo(-6,hyy-13); c.lineTo(-11,hyy-20);
+    c.closePath(); c.fill(); c.stroke();
+  } else if(p.ht==='cap'){
+    c.beginPath(); c.moveTo(-9,hyy-5); c.quadraticCurveTo(2,hyy-19,12,hyy-5); c.closePath(); c.fill(); c.stroke();
+  } else if(p.ht==='bun'){                     // 髮髻
+    c.beginPath(); c.ellipse(1,hyy-6,12,9,0,Math.PI,TAU); c.fill(); c.stroke();
+    c.beginPath(); c.arc(-1,hyy-19,6.5,0,TAU); c.fill(); c.stroke();
+    c.strokeStyle=shade(p.hc,50); c.lineWidth=1.6;
+    c.beginPath(); c.moveTo(-7,hyy-21); c.lineTo(6,hyy-17); c.stroke();
+  } else if(p.ht==='turban'){                  // 裹巾，尾巴會飄
+    c.beginPath(); c.ellipse(1,hyy-4,13,10,0,Math.PI,TAU); c.fill(); c.stroke();
+    c.beginPath(); c.moveTo(-11,hyy-6);
+    c.quadraticCurveTo(-24,hyy-2+Math.sin(time*4)*4,-19,hyy+9+Math.sin(time*4)*4);
+    c.quadraticCurveTo(-14,hyy+1,-9,hyy-3); c.closePath(); c.fill();
+  }
+  // 老紋
+  if((p.ex||[]).indexOf('oldlines')>=0){
+    c.strokeStyle='rgba(0,0,0,.28)'; c.lineWidth=1.2;
+    c.beginPath(); c.moveTo(6,hyy+5); c.quadraticCurveTo(9,hyy+7,6,hyy+9); c.stroke();
+  }
+  // 盔纓（plume / plume2 / 軍階）
+  const exs=p.ex||[], hasP=exs.indexOf('plume')>=0, hasP2=exs.indexOf('plume2')>=0;
+  if(hasP||hasP2||ri>=3){
+    const n2=hasP2?7:4, len=hasP2?38:30;
+    c.fillStyle=(hasP||hasP2)?'#e8c96a':RANKS[ri].hc;
+    for(let i=0;i<n2;i++){ c.beginPath(); c.moveTo(1,hyy-13);
+      c.lineTo(-4+i*2.2,hyy-len-Math.sin(time*5+i)*3); c.lineTo(-2+i*2.2,hyy-13); c.closePath(); c.fill(); }
+  }
+  c.restore();
+}
+
+/* ---------------- 繪製 ---------------- */
+function draw(){
+  const sh=shake;
+  const ox=VW/2-cam.x+(sh?rnd(-sh,sh):0), oy=VH/2-cam.y+(sh?rnd(-sh,sh):0);
+  ctx.clearRect(0,0,VW,VH);
+
+  // 背景
+  const g=ctx.createLinearGradient(0,0,0,VH);
+  g.addColorStop(0,'#191434'); g.addColorStop(.55,'#100e22'); g.addColorStop(1,'#080711');
+  ctx.fillStyle=g; ctx.fillRect(0,0,VW,VH);
+
+  ctx.save(); ctx.translate(ox,oy);
+
+  // 地面網格
+  ctx.strokeStyle='rgba(120,110,200,.10)'; ctx.lineWidth=1;
+  const gs=120;
+  const x0=Math.floor((cam.x-VW/2)/gs)*gs, x1=cam.x+VW/2;
+  const y0=Math.floor((cam.y-VH/2)/gs)*gs, y1=cam.y+VH/2;
+  ctx.beginPath();
+  for(let x=x0;x<x1;x+=gs){ ctx.moveTo(x,y0); ctx.lineTo(x,y1); }
+  for(let y=y0;y<y1;y+=gs){ ctx.moveTo(x0,y); ctx.lineTo(x1,y); }
+  ctx.stroke();
+  // 戰場邊界
+  ctx.strokeStyle='rgba(127,233,255,.22)'; ctx.lineWidth=3; ctx.strokeRect(30,30,W-60,H-60);
+
+  // 玩家腳下的評價光環
+  const R=rating();
+  if(combo>=8){
+    const rr=90+R.k*60;
+    const ag=ctx.createRadialGradient(P.x,P.y,0,P.x,P.y,rr);
+    ag.addColorStop(0,R.c+'44'); ag.addColorStop(1,'transparent');
+    ctx.fillStyle=ag; ctx.beginPath(); ctx.ellipse(P.x,P.y,rr,rr*.5,0,0,TAU); ctx.fill();
+  }
+
+  // 落櫻（地面層）
+  for(const p of petals){
+    if(Math.abs(p.x-cam.x)>VW||Math.abs(p.y-cam.y)>VH) continue;
+    ctx.save(); ctx.translate(p.x,p.y-p.z); ctx.rotate(p.r);
+    ctx.fillStyle='rgba(255,143,192,'+(0.16+0.3*(1-p.z/420))+')';
+    ctx.beginPath(); ctx.ellipse(0,0,p.s,p.s*.55,0,0,TAU); ctx.fill(); ctx.restore();
+  }
+
+  drawFX(0);
+
+  // 依 y 排序繪製
+  const ents=[];
+  for(const m of mobs) ents.push(m);
+  ents.push(P);
+  ents.sort((a,b)=>a.y-b.y);
+  for(const e of ents){ if(e===P) drawPlayer(); else drawMob(e); }
+
+  drawFX(1);
+
+  // 文字彈出
+  for(const p of pops){
+    const k=p.t/p.life;
+    ctx.save(); ctx.globalAlpha=1-k*k;
+    ctx.translate(p.x,p.y-k*44);
+    ctx.font=`${p.s}px "Hiragino Mincho ProN",serif`; ctx.textAlign='center';
+    ctx.lineWidth=4; ctx.strokeStyle='rgba(8,7,17,.85)'; ctx.strokeText(p.text,0,0);
+    ctx.fillStyle=p.c; ctx.fillText(p.text,0,0);
+    ctx.restore();
+  }
+
+  ctx.restore();
+  drawHUD();
+}
+
+function drawFX(layer){
+  for(const f of fx){
+    const k=f.t/f.life, a=1-k;
+    ctx.save();
+    if(f.k==='arc'&&layer===1){
+      ctx.globalAlpha=a*.95; ctx.translate(f.x,f.y);
+      ctx.rotate(f.face); ctx.scale(1,.62);
+      ctx.lineWidth=16*(1-k*.5); ctx.lineCap='round';
+      const gg=ctx.createLinearGradient(-f.r,0,f.r,0);
+      gg.addColorStop(0,'transparent'); gg.addColorStop(.5,f.c); gg.addColorStop(1,'#7fe9ff');
+      ctx.strokeStyle=gg;
+      ctx.beginPath(); ctx.arc(0,0,f.r*(0.7+k*.5),-f.arc/2,f.arc/2); ctx.stroke();
+    }
+    else if(f.k==='storm'&&layer===1){
+      ctx.globalAlpha=a; ctx.translate(f.x,f.y); ctx.scale(1,.55);
+      for(let i=0;i<4;i++){
+        const rr=f.r*(0.35+k*0.85)-i*16;
+        ctx.strokeStyle=i%2?'rgba(255,143,192,.75)':'rgba(127,233,255,.85)';
+        ctx.lineWidth=9-i*1.6;
+        ctx.beginPath(); ctx.arc(0,0,Math.max(4,rr),k*9+i*1.4,k*9+i*1.4+4.6); ctx.stroke();
+      }
+    }
+    else if(f.k==='rift'&&layer===0){
+      ctx.globalAlpha=a; ctx.translate(f.x,f.y); ctx.scale(1,.5);
+      ctx.strokeStyle='rgba(255,207,107,.9)'; ctx.lineWidth=7*(1-k);
+      ctx.beginPath(); ctx.arc(0,0,f.r*(0.3+k),0,TAU); ctx.stroke();
+      ctx.restore(); ctx.save();
+      ctx.globalAlpha=a*.8;
+      const gg=ctx.createLinearGradient(f.x,f.y,f.x,f.y-460);
+      gg.addColorStop(0,'rgba(255,207,107,.85)'); gg.addColorStop(1,'transparent');
+      ctx.fillStyle=gg; ctx.fillRect(f.x-26*(1-k),f.y-460,52*(1-k),460);
+    }
+    else if(f.k==='dome'&&layer===1){
+      ctx.globalAlpha=a*.9; ctx.translate(f.x,f.y);
+      const rr=f.r*(0.2+k*1.05);
+      const gg=ctx.createRadialGradient(0,0,rr*.4,0,0,rr);
+      gg.addColorStop(0,'transparent'); gg.addColorStop(.75,(f.c||'#7fe9ff')+'cc'); gg.addColorStop(1,'transparent');
+      ctx.fillStyle=gg; ctx.beginPath(); ctx.ellipse(0,0,rr,rr*.62,0,0,TAU); ctx.fill();
+      ctx.strokeStyle=(f.c||'#ffffff'); ctx.lineWidth=4*(1-k);
+      ctx.beginPath(); ctx.ellipse(0,0,rr,rr*.62,0,0,TAU); ctx.stroke();
+    }
+    else if(f.k==='beam'&&layer===1){
+      ctx.globalAlpha=a; ctx.translate(f.x,f.y); ctx.rotate(f.face);
+      const gg=ctx.createLinearGradient(0,0,f.len,0);
+      gg.addColorStop(0,'rgba(255,255,255,0)'); gg.addColorStop(.25,'#ffffff'); gg.addColorStop(1,'rgba(127,233,255,0)');
+      ctx.fillStyle=gg; ctx.fillRect(0,-9*(1-k)-2,f.len,18*(1-k)+4);
+    }
+    else if(f.k==='cut'&&layer===1){
+      ctx.globalAlpha=Math.min(1,a*1.6); ctx.translate(f.x,f.y); ctx.rotate(f.a+Math.PI/2);
+      ctx.strokeStyle='#fff'; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.moveTo(-26,0); ctx.lineTo(26,0); ctx.stroke();
+    }
+    else if(f.k==='spark'&&layer===1){
+      ctx.globalAlpha=a; ctx.translate(f.x,f.y);
+      ctx.strokeStyle='#fff'; ctx.lineWidth=2.4;
+      for(let i=0;i<4;i++){ const ang=f.a+i*1.57+k*2;
+        ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(ang)*(10+k*30),Math.sin(ang)*(7+k*20)); ctx.stroke(); }
+    }
+    else if(f.k==='wordslash'&&layer===1){
+      // 前段：劍鋒把字「寫」出來（由左而右揭開）；後段：字被斬散成光點飛出
+      const S=f.big?130:78, WR=0.34;
+      ctx.translate(f.x,f.y);
+      if(f.t<WR){
+        const w=f.t/WR;
+        ctx.globalAlpha=1;
+        if(f.pts&&f.pts.length){
+          ctx.fillStyle='#fff'; ctx.shadowColor='#7fe9ff'; ctx.shadowBlur=14;
+          for(const q of f.pts){ if((q.x+1)/2>w) continue;
+            ctx.fillRect(q.x*S-2,q.y*S-2,4.4,4.4); }
+        } else {
+          ctx.font=(S*1.6)+'px "Hiragino Mincho ProN",serif'; ctx.textAlign='center';
+          ctx.fillStyle='#fff'; ctx.fillText(f.ch,0,S*.55);
+        }
+        // 劍鋒
+        ctx.shadowBlur=0; ctx.strokeStyle='#7fe9ff'; ctx.lineWidth=5;
+        ctx.beginPath(); ctx.moveTo(-S+w*2*S,-S*1.25); ctx.lineTo(-S+w*2*S,S*1.25); ctx.stroke();
+      } else {
+        const k2=(f.t-WR)/(f.life-WR), fly=k2*k2*420;
+        ctx.globalAlpha=1-k2;
+        ctx.fillStyle='#ffe9b0'; ctx.shadowColor='#ffcf6b'; ctx.shadowBlur=12;
+        if(f.pts&&f.pts.length){
+          for(const q of f.pts){
+            const px=q.x*S+Math.cos(q.a)*fly, py=q.y*S+Math.sin(q.a)*fly*.7;
+            ctx.fillRect(px-2,py-2,4.4,4.4);
+          }
+        } else {
+          ctx.font=(S*1.6*(1+k2))+'px "Hiragino Mincho ProN",serif'; ctx.textAlign='center';
+          ctx.fillText(f.ch,0,S*.55);
+        }
+      }
+    }
+    else if(f.k==='burst'&&layer===1){
+      ctx.globalAlpha=a; ctx.translate(f.x,f.y);
+      ctx.fillStyle='rgba(191,234,255,'+(a*.9)+')';
+      ctx.beginPath(); ctx.arc(0,0,6+k*34,0,TAU); ctx.fill();
+    }
+    else if(f.k==='dim'&&layer===1){
+      ctx.globalAlpha=a; ctx.translate(f.x,f.y);
+      ctx.strokeStyle='#9fdcff'; ctx.lineWidth=6*(1-k);
+      for(let i=0;i<3;i++){ const ang=f.a+i*2.1;
+        ctx.beginPath(); ctx.moveTo(Math.cos(ang)*-70,Math.sin(ang)*-70); ctx.lineTo(Math.cos(ang)*70,Math.sin(ang)*70); ctx.stroke(); }
+    }
+    else if(f.k==='trail'&&layer===1){
+      ctx.globalAlpha=a*.8; ctx.strokeStyle='#7fe9ff'; ctx.lineWidth=5*(1-k);
+      ctx.beginPath(); ctx.moveTo(f.x1,f.y1); ctx.lineTo(f.x2,f.y2); ctx.stroke();
+    }
+    else if(f.k==='ghost'&&layer===0){
+      ctx.globalAlpha=a*.5; ctx.translate(f.x,f.y);
+      ctx.fillStyle='#2a2350';
+      ctx.fillRect(-9,-52,18,52);
+    }
+    else if(f.k==='petal'&&layer===1){
+      ctx.globalAlpha=a; ctx.translate(f.x,f.y);
+      ctx.fillStyle='#ff8fc0'; ctx.beginPath(); ctx.ellipse(0,0,5,2.6,f.a,0,TAU); ctx.fill();
+    }
+    else if(f.k==='rock'&&layer===1){
+      ctx.globalAlpha=a; ctx.translate(f.x,f.y);
+      ctx.fillStyle='#3b3466'; ctx.fillRect(-4,-4,9,9);
+    }
+    ctx.restore();
+  }
+}
+
+function drawShadow(x,y,z,r){
+  const s=clamp(1-z/560,.25,1);
+  ctx.fillStyle='rgba(0,0,0,'+(0.35*s)+')';
+  ctx.beginPath(); ctx.ellipse(x,y,r*s,r*.42*s,0,0,TAU); ctx.fill();
+}
+
+function drawMob(m){
+  if(m.word) return drawWordMob(m);
+  const sy=m.y-m.z;
+  drawShadow(m.x,m.y,m.z,15);
+  ctx.save(); ctx.translate(m.x,sy);
+  if(m.dead){
+    const k=m.deadT/.5; ctx.globalAlpha=1-k; ctx.scale(1+k*.5,1-k*.6);
+  }
+  const spin=Math.hypot(m.vx,m.vy)>380;
+  if(spin) ctx.rotate(Math.sin(T*22+m.wob)*0.9);
+  // 黃巾賊：粗布衣、黃頭巾、短戟
+  ctx.fillStyle=m.flash>0?'#ffffff':'#3a3128';
+  ctx.beginPath(); ctx.moveTo(-11,0); ctx.lineTo(-8,-30); ctx.lineTo(8,-30); ctx.lineTo(11,0); ctx.closePath(); ctx.fill();
+  ctx.fillStyle=m.flash>0?'#ffffff':'#d8b24a';
+  ctx.fillRect(-9,-31,18,4);                                  // 束帶
+  ctx.fillStyle=m.flash>0?'#ffffff':'#c99a3e';
+  ctx.beginPath(); ctx.arc(0,-36,9,0,TAU); ctx.fill();         // 黃頭巾
+  ctx.beginPath(); ctx.moveTo(-8,-38); ctx.lineTo(-19,-30); ctx.lineTo(-7,-32); ctx.closePath(); ctx.fill();
+  if(m.flash<=0){ ctx.fillStyle=m.mark>0?'#7fe9ff':'#ff5a5a'; ctx.fillRect(-6,-37,12,2.4); }
+  ctx.strokeStyle=m.flash>0?'#fff':'#6b5a3a'; ctx.lineWidth=2.6;
+  ctx.beginPath(); ctx.moveTo(11,-18); ctx.lineTo(20,-44); ctx.stroke();
+  ctx.restore();
+}
+
+function drawWordMob(m){
+  const bob=Math.sin(m.wob)*5, sy=m.y+bob;
+  const isT=target&&(m.ref===target||m.word===target.w);
+  const hinting=isT&&hintT>4;
+  drawShadow(m.x,m.y,0,22);
+  ctx.save(); ctx.translate(m.x,sy);
+  if(m.dead){ const k=m.deadT/.5; ctx.globalAlpha=1-k; ctx.scale(1+k*.8,1+k*.8); }
+  // 傳令兵：舉著令旗，字寫在旗面上
+  ctx.fillStyle=m.flash>0?'#ffffff':'#3d3346';
+  ctx.beginPath(); ctx.moveTo(-15,0); ctx.lineTo(-11,-40); ctx.lineTo(11,-40); ctx.lineTo(15,0); ctx.closePath(); ctx.fill();
+  ctx.fillStyle=m.flash>0?'#ffffff':'#2b2438';
+  ctx.beginPath(); ctx.arc(0,-48,8.5,0,TAU); ctx.fill();
+  // 旗桿
+  ctx.strokeStyle='#6b5a3a'; ctx.lineWidth=5;
+  ctx.beginPath(); ctx.moveTo(6,-6); ctx.lineTo(6,-142); ctx.stroke();
+  ctx.fillStyle='#c9a24a';
+  ctx.beginPath(); ctx.moveTo(6,-152); ctx.lineTo(1,-140); ctx.lineTo(11,-140); ctx.closePath(); ctx.fill();
+  // 旗面
+  const fw=70,fh=76,fx=6,fy=-136, sway=Math.sin(m.wob)*3;
+  if(hinting){
+    ctx.save(); ctx.globalAlpha=.5+.45*Math.sin(T*9);
+    ctx.strokeStyle='#ffcf6b'; ctx.lineWidth=6;
+    ctx.strokeRect(fx-6,fy-6,fw+12,fh+12); ctx.restore();
+  }
+  ctx.fillStyle='#9e2b2b';
+  ctx.beginPath();
+  ctx.moveTo(fx,fy); ctx.lineTo(fx+fw,fy+sway); ctx.lineTo(fx+fw,fy+fh+sway); ctx.lineTo(fx,fy+fh);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='#e0c065'; ctx.lineWidth=2.5; ctx.stroke();
+  ctx.fillStyle='#fff6e0'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.font='48px "Hiragino Mincho ProN",serif';
+  ctx.fillText(m.word,fx+fw/2,fy+fh/2+sway/2);
+  ctx.textBaseline='alphabetic';
+  ctx.restore();
+}
+
+function drawPlayer(){
+  const ri=rankIdx();
+  time=T;
+  const dir=Math.cos(P.face)<0?-1:1;
+  const sc=0.92+ri*0.045;
+  let m='idle';
+  if(P.act) m='attack';
+  else if(P.state==='run'||P.state==='dash') m='march';
+  const st=stuntPose();
+  ctx.save();
+  if(P.inv>0) ctx.globalAlpha=.6+.4*Math.sin(T*30);
+  // 翻身時的殘影，讓動作看得出軌跡
+  if(stunt&&(stunt.k==='spin'||stunt.k==='flip'||stunt.k==='ult')){
+    for(let g=1;g<=3;g++){
+      const kk=clamp((stunt.t-g*0.045)/stunt.dur,0,1);
+      if(kk<=0) continue;
+      const e2=ease(kk);
+      let r2=0,l2=0;
+      if(stunt.k==='spin'){ r2=e2*Math.PI*4; l2=Math.sin(kk*Math.PI)*26; }
+      else if(stunt.k==='flip'){ r2=-e2*Math.PI*2; l2=Math.sin(kk*Math.PI)*64; }
+      else { r2=-e2*Math.PI*4; l2=Math.sin(kk*Math.PI)*165; }
+      ctx.save(); ctx.globalAlpha=.16*(4-g)/3;
+      ctx.translate(P.x,P.y-P.z-l2);
+      ctx.translate(0,-34*sc); ctx.rotate(r2*dir); ctx.translate(0,34*sc);
+      drawHeroP(ctx,HERO,0,0,dir,sc,m,ri);
+      ctx.restore();
+    }
+  }
+  ctx.translate(P.x,P.y-P.z-st.lift);
+  ctx.translate(0,-34*sc); ctx.rotate(st.rot*dir); ctx.translate(0,34*sc);
+  ctx.scale(1,st.sq);
+  drawHeroP(ctx,HERO,0,0,dir,sc,m,ri);
+  ctx.restore();
+}
+
+/* ---------------- HUD ---------------- */
+function drawHUD(){
+  const pad=Math.max(14,(VW-VH)*0);
+  // HP
+  // 字兵在畫面外時，邊緣顯示指向箭頭與字，避免學生找不到
+  if(target && !dead && !showLearned){
+    const ox=VW/2-cam.x, oy=VH/2-cam.y, pad=54;
+    for(const m of mobs){
+      if(!m.word||m.dead) continue;
+      const sx=m.x+ox, sy=m.y+oy-70;
+      if(sx>pad&&sx<VW-pad&&sy>pad+70&&sy<VH-pad) continue;      // 看得到就不用箭頭
+      const cx=clamp(sx,pad,VW-pad), cy=clamp(sy,pad+70,VH-pad);
+      const isT=target&&(m.ref===target||m.word===target.w);
+      ctx.save(); ctx.translate(cx,cy);
+      ctx.globalAlpha=.9;
+      ctx.fillStyle=isT&&hintT>4 ? '#ffcf6b' : 'rgba(11,10,20,.8)';
+      ctx.beginPath(); ctx.arc(0,0,24,0,TAU); ctx.fill();
+      ctx.strokeStyle='#f6f2ff'; ctx.lineWidth=2; ctx.stroke();
+      ctx.fillStyle=isT&&hintT>4 ? '#0b0a14' : '#f6f2ff';
+      ctx.font='24px "Hiragino Mincho ProN",serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(m.word,0,1); ctx.textBaseline='alphabetic';
+      // 小三角指向實際位置
+      const ang=Math.atan2(sy-cy||m.y+oy-cy,sx-cx||m.x+ox-cx);
+      ctx.rotate(ang);
+      ctx.fillStyle='#f6f2ff';
+      ctx.beginPath(); ctx.moveTo(30,0); ctx.lineTo(21,-7); ctx.lineTo(21,7); ctx.closePath(); ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  // 答錯的紅色邊框提示（不扣血，只是視覺回饋）
+  if(wrongFlash>0){
+    ctx.save(); ctx.globalAlpha=wrongFlash*1.6;
+    ctx.strokeStyle='#ff5a5a'; ctx.lineWidth=10; ctx.strokeRect(5,5,VW-10,VH-10); ctx.restore();
+  }
+
+  // ── 題目條：這一關要找的字（點一下重念）
+  if(target && !dead){
+    ctx.save();
+    const bw=Math.min(300,VW-40), bx=(VW-bw)/2, by=Math.max(52,54);
+    ctx.fillStyle='rgba(11,10,20,.72)'; ctx.fillRect(bx,by,bw,74);
+    ctx.strokeStyle='rgba(127,233,255,.45)'; ctx.lineWidth=1.5; ctx.strokeRect(bx,by,bw,74);
+    ctx.textAlign='center';
+    ctx.font='12px system-ui,sans-serif'; ctx.fillStyle='#8fa3c8';
+    ctx.fillText('找出這個字　🔊 點一下重念',VW/2,by+17);
+    ctx.font='40px "Hiragino Mincho ProN",serif'; ctx.fillStyle='#fff';
+    ctx.fillText(target.w,VW/2-46,by+58);
+    ctx.font='15px "Hiragino Mincho ProN",serif'; ctx.fillStyle='#ffcf6b';
+    ctx.fillText(target.h,VW/2+42,by+52);
+    // 進度點：答對幾次才算學會
+    for(let i=0;i<needHits;i++){
+      const dx=VW/2-(needHits-1)*7+i*14;
+      ctx.beginPath(); ctx.arc(dx,by+68,4,0,TAU);
+      ctx.fillStyle=i<target.c?'#7fe9ff':'rgba(143,163,200,.3)'; ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  ctx.save();
+  ctx.translate(18,Math.max(18,20));
+  ctx.fillStyle='rgba(11,10,20,.6)'; ctx.fillRect(0,0,220,10);
+  const hpw=220*(P.hp/P.maxhp);
+  const hg=ctx.createLinearGradient(0,0,220,0);
+  hg.addColorStop(0,'#7fe9ff'); hg.addColorStop(1,'#4a7ad0');
+  ctx.fillStyle=P.hp<30?'#ff5a5a':hg; ctx.fillRect(0,0,hpw,10);
+  ctx.strokeStyle='rgba(143,163,200,.5)'; ctx.lineWidth=1; ctx.strokeRect(0,0,220,10);
+  ctx.font='11px system-ui,sans-serif'; ctx.fillStyle='#8fa3c8'; ctx.textAlign='left';
+  ctx.font='17px "Hiragino Mincho ProN",serif'; ctx.fillStyle='#e5c04a';
+  ctx.fillText(HERO.n+'　'+RANKS[rankIdx()].n,0,30);
+  ctx.font='11px system-ui,sans-serif'; ctx.fillStyle='#8fa3c8';
+  ctx.fillText('討伐 '+kills+'　答對 '+correctTotal+(M().invincible?'　（見習）':''),0,48);
+  if(arts.length){
+    ctx.font='16px "Hiragino Mincho ProN",serif'; ctx.fillStyle='#ffcf6b';
+    ctx.fillText('奧義　'+arts.join(' ')+'　×'+charges,0,70);
+  }
+  ctx.restore();
+
+  // 連擊
+  if(combo>0){
+    const R=rating();
+    ctx.save();
+    ctx.textAlign='right';
+    const px=VW-20, py=Math.max(62,64);
+    const puls=1+Math.max(0,(2.6-comboT>2.4?0:0))+ (combo>0? Math.max(0,(1-(2.6-comboT)*6))*0.18 :0);
+    ctx.translate(px,py); ctx.scale(puls,puls);
+    ctx.font='600 46px "Hiragino Mincho ProN",serif';
+    ctx.lineWidth=6; ctx.strokeStyle='rgba(8,7,17,.8)';
+    ctx.strokeText(combo,0,0); ctx.fillStyle='#fff'; ctx.fillText(combo,0,0);
+    ctx.font='14px system-ui,sans-serif'; ctx.fillStyle='#8fa3c8'; ctx.fillText('COMBO',0,20);
+    if(R.t){
+      ctx.font='700 56px "Hiragino Mincho ProN",serif';
+      ctx.lineWidth=7; ctx.strokeStyle='rgba(8,7,17,.85)';
+      ctx.strokeText(R.t,-110,6); ctx.fillStyle=R.c; ctx.fillText(R.t,-110,6);
+    }
+    ctx.restore();
+    // 連擊計時條
+    ctx.fillStyle='rgba(255,255,255,.25)';
+    ctx.fillRect(VW-20-150*(comboT/2.6),Math.max(72,74),150*(comboT/2.6),3);
+  }
+
+  // 連段提示
+  ctx.save();
+  ctx.font='12px "Hiragino Mincho ProN",serif'; ctx.textAlign='center'; ctx.fillStyle='rgba(143,163,200,.55)';
+  const c=P.chain.join('→')||'—';
+  ctx.fillText('連段：'+c+(P.state==='air'?'　［空中］ A 亂舞 / B 下砸':''),VW/2,VH-10);
+  ctx.restore();
+
+  if(showLearned){
+    const k=Math.min(1,showLearned.t/.35), a=showLearned.t>1.6?1-(showLearned.t-1.6)/.4:1;
+    ctx.save(); ctx.globalAlpha=a;
+    ctx.fillStyle='rgba(8,7,17,.86)'; ctx.fillRect(0,0,VW,VH);
+    ctx.textAlign='center';
+    // 光暈
+    const gg=ctx.createRadialGradient(VW/2,VH/2,0,VW/2,VH/2,190);
+    gg.addColorStop(0,'rgba(255,207,107,.5)'); gg.addColorStop(1,'transparent');
+    ctx.fillStyle=gg; ctx.beginPath(); ctx.arc(VW/2,VH/2,190,0,TAU); ctx.fill();
+    ctx.save(); ctx.translate(VW/2,VH/2); ctx.scale(.5+k*.7,.5+k*.7);
+    ctx.shadowColor='#ffcf6b'; ctx.shadowBlur=40;
+    ctx.font='120px "Hiragino Mincho ProN",serif'; ctx.fillStyle='#fff';
+    ctx.fillText(showLearned.w,0,26); ctx.restore();
+    ctx.font='26px "Hiragino Mincho ProN",serif'; ctx.fillStyle='#ffcf6b';
+    ctx.fillText('學會了！',VW/2,VH/2-140);
+    ctx.font='18px "Hiragino Mincho ProN",serif'; ctx.fillStyle='#b9c2e2';
+    ctx.fillText(showLearned.h,VW/2,VH/2+110);
+    if(showLearned.rank && showLearned.t>1.5){
+      const rk=Math.min(1,(showLearned.t-1.5)/.4);
+      ctx.globalAlpha=a*rk;
+      ctx.fillStyle='rgba(8,7,17,.9)'; ctx.fillRect(0,VH/2+140,VW,120);
+      ctx.font='13px system-ui,sans-serif'; ctx.fillStyle='#8fa3c8';
+      ctx.fillText('晉　升',VW/2,VH/2+172);
+      ctx.font='34px "Hiragino Mincho ProN",serif'; ctx.fillStyle='#e5c04a';
+      ctx.fillText(showLearned.rank.n,VW/2,VH/2+210);
+      ctx.font='14px "Hiragino Mincho ProN",serif'; ctx.fillStyle='#b9c2e2';
+      ctx.fillText(showLearned.rank.line,VW/2,VH/2+238);
+    }
+    ctx.restore();
+  }
+
+  if(dead){
+    ctx.fillStyle='rgba(8,7,17,.78)'; ctx.fillRect(0,0,VW,VH);
+    ctx.textAlign='center';
+    ctx.font='40px "Hiragino Mincho ProN",serif'; ctx.fillStyle='#ff5a5a';
+    ctx.fillText('討 死',VW/2,VH/2-10);
+    ctx.font='14px system-ui,sans-serif'; ctx.fillStyle='#b9c2e2';
+    ctx.fillText(RANKS[rankIdx()].n+'　討伐 '+kills+'　答對 '+correctTotal+'　學會 '+arts.length+' 字',VW/2,VH/2+22);
+    ctx.fillText('點擊畫面再戰',VW/2,VH/2+50);
+  }
+}
+
+addEventListener('pointerdown',e=>{
+  if(dead){ // 重來
+    P.hp=P.maxhp; P.x=W/2;P.y=H/2;P.z=0;P.vx=P.vy=P.vz=0;P.state='idle';P.act=null;P.chain=[];
+    mobs=[];for(let i=0;i<M().cap;i++)spawnMob(); kills=0;combo=0;best=0;dead=false;fx=[];pops=[];
+    showLearned=null;wrongFlash=0;initLearning();
+  }
+});
+
+/* ---------------- 主迴圈 ---------------- */
+let last=performance.now(), running=false;
+function loop(now){
+  const dt=Math.min(.05,(now-last)/1000); last=now;
+  if(running) update(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+var modeEls=document.querySelectorAll('.mode');
+for(var i=0;i<modeEls.length;i++){
+  (function(el){
+    el.addEventListener('click',function(){
+      for(var j=0;j<modeEls.length;j++) modeEls[j].classList.remove('sel');
+      el.classList.add('sel'); MODE=parseInt(el.getAttribute('data-m'),10)||0;
+    });
+  })(modeEls[i]);
+}
+
+document.getElementById('fullscreenBtn').addEventListener('click',function(){
+  var d=document.documentElement;
+  if(document.fullscreenElement||document.webkitFullscreenElement){
+    if(document.exitFullscreen) document.exitFullscreen();
+    else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+  } else {
+    if(d.requestFullscreen) d.requestFullscreen();
+    else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+  }
+});
+
+function renderArtBar(){
+  var bar=document.getElementById('artBar'), btn=document.getElementById('bU');
+  if(!bar||!btn) return;
+  btn.querySelector('.cnt').textContent=charges;
+  if(arts.length&&charges>0) btn.classList.remove('off'); else btn.classList.add('off');
+  if(!artOpen||!arts.length||charges<=0){ bar.classList.remove('on'); bar.innerHTML=''; return; }
+  bar.innerHTML='';
+  for(var i=0;i<arts.length;i++){
+    (function(ch){
+      var el=document.createElement('div');
+      el.className='art'; el.textContent=ch;
+      el.addEventListener('pointerdown',function(e){ e.preventDefault(); e.stopPropagation(); castArt(ch); });
+      bar.appendChild(el);
+    })(arts[i]);
+  }
+  bar.classList.add('on');
+}
+document.getElementById('bU').addEventListener('pointerdown',function(e){
+  e.preventDefault(); e.stopPropagation();
+  if(!arts.length||charges<=0) return;
+  artOpen=!artOpen; renderArtBar();
+});
+addEventListener('keydown',function(e){
+  if(e.code==='KeyU'){ if(arts.length&&charges>0){ artOpen=!artOpen; renderArtBar(); } }
+  var n=e.code.indexOf('Digit')===0 ? parseInt(e.code.slice(5),10) : 0;
+  if(n>=1&&n<=9&&arts[n-1]&&charges>0) castArt(arts[n-1]);
+});
+
+function bindSeg(id,setter){
+  var els=document.getElementById(id).querySelectorAll('.seg');
+  for(var i=0;i<els.length;i++){
+    (function(el){
+      el.addEventListener('click',function(){
+        for(var j=0;j<els.length;j++) els[j].classList.remove('sel');
+        el.classList.add('sel'); setter(parseInt(el.getAttribute('data-v'),10));
+      });
+    })(els[i]);
+  }
+}
+bindSeg('segPool',function(v){poolSize=v;});
+bindSeg('segHits',function(v){needHits=v;});
+bindSeg('segChoice',function(v){choices=v;});
+
+document.getElementById('bankToggle').addEventListener('click',function(){
+  var b=document.getElementById('bankBox');
+  b.style.display = b.style.display==='block' ? 'none' : 'block';
+});
+
+function parseBank(){
+  var raw=document.getElementById('bankText').value||'';
+  var lines=raw.split(/\r?\n/), out=[];
+  for(var i=0;i<lines.length;i++){
+    var s=lines[i].replace(/\u3000/g,' ').trim();
+    if(!s) continue;
+    var parts=s.split(/[,，\t]+/);
+    var w=(parts[0]||'').trim();
+    if(!w) continue;
+    out.push({w:w, h:(parts[1]||'').trim()||w});
+  }
+  return out;
+}
+
+// 點題目條 → 重念一次（提示不吝嗇）
+addEventListener('pointerdown',function(e){
+  if(!running||dead||!target) return;
+  var by=Math.max(52,54);
+  if(e.clientY>=by-6 && e.clientY<=by+80 && Math.abs(e.clientX-VW/2)<160) speak(target.w);
+});
+
+function renderHeroGrid(){
+  var g=document.getElementById('heroGrid'); g.innerHTML='';
+  var note=document.getElementById('pickNote');
+  if(note) note.textContent='共 '+HEROES.length+' 名武將　選定後以 2.5D 立繪上陣';
+  for(var i=0;i<HEROES.length;i++){
+    (function(h,idx){
+      var el=document.createElement('div');
+      el.className='hero'+(h===HERO?' sel':'');
+      el.innerHTML='<div class="pic">'+drawPortrait(h,96)+'</div>'+
+        '<div class="nm">'+h.n+'</div>'+
+        '<div class="rl"><span class="fc" style="background:'+FAC_COLOR[h.f]+'">'+h.f+'</span>'+
+        h.z+'<br>'+h.wp+'</div>';
+      var im=el.querySelector('img');
+      if(im){
+        im.setAttribute('alt','');                 // 破圖時不要再吐出一次名字
+        var fallback=function(){
+          var box=im.parentNode;
+          if(box && !box.querySelector('svg')) box.innerHTML=drawVectorPortrait(h,96);
+        };
+        im.addEventListener('error',fallback);
+        // 若圖片在掛上監聽之前就已經載入失敗，補判一次
+        if(im.complete && im.naturalWidth===0) fallback();
+      }
+      el.addEventListener('click',function(){ setHero(h); renderHeroGrid(); });
+      g.appendChild(el);
+    })(HEROES[i],i);
+  }
+}
+
+function startBattle(){
+  document.getElementById('pick').classList.remove('on');
+  mobs=[]; for(var q=0;q<M().cap;q++) spawnMob();
+  initLearning();
+  last=performance.now(); running=true;
+}
+
+(function(){
+  var tag='build 20260802-a　武將 '+HEROES.length+' 名　頭像 '+Object.keys(PORTRAIT_FILES).length+' 張';
+  document.getElementById('build').textContent=tag;
+  document.title='走卒傳（武將 '+HEROES.length+' 名）';
+})();
+
+document.getElementById('go').addEventListener('click',()=>{
+  audioOn();
+  var custom=parseBank();
+  WORDS = custom.length>=2 ? custom : DEFAULT_WORDS.slice();
+  document.getElementById('gate').style.display='none';
+  setHero(HERO); renderHeroGrid();
+  document.getElementById('pick').classList.add('on');
+});
+document.getElementById('pickGo').addEventListener('click',function(){ audioOn(); startBattle(); });
+</script>
+<script src="offline-register.js" defer></script>
+</body>
+</html>
