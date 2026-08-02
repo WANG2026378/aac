@@ -1,7 +1,7 @@
 /* iPad offline pack for the teaching portal. */
 importScripts('offline-files.js');
 
-var VERSION = '20260801-hanzi-siege-voice';
+var VERSION = '20260802-zouzu-v6';
 var CACHE_PREFIX = 'aac-teaching-';
 var STATIC_CACHE = CACHE_PREFIX + 'static-' + VERSION;
 var RUNTIME_CACHE = CACHE_PREFIX + 'runtime-' + VERSION;
