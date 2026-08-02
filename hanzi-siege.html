@@ -205,6 +205,7 @@ textarea{width:100%;min-height:150px;background:#1a1409;color:#f0e6d2;border:2px
   <div id="musicBox">
     <button class="mbtn" id="btnBgm" aria-label="音樂開關">🎵</button>
     <button class="mbtn" id="btnTrack" aria-label="換一首">🎼</button>
+    <button class="mbtn" id="btnVoice" aria-label="配音開關">🗣️</button>
   </div>
   <div id="musicName"></div>
   <div id="tapTip">
@@ -280,6 +281,9 @@ textarea{width:100%;min-height:150px;background:#1a1409;color:#f0e6d2;border:2px
     <b>攻城武器</b>（雲梯、火箭、撞城槌、投石車）與<b>防禦工事</b>（拒馬、箭樓、滾木、油鍋、加固城牆）。<br><br>
     <b>7. 武將升級</b>　用同一位武將打贏兩場升一級，Lv.2、Lv.3 各解鎖一個新絕招，
     畫面下方就會多一顆絕招鍵。<br><br>
+    <b>8. 配音</b>　右上角 🗣️ 可以開關配音。開啟時，出題會念出<b>提示</b>（不會直接講答案），
+    消到題目字會念那個字，答對整個語詞會念出語詞（英文題會先念英文再念中文）。
+    <b>點題目那一列可以重聽</b>。<br><br>
     <b>換語言</b>　在「詞庫設定」可切換國小生字、英文單字，或貼上自己的詞庫（日文、台語也能用）。
   </div>
   <div class="row"><button class="btn g3 sm back">← 返回</button></div>
@@ -791,7 +795,7 @@ function sfxWin(){[523,659,784,1046].forEach(function(f,i){setTimeout(function()
    存檔 / 詞庫組裝
    ============================================================ */
 const SKEY="hanzi_siege_save_v1";
-function defaultSave(){return{packId:"g12",custom:"",learned:{},weak:{},mastery:{},wins:0,plays:0,heroA:1,heroD:9,tipSeen:0,easy:1,noColor:0,stage:0,focusN:3,cities:0,bgm:1,track:0,exp:0,lv:1,coin:0,items:{},heroLv:{},heroWin:{}};}
+function defaultSave(){return{packId:"g12",custom:"",learned:{},weak:{},mastery:{},wins:0,plays:0,heroA:1,heroD:9,tipSeen:0,easy:1,noColor:0,stage:0,focusN:3,cities:0,bgm:1,track:0,exp:0,lv:1,coin:0,items:{},heroLv:{},heroWin:{},voice:1};}
 let save=defaultSave();
 function loadSave(){try{const r=localStorage.getItem(SKEY);if(r)save=Object.assign(defaultSave(),JSON.parse(r));}catch(e){}
  if(!save.mastery)save.mastery={};
@@ -951,6 +955,7 @@ Board.prototype.setQuest=function(first){
  this.done=[];
  this.buildFocus();
  if(!first){this.reseed();this.render();this.renderQuest();}
+ if(!this.ai&&game.running)setTimeout(function(){speakHint(this.quest,this.pack.mode);}.bind(this),350);
 };
 /* 換題後把盤面的字換成新的焦點字（位置不動，不會突然全消） */
 Board.prototype.reseed=function(){
@@ -1058,8 +1063,11 @@ Board.prototype.renderQuest=function(){
   const v=Math.min(MASTER_AT,m[i]);
   return '<span style="font-size:11px;color:'+(v>=MASTER_AT?"#7dffa9":"#bfa87e")+'">'+v+'/'+MASTER_AT+'</span>';
  }).join(" ");
- this.qEl.innerHTML='<span class="qq">?</span><span class="qh">'+q.h+'</span>'
+ this.qEl.innerHTML='<span class="qq">🔊</span><span class="qh">'+q.h+'</span>'
   +'<span class="qd">'+prog+'　'+lv+'</span>';
+ const self=this;
+ this.qEl.style.cursor="pointer";
+ this.qEl.onclick=function(){speakHint(self.quest,self.pack.mode);};
 };
 Board.prototype.render=function(){
  const el=this.el;if(!el)return;
@@ -1256,6 +1264,7 @@ Board.prototype.resolve=function(){
   this.pendingFocus=true;
   this.energy=clamp(this.energy+goals.length*18,0,100);
   fxBurst(this.side);
+  if(!this.ai)speak(goals[0],this.pack.mode);
   const eu=UNITS[unitKey(catOf(this.quest.c),true)];
   game.fx.push({k:"txt",x:this.side==="atk"?CAMP+46:WALLX-46,y:GY-64,t:1.3,
    s:"★"+eu.n+" 出動!",c:"#ffe9a8"});
@@ -1977,15 +1986,35 @@ function showLearn(q,mode){
  el.querySelector(".lr").textContent=mode==="word"?q.h:(q.h.split("　")[0]||"");
  el.querySelector(".lm").textContent=mode==="word"?"":(q.h.split("　")[1]||"");
  el.classList.remove("on");void el.offsetWidth;el.classList.add("on");
- speak(q.w,mode);
+ speakAnswer(q,mode);
 }
-function speak(txt,mode){
+/* ============================================================
+   配音模式：題目提示、目標字、學會的字都會念出來
+   中文用 zh-TW、英文單字用 en-US，速度放慢給小朋友聽
+   ============================================================ */
+function speak(txt,mode,force){
  try{
-  if(!window.speechSynthesis)return;
-  const u=new SpeechSynthesisUtterance(txt);
-  u.lang=mode==="word"?"en-US":"zh-TW";u.rate=.85;
+  if(!save.voice&&!force)return;
+  if(!window.speechSynthesis||!txt)return;
+  const u=new SpeechSynthesisUtterance(String(txt));
+  u.lang=(mode==="word"||mode==="en")?"en-US":"zh-TW";
+  u.rate=(mode==="word"||mode==="en")?.8:.75;
+  u.pitch=1.05;
   speechSynthesis.cancel();speechSynthesis.speak(u);
  }catch(e){}
+}
+/* 念一句：中文題念「解釋」那半（不會直接說出答案），英文題念中文意思 */
+function speakHint(q,mode){
+ if(!q)return;
+ if(mode==="word"){speak(q.h,"zh");return;}
+ const parts=String(q.h).split("　");
+ speak(parts.length>1?parts[1]:parts[0],"zh");
+}
+/* 念答案（完成或按重聽時用）*/
+function speakAnswer(q,mode){
+ if(!q)return;
+ if(mode==="word"){speak(q.w,"en");setTimeout(function(){speak(q.h,"zh");},900);}
+ else{speak(q.w,"zh");}
 }
 /* ---- 選單 ---- */
 function refreshMenu(){
@@ -2343,6 +2372,7 @@ function endRound(winner){
 function quitPlay(){
  game.running=false;
  MUSIC.stop();
+ try{speechSynthesis.cancel();}catch(e){}
  if(rafId){cancelAnimationFrame(rafId);rafId=null;}
  refreshMenu();show("scr-menu");
 }
@@ -2432,7 +2462,18 @@ function musicTip(s){const e=$("musicName");e.textContent=s;e.style.opacity=1;
 function refreshBgmBtn(){
  const b=$("btnBgm");
  if(save.bgm)b.classList.remove("off");else b.classList.add("off");
+ const v=$("btnVoice");
+ if(v){if(save.voice)v.classList.remove("off");else v.classList.add("off");}
 }
+$("btnVoice").onclick=function(){
+ save.voice=save.voice?0:1;persist();refreshBgmBtn();
+ musicTip(save.voice?"配音：開":"配音：關");
+ if(save.voice){
+  speak("配音已開啟","zh",true);
+  const b=(boardA&&!boardA.ai)?boardA:((boardD&&!boardD.ai)?boardD:null);
+  if(b)setTimeout(function(){speakHint(b.quest,b.pack.mode);},900);
+ }else{try{speechSynthesis.cancel();}catch(e){}}
+};
 $("btnBgm").onclick=function(){
  save.bgm=save.bgm?0:1;persist();
  MUSIC.on=!!save.bgm;
