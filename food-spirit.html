@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>卡靈召喚 · 美食魔導相機</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="卡靈召喚">
+<meta name="theme-color" content="#2d3a5c">
+<link rel="apple-touch-icon" href="icons/portal-180.png">
+<link rel="icon" href="icons/portal-512.png">
+<style>
+:root{
+  --bg:#eef1f7; --card:#fff; --ink:#28304a; --sub:#6d7691;
+  --line:#d6dbe8; --main:#2d3a5c; --main-d:#1e2740; --gold:#c9922f; --fs:1;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%;overscroll-behavior:none}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:"PingFang TC","Heiti TC","Microsoft JhengHei",system-ui,sans-serif;
+  font-size:calc(17px * var(--fs));line-height:1.5;
+  -webkit-text-size-adjust:100%;overflow:hidden;
+}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit}
+#errBar{display:none;position:fixed;left:0;right:0;top:0;z-index:9999;background:#b8342a;color:#fff;padding:10px 14px;font-size:15px}
+
+.wrap{display:flex;flex-direction:column;height:100%}
+header{
+  display:flex;align-items:center;gap:8px;
+  padding:calc(env(safe-area-inset-top) + 8px) 12px 8px;
+  background:var(--main);color:#fff;flex:0 0 auto;
+}
+header .ttl{font-weight:800;letter-spacing:2px;font-size:0.98em}
+header .rank{font-size:0.72em;opacity:0.85;font-weight:600}
+header .grow{flex:1}
+.hbtn{background:rgba(255,255,255,0.18);color:#fff;border-radius:10px;padding:8px 10px;font-size:0.8em;font-weight:700}
+.hbtn:active{background:rgba(255,255,255,0.34)}
+a.hbtn{text-decoration:none;display:inline-block}
+
+main{flex:1;min-height:0;display:flex;gap:12px;padding:10px;align-items:stretch}
+.screen{display:none;flex:1;min-width:0;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+.screen.on{display:flex}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px;margin-bottom:10px}
+.panel h2{margin:0 0 10px;font-size:0.95em;color:var(--main);letter-spacing:1px}
+.note{color:var(--sub);font-size:0.8em;line-height:1.6}
+
+nav.tabs{
+  display:flex;gap:6px;flex:0 0 auto;
+  padding:6px 10px calc(env(safe-area-inset-bottom) + 6px);
+  background:var(--card);border-top:1px solid var(--line);
+}
+nav.tabs button{flex:1;padding:9px 0 7px;border-radius:12px;color:var(--sub);font-weight:800;font-size:0.78em;line-height:1.25}
+nav.tabs button .ic{display:block;font-size:1.35em;line-height:1}
+nav.tabs button.on{background:#eef1f7;color:var(--main)}
+
+.shot{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.shotbtn{background:var(--main);color:#fff;border-radius:14px;padding:14px 16px;font-weight:800}
+.shotbtn:active{background:var(--main-d)}
+.shotbtn.alt{background:#7d879f}
+.thumb{width:84px;height:84px;border-radius:12px;object-fit:cover;border:2px solid var(--line);background:#eee;display:none}
+.thumb.on{display:block}
+input[type=file]{display:none}
+.mealrow{display:flex;gap:7px;margin-top:11px}
+.mealrow button{flex:1;padding:11px 0;border-radius:12px;background:#e4e8f2;color:var(--sub);font-weight:800;font-size:0.9em}
+.mealrow button.on{background:var(--gold);color:#fff}
+
+.search{width:100%;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:#fbfcff;font-size:1em;font-family:inherit;color:var(--ink)}
+.search:focus{outline:none;border-color:var(--main)}
+.cats{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.cats button{padding:8px 13px;border-radius:999px;background:#e4e8f2;color:var(--sub);font-weight:800;font-size:0.84em}
+.cats button.on{color:#fff}
+
+.foods{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:11px}
+.food{background:#fbfcff;border:1px solid var(--line);border-left-width:6px;border-radius:12px;padding:9px 8px;text-align:left;display:flex;align-items:center;gap:8px;min-height:58px}
+.food:active{background:#eef1f8}
+.food svg{flex:0 0 auto;width:38px;height:38px}
+.food .fb{min-width:0;flex:1}
+.food .fn{font-weight:800;display:block;font-size:0.95em}
+.food .fu{color:var(--sub);font-size:0.76em}
+.food .fk{color:var(--gold);font-weight:800;font-size:0.78em}
+.food .new{color:#c0392b;font-weight:800;font-size:0.7em}
+
+aside{flex:0 0 300px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px;display:flex;flex-direction:column;min-height:0}
+aside.off{display:none}
+aside h2{margin:0;font-size:0.88em;color:var(--main);letter-spacing:1px}
+.total{font-size:1.9em;font-weight:800;color:var(--gold);line-height:1.15}
+.total small{font-size:0.38em;color:var(--sub);font-weight:700;margin-left:4px}
+.party{flex:1;overflow-y:auto;min-height:50px;margin:6px 0}
+.pick{display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.pick svg{width:32px;height:32px;flex:0 0 auto}
+.pick .pn{flex:1;min-width:0;font-size:0.86em}
+.pick .pn b{display:block;font-weight:800}
+.pick .pn i{font-style:normal;color:var(--sub);font-size:0.85em}
+.pick .pk{color:var(--gold);font-weight:800;font-size:0.82em;width:50px;text-align:right}
+.qbtn{width:34px;height:34px;border-radius:10px;background:#e4e8f2;font-weight:800;color:var(--main);flex:0 0 auto}
+.qbtn:active{background:#d2d8e8}
+.qn{width:20px;text-align:center;font-weight:800}
+.empty{color:var(--sub);font-size:0.88em;text-align:center;padding:14px 4px}
+.savebtn{width:100%;padding:14px 0;border-radius:14px;background:var(--main);color:#fff;font-weight:800}
+.savebtn:active{background:var(--main-d)}
+.savebtn[disabled]{background:#b3bbcd}
+
+.stepbig{font-size:3.1em;font-weight:800;color:var(--main);line-height:1.05;text-align:center;letter-spacing:1px}
+.stepbig small{font-size:0.26em;color:var(--sub);margin-left:6px}
+.steplbl{text-align:center;color:var(--sub);font-size:0.82em;margin-top:-2px}
+.walkbtn{width:100%;padding:16px 0;border-radius:16px;background:#3f8f5c;color:#fff;font-weight:800;font-size:1.02em;margin-top:10px}
+.walkbtn:active{background:#33774c}
+.walkbtn.stop{background:#b8563a}
+.road{position:relative;height:82px;margin:12px 0 4px;border-radius:14px;background:#e8eef0;border:1px solid var(--line);overflow:hidden}
+.road .ground{position:absolute;left:0;right:0;bottom:0;height:22px;background:#d7e2d9}
+.road .walker{position:absolute;bottom:16px;width:52px;height:52px;transition:left 0.35s linear}
+.road .walker.go{animation:bob 0.5s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.road .flag{position:absolute;right:8px;bottom:18px;font-size:1.5em}
+.bar{height:14px;border-radius:999px;background:#e4e8f2;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--gold);width:0}
+.rowlbl{display:flex;justify-content:space-between;font-size:0.8em;font-weight:700;color:var(--sub);margin-top:10px}
+.quick{display:flex;gap:7px;margin-top:8px}
+.quick button{flex:1;padding:12px 0;border-radius:12px;background:#e4e8f2;color:var(--main);font-weight:800;font-size:0.84em}
+.quick button:active{background:#d2d8e8}
+.buddy{display:flex;align-items:center;gap:10px}
+.buddy svg{width:64px;height:64px;flex:0 0 auto}
+.buddy .bn{flex:1;min-width:0}
+.buddy .bn b{font-size:1.02em}
+.buddy .bn span{display:block;color:var(--sub);font-size:0.8em}
+.pickbuddy{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:7px;margin-top:8px;max-height:186px;overflow-y:auto}
+.pickbuddy button{background:#fbfcff;border:1px solid var(--line);border-radius:12px;padding:5px 2px;text-align:center}
+.pickbuddy button.on{border-color:var(--gold);background:#fdf6e6}
+.pickbuddy svg{width:40px;height:40px}
+.pickbuddy span{display:block;font-size:0.7em;font-weight:800}
+
+.six{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.orb{text-align:center;padding:7px 1px;border-radius:12px;background:#eef1f7;border:2px solid var(--line)}
+.orb.got{border-color:var(--gold);background:#fdf6e6}
+.orb svg{width:34px;height:34px;display:block;margin:0 auto}
+.orb .on2{font-size:0.62em;font-weight:800;color:var(--sub);display:block;margin-top:2px}
+.orb.got .on2{color:var(--gold)}
+
+.rec{display:flex;gap:9px;padding:9px 0;border-bottom:1px solid var(--line);align-items:center}
+.rec img{width:54px;height:54px;border-radius:10px;object-fit:cover;flex:0 0 auto;background:#eee}
+.rec .noimg{width:54px;height:54px;border-radius:10px;background:#e4e8f2;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:1.4em}
+.rec .rb{flex:1;min-width:0}
+.rec .rm{font-weight:800;font-size:0.92em}
+.rec .rl{color:var(--sub);font-size:0.8em;word-break:break-all}
+.rec .rk{color:var(--gold);font-weight:800;white-space:nowrap;font-size:0.86em}
+.delbtn{color:#b8342a;font-size:0.76em;font-weight:800;padding:6px}
+.daysum{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-top:2px solid var(--main);margin-top:6px;font-weight:800}
+.daysum span:last-child{color:var(--gold);font-size:1.2em}
+
+.dex{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:7px}
+.dexc{background:#fbfcff;border:1px solid var(--line);border-radius:12px;padding:6px 3px;text-align:center;position:relative}
+.dexc svg{width:46px;height:46px}
+.dexc .dn{font-size:0.74em;font-weight:800;display:block;margin-top:1px}
+.dexc .dk{font-size:0.66em;color:var(--sub)}
+.dexc.lock .dn{color:#b2b8c8}
+.dexc .src{position:absolute;top:3px;right:5px;font-size:0.7em}
+.dexbar{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;font-weight:800}
+.dexbar b{color:var(--gold);font-size:1.25em}
+
+.ovl{display:none;position:fixed;left:0;top:0;right:0;bottom:0;z-index:9000;align-items:center;justify-content:center;flex-direction:column;padding:20px;text-align:center;color:#fff}
+.ovl.on{display:flex}
+#summon{background:rgba(20,26,45,0.88)}
+#wild{background:rgba(22,45,32,0.9)}
+#evo{background:rgba(45,32,20,0.92);z-index:9050}
+#fusion{background:rgba(30,20,50,0.92);z-index:9100}
+.halo{width:196px;height:196px;border-radius:50%;background:radial-gradient(circle,rgba(255,225,150,0.55) 0%,rgba(255,225,150,0) 70%);display:flex;align-items:center;justify-content:center;animation:pop 0.5s ease-out}
+.halo svg{width:158px;height:158px}
+@keyframes pop{0%{transform:scale(0.2);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.sname{font-size:1.55em;font-weight:800;letter-spacing:2px;margin-top:4px}
+.sattr{color:#ffd98a;font-weight:800;margin-top:2px;font-size:0.88em}
+.snew{display:inline-block;background:var(--gold);color:#fff;font-weight:800;padding:4px 12px;border-radius:999px;margin-top:8px;font-size:0.8em}
+.stap{color:#aab2c8;font-size:0.8em;margin-top:14px}
+.fd{font-size:0.86em;margin-top:6px;line-height:1.7;max-width:420px}
+
+@media (max-width:860px){
+  main{flex-direction:column;padding:8px;gap:8px}
+  aside{flex:0 0 auto;max-height:38vh}
+  .foods{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+}
+@media (max-width:420px){
+  .foods{grid-template-columns:1fr 1fr}
+  .dex{grid-template-columns:repeat(auto-fill,minmax(74px,1fr))}
+}
+</style>
+</head>
+<body>
+<div id="errBar"></div>
+
+<div class="wrap">
+<header>
+  <a class="hbtn" href="index.html">←</a>
+  <div>
+    <div class="ttl">卡靈召喚</div>
+    <div class="rank" id="rankTxt">見習召喚師</div>
+  </div>
+  <span class="grow"></span>
+  <button class="hbtn" id="fontDn">A−</button>
+  <button class="hbtn" id="fontUp">A＋</button>
+</header>
+
+<main>
+  <section class="screen on" id="s0">
+    <div class="panel">
+      <h2>一、魔導相機拍下這一餐</h2>
+      <div class="shot">
+        <button class="shotbtn" id="camBtn">📷 拍照</button>
+        <button class="shotbtn alt" id="albBtn">🖼 相簿</button>
+        <img class="thumb" id="thumb" alt="這一餐的照片">
+        <button class="qbtn" id="clrImg" style="display:none">✕</button>
+      </div>
+      <input type="file" id="camIn" accept="image/*" capture="environment">
+      <input type="file" id="albIn" accept="image/*">
+      <div class="mealrow" id="mealRow">
+        <button data-m="早餐">早餐</button>
+        <button data-m="午餐" class="on">午餐</button>
+        <button data-m="晚餐">晚餐</button>
+        <button data-m="點心">點心</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>二、念出名字，召喚卡靈</h2>
+      <input class="search" id="q" type="search" placeholder="找食物…例如：飯、蛋、奶茶">
+      <div class="cats" id="cats"></div>
+      <div class="foods" id="foods"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s1">
+    <div class="panel">
+      <h2>散步探險</h2>
+      <div class="stepbig" id="stepNow">0<small>步</small></div>
+      <div class="steplbl" id="stepLbl">今天走了 0 步</div>
+      <div class="road">
+        <div class="ground"></div>
+        <div class="walker" id="walker"></div>
+        <div class="flag">🚩</div>
+      </div>
+      <button class="walkbtn" id="walkBtn">▶ 開始散步（用手機感應器計步）</button>
+      <p class="note" id="walkNote" style="margin:9px 0 0">計步只在這一頁開著、螢幕亮著的時候有效，鎖屏或切到別的 App 就會停。</p>
+      <div class="rowlbl"><span>手動補登</span><span>沒帶手機走的時候用</span></div>
+      <div class="quick">
+        <button data-s="100">+100 步</button>
+        <button data-s="500">+500 步</button>
+        <button data-s="1000">+1000 步</button>
+      </div>
+      <div class="quick">
+        <button data-s="600">走了 5 分鐘</button>
+        <button data-s="1200">走了 10 分鐘</button>
+        <button data-s="2400">走了 20 分鐘</button>
+      </div>
+      <div class="rowlbl"><span>從 iPhone 健康 App 抄今天的步數</span><span></span></div>
+      <div class="quick">
+        <input class="search" id="stepIn" type="number" inputmode="numeric" placeholder="例如 3250" style="flex:2;min-width:0">
+        <button id="stepSet" style="flex:1;background:var(--main);color:#fff">設定</button>
+      </div>
+      <p class="note" id="stepInNote" style="margin:8px 0 0">健康 App 會在背景自動數一整天，走完抄過來最準。</p>
+    </div>
+
+    <div class="panel">
+      <h2>同行夥伴</h2>
+      <div class="buddy" id="buddyBox"></div>
+      <div class="rowlbl"><span>進化進度</span><span id="evoLbl">－</span></div>
+      <div class="bar"><i id="evoBar"></i></div>
+      <div class="rowlbl"><span>換一隻夥伴同行</span><span></span></div>
+      <div class="pickbuddy" id="buddyPick"></div>
+    </div>
+
+    <div class="panel">
+      <h2>卡靈蛋</h2>
+      <div class="rowlbl"><span id="eggLbl">距離下一顆蛋還差 1000 步</span><span id="eggCnt">已孵 0 顆</span></div>
+      <div class="bar"><i id="eggBar"></i></div>
+      <p class="note" style="margin:9px 0 0">每走 1000 步孵出一顆蛋，裡面是還沒收集到的野生卡靈。</p>
+    </div>
+  </section>
+
+  <section class="screen" id="s2">
+    <div class="panel">
+      <h2 id="sixTtl">今天的六屬性</h2>
+      <div class="six" id="sixBox"></div>
+      <p class="note" id="sixMsg" style="margin:10px 0 0"></p>
+    </div>
+    <div class="panel">
+      <h2>今天召喚過的餐</h2>
+      <div id="todayList"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s3">
+    <div class="panel">
+      <div class="dexbar"><span>卡靈圖鑑</span><span><b id="dexN">0</b> / <span id="dexT">0</span></span></div>
+      <div class="cats" id="dexCats"></div>
+      <div class="dex" id="dexBox"></div>
+    </div>
+    <div class="panel">
+      <h2>召喚師手冊</h2>
+      <p class="note">
+        每一種食物都住著一隻卡靈。吃到會召喚牠，散步孵蛋會遇到野生的，兩種都能登錄圖鑑（🍽 是吃到的、🥾 是走路遇到的）。<br>
+        卡靈的體型是那份食物的熱量，只是牠天生的樣子，沒有好壞之分。走路換到的是夥伴的成長，跟吃多少無關，不會互相扣抵。<br>
+        每天把土、火、水、草、光、風六種屬性都召喚到，牠們就會合體成六芒獸。<br><br>
+        熱量是估計值，做法和份量不同就差很多，當成「大概多少」認識就好。照片存在這台裝置裡，不會上傳。
+      </p>
+    </div>
+  </section>
+
+  <aside id="partyPanel">
+    <h2>這一餐的隊伍</h2>
+    <div class="total" id="total">0<small>大卡</small></div>
+    <div class="party" id="party"><div class="empty">還沒有卡靈<br>點食物就會召喚出來</div></div>
+    <button class="savebtn" id="saveBtn" disabled>收隊，存進今天</button>
+  </aside>
+</main>
+
+<nav class="tabs">
+  <button id="tab0" class="on"><span class="ic">🍽</span>召喚</button>
+  <button id="tab1"><span class="ic">🥾</span>散步</button>
+  <button id="tab2"><span class="ic">📅</span>今天</button>
+  <button id="tab3"><span class="ic">📖</span>圖鑑</button>
+</nav>
+</div>
+
+<div class="ovl" id="summon">
+  <div class="halo" id="summonArt"></div>
+  <div class="sname" id="summonName"></div>
+  <div class="sattr" id="summonAttr"></div>
+  <div id="summonNew"></div>
+  <div class="stap">點一下繼續</div>
+</div>
+
+<div class="ovl" id="wild">
+  <div class="sattr">🥾 散步途中，蛋孵出來了！</div>
+  <div class="halo" id="wildArt"></div>
+  <div class="sname" id="wildName"></div>
+  <div class="sattr" id="wildAttr"></div>
+  <div><span class="snew">★ 野生卡靈登錄圖鑑</span></div>
+  <div class="stap">點一下繼續</div>
+</div>
+
+<div class="ovl" id="evo">
+  <div class="halo" id="evoArt"></div>
+  <div class="sname" id="evoName"></div>
+  <div class="sattr" id="evoStage"></div>
+  <div class="fd">夥伴陪你走了很多路，長大了。</div>
+  <div class="stap">點一下繼續</div>
+</div>
+
+<div class="ovl" id="fusion">
+  <div class="halo" id="fusionArt"></div>
+  <div class="sname">六芒獸 現身！</div>
+  <div class="fd" id="fusionMsg"></div>
+  <div class="stap">點一下繼續</div>
+</div>
+
+<script>
+window.onerror = function(msg, src, line){
+  var b = document.getElementById("errBar");
+  if(b){
+    b.style.display = "block";
+    b.textContent = "程式錯誤：" + msg + "（第 " + line + " 行）請把這行字告訴老師/開發者";
+  }
+  return false;
+};
+
+var CATS = [
+  {n:"土", full:"全榖雜糧類", body:"#d9973c", belly:"#f0c47f", top:"#a86c1e"},
+  {n:"火", full:"豆魚蛋肉類", body:"#c65a44", belly:"#eb9782", top:"#8f3324"},
+  {n:"水", full:"乳品類",     body:"#4a86ad", belly:"#9dc7de", top:"#2c5f80"},
+  {n:"草", full:"蔬菜類",     body:"#559a49", belly:"#a3d09a", top:"#357030"},
+  {n:"光", full:"水果類",     body:"#8f5fae", belly:"#c8a3dc", top:"#663d82"},
+  {n:"風", full:"油脂堅果",   body:"#c0982c", belly:"#e8cf7e", top:"#8f6f14"},
+  {n:"星", full:"整份餐點",   body:"#5d7392", belly:"#a6b6cd", top:"#3d5170"},
+  {n:"糖", full:"點心飲料",   body:"#c25b83", belly:"#e6a3bd", top:"#93395c"}
+];
+
+var FOODS = [
+  {n:"白飯", u:"1碗", k:280, c:0},{n:"白飯", u:"半碗", k:140, c:0},
+  {n:"糙米飯", u:"1碗", k:260, c:0},{n:"稀飯", u:"1碗", k:140, c:0},
+  {n:"麵條", u:"1碗", k:280, c:0},{n:"白吐司", u:"1片", k:130, c:0},
+  {n:"饅頭", u:"1個", k:280, c:0},{n:"地瓜", u:"1條", k:130, c:0},
+  {n:"玉米", u:"1根", k:130, c:0},{n:"蘿蔔糕", u:"1塊", k:130, c:0},
+  {n:"燒餅", u:"1個", k:240, c:0},{n:"油條", u:"1根", k:230, c:0},
+
+  {n:"水煮蛋", u:"1顆", k:75, c:1},{n:"荷包蛋", u:"1個", k:120, c:1},
+  {n:"無糖豆漿", u:"1杯", k:75, c:1},{n:"傳統豆腐", u:"1塊", k:90, c:1},
+  {n:"滷雞腿", u:"1隻", k:180, c:1},{n:"炸雞腿", u:"1隻", k:300, c:1},
+  {n:"雞胸肉", u:"1片", k:120, c:1},{n:"魚", u:"1片", k:120, c:1},
+  {n:"蝦子", u:"5隻", k:50, c:1},{n:"貢丸", u:"1顆", k:45, c:1},
+  {n:"香腸", u:"1條", k:180, c:1},{n:"火腿", u:"1片", k:40, c:1},
+  {n:"培根", u:"1片", k:60, c:1},
+
+  {n:"全脂鮮奶", u:"1杯", k:150, c:2},{n:"低脂鮮奶", u:"1杯", k:120, c:2},
+  {n:"優酪乳", u:"1瓶", k:130, c:2},{n:"起司片", u:"1片", k:60, c:2},
+  {n:"優格", u:"1杯", k:110, c:2},
+
+  {n:"燙青菜", u:"1份", k:25, c:3},{n:"炒青菜", u:"1份", k:80, c:3},
+  {n:"生菜沙拉", u:"1份", k:30, c:3},{n:"花椰菜", u:"1份", k:25, c:3},
+  {n:"高麗菜", u:"1份", k:25, c:3},{n:"蔬菜湯", u:"1碗", k:40, c:3},
+  {n:"海帶", u:"1份", k:20, c:3},
+
+  {n:"香蕉", u:"1根", k:105, c:4},{n:"蘋果", u:"1顆", k:95, c:4},
+  {n:"芭樂", u:"1顆", k:70, c:4},{n:"橘子", u:"1顆", k:50, c:4},
+  {n:"西瓜", u:"1片", k:80, c:4},{n:"葡萄", u:"10顆", k:60, c:4},
+  {n:"小番茄", u:"10顆", k:30, c:4},{n:"鳳梨", u:"1份", k:60, c:4},
+
+  {n:"沙拉油", u:"1茶匙", k:45, c:5},{n:"美乃滋", u:"1湯匙", k:60, c:5},
+  {n:"奶油", u:"1小塊", k:45, c:5},{n:"花生", u:"10顆", k:60, c:5},
+  {n:"腰果", u:"10顆", k:90, c:5},
+
+  {n:"滷肉飯", u:"1碗", k:500, c:6, cc:[0,1]},
+  {n:"雞腿便當", u:"1個", k:800, c:6, cc:[0,1,3]},
+  {n:"排骨便當", u:"1個", k:850, c:6, cc:[0,1,3]},
+  {n:"炒飯", u:"1盤", k:600, c:6, cc:[0,1,3]},
+  {n:"陽春麵", u:"1碗", k:340, c:6, cc:[0]},
+  {n:"牛肉麵", u:"1碗", k:550, c:6, cc:[0,1]},
+  {n:"水餃", u:"10顆", k:400, c:6, cc:[0,1,3]},
+  {n:"小籠包", u:"5顆", k:300, c:6, cc:[0,1]},
+  {n:"鍋貼", u:"5個", k:350, c:6, cc:[0,1]},
+  {n:"蛋餅", u:"1份", k:250, c:6, cc:[0,1]},
+  {n:"三明治", u:"1份", k:300, c:6, cc:[0,1,3]},
+  {n:"漢堡", u:"1個", k:500, c:6, cc:[0,1]},
+  {n:"披薩", u:"1片", k:270, c:6, cc:[0,2]},
+  {n:"泡麵", u:"1碗", k:470, c:6, cc:[0]},
+  {n:"御飯糰", u:"1個", k:200, c:6, cc:[0,1]},
+  {n:"黑輪", u:"1支", k:80, c:6, cc:[1]},
+
+  {n:"白開水", u:"1杯", k:0, c:7, cc:[]},{n:"無糖茶", u:"1杯", k:0, c:7, cc:[]},
+  {n:"珍珠奶茶", u:"中杯", k:500, c:7, cc:[]},{n:"可樂", u:"1罐", k:150, c:7, cc:[]},
+  {n:"運動飲料", u:"1瓶", k:130, c:7, cc:[]},{n:"果汁", u:"1杯", k:120, c:7, cc:[4]},
+  {n:"雞排", u:"1片", k:600, c:7, cc:[1]},{n:"鹽酥雞", u:"1份", k:400, c:7, cc:[1]},
+  {n:"薯條", u:"中份", k:320, c:7, cc:[]},{n:"洋芋片", u:"1小包", k:300, c:7, cc:[]},
+  {n:"巧克力", u:"1小條", k:250, c:7, cc:[]},{n:"冰淇淋", u:"1球", k:200, c:7, cc:[]},
+  {n:"布丁", u:"1個", k:130, c:7, cc:[]},{n:"蛋糕", u:"1塊", k:350, c:7, cc:[]},
+  {n:"餅乾", u:"3片", k:150, c:7, cc:[]},{n:"果凍", u:"1個", k:80, c:7, cc:[]},
+  {n:"豆花", u:"1碗", k:200, c:7, cc:[1]},{n:"菠蘿麵包", u:"1個", k:350, c:7, cc:[0]}
+];
+
+(function(){
+  for(var i = 0; i < FOODS.length; i++){
+    var f = FOODS[i];
+    if(!f.cc){ f.cc = (f.c < 6) ? [f.c] : []; }
+    f.id = f.n + "/" + f.u;
+  }
+})();
+
+var RANKS = [
+  {at:0, n:"見習召喚師"},{at:15, n:"初級召喚師"},{at:40, n:"中級召喚師"},
+  {at:90, n:"高級召喚師"},{at:180, n:"卡靈大師"},{at:350, n:"傳說召喚師"}
+];
+
+var EGG_STEPS = 1000, EVO1 = 2500, EVO2 = 8000;
+
+/* ================= 儲存 ================= */
+var KEY = "food_spirit_v1";
+var MAX_RECS = 120, MAX_IMGS = 20;
+var save = {recs:[], dex:{}, sum:0, fused:[], steps:{}, eggs:0, buddy:""};
+
+function loadSave(){
+  try{
+    var raw = localStorage.getItem(KEY);
+    if(raw){
+      var o = JSON.parse(raw);
+      if(o && typeof o === "object"){ save = o; }
+    }
+  }catch(e){ save = {}; }
+  if(!save.recs){ save.recs = []; }
+  if(!save.dex){ save.dex = {}; }
+  if(!save.sum){ save.sum = 0; }
+  if(!save.fused){ save.fused = []; }
+  if(!save.steps){ save.steps = {}; }
+  if(!save.eggs){ save.eggs = 0; }
+  if(!save.buddy){ save.buddy = ""; }
+  for(var id in save.dex){
+    if(typeof save.dex[id] === "number"){
+      save.dex[id] = {n:save.dex[id], w:0, s:"eat"};
+    }else{
+      if(!save.dex[id].n){ save.dex[id].n = 0; }
+      if(!save.dex[id].w){ save.dex[id].w = 0; }
+      if(!save.dex[id].s){ save.dex[id].s = "eat"; }
+    }
+  }
+}
+
+function trimSave(){
+  if(save.recs.length > MAX_RECS){ save.recs = save.recs.slice(save.recs.length - MAX_RECS); }
+  var seen = 0;
+  for(var i = save.recs.length - 1; i >= 0; i--){
+    if(save.recs[i].img){
+      seen++;
+      if(seen > MAX_IMGS){ delete save.recs[i].img; }
+    }
+  }
+}
+function dropOldestImage(){
+  for(var i = 0; i < save.recs.length; i++){
+    if(save.recs[i].img){ delete save.recs[i].img; return true; }
+  }
+  return false;
+}
+function writeSave(){
+  trimSave();
+  for(var a = 0; a < 40; a++){
+    try{ localStorage.setItem(KEY, JSON.stringify(save)); return true; }
+    catch(e){
+      if(!dropOldestImage()){
+        try{
+          save.recs = save.recs.slice(-15);
+          localStorage.setItem(KEY, JSON.stringify(save));
+          return true;
+        }catch(e2){ return false; }
+      }
+    }
+  }
+  return false;
+}
+
+/* ================= 工具 ================= */
+function $(id){ return document.getElementById(id); }
+function todayStr(){
+  var d = new Date(), m = d.getMonth() + 1, y = d.getDate();
+  return d.getFullYear() + "-" + (m < 10 ? "0" + m : m) + "-" + (y < 10 ? "0" + y : y);
+}
+function prettyDate(s){
+  var p = s.split("-");
+  return p.length < 3 ? s : (p[1] * 1) + "月" + (p[2] * 1) + "日";
+}
+function hashOf(s){
+  var h = 0;
+  for(var i = 0; i < s.length; i++){ h = (h * 31 + s.charCodeAt(i)) % 100000; }
+  return h;
+}
+function rankName(){
+  var r = RANKS[0].n;
+  for(var i = 0; i < RANKS.length; i++){ if(save.sum >= RANKS[i].at){ r = RANKS[i].n; } }
+  return r;
+}
+function findFood(id){
+  for(var i = 0; i < FOODS.length; i++){ if(FOODS[i].id === id){ return FOODS[i]; } }
+  return null;
+}
+function stageOf(id){
+  var d = save.dex[id];
+  if(!d){ return 0; }
+  var exp = d.n * 200 + d.w;
+  if(exp >= EVO2){ return 2; }
+  if(exp >= EVO1){ return 1; }
+  return 0;
+}
+function totalSteps(){
+  var t = 0;
+  for(var k in save.steps){ t += save.steps[k]; }
+  return t;
+}
+function todaySteps(){
+  var t = save.steps[todayStr()];
+  return t ? t : 0;
+}
+
+var canSpeak = (typeof speechSynthesis !== "undefined" && typeof SpeechSynthesisUtterance !== "undefined");
+function speak(t){
+  if(!canSpeak){ return; }
+  try{
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(t);
+    u.lang = "zh-TW"; u.rate = 0.95;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+var AC = null;
+function actx(){
+  if(AC){ return AC; }
+  try{
+    var C = window.AudioContext || window.webkitAudioContext;
+    if(C){ AC = new C(); }
+  }catch(e){}
+  return AC;
+}
+function tone(freq, at, dur, type, vol){
+  var a = actx();
+  if(!a){ return; }
+  try{
+    if(a.state === "suspended" && a.resume){ a.resume(); }
+    var o = a.createOscillator(), g = a.createGain();
+    o.type = type || "triangle";
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, a.currentTime + at);
+    g.gain.exponentialRampToValueAtTime(vol || 0.16, a.currentTime + at + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + at + dur);
+    o.connect(g); g.connect(a.destination);
+    o.start(a.currentTime + at); o.stop(a.currentTime + at + dur + 0.05);
+  }catch(e){}
+}
+var PENT = [0,2,4,7,9];
+function note(s){ return 261.63 * Math.pow(2, (PENT[((s % 5) + 5) % 5] + 12 * Math.floor(s / 5)) / 12); }
+function sfxSummon(seed){ for(var i = 0; i < 4; i++){ tone(note(seed % 5 + i), i * 0.07, 0.3, "triangle", 0.15); } }
+function sfxWild(){ for(var i = 0; i < 5; i++){ tone(note(i + 2), i * 0.08, 0.34, "sine", 0.15); } }
+function sfxEvo(){ for(var i = 0; i < 6; i++){ tone(note(i + 3), i * 0.09, 0.4, "triangle", 0.15); } }
+function sfxFusion(){
+  for(var i = 0; i < 8; i++){ tone(note(i), i * 0.11, 0.5, "triangle", 0.15); }
+  tone(note(10), 0.9, 1.1, "sine", 0.2);
+}
+function sfxTap(){ tone(note(3), 0, 0.08, "sine", 0.08); }
+function sfxStep(){ tone(note(1), 0, 0.05, "sine", 0.04); }
+
+/* ================= 卡靈外觀 ================= */
+function spiritSVG(f, locked, st){
+  var C = CATS[f.c];
+  var h = hashOf(f.id);
+  var body = locked ? "#c8cdda" : C.body;
+  var belly = locked ? "#d8dce6" : C.belly;
+  var top = locked ? "#b6bcca" : C.top;
+  if(!st){ st = 0; }
+
+  var sc = 0.70 + Math.min(f.k, 700) / 700 * 0.26 + st * 0.06;
+  var rx = Math.round(29 * sc), ry = Math.round((25 + (h % 7)) * sc);
+  var cy = 60;
+  var eyeY = cy - Math.round(ry * 0.28);
+  var eyeDx = Math.round(rx * 0.38);
+  var eyeR = 5 + (h % 3);
+  var ty = cy - ry;
+  var s = '<svg viewBox="0 0 100 100" aria-hidden="true">';
+
+  if(!locked && st >= 1){
+    s += '<circle cx="50" cy="' + cy + '" r="' + (rx + 12) + '" fill="none" stroke="' + top + '" stroke-width="2" opacity="0.45"/>';
+  }
+  if(!locked && st >= 2){
+    s += '<path d="M' + (50 - rx - 8) + ' ' + cy + ' q-12 -14 2 -18 q6 10 14 12 Z" fill="' + belly + '" opacity="0.9"/>';
+    s += '<path d="M' + (50 + rx + 8) + ' ' + cy + ' q12 -14 -2 -18 q-6 10 -14 12 Z" fill="' + belly + '" opacity="0.9"/>';
+  }
+
+  if(f.c === 0){
+    s += '<path d="M50 ' + (ty - 14) + ' L50 ' + (ty + 2) + '" stroke="' + top + '" stroke-width="4" fill="none"/>';
+    s += '<ellipse cx="44" cy="' + (ty - 8) + '" rx="5" ry="8" fill="' + top + '"/>';
+    s += '<ellipse cx="56" cy="' + (ty - 8) + '" rx="5" ry="8" fill="' + top + '"/>';
+  }else if(f.c === 1){
+    s += '<path d="M50 ' + (ty - 18) + ' Q60 ' + (ty - 2) + ' 50 ' + (ty + 4) + ' Q40 ' + (ty - 2) + ' 50 ' + (ty - 18) + ' Z" fill="' + top + '"/>';
+  }else if(f.c === 2){
+    s += '<path d="M50 ' + (ty - 16) + ' Q60 ' + (ty - 2) + ' 50 ' + (ty + 3) + ' Q40 ' + (ty - 2) + ' 50 ' + (ty - 16) + ' Z" fill="' + top + '" opacity="0.85"/>';
+  }else if(f.c === 3){
+    s += '<path d="M50 ' + (ty + 2) + ' Q34 ' + (ty - 14) + ' 50 ' + (ty - 16) + ' Q56 ' + (ty - 6) + ' 50 ' + (ty + 2) + ' Z" fill="' + top + '"/>';
+  }else if(f.c === 4){
+    s += '<circle cx="50" cy="' + (ty - 10) + '" r="9" fill="none" stroke="' + top + '" stroke-width="3"/>';
+  }else if(f.c === 5){
+    s += '<path d="M36 ' + (ty - 8) + ' q10 -8 20 0 q-10 8 -20 0 Z" fill="' + top + '"/>';
+  }else if(f.c === 6){
+    s += '<path d="M50 ' + (ty - 18) + ' l3.5 8 8.5 0.5 -6.5 5.5 2 8.5 -7.5-4.5 -7.5 4.5 2-8.5 -6.5-5.5 8.5-0.5 Z" fill="' + top + '"/>';
+  }else{
+    s += '<circle cx="50" cy="' + (ty - 11) + '" r="6" fill="' + top + '"/>';
+    s += '<circle cx="50" cy="' + (ty - 3) + '" r="4" fill="' + top + '"/>';
+  }
+
+  s += '<ellipse cx="50" cy="' + (cy + ry - 4) + '" rx="' + (rx - 6) + '" ry="5" fill="rgba(0,0,0,0.10)"/>';
+  s += '<ellipse cx="50" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" fill="' + body + '"/>';
+  s += '<ellipse cx="50" cy="' + (cy + Math.round(ry * 0.28)) + '" rx="' + Math.round(rx * 0.6) + '" ry="' + Math.round(ry * 0.48) + '" fill="' + belly + '"/>';
+
+  if(locked){
+    s += '<text x="50" y="' + (cy + 8) + '" text-anchor="middle" font-size="24" fill="#eef1f7">?</text></svg>';
+    return s;
+  }
+
+  s += '<circle cx="' + (50 - eyeDx) + '" cy="' + eyeY + '" r="' + eyeR + '" fill="#fff"/>';
+  s += '<circle cx="' + (50 + eyeDx) + '" cy="' + eyeY + '" r="' + eyeR + '" fill="#fff"/>';
+  s += '<circle cx="' + (50 - eyeDx + 1) + '" cy="' + eyeY + '" r="' + Math.round(eyeR * 0.5) + '" fill="#2b2f3d"/>';
+  s += '<circle cx="' + (50 + eyeDx + 1) + '" cy="' + eyeY + '" r="' + Math.round(eyeR * 0.5) + '" fill="#2b2f3d"/>';
+
+  var my = eyeY + eyeR + 7;
+  var t = h % 3;
+  if(t === 0){ s += '<path d="M43 ' + my + ' q7 7 14 0" stroke="#2b2f3d" stroke-width="2.4" fill="none" stroke-linecap="round"/>'; }
+  else if(t === 1){ s += '<ellipse cx="50" cy="' + (my + 2) + '" rx="5" ry="4" fill="#2b2f3d"/>'; }
+  else { s += '<path d="M45 ' + my + ' h10" stroke="#2b2f3d" stroke-width="2.4" stroke-linecap="round"/>'; }
+
+  s += '<circle cx="' + (50 - rx + 7) + '" cy="' + (my - 1) + '" r="3.5" fill="rgba(255,255,255,0.42)"/>';
+  s += '<circle cx="' + (50 + rx - 7) + '" cy="' + (my - 1) + '" r="3.5" fill="rgba(255,255,255,0.42)"/>';
+  s += '<ellipse cx="40" cy="' + (cy + ry - 1) + '" rx="6" ry="4" fill="' + top + '"/>';
+  s += '<ellipse cx="60" cy="' + (cy + ry - 1) + '" rx="6" ry="4" fill="' + top + '"/>';
+  if(st >= 2){
+    s += '<path d="M42 ' + (ty - 20) + ' l4 7 4-7 4 7 4-7 -2 9 -16 0 Z" fill="#ffd98a"/>';
+  }
+  s += '</svg>';
+  return s;
+}
+
+function orbSVG(ci, got){
+  var C = CATS[ci];
+  var body = got ? C.body : "#c8cdda";
+  var top = got ? C.top : "#b6bcca";
+  return '<svg viewBox="0 0 100 100" aria-hidden="true">' +
+    '<circle cx="50" cy="52" r="30" fill="' + body + '"/>' +
+    '<circle cx="42" cy="42" r="9" fill="rgba(255,255,255,0.4)"/>' +
+    '<text x="50" y="63" text-anchor="middle" font-size="30" font-weight="bold" fill="' + top + '">' + C.n + '</text></svg>';
+}
+
+function beastSVG(){
+  var s = '<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="52" r="34" fill="#3b4a72"/>';
+  for(var i = 0; i < 6; i++){
+    var a = (Math.PI * 2 / 6) * i - Math.PI / 2;
+    s += '<circle cx="' + (50 + Math.cos(a) * 34).toFixed(1) + '" cy="' + (52 + Math.sin(a) * 34).toFixed(1) +
+         '" r="11" fill="' + CATS[i].body + '"/>';
+  }
+  s += '<circle cx="50" cy="52" r="20" fill="#ffd98a"/>';
+  s += '<circle cx="43" cy="48" r="4" fill="#2b2f3d"/><circle cx="57" cy="48" r="4" fill="#2b2f3d"/>';
+  s += '<path d="M42 59 q8 8 16 0" stroke="#2b2f3d" stroke-width="3" fill="none" stroke-linecap="round"/></svg>';
+  return s;
+}
+
+/* ================= 這一餐 ================= */
+var cur = {meal:"午餐", img:"", items:[]};
+var curCat = -1, dexCat = -1;
+var queue = [], showing = false, wd = 0;
+
+function curTotal(){
+  var t = 0;
+  for(var i = 0; i < cur.items.length; i++){
+    var f = findFood(cur.items[i].id);
+    if(f){ t += f.k * cur.items[i].q; }
+  }
+  return t;
+}
+function addFood(f){
+  var isNew = !save.dex[f.id];
+  for(var i = 0; i < cur.items.length; i++){
+    if(cur.items[i].id === f.id){ cur.items[i].q++; pushSummon(f, false); renderPanel(); return; }
+  }
+  cur.items.push({id:f.id, q:1});
+  pushSummon(f, isNew);
+  renderPanel();
+}
+function bumpItem(idx, d){
+  var it = cur.items[idx];
+  if(!it){ return; }
+  it.q += d;
+  if(it.q <= 0){ cur.items.splice(idx, 1); }
+  sfxTap(); renderPanel();
+}
+
+function pushSummon(f, isNew){
+  if(!f){ return; }
+  queue.push({f:f, isNew:isNew});
+  if(!showing){ nextSummon(); }
+}
+function nextSummon(){
+  if(queue.length === 0){ showing = false; return; }
+  showing = true;
+  var job = queue.shift();
+  if(!job || !job.f){ showing = false; return; }
+  var f = job.f, C = CATS[f.c];
+  $("summonArt").innerHTML = spiritSVG(f, false, stageOf(f.id));
+  $("summonName").textContent = f.n + "靈";
+  $("summonAttr").textContent = C.n + "屬性 · " + C.full + " · 體型 " + f.k + " 大卡";
+  $("summonNew").innerHTML = job.isNew ? '<span class="snew">★ 新卡靈登錄圖鑑</span>' : "";
+  $("summon").className = "ovl on";
+  sfxSummon(hashOf(f.id));
+  speak(f.n);
+  if(wd){ clearTimeout(wd); }
+  wd = setTimeout(closeSummon, 4200);
+}
+function closeSummon(){
+  if(wd){ clearTimeout(wd); wd = 0; }
+  $("summon").className = "ovl";
+  if(queue.length > 0){ setTimeout(nextSummon, 120); }
+  else { showing = false; }
+}
+
+/* ================= 散步 ================= */
+var walking = false, motionOn = false, lock = null;
+var filt = 9.8, gate = false, lastPeak = 0, uiPend = 0, pending = 0;
+
+function addSteps(n){
+  if(!n || n <= 0){ return; }
+  var t = todayStr();
+  save.steps[t] = (save.steps[t] ? save.steps[t] : 0) + n;
+
+  var b = save.buddy;
+  if(b && save.dex[b]){
+    var before = stageOf(b);
+    save.dex[b].w += n;
+    var after = stageOf(b);
+    if(after > before){ showEvo(b, after); }
+  }
+  var earned = Math.floor(totalSteps() / EGG_STEPS);
+  var guard = 0;
+  while(earned > save.eggs && guard < 60){
+    save.eggs++;
+    guard++;
+    hatchEgg();
+  }
+  writeSave();
+  renderWalk();
+}
+
+function onMotion(e){
+  var a = e.accelerationIncludingGravity;
+  if(!a || a.x === null || a.x === undefined){ return; }
+  var m = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+  filt = filt * 0.85 + m * 0.15;
+  var dev = m - filt;
+  var now = Date.now();
+  if(!gate && dev > 1.5 && now - lastPeak > 270){
+    gate = true; lastPeak = now;
+    stepTick();
+  }
+  if(gate && dev < 0.5){ gate = false; }
+}
+
+function stepTick(){
+  pending++;
+  sfxStep();
+  if(!uiPend){
+    uiPend = setTimeout(function(){
+      uiPend = 0;
+      var n = pending; pending = 0;
+      addSteps(n);
+    }, 700);
+  }
+}
+
+function startWalk(){
+  var run = function(){
+    try{ window.addEventListener("devicemotion", onMotion, false); motionOn = true; }catch(e){}
+    walking = true;
+    $("walkBtn").textContent = "■ 結束散步";
+    $("walkBtn").className = "walkbtn stop";
+    $("walker").className = "walker go";
+    $("walkNote").textContent = "計步中。畫面關掉或切到別的 App 就會自動停下來。";
+    try{
+      if(navigator.wakeLock && navigator.wakeLock.request){
+        navigator.wakeLock.request("screen").then(function(l){ lock = l; }, function(){});
+      }
+    }catch(e){}
+  };
+  var D = window.DeviceMotionEvent;
+  if(D && typeof D.requestPermission === "function"){
+    D.requestPermission().then(function(res){
+      if(res === "granted"){ run(); }
+      else{ $("walkNote").textContent = "沒有拿到感應器權限，可以先用下面的手動補登。"; }
+    }, function(){
+      $("walkNote").textContent = "這台裝置不給感應器權限，可以用下面的手動補登。";
+    });
+  }else if(D){
+    run();
+  }else{
+    $("walkNote").textContent = "這台裝置沒有動作感應器，請用下面的手動補登。";
+  }
+}
+
+function stopWalk(){
+  if(motionOn){
+    try{ window.removeEventListener("devicemotion", onMotion, false); }catch(e){}
+    motionOn = false;
+  }
+  walking = false;
+  if(uiPend){ clearTimeout(uiPend); uiPend = 0; }
+  if(pending > 0){ var n = pending; pending = 0; addSteps(n); }
+  $("walkBtn").textContent = "▶ 開始散步（用手機感應器計步）";
+  $("walkBtn").className = "walkbtn";
+  $("walker").className = "walker";
+  if(lock){
+    try{ lock.release(); }catch(e){}
+    lock = null;
+  }
+  writeSave();
+}
+
+function hatchEgg(){
+  var pool = [];
+  for(var i = 0; i < FOODS.length; i++){
+    if(!save.dex[FOODS[i].id]){ pool.push(FOODS[i]); }
+  }
+  if(pool.length === 0){
+    if(save.buddy && save.dex[save.buddy]){ save.dex[save.buddy].w += 500; }
+    return;
+  }
+  var f = pool[Math.floor(Math.random() * pool.length)];
+  save.dex[f.id] = {n:0, w:0, s:"wild"};
+  $("wildArt").innerHTML = spiritSVG(f, false, 0);
+  $("wildName").textContent = f.n + "靈";
+  $("wildAttr").textContent = CATS[f.c].n + "屬性 · " + CATS[f.c].full + " · 體型 " + f.k + " 大卡";
+  $("wild").className = "ovl on";
+  sfxWild();
+  speak(f.n);
+  renderDex(); renderFoods();
+}
+
+function showEvo(id, st){
+  var f = findFood(id);
+  if(!f){ return; }
+  $("evoArt").innerHTML = spiritSVG(f, false, st);
+  $("evoName").textContent = f.n + "靈";
+  $("evoStage").textContent = (st === 1 ? "成長期" : "完全體") + " 進化成功！";
+  $("evo").className = "ovl on";
+  sfxEvo();
+  speak(f.n + "進化了");
+}
+
+function renderWalk(){
+  var ts = todaySteps();
+  $("stepNow").innerHTML = ts + '<small>步</small>';
+  $("stepLbl").textContent = "累計 " + totalSteps() + " 步 · 已孵 " + save.eggs + " 顆蛋";
+
+  var into = totalSteps() % EGG_STEPS;
+  $("eggBar").style.width = Math.round(into / EGG_STEPS * 100) + "%";
+  $("eggLbl").textContent = "距離下一顆蛋還差 " + (EGG_STEPS - into) + " 步";
+  $("eggCnt").textContent = "已孵 " + save.eggs + " 顆";
+
+  var w = $("walker");
+  var f0 = save.buddy ? findFood(save.buddy) : null;
+  w.innerHTML = f0 ? spiritSVG(f0, false, stageOf(save.buddy)) : "";
+  w.style.left = (4 + (ts % 120) / 120 * 74) + "%";
+
+  var bb = $("buddyBox");
+  if(!f0){
+    bb.innerHTML = '<div class="empty" style="flex:1">還沒有夥伴<br>先召喚或孵出一隻卡靈，再從下面挑一隻同行</div>';
+    $("evoLbl").textContent = "－";
+    $("evoBar").style.width = "0%";
+  }else{
+    var d = save.dex[save.buddy];
+    var st = stageOf(save.buddy);
+    var exp = d.n * 200 + d.w;
+    var nm = ["幼生期", "成長期", "完全體"][st];
+    bb.innerHTML = spiritSVG(f0, false, st) +
+      '<div class="bn"><b>' + f0.n + '靈</b><span>' + nm + ' · 陪走 ' + d.w + ' 步 · 召喚 ' + d.n + ' 次</span></div>';
+    if(st >= 2){
+      $("evoLbl").textContent = "已達完全體";
+      $("evoBar").style.width = "100%";
+    }else{
+      var need = (st === 0) ? EVO1 : EVO2;
+      var base = (st === 0) ? 0 : EVO1;
+      $("evoLbl").textContent = "還差 " + (need - exp) + " 點（走 1 步 = 1 點）";
+      $("evoBar").style.width = Math.round((exp - base) / (need - base) * 100) + "%";
+    }
+  }
+
+  var pb = $("buddyPick");
+  pb.innerHTML = "";
+  var any = 0;
+  for(var i = 0; i < FOODS.length; i++){
+    var f = FOODS[i];
+    if(!save.dex[f.id]){ continue; }
+    any++;
+    (function(f){
+      var b = document.createElement("button");
+      if(save.buddy === f.id){ b.className = "on"; }
+      b.innerHTML = spiritSVG(f, false, stageOf(f.id)) + '<span>' + f.n + '</span>';
+      b.onclick = function(){
+        save.buddy = f.id; writeSave(); sfxTap(); speak(f.n); renderWalk();
+      };
+      pb.appendChild(b);
+    })(f);
+  }
+  if(any === 0){ pb.innerHTML = '<div class="empty">還沒有可以同行的卡靈</div>'; }
+}
+
+/* ================= 畫面 ================= */
+function renderCats(){
+  var box = $("cats");
+  box.innerHTML = "";
+  var all = document.createElement("button");
+  all.textContent = "全部";
+  if(curCat === -1){ all.className = "on"; all.style.background = "#6d7691"; }
+  all.onclick = function(){ curCat = -1; renderCats(); renderFoods(); };
+  box.appendChild(all);
+  for(var i = 0; i < CATS.length; i++){
+    (function(i){
+      var b = document.createElement("button");
+      b.textContent = CATS[i].n;
+      if(curCat === i){ b.className = "on"; b.style.background = CATS[i].body; }
+      b.onclick = function(){ curCat = i; renderCats(); renderFoods(); };
+      box.appendChild(b);
+    })(i);
+  }
+}
+
+function renderFoods(){
+  var box = $("foods");
+  var kw = $("q").value.replace(/\s/g, "");
+  box.innerHTML = "";
+  var shown = 0;
+  for(var i = 0; i < FOODS.length; i++){
+    var f = FOODS[i];
+    if(curCat !== -1 && f.c !== curCat){ continue; }
+    if(kw && f.n.indexOf(kw) < 0){ continue; }
+    shown++;
+    (function(f){
+      var b = document.createElement("button");
+      b.className = "food";
+      b.style.borderLeftColor = CATS[f.c].body;
+      b.innerHTML = spiritSVG(f, false, stageOf(f.id)) +
+        '<span class="fb"><span class="fn">' + f.n + '</span>' +
+        '<span class="fu">' + f.u + ' · </span><span class="fk">' + f.k + ' 大卡</span>' +
+        (save.dex[f.id] ? "" : ' <span class="new">NEW</span>') + '</span>';
+      b.onclick = function(){ addFood(f); };
+      box.appendChild(b);
+    })(f);
+  }
+  if(shown === 0){ box.innerHTML = '<div class="empty">沒有找到這個食物，可以選最接近的一種</div>'; }
+}
+
+function renderPanel(){
+  $("total").innerHTML = curTotal() + '<small>大卡</small>';
+  var box = $("party");
+  box.innerHTML = "";
+  if(cur.items.length === 0){
+    box.innerHTML = '<div class="empty">還沒有卡靈<br>點食物就會召喚出來</div>';
+    $("saveBtn").disabled = true;
+    return;
+  }
+  $("saveBtn").disabled = false;
+  for(var i = 0; i < cur.items.length; i++){
+    (function(i){
+      var it = cur.items[i];
+      var f = findFood(it.id);
+      if(!f){ return; }
+      var row = document.createElement("div");
+      row.className = "pick";
+      var minus = document.createElement("button");
+      minus.className = "qbtn"; minus.textContent = "−";
+      minus.onclick = function(){ bumpItem(i, -1); };
+      var qn = document.createElement("span");
+      qn.className = "qn"; qn.textContent = it.q;
+      var plus = document.createElement("button");
+      plus.className = "qbtn"; plus.textContent = "＋";
+      plus.onclick = function(){ bumpItem(i, 1); };
+      var art = document.createElement("span");
+      art.innerHTML = spiritSVG(f, false, stageOf(f.id));
+      var nm = document.createElement("span");
+      nm.className = "pn";
+      nm.innerHTML = "<b>" + f.n + "靈</b><i>" + f.u + " × " + it.q + "</i>";
+      var kk = document.createElement("span");
+      kk.className = "pk"; kk.textContent = (f.k * it.q) + " 大卡";
+      row.appendChild(minus); row.appendChild(qn); row.appendChild(plus);
+      row.appendChild(art); row.appendChild(nm); row.appendChild(kk);
+      box.appendChild(row);
+    })(i);
+  }
+}
+
+function todayCats(){
+  var t = todayStr();
+  var got = [0,0,0,0,0,0];
+  for(var i = 0; i < save.recs.length; i++){
+    var r = save.recs[i];
+    if(r.d !== t){ continue; }
+    for(var j = 0; j < r.items.length; j++){
+      var f = findFood(r.items[j].id);
+      if(!f){ continue; }
+      for(var m = 0; m < f.cc.length; m++){ got[f.cc[m]] = 1; }
+    }
+  }
+  return got;
+}
+
+function renderToday(){
+  var t = todayStr(), got = todayCats(), n = 0;
+  var sb = $("sixBox");
+  sb.innerHTML = "";
+  for(var c = 0; c < 6; c++){
+    var d = document.createElement("div");
+    d.className = "orb" + (got[c] ? " got" : "");
+    d.innerHTML = orbSVG(c, got[c]) + '<span class="on2">' + CATS[c].full.replace("類", "") + '</span>';
+    sb.appendChild(d);
+  }
+  var miss = [];
+  for(var c2 = 0; c2 < 6; c2++){
+    if(got[c2]){ n++; } else { miss.push(CATS[c2].full.replace("類", "")); }
+  }
+  $("sixTtl").textContent = "今天的六屬性（" + n + " / 6）";
+  $("sixMsg").textContent = (n === 6) ? "六種屬性都到齊了，六芒獸現身！"
+    : (n === 0 ? "還沒開始，去召喚第一隻卡靈吧。" : "還差：" + miss.join("、"));
+
+  var box = $("todayList");
+  box.innerHTML = "";
+  var sum = 0, cnt = 0;
+  for(var i = 0; i < save.recs.length; i++){
+    var r = save.recs[i];
+    if(r.d !== t){ continue; }
+    cnt++; sum += r.total;
+    box.appendChild(recRow(r));
+  }
+  if(cnt === 0){
+    box.innerHTML = '<div class="empty">今天還沒有紀錄</div>';
+  }else{
+    var s = document.createElement("div");
+    s.className = "daysum";
+    s.innerHTML = "<span>今天合計</span><span>" + sum + " 大卡</span>";
+    box.appendChild(s);
+  }
+}
+
+function recRow(r){
+  var row = document.createElement("div");
+  row.className = "rec";
+  if(r.img){
+    var im = document.createElement("img");
+    im.src = r.img; im.alt = r.meal + "的照片";
+    row.appendChild(im);
+  }else{
+    var ph = document.createElement("div");
+    ph.className = "noimg"; ph.textContent = "🍽";
+    row.appendChild(ph);
+  }
+  var b = document.createElement("div");
+  b.className = "rb";
+  var names = [];
+  for(var i = 0; i < r.items.length; i++){
+    var f = findFood(r.items[i].id);
+    if(f){ names.push(f.n + (r.items[i].q > 1 ? "×" + r.items[i].q : "")); }
+  }
+  b.innerHTML = '<div class="rm">' + prettyDate(r.d) + "　" + r.meal + '</div><div class="rl">' + names.join("、") + '</div>';
+  row.appendChild(b);
+  var k = document.createElement("div");
+  k.className = "rk"; k.textContent = r.total + " 大卡";
+  row.appendChild(k);
+  var del = document.createElement("button");
+  del.className = "delbtn"; del.textContent = "刪";
+  del.onclick = function(){
+    if(!confirm("要刪掉這一筆嗎？（圖鑑會保留）")){ return; }
+    var out = [];
+    for(var i = 0; i < save.recs.length; i++){ if(save.recs[i].id !== r.id){ out.push(save.recs[i]); } }
+    save.recs = out;
+    writeSave(); renderToday();
+  };
+  row.appendChild(del);
+  return row;
+}
+
+function renderDexCats(){
+  var box = $("dexCats");
+  box.innerHTML = "";
+  var all = document.createElement("button");
+  all.textContent = "全部";
+  if(dexCat === -1){ all.className = "on"; all.style.background = "#6d7691"; }
+  all.onclick = function(){ dexCat = -1; renderDexCats(); renderDex(); };
+  box.appendChild(all);
+  for(var i = 0; i < CATS.length; i++){
+    (function(i){
+      var b = document.createElement("button");
+      b.textContent = CATS[i].n;
+      if(dexCat === i){ b.className = "on"; b.style.background = CATS[i].body; }
+      b.onclick = function(){ dexCat = i; renderDexCats(); renderDex(); };
+      box.appendChild(b);
+    })(i);
+  }
+}
+
+function renderDex(){
+  var box = $("dexBox");
+  box.innerHTML = "";
+  var got = 0;
+  for(var i = 0; i < FOODS.length; i++){ if(save.dex[FOODS[i].id]){ got++; } }
+  $("dexN").textContent = got;
+  $("dexT").textContent = FOODS.length;
+  for(var j = 0; j < FOODS.length; j++){
+    var f = FOODS[j];
+    if(dexCat !== -1 && f.c !== dexCat){ continue; }
+    (function(f){
+      var d = save.dex[f.id];
+      var have = !!d;
+      var c = document.createElement("button");
+      c.className = "dexc" + (have ? "" : " lock");
+      c.innerHTML = spiritSVG(f, !have, have ? stageOf(f.id) : 0) +
+        (have ? '<span class="src">' + (d.s === "wild" ? "🥾" : "🍽") + '</span>' : "") +
+        '<span class="dn">' + (have ? f.n + "靈" : "？？？") + '</span>' +
+        '<span class="dk">' + (have ? ["幼生", "成長", "完全"][stageOf(f.id)] : CATS[f.c].n + "屬性") + '</span>';
+      c.onclick = function(){ sfxTap(); if(have){ speak(f.n); } };
+      box.appendChild(c);
+    })(f);
+  }
+}
+
+/* ================= 照片 ================= */
+function handleFile(file){
+  if(!file){ return; }
+  var fr = new FileReader();
+  fr.onload = function(ev){
+    var img = new Image();
+    img.onload = function(){
+      try{
+        var max = 260;
+        var sc = Math.min(max / img.width, max / img.height, 1);
+        var cv = document.createElement("canvas");
+        cv.width = Math.max(1, Math.round(img.width * sc));
+        cv.height = Math.max(1, Math.round(img.height * sc));
+        cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+        cur.img = cv.toDataURL("image/jpeg", 0.5);
+        showThumb();
+      }catch(e){}
+    };
+    img.onerror = function(){};
+    img.src = ev.target.result;
+  };
+  fr.readAsDataURL(file);
+}
+function showThumb(){
+  var t = $("thumb");
+  if(cur.img){
+    t.src = cur.img; t.className = "thumb on";
+    $("clrImg").style.display = "block";
+  }else{
+    t.className = "thumb"; t.removeAttribute("src");
+    $("clrImg").style.display = "none";
+  }
+}
+
+/* ================= 收隊 ================= */
+function saveMeal(){
+  if(cur.items.length === 0){ return; }
+  var before = todayCats(), beforeN = 0;
+  for(var b = 0; b < 6; b++){ if(before[b]){ beforeN++; } }
+
+  var items = [];
+  for(var i = 0; i < cur.items.length; i++){
+    items.push({id:cur.items[i].id, q:cur.items[i].q});
+    var f = findFood(cur.items[i].id);
+    if(f){
+      if(!save.dex[f.id]){ save.dex[f.id] = {n:0, w:0, s:"eat"}; }
+      save.dex[f.id].n += cur.items[i].q;
+      save.sum += cur.items[i].q;
+      if(!save.buddy){ save.buddy = f.id; }
+    }
+  }
+  var r = {
+    id: "r" + Date.now() + Math.floor(Math.random() * 1000),
+    d: todayStr(), meal: cur.meal, items: items, total: curTotal()
+  };
+  if(cur.img){ r.img = cur.img; }
+  save.recs.push(r);
+  var ok = writeSave();
+
+  cur.img = ""; cur.items = [];
+  showThumb(); renderPanel(); renderFoods(); renderDex(); renderToday(); renderWalk();
+  $("rankTxt").textContent = rankName();
+  go(2);
+
+  var after = todayCats(), afterN = 0;
+  for(var a = 0; a < 6; a++){ if(after[a]){ afterN++; } }
+  var t = todayStr(), already = false;
+  for(var z = 0; z < save.fused.length; z++){ if(save.fused[z] === t){ already = true; } }
+  if(afterN === 6 && beforeN < 6 && !already){
+    save.fused.push(t); writeSave(); showFusion();
+  }
+  if(!ok){
+    var eb = $("errBar");
+    eb.style.display = "block";
+    eb.textContent = "裝置儲存空間已滿，這筆有存到但照片可能沒留下。";
+  }
+}
+
+function showFusion(){
+  $("fusionArt").innerHTML = beastSVG();
+  $("fusionMsg").textContent = "土、火、水、草、光、風全部到齊，六隻卡靈合體成功！今天的六芒獸屬於你。";
+  $("fusion").className = "ovl on";
+  sfxFusion(); speak("六芒獸現身");
+  setTimeout(function(){ $("fusion").className = "ovl"; }, 7000);
+}
+
+/* ================= 分頁 ================= */
+function go(i){
+  for(var k = 0; k < 4; k++){
+    $("s" + k).className = "screen" + (k === i ? " on" : "");
+    $("tab" + k).className = (k === i ? "on" : "");
+  }
+  $("partyPanel").className = (i === 0 ? "" : "off");
+  if(i === 1){ renderWalk(); }
+  if(i === 2){ renderToday(); }
+  if(i === 3){ renderDex(); }
+}
+var fs = 1;
+function setFs(d){
+  fs = Math.min(1.5, Math.max(0.8, fs + d));
+  document.documentElement.style.setProperty("--fs", fs);
+}
+
+function init(){
+  loadSave();
+  renderCats(); renderFoods(); renderPanel();
+  renderDexCats(); renderDex(); renderToday(); renderWalk();
+  $("rankTxt").textContent = rankName();
+
+  for(var k = 0; k < 4; k++){
+    (function(k){ $("tab" + k).onclick = function(){ sfxTap(); go(k); }; })(k);
+  }
+  $("q").oninput = renderFoods;
+
+  var mr = $("mealRow").getElementsByTagName("button");
+  for(var i = 0; i < mr.length; i++){
+    (function(btn){
+      btn.onclick = function(){
+        for(var j = 0; j < mr.length; j++){ mr[j].className = ""; }
+        btn.className = "on";
+        cur.meal = btn.getAttribute("data-m");
+      };
+    })(mr[i]);
+  }
+
+  $("camBtn").onclick = function(){ $("camIn").click(); };
+  $("albBtn").onclick = function(){ $("albIn").click(); };
+  $("camIn").onchange = function(){ handleFile(this.files && this.files[0]); this.value = ""; };
+  $("albIn").onchange = function(){ handleFile(this.files && this.files[0]); this.value = ""; };
+  $("clrImg").onclick = function(){ cur.img = ""; showThumb(); };
+  $("saveBtn").onclick = saveMeal;
+
+  $("walkBtn").onclick = function(){ if(walking){ stopWalk(); } else { startWalk(); } };
+  var qs = document.querySelectorAll(".quick button");
+  for(var z = 0; z < qs.length; z++){
+    (function(btn){
+      btn.onclick = function(){
+        sfxTap();
+        addSteps(parseInt(btn.getAttribute("data-s"), 10));
+      };
+    })(qs[z]);
+  }
+
+  $("stepSet").onclick = function(){
+    sfxTap();
+    var v = parseInt($("stepIn").value, 10);
+    if(!v || v < 0){
+      $("stepInNote").textContent = "請填一個數字，例如 3250。";
+      return;
+    }
+    var have = todaySteps();
+    if(v <= have){
+      $("stepInNote").textContent = "今天已經記到 " + have + " 步，比這個多了。";
+      return;
+    }
+    $("stepIn").value = "";
+    $("stepInNote").textContent = "補上 " + (v - have) + " 步，今天總共 " + v + " 步。";
+    addSteps(v - have);
+  };
+
+  $("summon").onclick = closeSummon;
+  $("wild").onclick = function(){ $("wild").className = "ovl"; };
+  $("evo").onclick = function(){ $("evo").className = "ovl"; };
+  $("fusion").onclick = function(){ $("fusion").className = "ovl"; };
+
+  $("fontUp").onclick = function(){ setFs(0.1); };
+  $("fontDn").onclick = function(){ setFs(-0.1); };
+
+  document.addEventListener("visibilitychange", function(){
+    if(document.hidden && walking){ stopWalk(); }
+  });
+}
+
+init();
+</script>
+<script src="offline-register.js" defer></script>
+</body>
+</html>
