@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>留言給老師｜永芳特教教學資源網</title>
+<meta name="description" content="悄悄話留言板：留言內容與老師的回覆，只有你自己和管理老師看得到。">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="留言給老師">
+<meta name="theme-color" content="#FF6B6B">
+<link rel="apple-touch-icon" href="icons/portal-180.png">
+<link rel="icon" href="icons/portal-512.png">
+<script src="offline-register.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #fef9f3;
+  --card: #ffffff;
+  --text: #2d3748;
+  --muted: #718096;
+  --primary: #FF6B6B;
+  --primary-dark: #E53E3E;
+  --accent-orange: #FF8E53;
+  --accent-blue: #4299E1;
+  --accent-green: #48BB78;
+  --border: #f0e6d6;
+  --shadow: 0 4px 24px rgba(229, 62, 62, 0.08);
+}
+body {
+  font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", -apple-system, sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.6;
+  min-height: 100vh; padding-bottom: 60px;
+}
+
+#errBar {
+  display: none; background: #742a2a; color: #fff; padding: 10px 14px;
+  font-size: 13px; line-height: 1.5; position: relative; z-index: 99;
+}
+
+.home {
+  position: absolute; top: 14px; left: 14px; z-index: 5;
+  background: rgba(255,255,255,0.25); color: #fff; text-decoration: none;
+  padding: 7px 14px; border-radius: 16px; font-size: 14px; font-weight: 600;
+}
+.header {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  color: #fff; padding: 56px 20px 34px; text-align: center; position: relative;
+}
+.header h1 { font-size: 27px; letter-spacing: 1px; }
+.header p { font-size: 14px; opacity: 0.95; margin-top: 6px; }
+
+.wrap { max-width: 680px; margin: 0 auto; padding: 0 16px; }
+
+.tabs {
+  display: flex; gap: 8px; margin: -22px auto 20px; max-width: 680px;
+  background: var(--card); padding: 6px; border-radius: 16px;
+  box-shadow: var(--shadow); position: relative; z-index: 3;
+}
+.tab {
+  flex: 1; text-align: center; padding: 11px 4px; border-radius: 12px;
+  font-size: 15px; font-weight: 700; color: var(--muted);
+  cursor: pointer; border: none; background: transparent; font-family: inherit;
+}
+.tab.on { background: var(--primary); color: #fff; }
+
+.panel { display: none; }
+.panel.on { display: block; }
+
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 18px; padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px;
+}
+.note {
+  background: #fff8e8; border: 1px solid #f6d68a; border-radius: 14px;
+  padding: 13px 15px; font-size: 14px; color: #7a5a12; margin-bottom: 16px;
+}
+.note b { color: #6b4a06; }
+
+label { display: block; font-size: 14px; font-weight: 700; margin: 14px 0 6px; }
+label:first-child { margin-top: 0; }
+input, textarea {
+  width: 100%; font-family: inherit; font-size: 16px; color: var(--text);
+  border: 2px solid var(--border); border-radius: 12px; padding: 11px 13px;
+  background: #fffdfa;
+}
+input:focus, textarea:focus { outline: none; border-color: var(--accent-orange); }
+textarea { min-height: 130px; resize: vertical; line-height: 1.7; }
+.hint { font-size: 12.5px; color: var(--muted); margin-top: 5px; }
+
+.btn {
+  display: block; width: 100%; margin-top: 18px; padding: 14px;
+  background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: #fff;
+  border: none; border-radius: 14px; font-size: 17px; font-weight: 700;
+  font-family: inherit; cursor: pointer;
+}
+.btn:disabled { opacity: 0.55; }
+.btn.sub {
+  background: #fff; color: var(--primary-dark);
+  border: 2px solid var(--border); font-size: 15px; padding: 11px;
+}
+
+.msg {
+  border: 1px solid var(--border); border-radius: 16px;
+  padding: 15px; margin-bottom: 13px; background: #fffdfa;
+}
+.msg .top {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 8px; flex-wrap: wrap; margin-bottom: 8px;
+}
+.who { font-weight: 700; font-size: 14.5px; }
+.when { font-size: 12.5px; color: var(--muted); }
+.badge {
+  font-size: 12px; padding: 3px 10px; border-radius: 10px; font-weight: 700;
+  background: #fed7d7; color: #9b2c2c;
+}
+.badge.done { background: #c6f6d5; color: #22543d; }
+.body { font-size: 15.5px; white-space: pre-wrap; word-break: break-word; }
+.reply {
+  margin-top: 12px; padding: 12px 14px; border-radius: 12px;
+  background: #ebf8ff; border-left: 4px solid var(--accent-blue);
+}
+.reply .lbl { font-size: 12.5px; font-weight: 700; color: #2b6cb0; margin-bottom: 4px; }
+.reply .body { font-size: 15px; }
+
+.status { font-size: 14.5px; padding: 12px 0; text-align: center; color: var(--muted); }
+.status.bad { color: var(--primary-dark); font-weight: 700; }
+.status.good { color: #22543d; font-weight: 700; }
+.empty { text-align: center; color: var(--muted); padding: 30px 10px; font-size: 15px; }
+
+.replybox { margin-top: 12px; }
+.replybox textarea { min-height: 80px; font-size: 15px; }
+
+.setupwarn {
+  background: #fff5f5; border: 2px dashed #fc8181; color: #9b2c2c;
+  border-radius: 14px; padding: 16px; font-size: 14px; margin-bottom: 16px;
+}
+.foot { text-align: center; color: var(--muted); font-size: 12.5px; padding: 24px 16px; }
+.foot a { color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div id="errBar"></div>
+
+<div class="header">
+  <a class="home" href="index.html">← 教學首頁</a>
+  <h1>💌 悄悄話留言板</h1>
+  <p>你寫的內容和老師的回覆，只有你自己看得到</p>
+</div>
+
+<div class="wrap">
+  <div class="tabs">
+    <button class="tab on" data-p="write">我要留言</button>
+    <button class="tab" data-p="mine">我的留言</button>
+    <button class="tab" data-p="adm">管理員</button>
+  </div>
+
+  <div id="setupWarn" class="setupwarn" style="display:none;">
+    尚未設定後端網址。請打開 <b>offline-register.js</b>，把最上面的
+    <b>AAC_API_URL</b> 換成你的 Google Apps Script 網址。
+  </div>
+
+  <!-- 我要留言 -->
+  <div class="panel on" id="p-write">
+    <div class="note">
+      取一個<b>只有你記得的暱稱</b>和密碼，下次用同一組就能回來看老師的回覆。<br>
+      密碼不會存在這台裝置上，請自己記牢；老師也查不到你的密碼。
+    </div>
+    <div class="card">
+      <label for="wNick">暱稱</label>
+      <input id="wNick" type="text" maxlength="20" autocomplete="off" placeholder="例如：小恐龍">
+      <div class="hint">2～20 個字。不用寫真名。</div>
+
+      <label for="wPw">密碼</label>
+      <input id="wPw" type="password" maxlength="40" autocomplete="off" placeholder="至少 4 個字">
+      <div class="hint">第一次留言時設定，之後都用這一組。</div>
+
+      <label for="wBody">想跟老師說的話</label>
+      <textarea id="wBody" maxlength="1000" placeholder="遇到的問題、建議、或想告訴老師的事…"></textarea>
+      <div class="hint"><span id="wCount">0</span> / 1000 字</div>
+
+      <button class="btn" id="wSend">送出留言</button>
+      <div class="status" id="wStat"></div>
+    </div>
+  </div>
+
+  <!-- 我的留言 -->
+  <div class="panel" id="p-mine">
+    <div class="card">
+      <label for="mNick">暱稱</label>
+      <input id="mNick" type="text" maxlength="20" autocomplete="off">
+      <label for="mPw">密碼</label>
+      <input id="mPw" type="password" maxlength="40" autocomplete="off">
+      <button class="btn" id="mGo">查看我的留言</button>
+      <button class="btn sub" id="mClear">換人使用（清掉暱稱）</button>
+      <div class="status" id="mStat"></div>
+    </div>
+    <div id="mList"></div>
+  </div>
+
+  <!-- 管理員 -->
+  <div class="panel" id="p-adm">
+    <div class="card">
+      <label for="aKey">管理員密碼</label>
+      <input id="aKey" type="password" maxlength="60" autocomplete="off">
+      <button class="btn" id="aGo">打開收件匣</button>
+      <button class="btn sub" id="aStats">📊 看網站流量表</button>
+      <div class="status" id="aStat"></div>
+    </div>
+    <div id="aList"></div>
+  </div>
+
+  <div class="foot">
+    高雄市永芳國小 · 特教一班<br>
+    留言只有留言者本人與管理老師看得到
+  </div>
+</div>
+
+<script>
+window.onerror = function (msg, src, line) {
+  var b = document.getElementById("errBar");
+  if (b) {
+    b.style.display = "block";
+    b.textContent = "程式錯誤：" + msg + "（第 " + line + " 行）請把這行字告訴老師/開發者";
+  }
+  return false;
+};
+
+(function () {
+  var LSKEY = 'aac_msg_v1';
+  var API = window.AAC_API_URL || '';
+
+  function $(id) { return document.getElementById(id); }
+
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(LSKEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return { nick: '' };
+  }
+  function save(o) {
+    try { localStorage.setItem(LSKEY, JSON.stringify(o)); } catch (e) {}
+  }
+
+  var store = load();
+
+  if (!API) $('setupWarn').style.display = 'block';
+
+  // ---- 呼叫後端 ----
+  function call(payload, done) {
+    if (!API) { done({ ok: false, err: '尚未設定後端網址' }); return; }
+    fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).then(function (r) {
+      return r.json();
+    }).then(function (d) {
+      done(d);
+    }).catch(function () {
+      done({ ok: false, err: '連不上伺服器，請確認網路後再試一次' });
+    });
+  }
+
+  function setStat(el, text, kind) {
+    el.className = 'status' + (kind ? ' ' + kind : '');
+    el.textContent = text;
+  }
+
+  // ---- 分頁切換 ----
+  var tabs = document.querySelectorAll('.tab');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].addEventListener('click', function () {
+      var name = this.getAttribute('data-p');
+      for (var j = 0; j < tabs.length; j++) tabs[j].classList.remove('on');
+      this.classList.add('on');
+      var ps = document.querySelectorAll('.panel');
+      for (var k = 0; k < ps.length; k++) ps[k].classList.remove('on');
+      $('p-' + name).classList.add('on');
+      window.scrollTo(0, 0);
+    });
+  }
+
+  // ---- 我要留言 ----
+  if (store.nick) { $('wNick').value = store.nick; $('mNick').value = store.nick; }
+
+  $('wBody').addEventListener('input', function () {
+    $('wCount').textContent = this.value.length;
+  });
+
+  $('wSend').addEventListener('click', function () {
+    var btn = this;
+    var nick = $('wNick').value.trim();
+    var pw = $('wPw').value;
+    var body = $('wBody').value.trim();
+
+    if (nick.length < 2) { setStat($('wStat'), '暱稱至少 2 個字', 'bad'); return; }
+    if (pw.length < 4) { setStat($('wStat'), '密碼至少 4 個字', 'bad'); return; }
+    if (!body) { setStat($('wStat'), '還沒寫內容喔', 'bad'); return; }
+
+    btn.disabled = true;
+    setStat($('wStat'), '送出中…');
+    call({ act: 'post', nick: nick, pw: pw, body: body }, function (d) {
+      btn.disabled = false;
+      if (!d.ok) { setStat($('wStat'), d.err || '送出失敗', 'bad'); return; }
+      store.nick = nick; save(store);
+      $('mNick').value = nick;
+      $('wBody').value = ''; $('wCount').textContent = '0';
+      setStat($('wStat'), '✅ 送出成功！老師看到後會回覆，之後用同一組暱稱和密碼就能查看。', 'good');
+    });
+  });
+
+  // ---- 我的留言 ----
+  $('mGo').addEventListener('click', function () {
+    var btn = this;
+    var nick = $('mNick').value.trim();
+    var pw = $('mPw').value;
+    if (!nick || !pw) { setStat($('mStat'), '請填暱稱和密碼', 'bad'); return; }
+
+    btn.disabled = true;
+    setStat($('mStat'), '查詢中…');
+    call({ act: 'mine', nick: nick, pw: pw }, function (d) {
+      btn.disabled = false;
+      if (!d.ok) { setStat($('mStat'), d.err || '查詢失敗', 'bad'); $('mList').innerHTML = ''; return; }
+      store.nick = nick; save(store);
+      setStat($('mStat'), '共 ' + d.list.length + ' 則', 'good');
+      renderMine(d.list);
+    });
+  });
+
+  $('mClear').addEventListener('click', function () {
+    store.nick = '';
+    save(store);
+    $('mNick').value = ''; $('mPw').value = ''; $('wNick').value = ''; $('wPw').value = '';
+    $('mList').innerHTML = '';
+    setStat($('mStat'), '已清掉這台裝置記住的暱稱', 'good');
+  });
+
+  function renderMine(list) {
+    var box = $('mList');
+    if (!list.length) {
+      box.innerHTML = '<div class="empty">還沒有留言。切到「我要留言」寫第一則吧！</div>';
+      return;
+    }
+    var h = '';
+    for (var i = 0; i < list.length; i++) {
+      var m = list[i];
+      h += '<div class="msg">';
+      h += '<div class="top"><span class="when">' + esc(m.at) + '</span>';
+      h += '<span class="badge' + (m.reply ? ' done' : '') + '">' +
+           (m.reply ? '老師已回覆' : '等待回覆') + '</span></div>';
+      h += '<div class="body">' + esc(m.body) + '</div>';
+      if (m.reply) {
+        h += '<div class="reply"><div class="lbl">👩‍🏫 老師的回覆 · ' + esc(m.replyAt) + '</div>';
+        h += '<div class="body">' + esc(m.reply) + '</div></div>';
+      }
+      h += '</div>';
+    }
+    box.innerHTML = h;
+  }
+
+  // ---- 管理員 ----
+  $('aGo').addEventListener('click', function () {
+    var btn = this;
+    var key = $('aKey').value;
+    if (!key) { setStat($('aStat'), '請輸入管理員密碼', 'bad'); return; }
+    btn.disabled = true;
+    setStat($('aStat'), '載入中…');
+    call({ act: 'admin', key: key }, function (d) {
+      btn.disabled = false;
+      if (!d.ok) { setStat($('aStat'), d.err || '載入失敗', 'bad'); $('aList').innerHTML = ''; return; }
+      var wait = 0;
+      for (var i = 0; i < d.list.length; i++) if (!d.list[i].reply) wait++;
+      setStat($('aStat'), '共 ' + d.list.length + ' 則，' + wait + ' 則待回覆', 'good');
+      renderAdmin(d.list, key);
+    });
+  });
+
+  $('aStats').addEventListener('click', function () {
+    window.location.href = 'stats.html';
+  });
+
+  function renderAdmin(list, key) {
+    var box = $('aList');
+    if (!list.length) { box.innerHTML = '<div class="empty">收件匣是空的。</div>'; return; }
+    var h = '';
+    for (var i = 0; i < list.length; i++) {
+      var m = list[i];
+      h += '<div class="msg" data-id="' + esc(m.id) + '">';
+      h += '<div class="top"><span class="who">👤 ' + esc(m.nick) + '</span>';
+      h += '<span class="when">' + esc(m.at) + '</span>';
+      h += '<span class="badge' + (m.reply ? ' done' : '') + '">' +
+           (m.reply ? '已回覆' : '待回覆') + '</span></div>';
+      h += '<div class="body">' + esc(m.body) + '</div>';
+      if (m.reply) {
+        h += '<div class="reply"><div class="lbl">你的回覆 · ' + esc(m.replyAt) + '</div>';
+        h += '<div class="body">' + esc(m.reply) + '</div></div>';
+      }
+      h += '<div class="replybox"><textarea placeholder="' +
+           (m.reply ? '修改回覆…' : '回覆這則留言…') + '">' + esc(m.reply) + '</textarea>';
+      h += '<button class="btn sub rep">送出回覆</button>';
+      h += '<div class="status rstat"></div></div>';
+      h += '</div>';
+    }
+    box.innerHTML = h;
+
+    var btns = box.querySelectorAll('.rep');
+    for (var j = 0; j < btns.length; j++) {
+      btns[j].addEventListener('click', function () {
+        var wrap = this.parentElement;
+        var card = wrap.parentElement;
+        var id = card.getAttribute('data-id');
+        var ta = wrap.querySelector('textarea');
+        var st = wrap.querySelector('.rstat');
+        var text = ta.value.trim();
+        if (!text) { st.className = 'status rstat bad'; st.textContent = '回覆是空的'; return; }
+        this.disabled = true;
+        st.className = 'status rstat'; st.textContent = '送出中…';
+        var b = this;
+        call({ act: 'reply', key: key, id: id, body: text }, function (d) {
+          b.disabled = false;
+          if (!d.ok) { st.className = 'status rstat bad'; st.textContent = d.err || '失敗'; return; }
+          st.className = 'status rstat good'; st.textContent = '✅ 已回覆';
+          var badge = card.querySelector('.badge');
+          if (badge) { badge.className = 'badge done'; badge.textContent = '已回覆'; }
+        });
+      });
+    }
+  }
+})();
+</script>
+</body>
+</html>
