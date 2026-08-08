@@ -105,7 +105,7 @@ header .hBtn{background:#fff;border-radius:14px;font-size:3.2vh;padding:.6vh 2vw
 .back{background:#fff;transform:rotateY(180deg);box-shadow:inset 0 0 0 .5vh #bee3f8}
 .card.done .back{background:#c6f6d5;box-shadow:inset 0 0 0 .5vh #48bb78}
 
-/* ===== 哆啦A夢道具 ===== */
+/* ===== 習德法寶 ===== */
 #gadgetBar{position:absolute;right:1vw;top:11vh;display:flex;flex-direction:column;gap:1.5vh;z-index:20}
 .gBtn{background:#fff;border:.5vh solid #4299e1;border-radius:18px;padding:1vh .5vh;font-size:4.5vh;
   display:flex;flex-direction:column;align-items:center;box-shadow:0 4px 0 #90bfe8;position:relative;width:12vh}
@@ -171,7 +171,7 @@ header .hBtn{background:#fff;border-radius:14px;font-size:3.2vh;padding:.6vh 2vw
   <!-- 主選單 -->
   <div id="menu" class="screen">
     <h1>🎯 配對學習遊戲</h1>
-    <div class="sub">點一點大按鈕開始練習！卡住了，可以用哆啦A夢道具幫忙喔 🔍🚪🍞</div>
+    <div class="sub">點一點大按鈕開始練習！卡住了，可以用習德法寶幫忙喔 🔍🌈🍯</div>
     <div class="menuSec">
       <h2>🔢 數量配對（生活數學）</h2>
       <div class="menuGrid">
@@ -226,9 +226,9 @@ header .hBtn{background:#fff;border-radius:14px;font-size:3.2vh;padding:.6vh 2vw
     <div id="ansArea"></div>
     <div id="gadgetBar">
       <button class="gBtn" onclick="useZoom()">🔍<span>放大鏡</span></button>
-      <button class="gBtn" id="itFifty" onclick="useFifty()">🔦<span>縮小燈</span><b id="nFifty">1</b></button>
-      <button class="gBtn" id="itHint" onclick="useHint()">🍞<span>記憶吐司</span><b id="nHint">1</b></button>
-      <button class="gBtn" id="itSkip" onclick="useSkip()">🚪<span>任意門</span><b id="nSkip">0</b></button>
+      <button class="gBtn" id="itFifty" onclick="useFifty()">🔍<span>明心鏡</span><b id="nFifty">1</b></button>
+      <button class="gBtn" id="itHint" onclick="useHint()">🍯<span>靈光蜜</span><b id="nHint">1</b></button>
+      <button class="gBtn" id="itSkip" onclick="useSkip()">🌈<span>彩虹橋</span><b id="nSkip">0</b></button>
     </div>
   </div>
 
@@ -238,7 +238,7 @@ header .hBtn{background:#fff;border-radius:14px;font-size:3.2vh;padding:.6vh 2vw
       <button class="hBtn" onclick="goHome()">🏠 回家</button>
       <div id="memProgress"></div>
       <div class="energy" id="memEnergy"></div>
-      <button class="hBtn" id="toastBtn" onclick="useToast()">🍞 記憶吐司 x1</button>
+      <button class="hBtn" id="honeyBtn" onclick="useHoney()">🍯 靈光蜜 x1</button>
       <button class="hBtn" onclick="startMemory(memLevel)">🔄 重玩</button>
     </header>
     <div id="memBoard"></div>
@@ -269,14 +269,14 @@ header .hBtn{background:#fff;border-radius:14px;font-size:3.2vh;padding:.6vh 2vw
     </div>
   </div>
 
-  <!-- 竹蜻蜓救援 -->
+  <!-- 護心羽救援 -->
   <div class="modal hidden" id="shieldModal">
     <div class="modalCard">
-      <div style="font-size:10vh">🚁</div>
-      <div class="gName">要用竹蜻蜓嗎？</div>
-      <div class="gDesc">用了竹蜻蜓，⭐星星不會不見，<br>可以再答一次！</div>
+      <div style="font-size:10vh">🪶</div>
+      <div class="gName">要用護心羽嗎？</div>
+      <div class="gDesc">用了護心羽，⭐星星不會不見，<br>可以再答一次！</div>
       <div>
-        <button class="mBtn" onclick="useShield(true)">🚁 要用！（剩 <span id="nShield">1</span> 個）</button>
+        <button class="mBtn" onclick="useShield(true)">🪶 要用！（剩 <span id="nShield">1</span> 個）</button>
         <button class="mBtn blue" onclick="useShield(false)">先不用</button>
       </div>
     </div>
@@ -288,10 +288,10 @@ header .hBtn{background:#fff;border-radius:14px;font-size:3.2vh;padding:.6vh 2vw
       <div style="font-size:3.5vh;font-weight:bold;color:#0b5ea8">🎒 我的法寶收藏</div>
       <div class="collGrid" id="collGrid"></div>
       <div class="invRow">
-        <span>🔦 ×<span id="cFifty">1</span></span>
-        <span>🍞 ×<span id="cHint">1</span></span>
-        <span>🚪 ×<span id="cSkip">0</span></span>
-        <span>🚁 ×<span id="cShield">1</span></span>
+        <span>🔍 ×<span id="cFifty">1</span></span>
+        <span>🍯 ×<span id="cHint">1</span></span>
+        <span>🌈 ×<span id="cSkip">0</span></span>
+        <span>🪶 ×<span id="cShield">1</span></span>
       </div>
       <div style="font-size:2.4vh;color:#666;margin-top:1vh">答對題目集⚡能量，集滿 3 格就能抽新法寶！</div>
       <button class="mBtn blue" onclick="$('collModal').classList.add('hidden')" style="margin-top:1.5vh">關閉</button>
@@ -414,10 +414,10 @@ function answer(btn,correct,answerSpeech){
   }else{
     btn.classList.add('wrong');beep(false);
     setTimeout(()=>{btn.classList.remove('wrong');btn.classList.add('dim')},450);
-    if(firstTry&&inv.shield>0){ /* 竹蜻蜓救援：保住星星再答一次 */
+    if(firstTry&&inv.shield>0){ /* 護心羽救援：保住星星再答一次 */
       $('nShield').textContent=inv.shield;
       $('shieldModal').classList.remove('hidden');
-      say('答錯了！要用竹蜻蜓保住星星嗎？',false);
+      say('答錯了！要用護心羽保住星星嗎？',false);
     }else{
       firstTry=false;
       say('再試一次，你可以的！',false);
@@ -647,24 +647,24 @@ GEN.pattern=function(){
   };
 };
 
-/* ================= 哆啦A夢法寶系統 ================= */
-/* 效果：fifty=縮小燈(刪1個錯誤答案) hint=提示 skip=直接通過 shield=答錯保住星星 */
+/* ================= 習德法寶系統 ================= */
+/* 效果：fifty=明心鏡(刪1個錯誤答案) hint=提示 skip=直接通過 shield=答錯保住星星 */
 const GADGETS=[
-  {e:'🚪',n:'任意門',fx:'skip',d:'打開門就能到任何地方，直接通過這一題！'},
-  {e:'🚁',n:'竹蜻蜓',fx:'shield',d:'戴在頭上就能飛，危機時救你一命！'},
-  {e:'🛸',n:'時光機',fx:'skip',d:'穿越時空，直接跳到下一題！'},
-  {e:'🔦',n:'縮小燈',fx:'fifty',d:'把錯誤的答案縮小到看不見！'},
-  {e:'🍞',n:'記憶吐司',fx:'hint',d:'吃下去就想起解題方法！'},
-  {e:'🍮',n:'翻譯蒟蒻',fx:'hint',d:'把難懂的題目變成簡單的提示！'},
-  {e:'💥',n:'空氣砲',fx:'fifty',d:'「砰」！把錯誤答案打飛！'},
-  {e:'🧣',n:'時光包巾',fx:'shield',d:'把答錯的時間包起來，重新再來！'},
-  {e:'⭕',n:'穿透環',fx:'skip',d:'穿過難題的牆壁，直接通關！'},
-  {e:'👒',n:'石頭帽',fx:'shield',d:'戴上帽子，錯誤就當作沒發生！'},
-  {e:'🪄',n:'換身棒',fx:'hint',d:'和數學小老師交換腦袋，獲得提示！'},
-  {e:'🍙',n:'桃太郎飯糰',fx:'shield',d:'吃了變勇敢，失敗了也不怕再試！'}
+  {e:'🌈',n:'彩虹橋',fx:'skip',d:'走上彩虹橋，一步就到對岸，直接通過這一題！'},
+  {e:'🪶',n:'護心羽',fx:'shield',d:'輕輕一飄，在你跌倒時接住你！'},
+  {e:'🚢',n:'跳島船',fx:'skip',d:'揚帆出發，直接航向下一題！'},
+  {e:'🔍',n:'明心鏡',fx:'fifty',d:'照一照，錯誤的答案就現形消失！'},
+  {e:'🍯',n:'靈光蜜',fx:'hint',d:'嚐一口，解題的方法就浮現！'},
+  {e:'🫧',n:'懂懂泡泡',fx:'hint',d:'把難懂的題目變成簡單的提示！'},
+  {e:'🌬️',n:'清風吹',fx:'fifty',d:'呼——把錯的答案吹走！'},
+  {e:'🧣',n:'暖心巾',fx:'shield',d:'把答錯的難過包起來，再試一次！'},
+  {e:'🌀',n:'穿霧環',fx:'skip',d:'穿過迷霧的牆壁，直接通關！'},
+  {e:'⛑️',n:'穩穩帽',fx:'shield',d:'戴上帽子，錯了也站得穩穩的！'},
+  {e:'🪄',n:'智慧杖',fx:'hint',d:'揮一揮，得到一個解題提示！'},
+  {e:'🌰',n:'勇氣果',fx:'shield',d:'吃了變勇敢，失敗也不怕再試！'}
 ];
-const FX_NAME={fifty:'🔦 讓一個錯誤答案消失 ×1',hint:'🍞 獲得一個提示 ×1',
-  skip:'🚪 直接通過一題 ×1',shield:'🚁 答錯時保住星星再答一次 ×1'};
+const FX_NAME={fifty:'🔍 讓一個錯誤答案消失 ×1',hint:'🍯 獲得一個提示 ×1',
+  skip:'🌈 直接通過一題 ×1',shield:'🪶 答錯時保住星星再答一次 ×1'};
 const HINTS={
   count:'每10個一格！可以點圖幫忙數，一個一個慢慢數',
   quantity:'先看清楚大數字，再一盤一盤慢慢數',
@@ -697,8 +697,8 @@ function updateItems(){
   $('itFifty').classList.toggle('off',inv.fifty<1||usedFifty||!!seqq);
   $('itHint').classList.toggle('off',inv.hint<1||usedHint);
   $('itSkip').classList.toggle('off',inv.skip<1||!!seqq);
-  $('toastBtn').textContent=`🍞 記憶吐司 x${inv.hint}`;
-  $('toastBtn').style.opacity=inv.hint>0?1:.4;
+  $('honeyBtn').textContent=`🍯 靈光蜜 x${inv.hint}`;
+  $('honeyBtn').style.opacity=inv.hint>0?1:.4;
 }
 function openGacha(){
   [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f),i*120));
@@ -740,7 +740,7 @@ function useFifty(){
   inv.fifty--;usedFifty=true;
   const b=pick(cands);
   b.style.transition='transform .5s';b.style.transform='scale(0)';
-  say('縮小燈！一個錯的答案變不見了！',false);
+  say('明心鏡！一個錯的答案變不見了！',false);
   setTimeout(()=>b.classList.add('dim'),500);
   updateItems();
 }
@@ -748,7 +748,7 @@ function useHint(){
   if(inv.hint<1||usedHint)return;
   inv.hint--;usedHint=true;
   const h=HINTS[mode]||'慢慢想，你可以的！';
-  const hb=$('hintBox');hb.textContent='🍞 '+h;hb.classList.add('show');
+  const hb=$('hintBox');hb.textContent='🍯 '+h;hb.classList.add('show');
   say(h,false);updateItems();
 }
 function useSkip(){
@@ -756,27 +756,27 @@ function useSkip(){
   const cb=[...$('ansArea').children].find(b=>b.dataset.ok==='1'&&!b.classList.contains('correct'));
   if(!cb)return;
   inv.skip--;updateItems();
-  say('任意門開啟！直接通過！',false);
+  say('彩虹橋開啟！直接通過！',false);
   cb.click();
 }
 function useShield(yes){
   $('shieldModal').classList.add('hidden');
   if(yes&&inv.shield>0){
     inv.shield--;updateItems();
-    say('竹蜻蜓出動！星星保住了，再選一次！',false);
+    say('護心羽出動！星星保住了，再選一次！',false);
   }else{
     firstTry=false;
     say('沒關係，再試一次，你可以的！',false);
   }
 }
-function useToast(){ /* 記憶翻翻樂的記憶吐司（用法寶庫存） */
+function useHoney(){ /* 記憶翻翻樂的靈光蜜（用法寶庫存） */
   if(inv.hint<1||memLock)return;
   inv.hint--;updateItems();
   memLock=true;
   if(memFirst){memFirst.classList.remove('flip');memFirst=null}
   const cards=[...$('memBoard').children];
   cards.forEach(c=>{if(!c.classList.contains('done'))c.classList.add('flip')});
-  say('記憶吐司！快記住卡片的位置',false);
+  say('靈光蜜！快記住卡片的位置',false);
   setTimeout(()=>{
     cards.forEach(c=>{if(!c.classList.contains('done'))c.classList.remove('flip')});
     memLock=false;
