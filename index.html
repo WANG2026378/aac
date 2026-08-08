@@ -319,6 +319,21 @@ body {
   color: var(--muted);
   font-family: ui-monospace, Menlo, monospace;
 }
+.tool-hits {
+  font-size: 12.5px;
+  color: var(--muted);
+  background: #fff6ee;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 2px 9px;
+  margin-left: auto;
+  margin-right: 10px;
+  white-space: nowrap;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+.tool-hits.show { opacity: 1; }
 .tool-arrow {
   color: var(--accent, var(--primary));
   font-size: 22px;
@@ -470,6 +485,7 @@ body {
 <div style="margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
   <a href="qr.html" style="background:rgba(255,255,255,0.25);color:white;padding:8px 18px;border-radius:18px;font-size:14px;text-decoration:none;font-weight:600;backdrop-filter:blur(8px);">📱 給家長的 QR 總表</a>
   <a href="about.html" style="background:rgba(255,255,255,0.25);color:white;padding:8px 18px;border-radius:18px;font-size:14px;text-decoration:none;font-weight:600;backdrop-filter:blur(8px);">📣 推廣介紹</a>
+  <a href="msg.html" style="background:rgba(255,255,255,0.25);color:white;padding:8px 18px;border-radius:18px;font-size:14px;text-decoration:none;font-weight:600;backdrop-filter:blur(8px);">💌 留言給老師</a>
 </div>
 
   <div class="stats">
@@ -1342,9 +1358,63 @@ body {
   <p style="margin-top:8px;font-size:13px;opacity:0.7;">
     為特殊需求學生與家長製作，<span class="heart">❤️</span> 持續更新中
   </p>
+  <p style="margin-top:10px;font-size:13px;">
+    <a href="msg.html" style="color:inherit;">💌 留言給老師（悩悩話）</a>
+  </p>
   <p style="margin-top:8px;font-size:12px;opacity:0.6;">© 2026 永芳特教教學資源網</p>
 </div>
 
 <script src="offline-register.js" defer></script>
+<script>
+/* 卡片點閱數：向後端要各頁累計次數，用 JSONP 取回（不需要 CORS 設定） */
+(function () {
+  function inject(counts) {
+    var cards = document.querySelectorAll('a.tool-card');
+    for (var i = 0; i < cards.length; i++) {
+      var href = (cards[i].getAttribute('href') || '').split('?')[0].split('#')[0];
+      var n = counts[href];
+      if (!n || n < 1) continue;          // 還沒有人點過就不顯示，避免整排掛 0
+      var cta = cards[i].querySelector('.tool-cta');
+      if (!cta) continue;
+      var span = document.createElement('span');
+      span.className = 'tool-hits';
+      span.textContent = '\uD83D\uDC40 ' + n.toLocaleString('en-US');
+      var arrow = cta.querySelector('.tool-arrow');
+      if (arrow) { cta.insertBefore(span, arrow); } else { cta.appendChild(span); }
+      setTimeout((function (s) { return function () { s.className = 'tool-hits show'; }; })(span), 30);
+    }
+  }
+
+  function start() {
+    var s = null;
+    try {
+      if (!window.AAC_API_URL) return;
+      var cbName = 'aacCounts' + Date.now();
+      var timer = setTimeout(cleanup, 8000);
+
+      function cleanup() {
+        clearTimeout(timer);
+        try { delete window[cbName]; } catch (e) { window[cbName] = undefined; }
+        if (s && s.parentNode) s.parentNode.removeChild(s);
+      }
+
+      window[cbName] = function (d) {
+        cleanup();
+        if (d && d.ok && d.counts) { try { inject(d.counts); } catch (e) {} }
+      };
+
+      s = document.createElement('script');
+      s.async = true;
+      s.onerror = cleanup;
+      s.src = window.AAC_API_URL + '?act=counts&cb=' + cbName + '&t=' + Date.now();
+      document.body.appendChild(s);
+    } catch (e) {}
+  }
+
+  // offline-register.js 是 defer，load 之後才保證 AAC_API_URL 已設定
+  if (document.readyState === 'complete') { start(); }
+  else { window.addEventListener('load', start); }
+})();
+</script>
 </body>
 </html>
