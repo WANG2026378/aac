@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>網站流量表｜永芳特教教學資源網</title>
+<meta name="robots" content="noindex">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="流量表">
+<meta name="theme-color" content="#4299E1">
+<link rel="apple-touch-icon" href="icons/portal-180.png">
+<link rel="icon" href="icons/portal-512.png">
+<script src="offline-register.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #f5f8fc;
+  --card: #ffffff;
+  --text: #2d3748;
+  --muted: #718096;
+  --blue: #4299E1;
+  --blue-dark: #2b6cb0;
+  --green: #48BB78;
+  --orange: #FF8E53;
+  --border: #e2e8f0;
+  --shadow: 0 4px 20px rgba(43, 108, 176, 0.08);
+}
+body {
+  font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", -apple-system, sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 50px;
+}
+#errBar {
+  display: none; background: #742a2a; color: #fff; padding: 10px 14px; font-size: 13px;
+}
+.home {
+  position: absolute; top: 14px; left: 14px; z-index: 5;
+  background: rgba(255,255,255,0.25); color: #fff; text-decoration: none;
+  padding: 7px 14px; border-radius: 16px; font-size: 14px; font-weight: 600;
+}
+.header {
+  background: linear-gradient(135deg, #4299E1 0%, #667eea 100%);
+  color: #fff; padding: 56px 20px 32px; text-align: center; position: relative;
+}
+.header h1 { font-size: 26px; }
+.header p { font-size: 13.5px; opacity: 0.92; margin-top: 5px; }
+
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 14px; }
+
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 18px; padding: 18px; box-shadow: var(--shadow);
+  margin: -18px auto 16px; position: relative; z-index: 3;
+}
+.card.plain { margin-top: 0; }
+
+label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+input {
+  width: 100%; font-family: inherit; font-size: 16px;
+  border: 2px solid var(--border); border-radius: 12px; padding: 11px 13px;
+}
+input:focus { outline: none; border-color: var(--blue); }
+.btn {
+  display: block; width: 100%; margin-top: 14px; padding: 13px;
+  background: linear-gradient(135deg, #4299E1, #667eea); color: #fff;
+  border: none; border-radius: 13px; font-size: 16px; font-weight: 700;
+  font-family: inherit; cursor: pointer;
+}
+.btn.sub {
+  background: #fff; color: var(--blue-dark); border: 2px solid var(--border);
+  font-size: 14.5px; padding: 10px;
+}
+.btn:disabled { opacity: 0.55; }
+.status { text-align: center; font-size: 14px; color: var(--muted); padding: 10px 0; }
+.status.bad { color: #c53030; font-weight: 700; }
+
+#dash { display: none; }
+
+.kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 11px; margin-bottom: 16px; }
+.kpi {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  padding: 15px 14px; box-shadow: var(--shadow);
+}
+.kpi .n { font-size: 30px; font-weight: 800; line-height: 1.15; color: var(--blue-dark); }
+.kpi .l { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.kpi .s { font-size: 12px; color: var(--green); font-weight: 700; }
+@media (min-width: 620px) { .kpis { grid-template-columns: repeat(4, 1fr); } }
+
+h2.sec {
+  font-size: 16px; margin: 22px 0 10px; display: flex;
+  align-items: center; gap: 7px;
+}
+h2.sec span { font-size: 18px; }
+
+canvas { width: 100%; height: 200px; display: block; }
+
+.rank { list-style: none; }
+.rank li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14.5px;
+}
+.rank li:last-child { border-bottom: none; }
+.rank .nm { flex: 1; word-break: break-all; }
+.rank .bar {
+  height: 7px; border-radius: 4px; background: var(--blue);
+  min-width: 4px; flex-shrink: 0;
+}
+.rank .v { font-weight: 700; color: var(--blue-dark); min-width: 46px; text-align: right; }
+.rank .i {
+  width: 22px; text-align: center; font-size: 12px; font-weight: 700;
+  color: var(--muted); flex-shrink: 0;
+}
+.foot { text-align: center; color: var(--muted); font-size: 12.5px; padding: 22px 14px; }
+.foot a { color: var(--blue-dark); }
+.setupwarn {
+  background: #fff5f5; border: 2px dashed #fc8181; color: #9b2c2c;
+  border-radius: 14px; padding: 15px; font-size: 14px; margin-bottom: 14px;
+}
+</style>
+</head>
+<body>
+
+<div id="errBar"></div>
+
+<div class="header">
+  <a class="home" href="index.html">← 教學首頁</a>
+  <h1>📊 網站流量表</h1>
+  <p>僅限管理員檢視</p>
+</div>
+
+<div class="wrap">
+  <div id="setupWarn" class="setupwarn" style="display:none;">
+    尚未設定後端網址。請打開 <b>offline-register.js</b>，把最上面的
+    <b>AAC_API_URL</b> 換成你的 Google Apps Script 網址。
+  </div>
+
+  <div class="card" id="login">
+    <label for="key">管理員密碼</label>
+    <input id="key" type="password" maxlength="60" autocomplete="off">
+    <button class="btn" id="go">查看流量</button>
+    <button class="btn sub" onclick="location.href='msg.html'">💌 回留言板</button>
+    <div class="status" id="stat"></div>
+  </div>
+
+  <div id="dash">
+    <div class="kpis">
+      <div class="kpi"><div class="n" id="kToday">–</div><div class="l">今天瀏覽</div><div class="s" id="kTodayU"></div></div>
+      <div class="kpi"><div class="n" id="kWeek">–</div><div class="l">近 7 天</div></div>
+      <div class="kpi"><div class="n" id="kMonth">–</div><div class="l">近 30 天</div></div>
+      <div class="kpi"><div class="n" id="kTotal">–</div><div class="l">累計總瀏覽</div><div class="s" id="kVis"></div></div>
+    </div>
+
+    <h2 class="sec"><span>📈</span>最近 30 天</h2>
+    <div class="card plain"><canvas id="chart"></canvas></div>
+
+    <h2 class="sec"><span>🔥</span>熱門頁面</h2>
+    <div class="card plain"><ul class="rank" id="pages"></ul></div>
+
+    <h2 class="sec"><span>🔗</span>從哪裡來</h2>
+    <div class="card plain"><ul class="rank" id="refs"></ul></div>
+
+    <h2 class="sec"><span>📱</span>使用裝置</h2>
+    <div class="card plain"><ul class="rank" id="devs"></ul></div>
+
+    <button class="btn sub" id="refresh" style="margin-top:18px;">🔄 重新整理（跳過快取）</button>
+    <button class="btn sub" onclick="location.href='msg.html'">💌 回留言板</button>
+  </div>
+
+  <div class="foot">
+    高雄市永芳國小 · 特教一班<br>
+    數字每 3 分鐘更新一次快取
+  </div>
+</div>
+
+<script>
+window.onerror = function (msg, src, line) {
+  var b = document.getElementById("errBar");
+  if (b) {
+    b.style.display = "block";
+    b.textContent = "程式錯誤：" + msg + "（第 " + line + " 行）請把這行字告訴老師/開發者";
+  }
+  return false;
+};
+
+(function () {
+  var API = window.AAC_API_URL || '';
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  if (!API) $('setupWarn').style.display = 'block';
+
+  var lastKey = '';
+
+  function call(payload, done) {
+    if (!API) { done({ ok: false, err: '尚未設定後端網址' }); return; }
+    fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).then(function (r) { return r.json(); })
+      .then(done)
+      .catch(function () { done({ ok: false, err: '連不上伺服器' }); });
+  }
+
+  function fetchStats(fresh) {
+    var btn = $('go');
+    btn.disabled = true;
+    $('stat').className = 'status';
+    $('stat').textContent = '載入中…';
+    call({ act: 'stats', key: lastKey, fresh: fresh ? 1 : 0 }, function (d) {
+      btn.disabled = false;
+      if (!d.ok) {
+        $('stat').className = 'status bad';
+        $('stat').textContent = d.err || '載入失敗';
+        return;
+      }
+      $('stat').textContent = '';
+      $('login').style.display = 'none';
+      $('dash').style.display = 'block';
+      render(d);
+    });
+  }
+
+  $('go').addEventListener('click', function () {
+    lastKey = $('key').value;
+    if (!lastKey) {
+      $('stat').className = 'status bad';
+      $('stat').textContent = '請輸入管理員密碼';
+      return;
+    }
+    fetchStats(false);
+  });
+
+  $('key').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') $('go').click();
+  });
+
+  $('refresh').addEventListener('click', function () { fetchStats(true); });
+
+  function render(d) {
+    $('kToday').textContent = d.today;
+    $('kTodayU').textContent = d.todayUniq + ' 位訪客';
+    $('kWeek').textContent = d.week;
+    $('kMonth').textContent = d.month;
+    $('kTotal').textContent = d.total;
+    $('kVis').textContent = d.visitors + ' 位不重複訪客';
+
+    drawChart(d.days, d.daily, d.dailyUniq);
+    rank('pages', d.pages);
+    rank('refs', d.refs);
+    rank('devs', d.devs, DEV_LABEL);
+  }
+
+  var DEV_LABEL = {
+    'Desktop': '桌機電腦', 'iPad': 'iPad', 'iPhone': 'iPhone',
+    'Android': 'Android 手機平板', 'Mac': 'Mac', 'Windows': 'Windows'
+  };
+
+  function rank(id, arr, labels) {
+    var box = $(id);
+    if (!arr || !arr.length) {
+      box.innerHTML = '<li style="color:#718096;justify-content:center;">還沒有資料</li>';
+      return;
+    }
+    var max = arr[0].v || 1;
+    var h = '';
+    for (var i = 0; i < arr.length; i++) {
+      var pct = Math.max(4, Math.round(arr[i].v / max * 100));
+      h += '<li><span class="i">' + (i + 1) + '</span>';
+      var nm = (labels && labels[arr[i].k]) ? labels[arr[i].k] : arr[i].k;
+      h += '<span class="nm">' + esc(nm) + '</span>';
+      h += '<span class="bar" style="width:' + Math.round(pct * 0.4) + 'px;"></span>';
+      h += '<span class="v">' + arr[i].v + '</span></li>';
+    }
+    box.innerHTML = h;
+  }
+
+  function drawChart(days, hits, uniq) {
+    var cv = $('chart');
+    var dpr = window.devicePixelRatio || 1;
+    var w = cv.clientWidth, h = 200;
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(h * dpr);
+    var g = cv.getContext('2d');
+    if (!g) return;
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, w, h);
+
+    var padL = 34, padR = 8, padT = 12, padB = 26;
+    var cw = w - padL - padR, ch = h - padT - padB;
+
+    var max = 1;
+    for (var i = 0; i < hits.length; i++) if (hits[i] > max) max = hits[i];
+    var step = Math.max(1, Math.ceil(max / 4));
+    var top = step * 4;
+
+    // 格線與刻度
+    g.font = '11px -apple-system, sans-serif';
+    g.textAlign = 'right';
+    g.textBaseline = 'middle';
+    for (var k = 0; k <= 4; k++) {
+      var val = step * k;
+      var y = padT + ch - (val / top) * ch;
+      g.strokeStyle = '#e2e8f0';
+      g.lineWidth = 1;
+      g.beginPath();
+      g.moveTo(padL, y + 0.5);
+      g.lineTo(padL + cw, y + 0.5);
+      g.stroke();
+      g.fillStyle = '#a0aec0';
+      g.fillText(String(val), padL - 6, y);
+    }
+
+    var n = hits.length;
+    var slot = cw / n;
+    var bw = Math.max(3, Math.min(16, slot * 0.62));
+
+    for (var i = 0; i < n; i++) {
+      var x = padL + slot * i + (slot - bw) / 2;
+      var bh = (hits[i] / top) * ch;
+      var y = padT + ch - bh;
+      g.fillStyle = (i === n - 1) ? '#FF8E53' : '#4299E1';
+      roundRect(g, x, y, bw, Math.max(bh, hits[i] > 0 ? 2 : 0), 3);
+      g.fill();
+
+      if (uniq && uniq[i] > 0) {
+        var uh = (uniq[i] / top) * ch;
+        g.fillStyle = 'rgba(255,255,255,0.55)';
+        g.fillRect(x, padT + ch - uh, bw, 2);
+      }
+    }
+
+    // 日期標籤（每 5 天一個）
+    g.fillStyle = '#a0aec0';
+    g.textAlign = 'center';
+    g.textBaseline = 'top';
+    for (var i = 0; i < n; i++) {
+      if (i % 5 !== 0 && i !== n - 1) continue;
+      var lab = String(days[i]).slice(5).replace('-', '/');
+      g.fillText(lab, padL + slot * i + slot / 2, padT + ch + 7);
+    }
+  }
+
+  function roundRect(g, x, y, w, h, r) {
+    if (h <= 0) { g.beginPath(); return; }
+    r = Math.min(r, w / 2, h / 2);
+    g.beginPath();
+    g.moveTo(x + r, y);
+    g.lineTo(x + w - r, y);
+    g.quadraticCurveTo(x + w, y, x + w, y + r);
+    g.lineTo(x + w, y + h);
+    g.lineTo(x, y + h);
+    g.lineTo(x, y + r);
+    g.quadraticCurveTo(x, y, x + r, y);
+    g.closePath();
+  }
+
+  window.addEventListener('resize', function () {
+    if ($('dash').style.display === 'block' && window.__lastStats) {
+      drawChart(window.__lastStats.days, window.__lastStats.daily, window.__lastStats.dailyUniq);
+    }
+  });
+
+  var origRender = render;
+  render = function (d) { window.__lastStats = d; origRender(d); };
+})();
+</script>
+</body>
+</html>
