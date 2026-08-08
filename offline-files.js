@@ -57,7 +57,6 @@ self.AAC_CORE_FILES = [
   "picturebook-demo.html",
   "picturebook-food.html",
   "picturebook-imported.html",
-  "pikmin.html",
   "qr.html",
   "range.html",
   "reader_3.html",
@@ -114,7 +113,6 @@ self.AAC_CORE_FILES = [
   "write.html",
   "yanggu.html",
   "zhuyin.html",
-  "十二碼足球_3D明星隊長_1.html"
 ];
 self.AAC_OFFLINE_FILES = [
   "badminton-sky-smash-v5.html",
@@ -897,7 +895,6 @@ self.AAC_OFFLINE_FILES = [
   "picturebook-demo.html",
   "picturebook-food.html",
   "picturebook-imported.html",
-  "pikmin.html",
   "qr.html",
   "range.html",
   "reader_3.html",
@@ -954,7 +951,6 @@ self.AAC_OFFLINE_FILES = [
   "write.html",
   "yanggu.html",
   "zhuyin.html",
-  "十二碼足球_3D明星隊長_1.html",
   "十二碼足球3D_assets/node_modules/three/build/three.min.js",
   "assets/sanguo-portraits/cao-cao.webp",
   "assets/sanguo-portraits/cao-ren.webp",
