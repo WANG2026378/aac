@@ -8,7 +8,7 @@
 <link rel="manifest" href="manifest.json">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>十二碼足球 3D · 明星隊長</title>
+<title>十二碼足球 3D · 傳奇隊長</title>
 <style>
   :root{
     --ink:#f7fbf7;
@@ -208,13 +208,13 @@
   <div class="result-panel">
     <h2 id="resultTitle">比賽完成</h2>
     <p id="resultText"></p>
-    <button id="again" type="button">明星隊長再戰</button>
+    <button id="again" type="button">傳奇隊長再戰</button>
   </div>
 </div>
 <div class="select-screen" id="selectScreen">
   <div class="select-inner">
-    <h1>選擇明星球員</h1>
-    <p>選中的球員先踢，另外四位球星接著上場</p>
+    <h1>選擇傳奇隊長</h1>
+    <p>選中的球員先踢，另外四位隊長接著上場</p>
     <div class="captains" id="captains"></div>
   </div>
 </div>
@@ -247,17 +247,17 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   }
 
   const PLAYERS = [
-    {name:'Lionel Messi',short:'梅西',nation:'阿根廷隊長',number:10,height:.94,skin:0xd7a477,hair:0x241b17,shirt:0x78b9e8,secondary:0xffffff,shorts:0xffffff,power:84,smart:99,stamina:86,foot:'left',beard:true},
-    {name:'Cristiano Ronaldo',short:'C 羅',nation:'葡萄牙隊長',number:7,height:1.06,skin:0xc98f65,hair:0x171412,shirt:0xb21f32,secondary:0x1a7d42,shorts:0x126138,power:99,smart:89,stamina:96,foot:'right'},
-    {name:'Kylian Mbappé',short:'姆巴佩',nation:'法國隊長',number:10,height:1.00,skin:0x6e422d,hair:0x151210,shirt:0x163c8c,secondary:0xd62836,shorts:0x102c68,power:95,smart:92,stamina:98,foot:'right'},
-    {name:'Harry Kane',short:'凱恩',nation:'英格蘭隊長',number:9,height:1.07,skin:0xe0b18a,hair:0x674831,shirt:0xf2f2ee,secondary:0x273b68,shorts:0x263454,power:94,smart:94,stamina:89,foot:'right',beard:true},
-    {name:'Son Heung-min',short:'孫興慜',nation:'韓國隊長',number:7,height:1.03,skin:0xe0b18a,hair:0x171515,shirt:0xd72f3f,secondary:0x172b45,shorts:0x172b45,power:91,smart:96,stamina:94,foot:'right'},
-    {name:'Lamine Yamal',short:'亞馬爾',nation:'西班牙隊長',number:19,height:.95,skin:0x9c6b43,hair:0x141210,shirt:0xc60b1e,secondary:0xffd000,shorts:0x1a2a6c,power:88,smart:96,stamina:92,foot:'left'},
-    {name:'Erling Haaland',short:'哈蘭德',nation:'挪威隊長',number:9,height:1.12,skin:0xeac49c,hair:0xcaa856,shirt:0xd0202f,secondary:0xffffff,shorts:0x16224e,power:99,smart:90,stamina:94,foot:'left'},
-    {name:'袁永誠',short:'袁永誠',nation:'台灣隊長',number:10,height:1.00,skin:0xd7a477,hair:0x171210,shirt:0x0b6fb8,secondary:0xffffff,shorts:0xffffff,power:92,smart:94,stamina:93,foot:'right'},
-    {name:'Ayase Ueda',short:'上田綺世',nation:'日本代表',number:9,height:1.05,skin:0xd8a77d,hair:0x171412,shirt:0x174694,secondary:0xffffff,shorts:0x142e68,power:93,smart:91,stamina:95,foot:'right',celebrations:['surf','heart']},
-    {name:'Vinícius Júnior',short:'維尼修斯',nation:'巴西代表',number:7,height:.98,skin:0x75472f,hair:0x151210,shirt:0xf3cf2e,secondary:0x16834b,shorts:0x174696,power:94,smart:95,stamina:99,foot:'right',celebrations:['hipdance']},
-    {name:'Virgil van Dijk',short:'范戴克',nation:'荷蘭隊長',number:4,height:1.13,skin:0x9a6848,hair:0x171412,shirt:0xf47b20,secondary:0x171717,shorts:0xf47b20,power:97,smart:98,stamina:92,foot:'right',beard:true,celebrations:['sky']}
+    {name:'Mateo Rivas',short:'里瓦斯',nation:'阿根廷隊長',number:10,height:.94,skin:0xd7a477,hair:0x241b17,shirt:0x78b9e8,secondary:0xffffff,shorts:0xffffff,power:84,smart:99,stamina:86,foot:'left',beard:true},
+    {name:'Diogo Serra',short:'塞拉',nation:'葡萄牙隊長',number:7,height:1.06,skin:0xc98f65,hair:0x171412,shirt:0xb21f32,secondary:0x1a7d42,shorts:0x126138,power:99,smart:89,stamina:96,foot:'right'},
+    {name:'Amaury Leclair',short:'勒克萊',nation:'法國隊長',number:10,height:1.00,skin:0x6e422d,hair:0x151210,shirt:0x163c8c,secondary:0xd62836,shorts:0x102c68,power:95,smart:92,stamina:98,foot:'right'},
+    {name:'Oliver Bramley',short:'布蘭利',nation:'英格蘭隊長',number:9,height:1.07,skin:0xe0b18a,hair:0x674831,shirt:0xf2f2ee,secondary:0x273b68,shorts:0x263454,power:94,smart:94,stamina:89,foot:'right',beard:true},
+    {name:'Kang Si-woo',short:'姜施佑',nation:'韓國隊長',number:7,height:1.03,skin:0xe0b18a,hair:0x171515,shirt:0xd72f3f,secondary:0x172b45,shorts:0x172b45,power:91,smart:96,stamina:94,foot:'right'},
+    {name:'Bruno Alcázar',short:'阿卡薩',nation:'西班牙隊長',number:19,height:.95,skin:0x9c6b43,hair:0x141210,shirt:0xc60b1e,secondary:0xffd000,shorts:0x1a2a6c,power:88,smart:96,stamina:92,foot:'left'},
+    {name:'Sondre Vik',short:'維克',nation:'挪威隊長',number:9,height:1.12,skin:0xeac49c,hair:0xcaa856,shirt:0xd0202f,secondary:0xffffff,shorts:0x16224e,power:99,smart:90,stamina:94,foot:'left'},
+    {name:'柯昱翔',short:'昱翔',nation:'台灣隊長',number:10,height:1.00,skin:0xd7a477,hair:0x171210,shirt:0x0b6fb8,secondary:0xffffff,shorts:0xffffff,power:92,smart:94,stamina:93,foot:'right'},
+    {name:'Kaito Minase',short:'水瀨海斗',nation:'日本代表',number:9,height:1.05,skin:0xd8a77d,hair:0x171412,shirt:0x174694,secondary:0xffffff,shorts:0x142e68,power:93,smart:91,stamina:95,foot:'right',celebrations:['surf','heart']},
+    {name:'Rafael Duarte',short:'杜阿爾特',nation:'巴西代表',number:7,height:.98,skin:0x75472f,hair:0x151210,shirt:0xf3cf2e,secondary:0x16834b,shorts:0x174696,power:94,smart:95,stamina:99,foot:'right',celebrations:['hipdance']},
+    {name:'Sven Broekman',short:'布魯克曼',nation:'荷蘭隊長',number:4,height:1.13,skin:0x9a6848,hair:0x171412,shirt:0xf47b20,secondary:0x171717,shorts:0xf47b20,power:97,smart:98,stamina:92,foot:'right',beard:true,celebrations:['sky']}
   ];
 
   const sceneHost = document.getElementById('scene');
@@ -676,7 +676,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       r.legs[1].upper.rotation.set(.18-wave*.12,0,.16);r.legs[1].lower.rotation.set(.46,0,0);
       r.arms[0].upper.rotation.set(-1.05+wave*.12,0,-1.28);r.arms[1].upper.rotation.set(.5-wave*.12,0,1.28);
       r.arms[0].lower.rotation.set(-.12,0,0);r.arms[1].lower.rotation.set(-.18,0,0);
-    }else if(c.type==='hipdance'){        // 維尼修斯式搖臀舞步
+    }else if(c.type==='hipdance'){        // 搖臀舞步慶祝
       const beat=Math.sin(ct*11), step=Math.sin(ct*5.5);
       pl.position.set(b.x+step*.14,b.y+Math.abs(beat)*.08,b.z);
       pl.rotation.set(0,c.baseRotY+step*.14,beat*.16);
@@ -690,7 +690,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       r.arms[0].upper.rotation.set(0,0,-2.25*form);r.arms[1].upper.rotation.set(0,0,2.25*form);
       r.arms[0].lower.rotation.set(0,0,-1.18*form);r.arms[1].lower.rotation.set(0,0,1.18*form);
       r.legs[0].upper.rotation.set(.05,0,0);r.legs[1].upper.rotation.set(-.05,0,0);
-    }else if(c.type==='sky'){             // 范戴克式單手食指指天
+    }else if(c.type==='sky'){             // 單手食指指天慶祝
       const rise=THREE.MathUtils.smoothstep(ct,0,.38), breathe=Math.sin(ct*3.8)*.04;
       pl.position.set(b.x,b.y+breathe,b.z);pl.rotation.set(0,c.baseRotY-.12*rise,0);
       r.arms[0].upper.rotation.set(-.65*rise,0,-.5*rise);r.arms[0].lower.rotation.set(-1.35*rise,0,-.18*rise);
@@ -866,8 +866,8 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     state='finished';reticle.visible=false;celebration&&clearCelebration();stopMusic();
     const goals=shots.filter(x=>x==='goal').length;
     document.getElementById('resultTitle').textContent=goals>=4?'世界級表現！':goals>=2?'隊長完成挑戰':'再戰一次';
-    document.getElementById('resultText').textContent=`五位明星球員合計踢進 ${goals} 球。`;
-    say(`五位明星球員合計踢進 ${goals} 球，比賽結束！`,true);
+    document.getElementById('resultText').textContent=`五位傳奇隊長合計踢進 ${goals} 球。`;
+    say(`五位傳奇隊長合計踢進 ${goals} 球，比賽結束！`,true);
     result.classList.add('show');
   }
   function startWithCaptain(index){
