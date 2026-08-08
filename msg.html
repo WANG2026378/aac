@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>留言給老師｜永芳特教教學資源網</title>
+<title>留言給老師｜共學教具箱</title>
 <meta name="description" content="悄悄話留言板：留言內容與老師的回覆，只有你自己和管理老師看得到。">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -164,17 +164,21 @@ textarea { min-height: 130px; resize: vertical; line-height: 1.7; }
   <!-- 我要留言 -->
   <div class="panel on" id="p-write">
     <div class="note">
-      取一個<b>只有你記得的暱稱</b>和密碼，下次用同一組就能回來看老師的回覆。<br>
-      密碼不會存在這台裝置上，請自己記牢；老師也查不到你的密碼。
+      取一個<b>只有你記得的暱稱</b>和<b>通關密語</b>，下次用同一組就能回來看老師的回覆。<br>
+      ⚠️ 通關密語請<b>隨便自己想一組新的</b>，<b>不要用你 Google、臉書或其他網站的密碼</b>。<br>
+      它不會存在這台裝置上，請自己記牢；老師也查不到。
     </div>
     <div class="card">
       <label for="wNick">暱稱</label>
       <input id="wNick" type="text" maxlength="20" autocomplete="off" placeholder="例如：小恐龍">
       <div class="hint">2～20 個字。不用寫真名。</div>
 
-      <label for="wPw">密碼</label>
-      <input id="wPw" type="password" maxlength="40" autocomplete="off" placeholder="至少 4 個字">
-      <div class="hint">第一次留言時設定，之後都用這一組。</div>
+      <label for="wPw">通關密語</label>
+      <input id="wPw" type="password" maxlength="40" autocomplete="off" placeholder="隨便想一組，至少 4 個字">
+      <div class="hint">
+        第一次留言時設定，之後都用這一組。<br>
+        <b>不要用你其他網站的密碼</b>，想一組新的就好，例如「大恐龍愛吃飯」。
+      </div>
 
       <label for="wBody">想跟老師說的話</label>
       <textarea id="wBody" maxlength="1000" placeholder="遇到的問題、建議、或想告訴老師的事…"></textarea>
@@ -190,7 +194,7 @@ textarea { min-height: 130px; resize: vertical; line-height: 1.7; }
     <div class="card">
       <label for="mNick">暱稱</label>
       <input id="mNick" type="text" maxlength="20" autocomplete="off">
-      <label for="mPw">密碼</label>
+      <label for="mPw">通關密語</label>
       <input id="mPw" type="password" maxlength="40" autocomplete="off">
       <button class="btn" id="mGo">查看我的留言</button>
       <button class="btn sub" id="mClear">換人使用（清掉暱稱）</button>
@@ -212,8 +216,9 @@ textarea { min-height: 130px; resize: vertical; line-height: 1.7; }
   </div>
 
   <div class="foot">
-    高雄市永芳國小 · 特教一班<br>
-    留言只有留言者本人與管理老師看得到
+    🎒 共學教具箱<br>
+    留言只有留言者本人與管理老師看得到<br>
+    <span style="opacity:0.8;">通關密語只用在這個留言板，請勿使用其他網站的密碼</span>
   </div>
 </div>
 
@@ -303,7 +308,7 @@ window.onerror = function (msg, src, line) {
     var body = $('wBody').value.trim();
 
     if (nick.length < 2) { setStat($('wStat'), '暱稱至少 2 個字', 'bad'); return; }
-    if (pw.length < 4) { setStat($('wStat'), '密碼至少 4 個字', 'bad'); return; }
+    if (pw.length < 4) { setStat($('wStat'), '通關密語至少 4 個字', 'bad'); return; }
     if (!body) { setStat($('wStat'), '還沒寫內容喔', 'bad'); return; }
 
     btn.disabled = true;
@@ -314,7 +319,7 @@ window.onerror = function (msg, src, line) {
       store.nick = nick; save(store);
       $('mNick').value = nick;
       $('wBody').value = ''; $('wCount').textContent = '0';
-      setStat($('wStat'), '✅ 送出成功！老師看到後會回覆，之後用同一組暱稱和密碼就能查看。', 'good');
+      setStat($('wStat'), '✅ 送出成功！老師看到後會回覆，之後用同一組暱稱和通關密語就能查看。', 'good');
     });
   });
 
@@ -323,7 +328,7 @@ window.onerror = function (msg, src, line) {
     var btn = this;
     var nick = $('mNick').value.trim();
     var pw = $('mPw').value;
-    if (!nick || !pw) { setStat($('mStat'), '請填暱稱和密碼', 'bad'); return; }
+    if (!nick || !pw) { setStat($('mStat'), '請填暱稱和通關密語', 'bad'); return; }
 
     btn.disabled = true;
     setStat($('mStat'), '查詢中…');
