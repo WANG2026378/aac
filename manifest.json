@@ -1,8 +1,8 @@
 {
   "id": "/aac/",
-  "name": "永芳特教教學分享網",
-  "short_name": "教學網",
-  "description": "iPad 可加入主畫面的離線教學工具平台",
+  "name": "共學教具箱",
+  "short_name": "教具箱",
+  "description": "普通班和特教班都能用的數位教具，免登入、點開就玩，iPad 可加到主畫面離線使用",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
