@@ -435,6 +435,7 @@ h1.logo{font-size:52px;margin:40px 0 4px;background:linear-gradient(90deg,#ffb92
 
 </div>
 <div id="musicName"></div>
+<audio id="themeSong" src="gyro-theme.mp3" loop preload="none" playsinline></audio>
 <div id="toast"></div>
 <script>
 "use strict";
@@ -3201,6 +3202,9 @@ function hostBroadcast(){
 }
 /* ============== 背景音樂(三種:輕鬆/緊張/激烈) ============== */
 const BGM_LIST=[
+ /* 第一首是真人主題曲(mp3)，其餘為程式合成 */
+ {n:"🎤 主題曲 超能陀螺轉起來",file:"gyro-theme.mp3",key:0,
+  relax:{vol:.55},tense:{vol:.62},intense:{vol:.7}},
  {n:"⚔️ 鋼鐵競技場",key:0,
   relax:  {bpm:96 ,vol:.22,lead:"triangle",bassW:"sine"   ,prog:[0,-3,-5,-3],
            mel:[0,4,7,11,12,11,7,4, 0,3,7,10,12,10,7,3],arp:[0,7,12,16],hat:0,swing:.06},
@@ -3226,6 +3230,22 @@ const BGM_LIST=[
 const music={
  ac:null,master:null,filter:null,on:true,mode:"relax",step:0,nextT:0,track:0,
  cur(){return BGM_LIST[this.track]||BGM_LIST[0];},
+ isFile(){const c=this.cur();return !!(c&&c.file);},
+ audio(){return document.getElementById("themeSong");},
+ /* 主題曲：用 <audio> 播放；程式合成曲：用 WebAudio 排程 */
+ syncFile(){
+  const a=this.audio();if(!a)return;
+  if(this.on&&this.isFile()){
+   const c=this.cur();
+   const v=((c[this.mode]||c.relax||{}).vol)||.55;
+   a.volume=Math.max(0,Math.min(1,v));
+   if(a.paused){const p=a.play();if(p&&p.catch)p.catch(function(){});}
+  }else{
+   try{if(!a.paused)a.pause();}catch(e){}
+  }
+  /* 播主題曲時把合成器靜音，避免兩層聲音疊在一起 */
+  if(this.master)this.master.gain.value=(this.on&&!this.isFile())?.9:0;
+ },
  pat(){const T=this.cur();return T[this.mode]||T.relax;},
  start(){
   if(this.ac)return;
@@ -3270,6 +3290,7 @@ const music={
  },
  tick(){
   if(!this.ac)return;
+  if(this.isFile()){this.nextT=this.ac.currentTime+.12;return;}
   const p=this.pat(),K=this.cur().key||0,beat=60/p.bpm/2;
   while(this.nextT<this.ac.currentTime+.28){
    const i=this.step%16,bar=Math.floor(this.step/4)%4;
@@ -3296,13 +3317,14 @@ const music={
    this.nextT+=beat;this.step++;
   }
  },
- set(m){if(this.mode!==m){this.mode=m;}},
+ set(m){if(this.mode!==m){this.mode=m;this.syncFile();}},
  setTrack(i){
   this.track=((i%BGM_LIST.length)+BGM_LIST.length)%BGM_LIST.length;
-  save.bgm=this.track;persist();
+  if(save){save.bgm=this.track;persist();}
   this.step=0;
   const el=$("musicName");
   if(el){el.textContent="♪ "+BGM_LIST[this.track].n;el.style.opacity=1;clearTimeout(this._nt);this._nt=setTimeout(()=>el.style.opacity=0,1800);}
+  this.syncFile();
  },
  /* 點按:開→切下一首→…→第三首後靜音→再點恢復第一首 */
  cycle(){
@@ -3310,14 +3332,14 @@ const music={
   if(!this.on){this.on=true;this.track=0;}
   else if(this.track<BGM_LIST.length-1){this.setTrack(this.track+1);}
   else{this.on=false;}
-  if(this.master)this.master.gain.value=this.on?.9:0;
   $("musicBtn").textContent=this.on?"🔊":"🔇";
   if(this.on&&this.track===0)this.setTrack(0);
+  this.syncFile();
  },
  toggle(){this.cycle();}
 };
-document.addEventListener("pointerdown",()=>music.start(),{once:true});
-document.addEventListener("keydown",()=>music.start(),{once:true});
+document.addEventListener("pointerdown",()=>{music.start();music.syncFile();},{once:true});
+document.addEventListener("keydown",()=>{music.start();music.syncFile();},{once:true});
 $("musicBtn").addEventListener("click",()=>music.cycle());
 (function(){
  const rb=$("replayBtn");
@@ -3339,6 +3361,11 @@ setInterval(()=>{
 
 /* ---- 啟動 ---- */
 loadSave();refreshPts();fitCanvas();
+/* 依存檔選曲；沒存過就用主題曲(第 0 首) */
+try{
+ music.track=(((save&&save.bgm)|0)%BGM_LIST.length+BGM_LIST.length)%BGM_LIST.length;
+ music.syncFile();
+}catch(e){}
 </script>
 <script type="module" src="gyro-league-matchmaking.js"></script>
 <div id="revealBox">
