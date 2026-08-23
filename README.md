@@ -1,48 +1,16 @@
-# 共學教具箱
+# 王川銘｜解冤結真言 108 計數器
 
-普通班和特教班都能用的數位教具 · 免登入、點開就玩、iPad 可離線使用
+## GitHub Pages 部署
 
-由高雄市永芳國小特教教師製作 · 歡迎自由取用，也歡迎分享給需要的老師
+1. 在 GitHub 建立新的 repository，例如 `mantra-counter`。
+2. 把本資料夾內的所有檔案與 `icons` 資料夾上傳到 repository 的根目錄，再提交（commit）。
+3. 到 repository 的 **Settings → Pages**，在 **Build and deployment** 選擇 **Deploy from a branch**；Branch 選擇 `main` 與 `/ (root)`，按 **Save**。
+4. 等待約一分鐘，GitHub Pages 顯示的網址就是手機版 App 網址。以 iPhone Safari 開啟後，按分享按鈕 → **加入主畫面**，即可像 App 一樣使用並離線開啟。
 
-## iPad 溝通版 AAC（talk.html）
+## 語音功能說明
 
-王川銘老師 - iPad 輔助溝通系統
+語音自動計數依賴瀏覽器內建的網頁語音辨識。Chrome／Android 通常支援較完整；iPhone Safari 與部分瀏覽器可能不提供、或服務暫時無法使用。App 會顯示具體原因，手動的「＋1／－1」不受影響。第一次使用時請允許麥克風。
 
-**正式網址**: https://wang2026378.github.io/aac/
+## 姓名與三學精舍回報連結
 
-## 功能
-- 大按鈕中文 TTS 語音溝通板
-- 10 大分類 120+ 預設詞彙
-- 句子建構器
-- 老師可編輯/上傳家人照片
-- PWA 支援，可加到 iPad 主畫面離線使用
-
-## 繪本匯入
-
-新增繪本時，先把裁切好的頁面圖片放在同一個資料夾，檔名用頁碼排序，例如 `page-01.jpg`、`page-02.jpg`。
-
-```bash
-node tools/import-picturebook.mjs --source ~/Downloads/my-book --slug my-book --title "我的繪本" --theme emotion
-```
-
-常用指令：
-
-```bash
-node tools/import-picturebook.mjs --scan
-node tools/import-picturebook.mjs --source ~/Downloads/my-book --slug my-book --title "我的繪本" --theme generic
-node tools/import-picturebook.mjs --source ~/Downloads/food-book --slug food-book --title "食物繪本" --theme food
-```
-
-匯入後會產生：
-
-- `assets/picturebooks/<slug>/page-01.jpg` 等圖片
-- `assets/picturebooks/<slug>/lesson.js` 教學資料
-- `assets/picturebooks/<slug>/import-summary.json` 匯入摘要
-
-打開隱藏教學頁：
-
-```text
-picturebook-imported.html?lesson=<slug>
-```
-
-接著編輯 `assets/picturebooks/<slug>/lesson.js` 裡每一頁的 `title`、`text`、`companionLine`、`question`，就能保留同一套翻頁、TTS、題目、進度與大圖模式。
+第一次開啟時，持誦者可輸入自己的姓名，姓名只會儲存在自己的裝置。請將三學精舍提供的「報告圈數」完整網址填入 `app.js` 最上方的 `REPORT_URL`，網站便會顯示該連結。
