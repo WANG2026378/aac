@@ -1,0 +1,17 @@
+{
+  "id": "/aac/amitabha-counter.html",
+  "name": "阿彌陀佛｜108 念佛計數器",
+  "short_name": "念佛計數器",
+  "description": "阿彌陀佛 108 念佛計數器，可加入手機主畫面使用。",
+  "start_url": "./amitabha-counter.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fffaf2",
+  "theme_color": "#8d293d",
+  "lang": "zh-TW",
+  "icons": [
+    {"src":"icons/amitabha-icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"icons/amitabha-icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"},
+    {"src":"icons/amitabha-icon-1024.png","sizes":"1024x1024","type":"image/png","purpose":"any"}
+  ]
+}
