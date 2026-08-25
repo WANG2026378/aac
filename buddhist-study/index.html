@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#7d2138">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="念佛學佛">
+  <meta name="description" content="每念佛 108 遍，依序解鎖一張《佛說阿彌陀經》經文圖解。">
+  <title>西方蓮語｜念佛學佛</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="buddhist-study-v1.css">
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">念一句佛號・讀一段佛經</p>
+      <h1>西方蓮語</h1>
+      <p class="subtitle">念佛計數 ×《佛說阿彌陀經》圖文學習</p>
+    </div>
+    <button class="text-size" id="textSize" type="button" aria-label="放大文字">大字 A＋</button>
+  </header>
+
+  <nav class="tabs" aria-label="主要功能">
+    <button class="tab active" type="button" data-page="chant">🙏 念佛</button>
+    <button class="tab" type="button" data-page="gallery">🪷 圖文寶藏</button>
+    <button class="tab" type="button" data-page="help">📱 使用說明</button>
+  </nav>
+
+  <main>
+    <section class="page active" id="chantPage">
+      <article class="hero-card">
+        <img src="assets/amitabha-sutra/061.webp" alt="阿彌陀佛莊嚴聖像" width="960" height="1200">
+        <div class="hero-shade"></div>
+        <div class="hero-copy">
+          <p>攝心持名</p>
+          <h2>南無阿彌陀佛</h2>
+          <p>每念滿 108 遍，解鎖一張經文圖解</p>
+        </div>
+      </article>
+
+      <section class="progress-card" aria-labelledby="counterTitle">
+        <div class="collection-row">
+          <div><span id="unlockedCount">0</span><small>／138 張已解鎖</small></div>
+          <div><span id="totalCount">0</span><small>累積佛號</small></div>
+        </div>
+        <div class="collection-track" aria-hidden="true"><div id="collectionProgress"></div></div>
+        <p id="counterTitle" class="round-label">第 1 輪・本輪</p>
+        <div class="counter"><output id="roundCount">0</output><span>／108</span></div>
+        <div class="round-track" aria-hidden="true"><div id="roundProgress"></div></div>
+        <p class="encourage" id="encourage">放慢呼吸，清楚念一聲佛號。</p>
+      </section>
+
+      <section class="voice-card">
+        <button class="voice-button" id="voiceButton" type="button">🎙️ 開始語音計數</button>
+        <p class="voice-status" id="voiceStatus" aria-live="polite">按下後，說出「阿彌陀佛」即可自動加一。</p>
+        <label class="wake-row"><input id="wakeToggle" type="checkbox" checked> 念佛時保持螢幕亮著</label>
+        <p class="screen-note">手機鎖定螢幕後，瀏覽器可能暫停語音辨識；請保持此頁開啟，漏計可按＋1補正。</p>
+      </section>
+
+      <section class="manual-controls" aria-label="手動計數">
+        <button class="soft-button" id="minusButton" type="button">－1<br><small>修正</small></button>
+        <button class="plus-button" id="plusButton" type="button">＋1<br><small>念完一次</small></button>
+      </section>
+
+      <details class="safe-settings">
+        <summary>計數修正與資料說明</summary>
+        <p>進度只保存在這支手機的瀏覽器，不會上傳姓名或錄音。</p>
+        <button class="danger-soft" id="resetRound" type="button">只將本輪歸零</button>
+        <button class="danger-soft" id="resetAll" type="button">重新開始全部收藏</button>
+      </details>
+    </section>
+
+    <section class="page" id="galleryPage">
+      <header class="section-heading">
+        <p class="eyebrow">一輪一法語</p>
+        <h2>我的阿彌陀經圖文寶藏</h2>
+        <p>已解鎖的圖可以隨時重看；第 131–138 張為卷末敦煌本附錄，會特別標示。</p>
+      </header>
+      <div class="gallery" id="gallery" aria-live="polite"></div>
+    </section>
+
+    <section class="page" id="helpPage">
+      <header class="section-heading">
+        <p class="eyebrow">第一次使用請先看</p>
+        <h2>三步設定，不容易按錯</h2>
+      </header>
+      <ol class="guide-list">
+        <li><b>先加入手機主畫面</b><span>以後直接點佛像圖示開啟，就像 App 一樣。</span></li>
+        <li><b>第一次按「開始語音計數」</b><span>看到麥克風詢問時按「允許」。不想用麥克風，也可一直用＋1。</span></li>
+        <li><b>念滿 108 遍收下一張圖</b><span>關閉網頁再回來，已完成的進度仍會保留在這支手機。</span></li>
+      </ol>
+
+      <section class="install-card">
+        <h3>iPhone／iPad 安裝</h3>
+        <div class="share-icon" aria-hidden="true">⇧</div>
+        <p>請用 Safari 開啟 → 按下方「分享」圖示 → 往下找「加入主畫面」→ 按「新增」。</p>
+        <button id="installButton" class="install-button" type="button">加入手機主畫面</button>
+        <p id="installStatus" class="small-note">iPhone 若沒有跳出安裝視窗，請照上面的 Safari 步驟操作。</p>
+      </section>
+
+      <section class="install-card">
+        <h3>網址容易複製</h3>
+        <p class="url-box" id="siteUrl"></p>
+        <button id="copyUrl" class="soft-wide" type="button">複製網站網址</button>
+      </section>
+
+      <section class="privacy-card">
+        <h3>麥克風與隱私</h3>
+        <p>本站不自行錄音、保存或上傳您的聲音。語音辨識由手機瀏覽器或系統提供，可能需要網路。您可以拒絕麥克風，改用手動＋1。</p>
+      </section>
+
+      <section class="source-card">
+        <h3>經文來源</h3>
+        <p>姚秦鳩摩羅什譯《佛說阿彌陀經》，CBETA T12n0366。圖片為經典意象創作，供學習與觀想輔助。</p>
+        <a href="https://cbetaonline.dila.edu.tw/zh/T12n0366" target="_blank" rel="noopener">查看 CBETA 經文來源</a>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="introDialog" class="dialog">
+    <div class="dialog-body">
+      <p class="lotus-mark">🪷</p>
+      <h2>歡迎來到西方蓮語</h2>
+      <p>每念滿 108 遍，就依序解鎖一張《佛說阿彌陀經》圖解；共 138 張。</p>
+      <ul>
+        <li>可使用麥克風自動辨識佛號。</li>
+        <li>也可只按＋1，不必開麥克風。</li>
+        <li>進度保存在您的手機瀏覽器。</li>
+      </ul>
+      <button id="introClose" class="primary-wide" type="button">我知道了，開始念佛</button>
+      <button id="introHelp" class="link-button" type="button">先看安裝與麥克風說明</button>
+    </div>
+  </dialog>
+
+  <dialog id="voiceDialog" class="dialog">
+    <div class="dialog-body">
+      <p class="lotus-mark">🎙️</p>
+      <h2>開啟麥克風前請確認</h2>
+      <p>瀏覽器會使用麥克風辨識「阿彌陀佛」。本站不保存錄音；辨識服務可能由瀏覽器或手機系統在網路上處理。</p>
+      <button id="voiceAgree" class="primary-wide" type="button">同意並開啟麥克風</button>
+      <button id="voiceCancel" class="soft-wide" type="button">不用麥克風，改按＋1</button>
+    </div>
+  </dialog>
+
+  <dialog id="rewardDialog" class="reward-dialog">
+    <article class="reward-card">
+      <div class="reward-topline"><span id="rewardNumber"></span><span id="appendixBadge" hidden>卷末附錄</span></div>
+      <img id="rewardImage" alt="" width="960" height="1200">
+      <div class="reward-copy">
+        <p class="eyebrow">108 遍圓滿・新圖解鎖</p>
+        <h2 id="rewardTitle"></h2>
+        <h3>經文原句</h3>
+        <blockquote id="rewardScripture"></blockquote>
+        <h3>白話說明</h3>
+        <p id="rewardPlain"></p>
+        <details><summary>這張圖畫了什麼？</summary><p id="rewardVisual"></p></details>
+        <div class="reward-actions">
+          <button id="shareReward" class="soft-wide" type="button">分享這段法語</button>
+          <button id="rewardClose" class="primary-wide" type="button">收下圖文，繼續念佛</button>
+        </div>
+      </div>
+    </article>
+  </dialog>
+
+  <script src="buddhist-study-v1.js" defer></script>
+</body>
+</html>
