@@ -1,4 +1,4 @@
-const CACHE='buddhist-study-shell-v3';
+const CACHE='buddhist-study-shell-v4';
 const SHELL=['./','./index.html','./chant.html','./buddhist-hub-v1.css','./buddhist-hub-v1.js','./apps.json','./buddhist-study-v2.css','./buddhist-study-v2.js','./amitabha-sutra-cards.json','./manifest.webmanifest','./chant.webmanifest','./icon-192.png','./icon-512.png','./assets/amitabha-sutra/001.webp','./assets/amitabha-sutra/030.webp','./assets/amitabha-sutra/061.webp','./assets/amitabha-sutra/096.webp'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('buddhist-study-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()))});
