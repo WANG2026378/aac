@@ -113,3 +113,5 @@ main{max-width:760px;margin:auto;padding:0 16px calc(40px + env(safe-area-inset-
 .reward-dialog.compact .reward-actions{margin:7px 0 0;display:block}
 .reward-dialog.compact .primary-wide{min-height:39px;font-size:.84rem}
 @keyframes rewardDrop{from{transform:translateY(-120%);opacity:.3}to{transform:translateY(0);opacity:1}}
+/* Return link shown when this app is opened from the card portal. */
+.hub-back{display:block;width:max-content;max-width:calc(100% - 24px);margin:calc(10px + env(safe-area-inset-top)) auto 0;padding:8px 14px;border:1px solid #e3c8b9;border-radius:999px;background:#fffaf1;color:#7d2138;text-decoration:none;font-weight:800;font-size:.88rem}

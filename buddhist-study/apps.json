@@ -1,0 +1,8 @@
+{
+  "updated": "2026-08-26",
+  "apps": [
+    {"id":"western-lotus","title":"西方蓮語","subtitle":"念佛計數 ×《佛說阿彌陀經》圖文學習","description":"寬鬆辨識「阿彌陀佛」，每念滿 108 遍依序解鎖一張經文圖解，共 138 張。","href":"chant.html","cover":"assets/amitabha-sutra/061.webp","coverAlt":"阿彌陀佛莊嚴聖像","tags":["語音計數","阿彌陀經","138 張圖文"],"featured":true},
+    {"id":"amitabha-counter","title":"阿彌陀佛念佛計數器","subtitle":"簡明 108 遍持名念佛","description":"畫面簡單、按鍵清楚，可使用麥克風或手動加一，適合專心持名念佛。","href":"../amitabha-counter.html","cover":"assets/amitabha-sutra/030.webp","coverAlt":"蓮池與極樂世界意象","tags":["108 計數","語音辨識","簡易版"]},
+    {"id":"release-knots","title":"解冤結真言 108 計數器","subtitle":"持誦、計數與回向","description":"顯示真言與回向文字，支援姓名、字體大小、語音計數及完成圈數。","href":"../buddhist-practice.html","cover":"assets/amitabha-sutra/096.webp","coverAlt":"清淨蓮花與佛國光明意象","tags":["真言","回向","108 計數"]}
+  ]
+}

@@ -1,13 +1,13 @@
 {
-  "name": "西方蓮語｜念佛學佛",
-  "short_name": "念佛學佛",
-  "description": "每念佛 108 遍，依序解鎖一張《佛說阿彌陀經》圖解。",
+  "name": "學佛軟體入口",
+  "short_name": "學佛軟體",
+  "description": "念佛、讀經與日常修持的網頁軟體入口。",
   "lang": "zh-Hant",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#fffaf1",
-  "theme_color": "#7d2138",
+  "theme_color": "#76233b",
   "icons": [
     {"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
     {"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
