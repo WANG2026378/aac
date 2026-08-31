@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+<link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>永芳特教教學資源網</title>
-<meta name="description" content="永芳國小特教教學資源網 · 普通生與特殊生都能用的數位教學工具：溝通版 AAC、注音學習、種子冒險、運筆練習、故事屋">
+<title>共學教具箱 · 普通班和特教班都能用的數位教具</title>
+<meta name="description" content="共學教具箱：普通班和特教班都能用的數位教具。免登入、點開就玩、iPad 加到主畫面可離線使用。溝通版 AAC、注音學習、種子冒險、運筆練習、故事屋">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="永芳特教">
+<meta name="apple-mobile-web-app-title" content="共學教具箱">
 <meta name="theme-color" content="#FF6B6B">
 <link rel="apple-touch-icon" href="icons/portal-180.png?v=1">
 <link rel="apple-touch-icon" sizes="180x180" href="icons/portal-180.png?v=1">
@@ -166,6 +167,67 @@ body {
   font-size: 14px;
   font-weight: 700;
 }
+.category-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: -4px 0 26px;
+}
+.category-nav a {
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 8px 14px;
+  text-decoration: none;
+  box-shadow: 0 3px 14px rgba(45, 55, 72, 0.06);
+  transition: border-color 0.2s, transform 0.2s;
+}
+.category-nav a:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+.tool-category {
+  margin-bottom: 34px;
+  scroll-margin-top: 18px;
+}
+.tool-category:last-child {
+  margin-bottom: 0;
+}
+.category-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.category-head h3 {
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 900;
+}
+.category-head h3 span {
+  display: inline-block;
+  margin-right: 8px;
+}
+.category-head p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-top: 2px;
+}
+.category-head .count {
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  color: var(--muted);
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 4px 10px;
+}
 
 /* ============ Tool Card ============ */
 .grid {
@@ -257,6 +319,21 @@ body {
   color: var(--muted);
   font-family: ui-monospace, Menlo, monospace;
 }
+.tool-hits {
+  font-size: 12.5px;
+  color: var(--muted);
+  background: #fff6ee;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 2px 9px;
+  margin-left: auto;
+  margin-right: 10px;
+  white-space: nowrap;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+.tool-hits.show { opacity: 1; }
 .tool-arrow {
   color: var(--accent, var(--primary));
   font-size: 22px;
@@ -279,6 +356,36 @@ body {
   --accent-bg: linear-gradient(135deg, #C6F6D5, #9AE6B4);
   --accent-shadow: rgba(72, 187, 120, 0.25);
   --tag-bg: #C6F6D5;
+}
+.tool-card.sanguo {
+  --accent: #B45309;
+  --accent-bg: linear-gradient(135deg, #FEF3C7, #FCD34D);
+  --accent-shadow: rgba(180, 83, 9, 0.25);
+  --tag-bg: #FEF3C7;
+}
+.tool-card.sanguo-math {
+  --accent: #8E2F24;
+  --accent-bg: linear-gradient(135deg, #FEE2E2, #FCD34D);
+  --accent-shadow: rgba(142, 47, 36, 0.25);
+  --tag-bg: #FEE2E2;
+}
+.tool-card.xide-math {
+  --accent: #0B5EA8;
+  --accent-bg: linear-gradient(135deg, #DBEAFE, #FDE68A);
+  --accent-shadow: rgba(11, 94, 168, 0.25);
+  --tag-bg: #DBEAFE;
+}
+.tool-card.nature {
+  --accent: #2E9E3F;
+  --accent-bg: linear-gradient(135deg, #DCFCE7, #A7F3D0);
+  --accent-shadow: rgba(46, 158, 63, 0.25);
+  --tag-bg: #DCFCE7;
+}
+.tool-card.matching {
+  --accent: #0891B2;
+  --accent-bg: linear-gradient(135deg, #CFFAFE, #E0F2FE);
+  --accent-shadow: rgba(8, 145, 178, 0.25);
+  --tag-bg: #CFFAFE;
 }
 .tool-card.zhuyin {
   --accent: #7C3AED;
@@ -309,6 +416,12 @@ body {
   --accent-bg: linear-gradient(135deg, #FFE0D2, #FFCCB8);
   --accent-shadow: rgba(255, 123, 84, 0.25);
   --tag-bg: #FFE0D2;
+}
+.tool-card.football {
+  --accent: #16A34A;
+  --accent-bg: linear-gradient(135deg, #DCFCE7, #BBF7D0);
+  --accent-shadow: rgba(22, 163, 74, 0.25);
+  --tag-bg: #DCFCE7;
 }
 .tool-card.coming {
   --accent: #A0AEC0;
@@ -352,6 +465,10 @@ body {
 @media (max-width: 600px) {
   .header { padding: 40px 20px 60px; }
   .stats { gap: 20px; }
+  .category-nav { gap: 8px; }
+  .category-nav a { font-size: 13px; padding: 7px 11px; }
+  .category-head { display: block; }
+  .category-head .count { display: inline-block; margin-top: 8px; }
   .grid { grid-template-columns: 1fr; }
   .tool-card { padding: 20px; }
 }
@@ -361,19 +478,20 @@ body {
 
 <!-- Header -->
 <div class="header">
-  <div class="brand">🎓 永芳國小特教班</div>
-  <h1 class="title">永芳<span class="accent">特教</span>教學資源網</h1>
-  <p class="subtitle">為普通生與特殊生設計的數位教學工具 · 在家可用 · iPad/平板友善</p>
-  <div class="teacher-info">📚 給家長、學生、老師共同使用</div>
+  <div class="brand">🎒 普特共學 · 免登入．點開就玩</div>
+  <h1 class="title">共學<span class="accent">教具箱</span></h1>
+  <p class="subtitle">普通班和特教班都能用的數位教具 · 不用登入 · 在家可用 · iPad/平板友善</p>
+  <div class="teacher-info">📚 老師、家長、學生都歡迎自由取用</div>
 <div style="margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
   <a href="qr.html" style="background:rgba(255,255,255,0.25);color:white;padding:8px 18px;border-radius:18px;font-size:14px;text-decoration:none;font-weight:600;backdrop-filter:blur(8px);">📱 給家長的 QR 總表</a>
   <a href="about.html" style="background:rgba(255,255,255,0.25);color:white;padding:8px 18px;border-radius:18px;font-size:14px;text-decoration:none;font-weight:600;backdrop-filter:blur(8px);">📣 推廣介紹</a>
+  <a href="msg.html" style="background:rgba(255,255,255,0.25);color:white;padding:8px 18px;border-radius:18px;font-size:14px;text-decoration:none;font-weight:600;backdrop-filter:blur(8px);">💌 留言給老師</a>
 </div>
 
   <div class="stats">
     <div class="stat">
-      <div class="stat-num">6</div>
-      <div class="stat-lbl">教學工具</div>
+      <div class="stat-num">23</div>
+      <div class="stat-lbl">數位教具</div>
     </div>
     <div class="stat">
       <div class="stat-num">200+</div>
@@ -394,15 +512,31 @@ body {
 <div class="main">
 
   <!-- 教學工具 -->
-  <div class="section">
+  <div class="section" id="tools">
     <div class="section-head">
       <span class="icon">🛠️</span>
-      <h2>教學工具</h2>
-      <span class="count">7 個</span>
+      <h2>分類找工具</h2>
+      <span class="count">23 個</span>
     </div>
 
-    <div class="grid">
+    <nav class="category-nav" aria-label="教學工具分類">
+      <a href="#cat-communication">💬 溝通輔具</a>
+      <a href="#cat-language">📚 語文識字</a>
+      <a href="#cat-math">🧮 數學認知</a>
+      <a href="#cat-science">🔎 自然科學</a>
+      <a href="#cat-emotion">🏝️ 情緒社交</a>
+      <a href="#cat-active">⚽ 體感遊戲</a>
+    </nav>
 
+    <section class="tool-category" id="cat-communication">
+      <div class="category-head">
+        <div>
+          <h3><span>💬</span>溝通輔具</h3>
+          <p>給需要輔助表達、句子組合與語音輸出的學生使用。</p>
+        </div>
+        <span class="count">1 個</span>
+      </div>
+      <div class="grid">
       <!-- AAC -->
       <a href="talk.html" class="tool-card aac">
         <div class="tool-icon">💬</div>
@@ -420,6 +554,80 @@ body {
         </div>
         <div class="tool-cta">
           <span class="tool-url">talk.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+      </div>
+    </section>
+
+    <section class="tool-category" id="cat-language">
+      <div class="category-head">
+        <div>
+          <h3><span>📚</span>語文識字</h3>
+          <p>從注音、聽讀、識字到運筆，依能力逐步練習。</p>
+        </div>
+        <span class="count">11 個</span>
+      </div>
+      <div class="grid">
+      <!-- 打地鼠字 -->
+      <a href="mole.html" class="tool-card learn">
+        <div class="tool-icon">🔨</div>
+        <div class="tool-title">打地鼠字</div>
+        <div class="tool-subtitle">地鼠洞排成字形 · 打對的字留在洞上</div>
+        <div class="tool-desc">
+          地鼠洞沿著這個字的骨架排開，洞的多寡跟著筆畫數走。每隻字鼠身上都是一個完整的字，是今天要學的那個就打，打對的留在洞上、打錯的縮回去；洞全填滿，整片草地就拼出一個大大的字。干擾字用電腦算過的形近字（日／目、人／入、好／姐），內建 100 個一年級常用字，密度、同時出現的字鼠數、依筆順都能調。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">今日新上架</span>
+          <span class="tag">整字辨識</span>
+          <span class="tag">形近字干擾</span>
+          <span class="tag">可調密度</span>
+          <span class="tag">100 個一年級字</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">mole.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- 打地鼠字 筆畫版 -->
+      <a href="mole1.html" class="tool-card learn">
+        <div class="tool-icon">🔨</div>
+        <div class="tool-title">打地鼠字 筆畫版</div>
+        <div class="tool-subtitle">版本一 · 地鼠舉著單一筆畫</div>
+        <div class="tool-desc">
+          同一個打地鼠玩法的第一版：地鼠身上舉的是拆開的單一筆畫，打對的筆畫留在洞上、湊成整個字。適合已經會認字、要練筆畫辨識與筆順的學生，也有部件拼字的前置關卡。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">版本一</span>
+          <span class="tag">筆畫辨識</span>
+          <span class="tag">部件拼字</span>
+          <span class="tag">依筆順</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">mole1.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- 走卒傳 -->
+      <a href="zouzu-zhuan-v7-2.html" class="tool-card sanguo">
+        <div class="tool-icon">🗡️</div>
+        <div class="tool-title">走卒傳</div>
+        <div class="tool-subtitle">V7.2 戰場進化 · 認一個字升一階</div>
+        <div class="tool-desc">
+          從黃巾荒野一路打到虎牢關、赤壁與五丈原。答對會朗讀國字與詞語，關卡後段逐步出現盾兵、槍兵、弩兵、騎兵與重甲兵；六十名武將皆可出戰，學會的字會化為奧義。老師也能自訂生字與練習次數。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">今日新上架</span>
+          <span class="tag">識字練習</span>
+          <span class="tag">4 大戰場</span>
+          <span class="tag">6 類敵軍</span>
+          <span class="tag">答對朗讀</span>
+          <span class="tag">自訂生字</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">zouzu-zhuan-v7-2.html</span>
           <span class="tool-arrow">→</span>
         </div>
       </a>
@@ -441,6 +649,69 @@ body {
         </div>
         <div class="tool-cta">
           <span class="tool-url">seed.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- 三國識字攻城戰 -->
+      <a href="hanzi-siege.html" class="tool-card sanguo">
+        <div class="tool-icon">🏯</div>
+        <div class="tool-title">三國識字攻城戰</div>
+        <div class="tool-subtitle">識字三消 × 攻守城戰 · 一次只練 1～7 個字 · 可雙打</div>
+        <div class="tool-desc">
+          題目只給注音或意思，學生要想出語詞才知道要消哪個字。<b>三個一樣的字</b>連成一線才會消掉，消掉的字會變成兵去攻城。盤面<b>一次只放 1～7 個字</b>反覆出現，同一個字消掉 6 次就算學會，才換新字進來，慢慢累積到全部學會。有不會輸的<b>練習關</b>、十關<b>三國戰役闖關</b>（各關戰場景色不同）、<b>守城戰</b>，還能兩人同一台平板<b>雙打</b>。消字可得<b>經驗值與錢幣</b>，升軍階（新兵→大將軍）、武將升級解鎖新絕招，並到<b>軍械庫</b>打造雲梯、投石車、拒馬、箭樓等攻守裝備。配樂是琵琶古箏笛子戰鼓的國樂。內建國小低中高年級與英文單字詞庫（英文自動換成西洋城堡背景），也可貼上自訂詞庫練其他外語。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">今日新上架</span>
+          <span class="tag">識字三消</span>
+          <span class="tag">十關闖關</span>
+          <span class="tag">雙人對戰</span>
+          <span class="tag">軍階養成</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">hanzi-siege.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- 真三國字消 -->
+      <a href="zhen-sanguo-zixiao.html" class="tool-card sanguo">
+        <div class="tool-icon">⚔️</div>
+        <div class="tool-title">真三國字消</div>
+        <div class="tool-subtitle">漫畫武將 × 識字三消 × 十章劇情攻城</div>
+        <div class="tool-desc">
+          結合三國識字大戰的精美漫畫武將與攻城三消玩法。消除字陣即可出兵，魏、蜀、吳兵種各有造型差異，並可解鎖投石器、雲梯、強弩等二十種兵種與攻城裝備。十章三國劇情加入自然男女角色配音，猛將、主公、軍師與女將都有不同表演語氣。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">今日新上架</span>
+          <span class="tag">識字三消</span>
+          <span class="tag">漫畫武將</span>
+          <span class="tag">20 種兵種</span>
+          <span class="tag">角色配音</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">zhen-sanguo-zixiao.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- Sanguo Literacy -->
+      <a href="sanguo-shizi-dazhan.html" class="tool-card sanguo">
+        <div class="tool-icon">🏯</div>
+        <div class="tool-title">三國識字大戰</div>
+        <div class="tool-subtitle">國小一至四年級 · 國字學習戰略遊戲</div>
+        <div class="tool-desc">
+          選擇魏、蜀、吳勢力，在地圖任務中練習識字、讀音與詞意判斷。新增軍師智謀關卡，智力高的武將可用更多法寶破敵。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">一至四年級</span>
+          <span class="tag">國字辨識</span>
+          <span class="tag">讀音練習</span>
+          <span class="tag">智謀關卡</span>
+          <span class="tag">闖關挑戰</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">sanguo-shizi-dazhan.html</span>
           <span class="tool-arrow">→</span>
         </div>
       </a>
@@ -487,27 +758,6 @@ body {
         </div>
       </a>
 
-      <!-- Mood 心情島 -->
-      <a href="mood.html" class="tool-card mood">
-        <div class="tool-icon">🏝️</div>
-        <div class="tool-title">心情島大冒險｜SEED 習德</div>
-        <div class="tool-subtitle">情緒社交課程 · 中年級六島冒險</div>
-        <div class="tool-desc">
-          怒怒火人/憂憂淚滴/怕怕冰人/慌慌旋風/酸酸仙人掌/喜喜櫻花六隻原創角色。30 題情境 4 選 1+技能小遊戲，種子發芽成習德苗，集滿六德解鎖守護者。
-        </div>
-        <div class="tool-tags">
-          <span class="tag">6 島冒險</span>
-          <span class="tag">30 情境題</span>
-          <span class="tag">原創角色</span>
-          <span class="tag">技能練習</span>
-          <span class="tag">六德花園</span>
-        </div>
-        <div class="tool-cta">
-          <span class="tool-url">mood.html</span>
-          <span class="tool-arrow">→</span>
-        </div>
-      </a>
-
       <!-- Zhuyin -->
       <a href="zhuyin.html" class="tool-card zhuyin">
         <div class="tool-icon">🔤</div>
@@ -549,9 +799,200 @@ body {
           <span class="tool-arrow">→</span>
         </div>
       </a>
+      </div>
+    </section>
+
+    <section class="tool-category" id="cat-math">
+      <div class="category-head">
+        <div>
+          <h3><span>🧮</span>數學認知</h3>
+          <p>用闖關和大按鈕互動練習數量、加減、時間、日期與配對。</p>
+        </div>
+        <span class="count">3 個</span>
+      </div>
+      <div class="grid">
+      <!-- Sanguo Math -->
+      <a href="sanguo-math-yanyi.html" class="tool-card sanguo-math">
+        <div class="tool-icon">🏯</div>
+        <div class="tool-title">三國數學演義</div>
+        <div class="tool-subtitle">國小一至四年級 · 加減法、時間與日期攻城戰</div>
+        <div class="tool-desc">
+          依三國識字大戰架構設計，選擇魏蜀吳勢力攻城。把加法、減法、時間、日期題變成戰鬥，智力高的武將可使用更多解題法寶。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">三國地圖</span>
+          <span class="tag">加減法</span>
+          <span class="tag">時間日期</span>
+          <span class="tag">軍師法寶</span>
+          <span class="tag">iPad友善</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">sanguo-math-yanyi.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- 習德數學大冒險 -->
+      <a href="xide-math-adventure.html" class="tool-card xide-math">
+        <div class="tool-icon">🧮</div>
+        <div class="tool-title">習德數學大冒險</div>
+        <div class="tool-subtitle">國小一至四年級 · 加減法、時間與日期複習</div>
+        <div class="tool-desc">
+          習德精靈帶你闖四大關卡，救出被迷霧魔王抓走的靜德苗、說德苗、定德苗、安德苗：加法森林、減法山洞、時間之塔、日期迷宮。答題收集 12 種法寶，也可切換成單元練習模式。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">加法練習</span>
+          <span class="tag">減法練習</span>
+          <span class="tag">時間單元</span>
+          <span class="tag">日期單元</span>
+          <span class="tag">法寶提示</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">xide-math-adventure.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- Matching Learning -->
+      <a href="matching-learning-game.html" class="tool-card matching">
+        <div class="tool-icon">🎯</div>
+        <div class="tool-title">配對學習遊戲</div>
+        <div class="tool-subtitle">生活數學與認知配對 · 大按鈕觸控練習</div>
+        <div class="tool-desc">
+          練習數一數、實物配對、錢幣小達人與簡易加減，也有記憶翻翻樂、好朋友配對、影子配對和規律接龍。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">數量配對</span>
+          <span class="tag">錢幣練習</span>
+          <span class="tag">簡易加減</span>
+          <span class="tag">記憶翻牌</span>
+          <span class="tag">觸控友善</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">matching-learning-game.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      </div>
+    </section>
+
+    <section class="tool-category" id="cat-science">
+      <div class="category-head">
+        <div>
+          <h3><span>🔎</span>自然科學</h3>
+          <p>用圖鑑、照片、食物鏈和小測驗帶孩子觀察自然。</p>
+        </div>
+        <span class="count">1 個</span>
+      </div>
+      <div class="grid">
+      <!-- Nature Explorer -->
+      <a href="nature-explorer.html" class="tool-card nature">
+        <div class="tool-icon">🔎</div>
+        <div class="tool-title">自然探索家</div>
+        <div class="tool-subtitle">動物・昆蟲・植物 · 生態與趣聞大發現</div>
+        <div class="tool-desc">
+          以圖鑑卡片探索石虎、台灣黑熊、蜜蜂、螢火蟲、向日葵、捕蠅草等生物。可看照片、聽介紹、理解食物鏈並完成小測驗。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">動物圖鑑</span>
+          <span class="tag">昆蟲觀察</span>
+          <span class="tag">植物探索</span>
+          <span class="tag">生態食物鏈</span>
+          <span class="tag">小測驗</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">nature-explorer.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+      </div>
+    </section>
+
+    <section class="tool-category" id="cat-emotion">
+      <div class="category-head">
+        <div>
+          <h3><span>🏝️</span>情緒社交</h3>
+          <p>用情境選擇和角色冒險練習情緒辨識與合宜表達。</p>
+        </div>
+        <span class="count">1 個</span>
+      </div>
+      <div class="grid">
+      <!-- Mood 心情島 -->
+      <a href="mood.html" class="tool-card mood">
+        <div class="tool-icon">🏝️</div>
+        <div class="tool-title">心情島大冒險｜SEED 習德</div>
+        <div class="tool-subtitle">情緒社交課程 · 中年級六島冒險</div>
+        <div class="tool-desc">
+          怒怒火人/憂憂淚滴/怕怕冰人/慌慌旋風/酸酸仙人掌/喜喜櫻花六隻原創角色。30 題情境 4 選 1+技能小遊戲，種子發芽成習德苗，集滿六德解鎖守護者。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">6 島冒險</span>
+          <span class="tag">30 情境題</span>
+          <span class="tag">原創角色</span>
+          <span class="tag">技能練習</span>
+          <span class="tag">六德花園</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">mood.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+      </div>
+    </section>
+
+    <section class="tool-category" id="cat-active">
+      <div class="category-head">
+        <div>
+          <h3><span>⚽</span>體感遊戲</h3>
+          <p>用遊戲化挑戰提高動機，適合短時間活動與獎勵。</p>
+        </div>
+        <span class="count">6 個</span>
+      </div>
+      <div class="grid">
+      <!-- Gyro Clash 超能戰螺 -->
+      <a href="gyro-clash.html" class="tool-card football">
+        <div class="tool-icon">🌀</div>
+        <div class="tool-title">超能戰螺對戰</div>
+        <div class="tool-subtitle">十二生肖狂暴獸首 · 入手展示畫面 · 3D 立體戰鬥 · 60 顆戰螺</div>
+        <div class="tool-desc">
+          新增<b>十二生肖復古珍藏戰螺</b>:中央徽章是手繪<b>狂暴獸首</b>,虎有王紋獠牙、龍是分叉巨角、猴戴齊天金箍,眼睛發光還會定時怒吼震波。買到或抽中會跳出<b>專屬展示畫面</b>,標出徽章寓意、身價編號與四項數值,還能<b>點大招看實戰特效模擬</b>。發射前可轉動準星選切入方向與落點深度,絕招是畫面下方的大按鍵,小朋友在大螢幕也好按。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">全新改版</span>
+          <span class="tag">十二生肖</span>
+          <span class="tag">60 顆戰螺</span>
+          <span class="tag">入手展示</span>
+          <span class="tag">零件改裝</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">gyro-clash.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- Football 十二碼足球 -->
+      <a href="penalty3d_3.html" class="tool-card football">
+        <div class="tool-icon">⚽</div>
+        <div class="tool-title">十二碼足球 3D</div>
+        <div class="tool-subtitle">11 位傳奇隊長 · 五球挑戰</div>
+        <div class="tool-desc">
+          選擇明星球員先上場，移動準星射門，挑戰 3D 守門員。進球後有慢動作重播，以及衝浪、搖臀舞、比愛心、指天等專屬慶祝。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">3D 點球</span>
+          <span class="tag">11 位球員</span>
+          <span class="tag">進球重播</span>
+          <span class="tag">手機／電腦</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">penalty3d_3.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
 
       <!-- Bowling Strike Clash -->
-      <a href="bowling-strike-clash.html" class="tool-card story">
+      <a href="bowling-strike-clash.html" class="tool-card football">
         <div class="tool-icon">🎳</div>
         <div class="tool-title">超能爆擊保齡球</div>
         <div class="tool-subtitle">瞄準蓄力 · 曲球挑戰 · 血條對決</div>
@@ -570,56 +1011,299 @@ body {
         </div>
       </a>
 
-    </div>
+      <!-- Battle T-ball Baseball -->
+      <a href="battle-tball-baseball.html" class="tool-card football">
+        <div class="tool-icon">⚾</div>
+        <div class="tool-title">超能戰棒樂樂棒球</div>
+        <div class="tool-subtitle">揮棒時機 · 全壘打大賽 · 血條對決</div>
+        <div class="tool-desc">
+          選角色、戰棒與球隊，在戰鬥對決、經典快速賽或全壘打大賽挑戰 AI 與同機朋友；掌握甜蜜點，打出強襲安打。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">今日新上架</span>
+          <span class="tag">單人 AI</span>
+          <span class="tag">雙人同機</span>
+          <span class="tag">全壘打大賽</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">battle-tball-baseball.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- Smash Clash Badminton -->
+      <a href="badminton-sky-smash-v5.html" class="tool-card football">
+        <div class="tool-icon">🏸</div>
+        <div class="tool-title">超能羽球：戰術扣殺</div>
+        <div class="tool-subtitle">觸控大按鍵 · 戰術慢鏡 · 鍵盤對戰</div>
+        <div class="tool-desc">
+          保留擬真羽球動作，加入前點、追身、底線落點選擇與角色大招。手機、平板採左側大觸控按鍵，Mac 鍵盤可用 A／D 移動與 J／K／L／P 擊球。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">全新改版</span>
+          <span class="tag">手機／平板</span>
+          <span class="tag">Mac 鍵盤</span>
+          <span class="tag">戰術慢鏡</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">badminton-sky-smash-v5.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- Badminton Super Smash S2 -->
+      <a href="badminton-super-smash-s2.html" class="tool-card football">
+        <div class="tool-icon">🏸</div>
+        <div class="tool-title">超能羽球 S2</div>
+        <div class="tool-subtitle">蓄力發球 · 殺球力道 · 邊線深度 · 三段難度</div>
+        <div class="tool-desc">
+          拉桿蓄力決定短發或長發，殺球按越久打越深、短按變網前壓殺，還能往邊線切。電腦分簡單、普通、困難三段，絕招得分會播慢動作重播。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">今日新上架</span>
+          <span class="tag">三段難度</span>
+          <span class="tag">蓄力發球</span>
+          <span class="tag">絕招重播</span>
+          <span class="tag">支援手把</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">badminton-super-smash-s2.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      </div>
+    </section>
   </div>
 
-  <!-- 即將上線 -->
+  <!-- 今日新上架 -->
   <div class="section">
     <div class="section-head">
-      <span class="icon">✨</span>
-      <h2>即將上線</h2>
-      <span class="count">2 個籌備中</span>
+      <span class="icon">🆕</span>
+      <h2>今日新上架</h2>
+      <span class="count">11 個新工具</span>
     </div>
 
     <div class="grid">
-<div class="tool-card coming">
-        <div class="tool-icon">🎨</div>
-        <div class="tool-title">手部運筆練習</div>
-        <div class="tool-subtitle">籌備中</div>
-        <div class="tool-desc">
-          觸控描寫常用字、進步追蹤、家長端可看見學生練習紀錄。整合 iPad Pencil 力道感應。
-        </div>
-        <div class="tool-cta">
-          <span class="tool-url">敬請期待</span>
-          <span class="tool-arrow">⏳</span>
-        </div>
-      </div>
 
-      <div class="tool-card coming">
-        <div class="tool-icon">🔢</div>
-        <div class="tool-title">數量配對遊戲</div>
-        <div class="tool-subtitle">籌備中</div>
+      <!-- 打地鼠字 -->
+      <a href="mole.html" class="tool-card learn">
+        <div class="tool-icon">🔨</div>
+        <div class="tool-title">打地鼠字</div>
+        <div class="tool-subtitle">地鼠洞排成字形 · 打對的字留在洞上</div>
         <div class="tool-desc">
-          1-20 數量點數、實物配對、簡易加減。結合生活情境（錢幣、餅乾、糖果）。
+          地鼠洞沿著這個字的骨架排開，洞的多寡跟著筆畫數走。每隻字鼠身上都是一個完整的字，是今天要學的那個就打，打對的留在洞上、打錯的縮回去；洞全填滿，整片草地就拼出一個大大的字。干擾字用電腦算過的形近字（日／目、人／入、好／姐），內建 100 個一年級常用字，密度、同時出現的字鼠數、依筆順都能調。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">今日新上架</span>
+          <span class="tag">整字辨識</span>
+          <span class="tag">形近字干擾</span>
+          <span class="tag">可調密度</span>
+          <span class="tag">100 個一年級字</span>
         </div>
         <div class="tool-cta">
-          <span class="tool-url">敬請期待</span>
-          <span class="tool-arrow">⏳</span>
+          <span class="tool-url">mole.html</span>
+          <span class="tool-arrow">→</span>
         </div>
-      </div>
+      </a>
 
-      <div class="tool-card coming">
-        <div class="tool-icon">🕐</div>
-        <div class="tool-title">作息時間表</div>
-        <div class="tool-subtitle">籌備中</div>
+      <!-- 打地鼠字 筆畫版 -->
+      <a href="mole1.html" class="tool-card learn">
+        <div class="tool-icon">🔨</div>
+        <div class="tool-title">打地鼠字 筆畫版</div>
+        <div class="tool-subtitle">版本一 · 地鼠舉著單一筆畫</div>
         <div class="tool-desc">
-          視覺化每日作息卡，家長與老師共同編輯，學生隨時看下一個活動是什麼。
+          同一個打地鼠玩法的第一版：地鼠身上舉的是拆開的單一筆畫，打對的筆畫留在洞上、湊成整個字。適合已經會認字、要練筆畫辨識與筆順的學生，也有部件拼字的前置關卡。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">版本一</span>
+          <span class="tag">筆畫辨識</span>
+          <span class="tag">部件拼字</span>
+          <span class="tag">依筆順</span>
         </div>
         <div class="tool-cta">
-          <span class="tool-url">敬請期待</span>
-          <span class="tool-arrow">⏳</span>
+          <span class="tool-url">mole1.html</span>
+          <span class="tool-arrow">→</span>
         </div>
-      </div>
+      </a>
+
+
+      <!-- 走卒傳 -->
+      <a href="zouzu-zhuan-v7-2.html" class="tool-card sanguo">
+        <div class="tool-icon">🗡️</div>
+        <div class="tool-title">走卒傳</div>
+        <div class="tool-subtitle">V7.2 戰場進化 · 認一個字升一階</div>
+        <div class="tool-desc">
+          從黃巾荒野一路打到虎牢關、赤壁與五丈原。答對會朗讀國字與詞語，關卡後段逐步出現盾兵、槍兵、弩兵、騎兵與重甲兵；六十名武將皆可出戰，學會的字會化為奧義。老師也能自訂生字與練習次數。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">今日新上架</span>
+          <span class="tag">識字練習</span>
+          <span class="tag">4 大戰場</span>
+          <span class="tag">6 類敵軍</span>
+          <span class="tag">答對朗讀</span>
+          <span class="tag">自訂生字</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">zouzu-zhuan-v7-2.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="zhen-sanguo-zixiao.html" class="tool-card sanguo">
+        <div class="tool-icon">⚔️</div>
+        <div class="tool-title">真三國字消</div>
+        <div class="tool-subtitle">漫畫武將 × 識字三消 × 十章劇情攻城</div>
+        <div class="tool-desc">
+          消除字陣出兵攻城，解鎖魏、蜀、吳特色軍隊與投石器、雲梯、強弩等裝備。十章三國故事保留精美漫畫武將，並加入男女角色自然演員配音。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">今日新上架</span>
+          <span class="tag">識字三消</span>
+          <span class="tag">十章劇情</span>
+          <span class="tag">男女角色配音</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">zhen-sanguo-zixiao.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- 三國識字攻城戰 -->
+      <a href="hanzi-siege.html" class="tool-card sanguo">
+        <div class="tool-icon">🏯</div>
+        <div class="tool-title">三國識字攻城戰</div>
+        <div class="tool-subtitle">識字三消 × 攻守城戰 · 一次只練 1～7 個字 · 可雙打</div>
+        <div class="tool-desc">
+          題目只給注音或意思，學生要想出語詞才知道要消哪個字。<b>三個一樣的字</b>連成一線才會消掉，消掉的字會變成兵去攻城。盤面<b>一次只放 1～7 個字</b>反覆出現，同一個字消掉 6 次就算學會，才換新字進來，慢慢累積到全部學會。有不會輸的<b>練習關</b>、十關<b>三國戰役闖關</b>（各關戰場景色不同）、<b>守城戰</b>，還能兩人同一台平板<b>雙打</b>。消字可得<b>經驗值與錢幣</b>，升軍階（新兵→大將軍）、武將升級解鎖新絕招，並到<b>軍械庫</b>打造雲梯、投石車、拒馬、箭樓等攻守裝備。配樂是琵琶古箏笛子戰鼓的國樂。內建國小低中高年級與英文單字詞庫（英文自動換成西洋城堡背景），也可貼上自訂詞庫練其他外語。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">今日新上架</span>
+          <span class="tag">識字三消</span>
+          <span class="tag">十關闖關</span>
+          <span class="tag">雙人對戰</span>
+          <span class="tag">軍階養成</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">hanzi-siege.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="badminton-super-smash-s2.html" class="tool-card football">
+        <div class="tool-icon">🏸</div>
+        <div class="tool-title">超能羽球 S2</div>
+        <div class="tool-subtitle">蓄力發球 · 力道分層殺球 · 絕招重播</div>
+        <div class="tool-desc">
+          發球改成拉桿蓄力，殺球依按壓長短打出網前壓殺或重殺後場，並可指定邊線落點。新增簡單／普通／困難電腦難度。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">今日上架</span>
+          <span class="tag">羽球對戰</span>
+          <span class="tag">三段難度</span>
+          <span class="tag">慢動作重播</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">badminton-super-smash-s2.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="sanguo-math-yanyi.html" class="tool-card sanguo-math">
+        <div class="tool-icon">🏯</div>
+        <div class="tool-title">三國數學演義</div>
+        <div class="tool-subtitle">三國戰略地圖 · 加減、時間、日期數學戰</div>
+        <div class="tool-desc">
+          把習德數學大冒險的四大單元，整合成三國攻城戰。智力高的武將有更多錦囊、觀星、木牛流馬與借東風法寶。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">今日上架</span>
+          <span class="tag">三國數學</span>
+          <span class="tag">時間日期</span>
+          <span class="tag">解題法寶</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">sanguo-math-yanyi.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="matching-learning-game.html" class="tool-card matching">
+        <div class="tool-icon">🎯</div>
+        <div class="tool-title">配對學習遊戲</div>
+        <div class="tool-subtitle">生活數學與認知配對 · 大按鈕觸控練習</div>
+        <div class="tool-desc">
+          數一數、實物配對、錢幣、簡易加減、記憶翻翻樂、影子配對與規律接龍，一次放進同一個觸控友善練習。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">今日上架</span>
+          <span class="tag">數量配對</span>
+          <span class="tag">錢幣練習</span>
+          <span class="tag">記憶翻牌</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">matching-learning-game.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="nature-explorer.html" class="tool-card nature">
+        <div class="tool-icon">🔎</div>
+        <div class="tool-title">自然探索家</div>
+        <div class="tool-subtitle">動物・昆蟲・植物 · 生態與趣聞大發現</div>
+        <div class="tool-desc">
+          用圖鑑卡片探索動物、昆蟲與植物，能看照片、聽介紹、理解食物鏈，最後用小測驗確認理解。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">今日上架</span>
+          <span class="tag">自然科學</span>
+          <span class="tag">生態食物鏈</span>
+          <span class="tag">小測驗</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">nature-explorer.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="xide-math-adventure.html" class="tool-card xide-math">
+        <div class="tool-icon">🧮</div>
+        <div class="tool-title">習德數學大冒險</div>
+        <div class="tool-subtitle">國小一至四年級 · 加減法、時間與日期複習</div>
+        <div class="tool-desc">
+          透過加法森林、減法山洞、時間之塔與日期迷宮四大關卡，複習數學概念並收集法寶。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">今日上架</span>
+          <span class="tag">加減法</span>
+          <span class="tag">時間日期</span>
+          <span class="tag">闖關練習</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">xide-math-adventure.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="gyro-clash.html" class="tool-card football">
+        <div class="tool-icon">🌀</div>
+        <div class="tool-title">超能戰螺對戰（十二生肖版）</div>
+        <div class="tool-subtitle">生肖狂暴獸首 · 入手展示畫面 · 大招實戰模擬 · 60 顆戰螺</div>
+        <div class="tool-desc">
+          <b>十二生肖復古珍藏戰螺</b>登場!中央是手繪<b>狂暴獸首</b>,眼睛發光、定時怒吼並震出衝擊波,每顆都有專屬被動能力。買到或從盲盒抽中會跳出<b>入手展示畫面</b>:陀螺放大旋轉、稀有度光效灑落,標出徽章寓意與身價編號,<b>按下大招還會當場演一次實戰特效</b>,收集成就感十足。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">本日更新</span>
+          <span class="tag">十二生肖</span>
+          <span class="tag">狂暴獸首</span>
+          <span class="tag">入手展示</span>
+          <span class="tag">大招模擬</span>
+        </div>
+        <div class="tool-cta">
+          <span class="tool-url">gyro-clash.html</span>
+          <span class="tool-arrow">→</span>
+        </div>
+      </a>
     </div>
   </div>
 
@@ -655,7 +1339,7 @@ body {
     <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:space-between;">
       <div>
         <div style="font-size:36px;margin-bottom:4px;">📱 一頁全部 QR Code</div>
-        <p style="font-size:15px;opacity:0.95;line-height:1.6;">所有 6 個工具的 QR Code 集中在一張可<b>列印的 A4</b>頁面，方便傳給家長、貼在家裡或聯絡簿上。</p>
+        <p style="font-size:15px;opacity:0.95;line-height:1.6;">所有主要工具的 QR Code 集中在一張可<b>列印的 A4</b>頁面，方便傳給家長、貼在家裡或聯絡簿上。</p>
         <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
           <span style="background:rgba(255,255,255,0.25);padding:4px 12px;border-radius:12px;font-size:13px;">🖨️ 可列印</span>
           <span style="background:rgba(255,255,255,0.25);padding:4px 12px;border-radius:12px;font-size:13px;">📄 A4 排版</span>
@@ -669,13 +1353,68 @@ body {
 
 <!-- Footer -->
 <div class="footer">
-  <div class="school">🏫 高雄市永芳國小 · 特教一班</div>
-  <p>數位教學資源 · 普通生與特殊生皆適用</p>
+  <div class="school">🎒 共學教具箱</div>
+  <p>普通班和特教班都能用的數位教具 · 免登入．點開就玩</p>
   <p style="margin-top:8px;font-size:13px;opacity:0.7;">
-    為特殊需求學生與家長製作，<span class="heart">❤️</span> 持續更新中
+    由高雄市永芳國小特教教師製作 · 歡迎自由取用，也歡迎分享給需要的老師<br><span class="heart">❤️</span> 持續更新中
   </p>
-  <p style="margin-top:8px;font-size:12px;opacity:0.6;">© 2026 永芳特教教學資源網</p>
+  <p style="margin-top:10px;font-size:13px;">
+    <a href="msg.html" style="color:inherit;">💌 留言給老師（悄悄話）</a>
+  </p>
+  <p style="margin-top:8px;font-size:12px;opacity:0.6;">© 2026 共學教具箱</p>
 </div>
 
+<script src="offline-register.js" defer></script>
+<script>
+/* 卡片點閱數：向後端要各頁累計次數，用 JSONP 取回（不需要 CORS 設定） */
+(function () {
+  function inject(counts) {
+    var cards = document.querySelectorAll('a.tool-card');
+    for (var i = 0; i < cards.length; i++) {
+      var href = (cards[i].getAttribute('href') || '').split('?')[0].split('#')[0];
+      var n = counts[href];
+      if (!n || n < 1) continue;          // 還沒有人點過就不顯示，避免整排掛 0
+      var cta = cards[i].querySelector('.tool-cta');
+      if (!cta) continue;
+      var span = document.createElement('span');
+      span.className = 'tool-hits';
+      span.textContent = '\uD83D\uDC40 ' + n.toLocaleString('en-US');
+      var arrow = cta.querySelector('.tool-arrow');
+      if (arrow) { cta.insertBefore(span, arrow); } else { cta.appendChild(span); }
+      setTimeout((function (s) { return function () { s.className = 'tool-hits show'; }; })(span), 30);
+    }
+  }
+
+  function start() {
+    var s = null;
+    try {
+      if (!window.AAC_API_URL) return;
+      var cbName = 'aacCounts' + Date.now();
+      var timer = setTimeout(cleanup, 8000);
+
+      function cleanup() {
+        clearTimeout(timer);
+        try { delete window[cbName]; } catch (e) { window[cbName] = undefined; }
+        if (s && s.parentNode) s.parentNode.removeChild(s);
+      }
+
+      window[cbName] = function (d) {
+        cleanup();
+        if (d && d.ok && d.counts) { try { inject(d.counts); } catch (e) {} }
+      };
+
+      s = document.createElement('script');
+      s.async = true;
+      s.onerror = cleanup;
+      s.src = window.AAC_API_URL + '?act=counts&cb=' + cbName + '&t=' + Date.now();
+      document.body.appendChild(s);
+    } catch (e) {}
+  }
+
+  // offline-register.js 是 defer，load 之後才保證 AAC_API_URL 已設定
+  if (document.readyState === 'complete') { start(); }
+  else { window.addEventListener('load', start); }
+})();
+</script>
 </body>
 </html>
