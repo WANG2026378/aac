@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>遊戲工坊 — 為特教學生做的識字遊戲</title>
+<meta name="description" content="把章回小說做成識字遊戲。認得一個字，角色就強一分。三國與西遊，給特教學生的動作遊戲。">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="遊戲工坊">
+<meta name="theme-color" content="#B03A2E">
+<link rel="apple-touch-icon" href="icons/portal-180.png">
+<link rel="icon" type="image/png" href="icons/portal-512.png">
+<style>
+  :root{
+    --paper:#FBF6EA;          /* 宣紙 */
+    --paper-2:#FFFFFF;
+    --ink:#2A2724;            /* 墨 */
+    --ink-soft:#6E665C;
+    --seal:#B03A2E;           /* 硃砂 */
+    --seal-deep:#8C2A20;
+    --mineral:#2F6B7A;        /* 石青 */
+    --mineral-soft:#DCEAEE;
+    --gold:#C89B3C;           /* 藤黃 */
+    --line:#E7DCC6;
+    --shade:0 3px 18px rgba(90,60,40,.09);
+    --shade-lift:0 10px 34px rgba(140,42,32,.16);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+    line-height:1.75; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1060px;margin:0 auto;padding:0 22px;}
+
+  /* ── 書名頁 ── */
+  .cover{
+    padding:64px 22px 54px; text-align:center; position:relative; overflow:hidden;
+    background:
+      repeating-linear-gradient(90deg,rgba(176,58,46,.045) 0 1px,transparent 1px 34px),
+      linear-gradient(180deg,#FFFDF7,var(--paper));
+    border-bottom:1px solid var(--line);
+  }
+  .seal{
+    display:inline-grid; place-items:center; width:70px; height:70px;
+    background:var(--seal); color:#FFF6EC; border-radius:8px;
+    font-family:"Noto Serif TC","Songti TC",serif; font-size:23px; line-height:1.1;
+    letter-spacing:.06em; box-shadow:0 4px 16px rgba(140,42,32,.3); transform:rotate(-3deg);
+  }
+  .cover h1{
+    margin-top:22px; font-family:"Noto Serif TC","Songti TC",serif;
+    font-size:clamp(31px,7vw,50px); font-weight:600; letter-spacing:.14em; line-height:1.25;
+  }
+  .cover .lede{
+    margin:14px auto 0; max-width:34em; color:var(--ink-soft); font-size:15.5px;
+  }
+  .rule{
+    width:86px; height:3px; margin:26px auto 0; border-radius:2px;
+    background:linear-gradient(90deg,var(--seal),var(--gold));
+  }
+  .figures{
+    display:flex; justify-content:center; gap:34px; flex-wrap:wrap; margin-top:28px;
+  }
+  .fig b{
+    display:block; font-family:"Noto Serif TC","Songti TC",serif;
+    font-size:26px; font-weight:600; color:var(--seal-deep); line-height:1.2;
+  }
+  .fig span{font-size:12.5px; color:var(--ink-soft); letter-spacing:.08em;}
+
+  /* ── 分區 ── */
+  main{padding:44px 0 12px;}
+  .band{margin-bottom:44px;}
+  .band-head{display:flex; align-items:baseline; gap:12px; margin-bottom:6px;}
+  .band-head h2{
+    font-family:"Noto Serif TC","Songti TC",serif;
+    font-size:21px; font-weight:600; letter-spacing:.1em;
+  }
+  .band-head span{font-size:13px; color:var(--ink-soft);}
+  .band-line{height:1px; background:var(--line); margin-bottom:22px;}
+
+  /* ── 回目卡 ── */
+  .shelf{display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(310px,1fr));}
+  .vol{
+    background:var(--paper-2); border-radius:16px; padding:26px 26px 22px;
+    box-shadow:var(--shade); text-decoration:none; color:inherit;
+    border:1px solid var(--line); border-left:6px solid var(--accent,var(--seal));
+    display:flex; flex-direction:column; transition:box-shadow .22s ease, transform .22s ease;
+  }
+  .vol:hover,.vol:focus-visible{box-shadow:var(--shade-lift); transform:translateY(-3px);}
+  .vol:focus-visible{outline:3px solid var(--mineral); outline-offset:3px;}
+  .hui{
+    font-family:"Noto Serif TC","Songti TC",serif; font-size:12.5px;
+    color:var(--accent,var(--seal)); letter-spacing:.24em;
+  }
+  .vol h3{
+    font-family:"Noto Serif TC","Songti TC",serif;
+    font-size:27px; font-weight:600; letter-spacing:.08em; margin:2px 0 6px;
+  }
+  .couplet{
+    font-family:"Noto Serif TC","Songti TC",serif; font-size:14.5px;
+    color:var(--ink-soft); line-height:1.9;
+    padding-left:12px; border-left:2px solid var(--line);
+  }
+  .vol p{margin-top:14px; font-size:14px; color:var(--ink-soft);}
+  .facts{list-style:none; margin:14px 0 0; display:grid; gap:5px;}
+  .facts li{font-size:13.5px; display:flex; gap:9px; align-items:flex-start;}
+  .facts li::before{
+    content:""; flex:0 0 6px; width:6px; height:6px; border-radius:50%;
+    background:var(--accent,var(--seal)); margin-top:9px;
+  }
+  .go{
+    margin-top:auto; padding-top:18px; display:flex; align-items:center;
+    justify-content:space-between; gap:10px;
+  }
+  .go em{
+    font-style:normal; font-size:12px; color:var(--ink-soft);
+    font-family:ui-monospace,"SFMono-Regular",Menlo,monospace;
+  }
+  .go b{
+    font-size:14.5px; font-weight:600; color:#fff; background:var(--accent,var(--seal));
+    padding:9px 20px; border-radius:999px; letter-spacing:.06em;
+  }
+  .shu{--accent:var(--seal);}
+  .wei{--accent:var(--mineral);}
+
+  /* ── 工具列 ── */
+  .kit{display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(228px,1fr));}
+  .tool{
+    background:var(--mineral-soft); border-radius:13px; padding:17px 19px;
+    text-decoration:none; color:inherit; border:1px solid #C9DEE4;
+    transition:background .2s ease;
+  }
+  .tool:hover,.tool:focus-visible{background:#CFE4E9;}
+  .tool:focus-visible{outline:3px solid var(--mineral); outline-offset:2px;}
+  .tool h4{font-size:15.5px; font-weight:600; letter-spacing:.04em;}
+  .tool p{font-size:13px; color:#4B6670; margin-top:4px;}
+
+  /* ── 說明 ── */
+  .note{
+    background:#fff; border:1px solid var(--line); border-radius:14px;
+    padding:22px 24px; box-shadow:var(--shade);
+  }
+  .note h3{
+    font-family:"Noto Serif TC","Songti TC",serif; font-size:17px;
+    font-weight:600; letter-spacing:.08em; margin-bottom:8px;
+  }
+  .note p{font-size:14px; color:var(--ink-soft);}
+  .note p + p{margin-top:9px;}
+
+  footer{
+    margin-top:46px; padding:30px 22px 40px; text-align:center;
+    border-top:1px solid var(--line); color:var(--ink-soft); font-size:13.5px;
+  }
+  footer a{color:var(--seal); text-decoration:none; border-bottom:1px solid #E3BDB6;}
+  footer a:hover{color:var(--seal-deep);}
+
+  @media (max-width:640px){
+    .cover{padding:46px 20px 40px;}
+    .figures{gap:22px;}
+    .vol{padding:22px 20px 18px;}
+    .vol h3{font-size:24px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important; scroll-behavior:auto !important;}
+  }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="seal">遊戲<br>工坊</div>
+  <h1>把章回小說做成識字遊戲</h1>
+  <p class="lede">妖幡上寫著字，軍令旗上也寫著字。認得出來才砍得中，認得越多，角色就越強。做給特教學生玩的動作遊戲。</p>
+  <div class="rule"></div>
+  <div class="figures">
+    <div class="fig"><b>2</b><span>款遊戲</span></div>
+    <div class="fig"><b>90</b><span>個角色</span></div>
+    <div class="fig"><b>8</b><span>關卡與番外</span></div>
+    <div class="fig"><b>90</b><span>張畫像</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="band">
+    <div class="band-head">
+      <h2>遊戲</h2>
+      <span>點開就能玩，不用安裝</span>
+    </div>
+    <div class="band-line"></div>
+
+    <div class="shelf">
+
+      <a class="vol shu" href="qujing-zhuan.html">
+        <div class="hui">第一回</div>
+        <h3>取經傳</h3>
+        <div class="couplet">妖幡橫路認真字<br>凡胎一步證如來</div>
+        <p>西行路上的妖怪舉著寫了字的幡。認得哪一面是題目上的字，才打得中真的那一個。</p>
+        <ul class="facts">
+          <li>師徒五人可選，兵器各有打法</li>
+          <li>四關主線加四篇番外，打過的妖怪能解鎖來玩</li>
+          <li>學會的字會變成法術，字越多招越多</li>
+          <li>老師可自訂生字、調整難度</li>
+        </ul>
+        <div class="go"><em>qujing-zhuan.html</em><b>開始遊戲</b></div>
+      </a>
+
+      <a class="vol wei" href="zouzu-zhuan.html">
+        <div class="hui">第二回</div>
+        <h3>走卒傳</h3>
+        <div class="couplet">黃巾亂裡識軍令<br>走卒行中拜將軍</div>
+        <p>軍中最末的走卒，看不懂令旗就一輩子扛旗。認得一個字升一階，從走卒打到大將軍。</p>
+        <ul class="facts">
+          <li>六十名三國武將可選，甲隨軍階越換越好</li>
+          <li>七階軍階，認字直接換成戰力</li>
+          <li>答錯不扣血，慢慢認也走得完</li>
+          <li>老師可自訂生字、調整難度</li>
+        </ul>
+        <div class="go"><em>zouzu-zhuan.html</em><b>開始遊戲</b></div>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band-head">
+      <h2>設計工具</h2>
+      <span>做遊戲時用來比對的檢視頁</span>
+    </div>
+    <div class="band-line"></div>
+    <div class="kit">
+      <a class="tool" href="角色辨識度預覽.html">
+        <h4>角色與兵器</h4>
+        <p>三十個角色並排，比對長相、兵器與招牌輪廓</p>
+      </a>
+      <a class="tool" href="服裝與姿態預覽.html">
+        <h4>服裝與姿態</h4>
+        <p>切換站立、行走、攻擊，看衣料與動作</p>
+      </a>
+      <a class="tool" href="武器手感預覽.html">
+        <h4>武器手感</h4>
+        <p>顯示命中範圍，比較各種兵器的打法差異</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band-head">
+      <h2>設計的想法</h2>
+    </div>
+    <div class="band-line"></div>
+    <div class="note">
+      <h3>先讓人贏，再讓人學</h3>
+      <p>答錯只會把敵人彈開，不扣血也不中斷連擊，卡住幾秒就自動提示。故意亂砍也走得完一輪，因為挫折會讓人停下來，而停下來就學不到字了。</p>
+      <p>認得的字不只是分數。它會變成角色的法術、變成軍階、變成身上那套越換越好的甲。學生看得到自己認字的成果長在角色身上。</p>
+      <p>每個字要答對好幾次才算學會，而且會一直輪回來複習。次數與難度都能由老師調整。</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>遊戲工坊 · 給特殊生的識字動作遊戲</p>
+  <p><a href="index.html">回教學資源網</a></p>
+</footer>
+
+<script src="offline-register.js" defer></script>
+</body>
+</html>
