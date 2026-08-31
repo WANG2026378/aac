@@ -1,0 +1,2888 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>取經傳・十六難</title>
+<meta name="description" content="西遊記十六難的橫向破關動作遊戲。師徒五人各有封號形態，二十五名妖魔守關。">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="十六難">
+<meta name="theme-color" content="#080b12">
+<link rel="apple-touch-icon" href="icons/portal-180.png">
+<link rel="icon" type="image/png" href="icons/portal-512.png">
+<style>
+  :root{--gold:#ffd36a;--ink:#080b12;--line:rgba(212,230,255,.28);--glass:rgba(7,12,20,.76);}
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:none;}
+  html,body{width:100%;height:100%;overflow:hidden;background:#080b12;color:#f5f3ea;
+    font-family:"PingFang TC","Noto Sans TC",sans-serif;}
+  button{font:inherit;color:inherit;border:0;cursor:pointer;user-select:none;-webkit-user-select:none;}
+  #app{position:fixed;inset:0;background:#080b12;overflow:hidden;}
+  #homeBtn{position:fixed;z-index:60;top:max(8px,env(safe-area-inset-top));
+    left:max(10px,env(safe-area-inset-left));padding:7px 13px;font-size:13px;
+    letter-spacing:.06em;color:#d8e2f4;text-decoration:none;border-radius:3px;
+    border:1px solid rgba(212,230,255,.3);background:rgba(7,12,20,.72);
+    backdrop-filter:blur(3px);touch-action:auto;}
+  #homeBtn:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+  #errBar{display:none;position:fixed;left:0;right:0;top:0;z-index:99;padding:10px 14px;
+    background:#c0392b;color:#fff;font-size:13px;line-height:1.5;touch-action:auto;}
+  #game{display:block;width:100%;height:100%;background:#10151e;}
+  .screen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:
+    max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right))
+    max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));z-index:20;}
+  .screen.hidden,.hidden{display:none!important;}
+  .select-panel{width:min(980px,96vw);max-height:94dvh;overflow:auto;background:rgba(7,10,16,.92);
+    border:1px solid rgba(255,211,106,.42);box-shadow:0 22px 80px rgba(0,0,0,.6);padding:22px;}
+  .game-title{text-align:center;color:var(--gold);font-family:"Hiragino Mincho ProN","Noto Serif TC",serif;
+    font-size:clamp(28px,6vw,58px);letter-spacing:.12em;font-weight:800;text-shadow:0 3px 0 #5e291d,0 0 22px rgba(255,110,50,.38);}
+  .chapter{text-align:center;margin-top:5px;color:#9dc9d1;font-size:12px;letter-spacing:.38em;}
+  .hero-grid{display:grid;grid-template-columns:repeat(5,minmax(112px,1fr));gap:10px;margin-top:20px;}
+  .hero-card{position:relative;min-width:0;border:1px solid var(--line);background:#111523;padding:6px 6px 10px;
+    text-align:center;border-radius:5px;transition:transform .15s,border-color .15s;}
+  .hero-card.selected{border:2px solid var(--gold);padding:5px 5px 9px;transform:translateY(-4px);background:#1b1820;}
+  .hero-card canvas{display:block;width:100%;height:180px;background:#0b1019;border-bottom:1px solid rgba(255,255,255,.08);}
+  .hero-card strong{display:block;font-size:16px;margin-top:7px;color:#fff;white-space:nowrap;}
+  .hero-card span{display:block;color:#aeb9c8;font-size:11px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .journey-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:17px;padding:0 2px 8px;
+    border-bottom:1px solid rgba(255,211,106,.25);font-family:"Hiragino Mincho ProN","Noto Serif TC",serif;}
+  .journey-head strong{color:var(--gold);font-size:18px;letter-spacing:.08em}.journey-head span{color:#9dc9d1;font-size:12px;font-weight:800;}
+  .stage-select{display:grid;grid-template-columns:repeat(8,minmax(74px,1fr));gap:7px;margin-top:10px;}
+  .stage-card{min-height:54px;padding:7px 5px;border-radius:6px;text-align:center;background:linear-gradient(155deg,#252130,#0d1420);
+    box-shadow:inset 0 0 0 1px rgba(186,205,218,.2);}
+  .stage-card span,.stage-card b,.stage-card small{display:block}.stage-card span{color:#91a9b7;font-size:10px;font-weight:800;}
+  .stage-card b{color:#f6f0df;font-size:12px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .stage-card small{color:#83cbd0;font-size:9px;margin-top:2px}.stage-card.selected{background:linear-gradient(155deg,#5b3424,#17212b);
+    box-shadow:0 0 0 2px var(--gold),inset 0 0 20px rgba(255,199,92,.12);}
+  .stage-card:disabled{opacity:.4;cursor:not-allowed}.stage-card:disabled small{color:#8b8d94;}
+  .ui-focus{outline:3px solid #73e8ff!important;outline-offset:3px;filter:brightness(1.13);}
+  .primary{display:block;margin:18px auto 0;min-width:190px;padding:13px 24px;background:var(--gold);color:#17120a;
+    border-radius:4px;font-weight:900;letter-spacing:.18em;font-size:17px;box-shadow:0 5px 0 #8a5124;}
+  .primary:active{transform:translateY(3px);box-shadow:0 2px 0 #8a5124;}
+  #hud{position:absolute;inset:0 0 auto 0;padding:max(10px,env(safe-area-inset-top)) 14px 0;z-index:8;pointer-events:none;}
+  .hud-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}
+  .player-hud,.boss-hud{width:min(38vw,420px);padding:8px 10px;background:var(--glass);border:1px solid var(--line);}
+  .boss-hud{text-align:right;}
+  .hud-name{display:flex;justify-content:space-between;gap:12px;font-size:13px;font-weight:800;margin-bottom:5px;}
+  .bar{height:12px;background:#1a1d25;border:1px solid rgba(255,255,255,.2);overflow:hidden;}
+  .fill{height:100%;width:100%;transform-origin:left center;background:#49bd6b;transition:width .12s linear;}
+  #energyFill{background:#41b9dc;}.boss-hud .fill{background:#dd4a47;}
+  .energy{height:7px;margin-top:4px;}
+  .inventory{display:flex;gap:10px;margin-top:5px;color:#d8e1ea;font-size:11px;}
+  #stageName{position:absolute;left:50%;top:max(12px,env(safe-area-inset-top));transform:translateX(-50%);
+    background:rgba(7,12,20,.76);border:1px solid rgba(255,211,106,.35);padding:7px 13px;color:var(--gold);
+    font-family:"Hiragino Mincho ProN","Noto Serif TC",serif;font-weight:800;letter-spacing:.1em;white-space:nowrap;}
+  #topActions{position:absolute;right:max(10px,env(safe-area-inset-right));top:calc(max(10px,env(safe-area-inset-top)) + 62px);
+    display:flex;gap:8px;z-index:12;}
+  .icon-btn{width:42px;height:42px;border-radius:50%;background:rgba(8,12,19,.76);border:1px solid rgba(255,255,255,.3);
+    display:grid;place-items:center;font-size:20px;}
+  #touchControls{position:absolute;inset:0;z-index:10;pointer-events:none;}
+  #stickArea{position:absolute;left:max(18px,env(safe-area-inset-left));bottom:max(20px,env(safe-area-inset-bottom));
+    width:150px;height:150px;border-radius:50%;background:rgba(9,16,25,.32);border:2px solid rgba(210,235,255,.3);
+    pointer-events:auto;}
+  #stickKnob{position:absolute;left:47px;top:47px;width:56px;height:56px;border-radius:50%;background:rgba(212,232,244,.5);
+    border:2px solid rgba(255,255,255,.66);box-shadow:0 4px 18px rgba(0,0,0,.35);}
+  #actionPad{position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));
+    width:262px;height:184px;pointer-events:none;}
+  .action{position:absolute;width:76px;height:76px;border-radius:50%;pointer-events:auto;border:2px solid rgba(255,255,255,.5);
+    background:rgba(11,19,28,.5);font-weight:900;font-size:16px;text-shadow:0 2px 3px #000;}
+  #attackBtn{right:0;bottom:0;background:rgba(198,55,42,.62);}
+  #heavyBtn{right:0;bottom:88px;background:rgba(202,105,34,.64);}
+  #jumpBtn{right:84px;bottom:0;background:rgba(48,130,178,.58);}
+  #skillBtn{right:84px;bottom:88px;background:rgba(151,74,183,.58);}
+  .action:active,.action.down{transform:scale(.92);filter:brightness(1.3);}
+  #message{position:absolute;left:50%;top:22%;transform:translateX(-50%);z-index:16;text-align:center;
+    font-family:"Hiragino Mincho ProN","Noto Serif TC",serif;font-weight:900;color:#fff;font-size:clamp(24px,5vw,52px);
+    text-shadow:0 3px 0 #30120b,0 0 22px #e46430;pointer-events:none;white-space:nowrap;}
+  #ultimateBanner{position:absolute;inset:0;z-index:17;display:grid;place-items:center;pointer-events:none;opacity:0;}
+  #ultimateBanner.show{animation:ultimate-banner .95s ease-out both;}
+  #ultimateGlyph{font-family:"Hiragino Mincho ProN","Noto Serif TC",serif;font-size:min(42vw,330px);font-weight:900;
+    color:#fff7cf;line-height:.8;text-shadow:0 0 8px #fff,0 0 30px #ffc94f,8px 10px 0 rgba(98,30,16,.66);transform:rotate(-8deg);}
+  #ultimateName{position:absolute;top:68%;font-family:"Hiragino Mincho ProN","Noto Serif TC",serif;font-size:clamp(23px,5vw,54px);
+    color:#ffd36a;font-weight:900;letter-spacing:.18em;text-shadow:0 3px 0 #42150b,0 0 20px #ff6c38;white-space:nowrap;}
+  #impactFlash{position:absolute;inset:0;z-index:15;background:#fff4ba;opacity:0;pointer-events:none;mix-blend-mode:screen;}
+  #impactFlash.flash{animation:impact-flash .28s ease-out both;}
+  @keyframes ultimate-banner{0%{opacity:0;transform:scale(1.8)}18%{opacity:1;transform:scale(.86)}38%{transform:scale(1.05)}72%{opacity:1}100%{opacity:0;transform:scale(1.12)}}
+  @keyframes impact-flash{0%{opacity:.88}35%{opacity:.28}100%{opacity:0}}
+  #endPanel{background:rgba(4,7,11,.74);}
+  .end-box{width:min(460px,92vw);padding:28px;background:#0d131d;border:1px solid rgba(255,211,106,.45);text-align:center;}
+  .end-box h2{font-size:34px;color:var(--gold);}.end-box p{margin-top:9px;color:#b8c3ce;}
+  #creditsPanel{padding:0;display:block;overflow:hidden;z-index:26;background:#030508;}
+  #creditsPanel::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:
+    linear-gradient(180deg,rgba(0,0,0,.94),transparent 14%,transparent 82%,rgba(0,0,0,.94)),
+    radial-gradient(ellipse at center,transparent 34%,rgba(0,0,0,.78) 100%);}
+  #creditsExitBtn{position:absolute;z-index:5;right:max(14px,env(safe-area-inset-right));top:max(14px,env(safe-area-inset-top));
+    width:46px;height:46px;border-radius:50%;background:rgba(8,12,18,.72);box-shadow:inset 0 0 0 1px rgba(255,221,145,.55);font-size:20px;}
+  .credits-roll{position:absolute;z-index:1;left:0;right:0;top:0;will-change:transform;}
+  .credits-roll.playing{animation:credits-roll 255s linear forwards;}
+  .credits-intro,.credits-final{min-height:78dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 20px;}
+  .credits-intro small{color:#88c7cf;letter-spacing:.42em}.credits-intro h2,.credits-final h2{margin-top:14px;color:var(--gold);
+    font-family:"Hiragino Mincho ProN","Noto Serif TC",serif;font-size:clamp(38px,8vw,88px);letter-spacing:.16em;text-shadow:0 0 30px rgba(255,177,75,.34);}
+  .credits-intro p,.credits-final p{max-width:680px;margin-top:18px;color:#c5cbd0;line-height:2;font-size:clamp(14px,2vw,19px);}
+  .credits-entry{width:min(920px,91vw);min-height:62dvh;margin:0 auto;display:grid;grid-template-columns:minmax(180px,36%) 1fr;
+    gap:clamp(24px,5vw,70px);align-items:center;padding:34px 0;border-bottom:1px solid rgba(255,220,144,.1);}
+  .credits-entry:nth-child(odd) img{order:2}.credits-entry img{width:100%;max-height:54dvh;aspect-ratio:5/6;object-fit:cover;object-position:50% 22%;
+    border-radius:4px;box-shadow:0 20px 70px rgba(0,0,0,.72),0 0 0 1px rgba(255,222,154,.2);}
+  .credits-copy small{color:#79bdc8;font-size:11px;letter-spacing:.28em}.credits-copy h3{margin-top:9px;color:#fff1bf;
+    font-family:"Hiragino Mincho ProN","Noto Serif TC",serif;font-size:clamp(27px,4vw,48px);font-weight:800;}
+  .credits-copy b{display:block;margin-top:8px;color:#d6a54e;font-size:15px;letter-spacing:.1em}.credits-copy p{margin-top:17px;color:#c6cbd0;font-size:clamp(14px,1.6vw,18px);line-height:1.95;}
+  .credits-final{min-height:84dvh}.credits-final h2{font-size:clamp(34px,7vw,74px)}
+  @keyframes credits-roll{from{transform:translateY(0)}to{transform:translateY(-100%)}}
+  .story-box{width:min(850px,94vw);display:grid;grid-template-columns:minmax(190px,36%) 1fr;max-height:88dvh;
+    overflow:hidden;background:#0a0e16;border:1px solid rgba(255,211,106,.46);box-shadow:0 24px 90px #000;}
+  .story-box img{width:100%;height:100%;min-height:360px;object-fit:cover;object-position:50% 24%;background:#111;}
+  .story-copy{padding:clamp(20px,4vw,42px);align-self:center;}.story-copy small{color:#8fc6d0;letter-spacing:.24em;}
+  .story-copy h2{color:var(--gold);font-family:"Hiragino Mincho ProN","Noto Serif TC",serif;font-size:clamp(26px,5vw,46px);margin-top:8px;}
+  .story-copy p{color:#c8d0d8;line-height:1.9;margin-top:16px;font-size:15px;white-space:pre-line;}
+  .shop-box{width:min(860px,94vw);max-height:90dvh;overflow:auto;background:#0d131d;border:1px solid rgba(255,211,106,.5);padding:22px;}
+  .shop-head{display:flex;justify-content:space-between;align-items:center;gap:16px}.shop-head h2{color:var(--gold);font-size:30px}.shop-head strong{font-size:18px;color:#ffe6a0;}
+  .shop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px;}.shop-item{padding:14px;background:#151b26;border:1px solid var(--line);text-align:left;border-radius:4px;}
+  .shop-item b{display:block;color:#fff;font-size:16px}.shop-item span{display:block;color:#9eabb8;font-size:12px;line-height:1.55;margin-top:5px}.shop-item em{display:block;color:var(--gold);font-style:normal;margin-top:10px;font-weight:800;}
+  .shop-item:disabled{opacity:.42}.shop-item:not(:disabled):active{transform:scale(.97)}
+  .art-forge{margin-top:16px;padding:14px 14px 18px;border-radius:7px;background:rgba(17,22,31,.72);box-shadow:inset 0 0 0 1px rgba(255,213,112,.22);}
+  .art-forge h3{color:var(--gold);font-family:"Noto Serif TC",serif;font-size:17px}.art-forge p{color:#9facb8;font-size:12px;margin-top:4px;}
+  .art-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}.art-chip{min-width:82px;padding:9px 12px;border-radius:5px;background:#151c27;box-shadow:inset 0 0 0 1px rgba(188,210,220,.22);font-size:13px;font-weight:800;}
+  .art-chip.equipped{color:#161006;background:linear-gradient(#ffe39a,#d99c3d);box-shadow:0 0 0 2px rgba(255,235,168,.35);}.art-chip:disabled{opacity:.28;}
+  .item-btn{position:absolute;width:46px;height:46px;border-radius:50%;pointer-events:auto;background:rgba(11,19,28,.58);border:1px solid rgba(255,255,255,.5);font-size:12px;font-weight:800;}
+  #hpPotionBtn{left:0;bottom:56px;color:#ff8a83}#mpPotionBtn{left:0;bottom:5px;color:#72d8ff}
+
+  /* 古風戰卷介面：雲紋收頂、海水紋收底，避免面板只剩僵硬直線。 */
+  .select-panel,.story-box,.shop-box,.end-box{
+    position:relative;isolation:isolate;border:0;border-radius:8px;
+    background-color:rgba(9,13,22,.95);
+    background-image:
+      radial-gradient(ellipse at 12px 100%,transparent 9px,rgba(108,176,184,.22) 10px 12px,transparent 13px),
+      radial-gradient(ellipse at 38px 100%,transparent 13px,rgba(108,176,184,.15) 14px 16px,transparent 17px),
+      linear-gradient(135deg,rgba(126,42,29,.23),transparent 34%),
+      linear-gradient(180deg,rgba(255,214,116,.08),transparent 18%,transparent 76%,rgba(64,132,145,.12));
+    background-size:52px 26px,76px 34px,100% 100%,100% 100%;
+    background-position:0 100%,18px 100%,0 0,0 0;background-repeat:repeat-x,repeat-x,no-repeat,no-repeat;
+    box-shadow:0 24px 86px rgba(0,0,0,.68),inset 0 0 0 1px rgba(255,211,106,.28),inset 0 0 32px rgba(132,69,37,.12);
+  }
+  .select-panel::before,.story-box::before,.shop-box::before,.end-box::before{
+    content:"";position:absolute;z-index:0;inset:8px 12px auto;height:34px;pointer-events:none;opacity:.58;
+    background:
+      radial-gradient(ellipse at 20px 17px,transparent 10px,rgba(255,213,111,.38) 11px 12px,transparent 13px) 0 0/74px 30px repeat-x,
+      radial-gradient(ellipse at 52px 9px,transparent 7px,rgba(255,213,111,.22) 8px 9px,transparent 10px) 0 0/90px 26px repeat-x;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+  }
+  .select-panel>* ,.story-box>* ,.shop-box>* ,.end-box>*{position:relative;z-index:1;}
+  .hero-card,.shop-item{border:0;border-radius:7px;background:
+    radial-gradient(circle at 8px 8px,rgba(255,215,122,.16) 0 2px,transparent 3px),
+    linear-gradient(155deg,rgba(40,35,49,.98),rgba(12,17,28,.98));
+    box-shadow:inset 0 0 0 1px rgba(186,205,218,.2),inset 0 -12px 25px rgba(36,104,112,.08);}
+  .hero-card::after,.shop-item::after{content:"";position:absolute;left:10%;right:10%;bottom:3px;height:9px;opacity:.5;pointer-events:none;
+    background:radial-gradient(ellipse at 10px 9px,transparent 6px,rgba(105,184,194,.42) 7px 8px,transparent 9px) 0 0/32px 9px repeat-x;}
+  .hero-card.selected{border:0;box-shadow:0 0 0 2px var(--gold),0 10px 30px rgba(0,0,0,.48),inset 0 -18px 30px rgba(128,46,30,.2);}
+  .primary{border-radius:5px 5px 18px 18px;background:linear-gradient(180deg,#ffe39a,#d99c3d);box-shadow:0 5px 0 #70401f,inset 0 0 0 2px rgba(255,249,205,.48);}
+  .player-hud,.boss-hud,#stageName{border:0;border-radius:0 14px 14px 14px;background:
+    radial-gradient(ellipse at 16px 100%,transparent 8px,rgba(98,188,195,.2) 9px 10px,transparent 11px) 0 100%/38px 14px repeat-x,
+    linear-gradient(100deg,rgba(7,12,20,.94),rgba(27,31,39,.78));
+    box-shadow:inset 0 0 0 1px rgba(255,216,122,.24),0 5px 20px rgba(0,0,0,.26);}
+  .boss-hud{border-radius:14px 0 14px 14px;}
+  .bar{border:0;border-radius:8px;background:
+    radial-gradient(ellipse at 10px 8px,transparent 5px,rgba(255,255,255,.08) 6px 7px,transparent 8px) 0 0/24px 12px repeat-x,
+    rgba(12,14,20,.84);box-shadow:inset 0 0 0 1px rgba(255,231,177,.2);}
+  .fill{border-radius:8px;box-shadow:inset 0 2px rgba(255,255,255,.2),0 0 10px currentColor;}
+  #stickArea{background:
+    repeating-radial-gradient(circle at center,transparent 0 27px,rgba(105,190,198,.14) 28px 30px,transparent 31px 42px),
+    rgba(9,16,25,.34);border-color:rgba(209,185,124,.46);box-shadow:inset 0 0 22px rgba(70,166,178,.15);}
+  #stickKnob{background:radial-gradient(circle at 36% 30%,rgba(255,241,198,.74),rgba(96,147,157,.52) 48%,rgba(22,42,51,.7));border-color:rgba(255,224,151,.58);}
+  .action,.item-btn,.icon-btn{border-color:rgba(255,224,158,.56);box-shadow:inset 0 0 0 4px rgba(0,0,0,.16),inset 0 0 18px rgba(255,225,154,.08),0 5px 16px rgba(0,0,0,.3);}
+  .icon-btn{position:relative;}
+  .action::after,.item-btn::after,.icon-btn::after{content:"";position:absolute;inset:5px;border-radius:50%;pointer-events:none;
+    border:1px solid rgba(255,227,169,.2);border-top-color:rgba(255,244,208,.54);}
+  #attackBtn{background:radial-gradient(circle at 35% 28%,rgba(255,139,91,.76),rgba(128,29,25,.72));}
+  #heavyBtn{background:radial-gradient(circle at 35% 28%,rgba(255,183,90,.78),rgba(126,60,19,.75));}
+  #jumpBtn{background:radial-gradient(circle at 35% 28%,rgba(111,204,226,.75),rgba(24,82,119,.72));}
+  #skillBtn{background:radial-gradient(circle at 35% 28%,rgba(211,132,236,.76),rgba(80,35,112,.76));}
+  @media(pointer:fine){#touchControls{opacity:.55;}}
+  @media(max-width:760px){
+    .select-panel{padding:15px 10px}.hero-grid{grid-template-columns:repeat(3,minmax(92px,1fr));gap:7px}
+    .hero-card canvas{height:135px}.hero-card strong{font-size:14px}
+    .stage-select{grid-template-columns:repeat(4,minmax(68px,1fr))}.stage-card{min-height:49px}
+    .player-hud,.boss-hud{width:37vw;padding:6px}.hud-name{font-size:11px}.bar{height:9px}
+    #stageName{top:48px;font-size:11px;padding:5px 8px}
+    .story-box{grid-template-columns:42% 1fr}.story-box img{min-height:300px}.story-copy{padding:16px}.story-copy p{font-size:13px}
+    .shop-grid{grid-template-columns:repeat(2,1fr)}
+    .credits-entry{grid-template-columns:38% 1fr;gap:18px;min-height:58dvh}.credits-entry img{max-height:45dvh}.credits-copy p{line-height:1.7}
+  }
+  @media(max-height:520px) and (orientation:landscape){
+    .select-panel{max-height:98dvh;padding:8px 12px}.game-title{font-size:30px}.chapter{display:none}
+    .hero-grid{margin-top:8px;grid-template-columns:repeat(5,1fr)}.hero-card canvas{height:112px}
+    .journey-head{margin-top:9px;padding-bottom:5px}.journey-head strong{font-size:14px}.stage-select{grid-template-columns:repeat(8,1fr);gap:5px;margin-top:6px}
+    .stage-card{min-height:42px;padding:4px 3px}.stage-card b{font-size:10px}.stage-card small{display:none}
+    .primary{margin-top:8px;padding:9px 20px}.hero-card span{display:none}
+    #stickArea{width:124px;height:124px}#stickKnob{left:39px;top:39px;width:46px;height:46px}
+    #actionPad{width:230px;height:138px}.action{width:64px;height:64px;font-size:14px}
+    #attackBtn{right:0;bottom:0}#heavyBtn{right:0;bottom:72px}#jumpBtn{right:70px;bottom:0}#skillBtn{right:70px;bottom:72px}
+    .story-box{grid-template-columns:32% 1fr}.story-box img{min-height:250px}.story-copy p{line-height:1.55;margin-top:8px}.story-copy .primary{display:inline-block;min-width:150px}
+    .shop-box{padding:12px}.shop-grid{margin-top:9px}.shop-item{padding:9px}.shop-item span{display:none}
+  }
+</style></head><body>
+<script>
+window.onerror=function(msg,src,line){
+  var b=document.getElementById("errBar");
+  if(b){b.style.display="block";b.textContent="程式錯誤："+msg+"（第 "+line+" 行）請把這行字告訴開發者";}
+  return false;
+};
+</script>
+<div id="errBar"></div>
+<a id="homeBtn" href="games.html">← 遊戲工坊</a>
+<main id="app">
+  <canvas id="game" aria-label="取經傳橫向破關遊戲"></canvas>
+  <section id="selectScreen" class="screen">
+    <div class="select-panel">
+      <h1 class="game-title">取經傳</h1>
+      <div class="chapter">降妖西行・十六難完整篇</div>
+      <div id="heroGrid" class="hero-grid"></div>
+      <div class="journey-head"><strong>十六難關卡全覽</strong><span id="journeyProgress">已開放 1 / 16</span></div>
+      <div id="stageSelect" class="stage-select" aria-label="選擇起始關卡"></div>
+      <button id="startBtn" class="primary" data-ui-id="start">從第一難出發</button>
+    </div>
+  </section>
+  <section id="hud" class="hidden">
+    <div class="hud-row">
+      <div class="player-hud"><div class="hud-name"><span id="playerName">孫悟空</span><span id="hpText">100</span></div>
+        <div class="bar"><div id="hpFill" class="fill"></div></div><div class="bar energy"><div id="energyFill" class="fill"></div></div>
+        <div class="inventory"><span>錢 <b id="coinText">0</b></span><span>血藥 <b id="hpPotionText">0</b></span><span>法藥 <b id="mpPotionText">0</b></span><span id="spellText"></span></div></div>
+      <div id="bossHud" class="boss-hud hidden"><div class="hud-name"><span id="bossPhase">人形</span><span id="bossName">白骨精</span></div>
+        <div class="bar"><div id="bossFill" class="fill"></div></div></div>
+    </div>
+    <div id="stageName">第一難・白虎嶺</div>
+  </section>
+  <div id="topActions"><button id="fullBtn" class="icon-btn" title="全螢幕">⛶</button><button id="pauseBtn" class="icon-btn" title="暫停">Ⅱ</button></div>
+  <div id="touchControls" class="hidden">
+    <div id="stickArea"><div id="stickKnob"></div></div>
+    <div id="actionPad"><button id="hpPotionBtn" class="item-btn">血藥</button><button id="mpPotionBtn" class="item-btn">法藥</button>
+      <button id="jumpBtn" class="action">跳</button><button id="attackBtn" class="action">輕擊</button><button id="heavyBtn" class="action">重擊</button><button id="skillBtn" class="action">奧義</button></div>
+  </div>
+  <div id="message"></div>
+  <div id="ultimateBanner"><div id="ultimateGlyph">鬥</div><div id="ultimateName">金箍風暴</div></div><div id="impactFlash"></div>
+  <section id="storyPanel" class="screen hidden"><div class="story-box"><img id="storyPortrait" alt="劇情角色">
+    <div class="story-copy"><small id="storyChapter">第一難</small><h2 id="storyTitle">白虎嶺</h2><p id="storyText"></p><button id="storyBtn" class="primary">迎戰</button></div></div></section>
+  <section id="shopPanel" class="screen hidden"><div class="shop-box"><div class="shop-head"><h2>西行行商</h2><strong>盤纏 <span id="shopCoins">0</span></strong></div>
+    <div id="shopGrid" class="shop-grid"></div><div id="artForge" class="art-forge"></div><button id="leaveShopBtn" class="primary" data-ui-id="shop-leave">繼續西行</button></div></section>
+  <section id="endPanel" class="screen hidden"><div class="end-box"><h2 id="endTitle">功德圓滿</h2><p id="endText"></p><button id="restartBtn" class="primary">再闖一次</button></div></section>
+  <section id="creditsPanel" class="screen hidden" aria-label="取經傳電影式片尾">
+    <button id="creditsExitBtn" title="返回十六關選單">×</button><div id="creditsRoll" class="credits-roll"></div>
+  </section>
+</main>
+<script>
+"use strict";
+const TAU=Math.PI*2;
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const rnd=(a,b)=>a+Math.random()*(b-a);
+let time=0;
+const ATTACK_MODEL_RIG=Object.freeze({
+  footY:0, hipY:-50, torsoLift:-22, headY:-72,
+  thigh:27, shin:26,
+  upperArm:18, forearm:16.5,
+  rearUpperArm:17.5, rearForearm:16.5,
+  freeUpperArm:17, freeForearm:15.5
+});
+const RANKS=[{hc:'#6b6250'},{hc:'#8a7a52'},{hc:'#b04a3a'},{hc:'#c94b4b'},
+             {hc:'#e0553f'},{hc:'#e0553f'},{hc:'#ffcf6b'}];
+function ease(t){return t*t*(3-2*t)}
+function shade(hex, amt){
+  const n = parseInt(hex.slice(1),16);
+  let r=(n>>16)+amt, g=((n>>8)&255)+amt, b=(n&255)+amt;
+  r=Math.max(0,Math.min(255,r)); g=Math.max(0,Math.min(255,g)); b=Math.max(0,Math.min(255,b));
+  return "#"+((r<<16)|(g<<8)|b).toString(16).padStart(6,"0");
+}
+/* 兩節肢體的反向運動學（IK）。
+   給定根部（肩／髖）與末端（手／腳），用餘弦定理解出中間關節。
+   pref='front' 關節朝前（膝），'back' 朝後（肘）——這是人體的實際彎曲方向。 */
+function limb2(c,sx,sy,ex,ey,l1,l2,pref,w,color){
+  let dx=ex-sx, dy=ey-sy, d=Math.hypot(dx,dy);
+  const max=l1+l2-0.001, min=Math.abs(l1-l2)+0.001;
+  if(d>max){ const k=max/d; ex=sx+dx*k; ey=sy+dy*k; dx*=k; dy*=k; d=max; }
+  if(d<min){ const k=min/Math.max(d,0.001); ex=sx+dx*k; ey=sy+dy*k; dx*=k; dy*=k; d=min; }
+  const base=Math.atan2(dy,dx);
+  const cosA=clamp((d*d+l1*l1-l2*l2)/(2*d*l1),-1,1);
+  const A=Math.acos(cosA);
+  // 兩組解，取關節較前或較後的那一組
+  const j1x=sx+Math.cos(base+A)*l1, j1y=sy+Math.sin(base+A)*l1;
+  const j2x=sx+Math.cos(base-A)*l1, j2y=sy+Math.sin(base-A)*l1;
+  const useFirst = pref==='front' ? (j1x>j2x) : (j1x<j2x);
+  const jx=useFirst?j1x:j2x, jy=useFirst?j1y:j2y;
+  limb(c,sx,sy,jx,jy,w,color);                 // 上臂／大腿
+  limb(c,jx,jy,ex,ey,w*0.84,color);            // 前臂／小腿
+  return {jx:jx,jy:jy,ex:ex,ey:ey};
+}
+function limb(c,x1,y1,x2,y2,w,color){c.strokeStyle='#120f0b';c.lineWidth=w+2.4;c.lineCap='round';
+  c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+  c.strokeStyle=color;c.lineWidth=w;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke()}
+function drawHand(c,x,y,ang,skin,cuff,slim,gripping){
+  const palmL=slim?7.1:8.4, palmW=slim?3.8:4.5;
+  c.save(); c.translate(x,y); c.rotate(ang);
+  // 袖口包住手腕，前臂不會直接變成一顆圓球。
+  c.fillStyle=shade(cuff,-18); c.strokeStyle='#120f0b'; c.lineWidth=1;
+  c.fillRect(-5.5,-palmW,5.2,palmW*2); c.strokeRect(-5.5,-palmW,5.2,palmW*2);
+  c.fillStyle=skin; c.strokeStyle='#120f0b'; c.lineWidth=1.05;
+  c.beginPath(); c.ellipse(1.8,0,palmL*.58,palmW,0,0,TAU); c.fill(); c.stroke();
+  // 握武器時手掌包住柄，三條短線表現手指，不畫成張開的手掌。
+  c.strokeStyle=shade(skin,-48); c.lineWidth=.75; c.lineCap='round';
+  if(gripping){
+    for(let i=-1;i<=1;i++){c.beginPath();c.moveTo(.2,i*1.65);c.quadraticCurveTo(2.5,i*2.1,4.4,i*1.45);c.stroke();}
+    c.beginPath(); c.moveTo(-.6,-palmW*.72); c.quadraticCurveTo(2,-palmW*1.12,4.2,-palmW*.5); c.stroke();
+  } else {
+    for(let i=-1;i<=1;i++){c.beginPath();c.moveTo(3.1,i*1.35);c.lineTo(6.2,i*1.55);c.stroke();}
+  }
+  c.restore();
+}
+function combatGait(ph,stride,lift){
+  const u=(((ph%TAU)+TAU)%TAU)/TAU, duty=.64;
+  if(u<duty){
+    const k=u/duty;
+    return {x:stride*(1-2*k),y:ATTACK_MODEL_RIG.footY,planted:true};
+  }
+  const k=(u-duty)/(1-duty);
+  return {x:stride*(-1+2*k),y:ATTACK_MODEL_RIG.footY-lift*Math.sin(k*Math.PI),planted:false};
+}
+/* 所有動作只改關節與重心。骨長、頭身、髖與角色外框永遠取自同一個攻擊母模型。 */
+function pose(type,t,fem){
+  const q={bob:0,walk:0,attack:0,recoil:0,sway:0,lean:0,breath:0,antic:0,
+    crouch:0,armLift:0,air:0,land:0,hurt:0,skill:0,heavy:0,slam:0,cast:0,variant:1};
+  q.breath = Math.sin(t*(fem?1.9:2.4))*(fem?1.5:0.9);     // 站著也有呼吸起伏
+  if(type==='idle'){
+    q.sway=Math.sin(t*1.45)*.5;
+    q.armLift=.08+Math.sin(t*1.8)*.035;
+  }
+  if(type==='march'){
+    const sp=fem?7.4:8.1;
+    q.walk=Math.sin(t*sp)*(fem?.72:.84);
+    q.bob=Math.abs(Math.sin(t*sp))*1.7;
+    q.sway=Math.sin(t*sp*.5)*(fem?.5:.4);
+    q.lean=-.09;q.armLift=.18;
+  }
+  if(type==='jump'){
+    q.air=1;q.crouch=.15;q.bob=2.5;q.lean=-.12;q.armLift=.72;q.sway=-1.5;
+  }
+  if(type==='fall'){
+    q.air=1;q.crouch=.08;q.lean=.08;q.armLift=.48;q.sway=1.2;
+  }
+  if(type==='land'){
+    const s=clamp(t/.18,0,1);q.land=1-s;q.crouch=Math.sin(s*Math.PI)*.9;q.bob=-q.crouch*3;q.armLift=.28;
+  }
+  if(type==='hurt'){
+    q.hurt=1;q.recoil=1;q.lean=.28;q.crouch=.48;q.armLift=-.35;q.sway=-4;
+  }
+  if(type==='cast'){
+    q.cast=1;q.antic=.7;q.crouch=.32;q.armLift=1;q.bob=1.5;q.sway=Math.sin(t*9)*1.2;
+  }
+  if(type==='attack'||type==='attack2'||type==='attack3'||type==='light'||type==='heavy'||type==='jumpHeavy'||type==='skill'){
+    const s=(t%1.55)/1.55;
+    q.variant=type==='attack2'?2:type==='attack3'?3:type==='heavy'?4:type==='jumpHeavy'?5:1;
+    q.skill=type==='skill'?1:0;
+    q.heavy=type==='heavy'||type==='jumpHeavy'?1:0;q.slam=type==='jumpHeavy'?1:0;
+    // 預備：真正的反向蓄力相位（不是從揮擊值推導）
+    const AW=q.skill?.24:(fem?0.20:0.16);
+    q.antic = s<AW ? Math.sin(s/AW*Math.PI) : 0;
+    if(fem){
+      // 起手慢、揮擊圓、收招留一拍，整體不那麼硬
+      q.attack = s<.34 ? ease(Math.max(0,(s-AW*0.6)/(.34-AW*0.6)))
+               : s<.54 ? 1-ease((s-.34)/.20)*.16
+               : s<.88 ? .84*(1-ease((s-.54)/.34)) : 0;
+      q.sway=Math.sin(s*Math.PI)*2.2;
+    } else {
+      q.attack = s<.3 ? ease(Math.max(0,(s-AW*0.6)/(.3-AW*0.6)))
+               : s<.5 ? 1-ease((s-.3)/.2)*.22
+               : s<.82 ? .78*(1-ease((s-.5)/.32)) : 0;
+    }
+    if(q.variant===2){q.lean=.08;q.sway=-Math.sin(s*Math.PI)*2.8;}
+    if(q.variant===3){q.crouch=Math.sin(s*Math.PI)*.38;q.lean=-.16;q.armLift=.25;}
+    if(q.heavy){q.crouch=Math.sin(s*Math.PI)*.46;q.lean=-.18+q.attack*.2;q.armLift=.32;q.sway=Math.sin(s*Math.PI)*3.4;}
+    if(type==='jumpHeavy'){q.air=1;q.crouch=.34+Math.sin(s*Math.PI)*.22;q.lean=.2+q.attack*.16;q.armLift=.82;q.sway=-2.2+q.attack*4.4;q.bob=2;}
+    if(q.skill){q.attack=Math.min(1,q.attack*1.12);q.crouch=Math.sin(s*Math.PI)*.42;q.armLift=.42;q.sway=Math.sin(s*Math.PI)*3.6;}
+  }
+  return q;
+}
+
+/* ================= 2.5D 側身立繪 =================
+   讀的是跟頭像同一份 p 欄位：sk 膚色 / ey 眼 / br 眉 / bd 鬍 / bc 鬍色
+   / ht 頭飾 / hc 頭飾色 / ac 甲色 / at 服裝 / ex 特徵
+   軍階 ri 只加不換：甲片、肩甲、披風、描金、背纓一層層疊上去。   */
+function wpKind(wp,h){
+  // 手感類型。角色可用 wk 欄位直接指定，優先於名字推測。
+  if(h&&h.wk&&WEAPON[h.wk]) return h.wk;
+  if(/錫|經|卷/.test(wp)) return 'sutra';
+  if(/弓|弩|鏢|箭/.test(wp)) return 'bow';
+  if(/耙/.test(wp)) return 'rake';
+  if(/棒|棍|桿|杵/.test(wp)) return 'staff';
+  if(/偃月|鎚|錘|鏟|斧/.test(wp)) return 'glaive';
+  if(/扇|拂塵|塵尾|淨瓶|楊柳|笏/.test(wp)||wp==='如意') return 'fan';
+  if(/矛|槍|戟|尖|杖|叉/.test(wp)) return 'pole';
+  return 'sword';
+}
+/* 外觀類型：跟手感分開，所以 25 個 Boss 能有 25 種一眼認得出的兵器，
+   但共用少數幾種打擊手感。角色可用 wv 欄位指定，沒寫就依名字推。 */
+function wpView(wp,h){
+  if(h&&h.wv) return h.wv;
+  if(/白骨/.test(wp)) return 'bone';
+  if(/芭蕉/.test(wp)) return 'bigfan';
+  if(/爪/.test(wp)) return 'claw';
+  if(/雙劍|雙股/.test(wp)) return 'twin';
+  if(/杵/.test(wp)) return 'pestle';
+  if(/淨瓶|楊柳/.test(wp)) return 'vase';
+  if(/拂塵|塵尾/.test(wp)) return 'whisk';
+  if(/火尖/.test(wp)) return 'firespear';
+  if(/三股|鋼叉/.test(wp)) return 'trident';
+  if(/鎚|錘/.test(wp)) return 'mace';
+  if(/畫戟/.test(wp)) return 'halberd';
+  if(/兩刃/.test(wp)) return 'trident';
+  if(/如意$/.test(wp)) return 'ruyi';
+  if(/笏/.test(wp)) return 'tablet';
+  if(/鏢/.test(wp)) return 'dart';
+  if(/刀/.test(wp)) return 'saber';
+  if(/長鼻/.test(wp)) return 'trunkspear';
+  return wpKind(wp,h);
+}
+
+const WEAPON_FORMS={
+  '孫悟空':['如意金箍棒','赤金金箍棒','靈紋金箍棒','鎮海神針','齊天神兵'],
+  '豬八戒':['九齒釘耙','玄鐵釘耙','天河戰耙','天蓬神耙','淨壇神兵'],
+  '沙悟淨':['降妖寶杖','流沙寶杖','月牙降魔杖','捲簾神杖','金身神兵'],
+  '唐三藏':['九環錫杖','赤金錫杖','梵音九環杖','金蟬佛杖','旃檀神兵'],
+  '白龍馬':['龍鱗銀戟','寒光銀戟','滄海龍戟','八部天龍戟','廣力神兵']
+};
+function weaponFormName(name,level){
+  const forms=WEAPON_FORMS[name];return forms?forms[clamp((level||1)-1,0,forms.length-1)]:'神兵';
+}
+function drawWeaponEvolution(c,level,color,longWeapon,front=false){
+  if(level<2)return;
+  const x1=longWeapon?-32:0,y1=longWeapon?17:0,x2=longWeapon?38:48,y2=longWeapon?-19:0;
+  c.save();c.globalAlpha=front?.82:.2+.07*level;c.strokeStyle=color;c.shadowColor=color;c.shadowBlur=front?5:8+level*3;
+  c.lineCap='round';c.lineWidth=front?1.25:level>=5?9:4+level*.7;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+  if(level>=5&&!front){c.globalAlpha=.34;c.lineWidth=2.5;c.beginPath();c.moveTo(x1,y1-6);c.lineTo(x2+8,y2-6);c.stroke();}
+  if(front){
+    c.shadowBlur=3;c.fillStyle='#e8c66a';
+    for(let i=0;i<Math.min(4,level-1);i++){const u=.28+i*.13,x=x1+(x2-x1)*u,y=y1+(y2-y1)*u;c.beginPath();c.arc(x,y,1.6,0,TAU);c.fill();}
+    if(level>=4){c.fillStyle=color;c.font='900 7px serif';c.textAlign='center';c.textBaseline='middle';for(let i=0;i<3;i++){const a=time*1.7+i*TAU/3;c.fillText(['天','玄','破'][i],Math.cos(a)*25,Math.sin(a)*11);}}
+  }
+  c.restore();
+}
+
+const WEAPON={
+ staff :{n:'如意棒', reach:1.48, arc:0.72, dmg:1, kb:1.15, spd:1.06, style:'thrust',
+         tip:'最長最快的直刺，一棒捅穿一整排，但掃不到旁邊'},
+ rake  :{n:'九齒耙', reach:1.02, arc:1.42, dmg:2, kb:1.85, spd:0.74, style:'sweep',
+         tip:'又慢又重，扇面最寬，一耙把整圈妖怪掀飛'},
+ pole  :{n:'寶杖',   reach:1.22, arc:1.02, dmg:1, kb:1.40, spd:0.96, style:'sweep',
+         tip:'長短快慢都中庸，最好上手'},
+ lance :{n:'長戟', reach:1.16, arc:0.62, dmg:1, kb:1.05, spd:1.26, style:'thrust',
+         tip:'出手最快的長兵，一戟連刺，但掃不到兩側'},
+ sword :{n:'劍',     reach:0.84, arc:1.06, dmg:1, kb:0.95, spd:1.38, style:'sweep',
+         tip:'出手最快，貼身連段收得緊，但要靠很近'},
+ sutra :{n:'經杖',   reach:0.66, arc:0.90, dmg:1, kb:0.70, spd:1.02, style:'cast', shot:'word',
+         tip:'不揮武器，唸出字射出去，字會自己追著妖怪跑'},
+ glaive:{n:'大刀',   reach:1.18, arc:1.16, dmg:2, kb:1.30, spd:0.80, style:'sweep',
+         tip:'慢，但一刀兩下傷害'},
+ bow   :{n:'弓',     reach:0.58, arc:0.70, dmg:1, kb:0.60, spd:1.12, style:'cast', shot:'arrow',
+         tip:'遠程連射，近身吃虧'},
+ fan   :{n:'扇',     reach:1.08, arc:1.32, dmg:1, kb:1.95, spd:1.00, style:'sweep',
+         tip:'扇面寬，把妖怪吹得老遠'}
+};
+
+const HEROES=[
+ {n:"孫悟空",f:"蜀",z:"齊天大聖",t:"火眼金睛",wp:"如意金箍棒",wu:99,zh:88,ld:90,
+  fin:"鬥戰勝佛",
+  p:{sk:"#d8a45c",ey:"sharp",br:"angry",bd:"none",bc:"#8a5a28",ht:"goldhelm",hc:"#e8c96a",ac:"#c9a03c",at:"armor",ex:["plume","wide","feather","fur"]}},
+ {n:"豬八戒",f:"蜀",z:"天蓬元帥",t:"淨壇之腹",wp:"九齒釘耙",wu:88,zh:52,ld:70,
+  fin:"淨壇使者",
+  p:{sk:"#7d7570",ey:"narrow",br:"bushy",bd:"full",bc:"#2a2320",ht:"cap",hc:"#2a3348",ac:"#2e3a55",at:"robe",ex:["bigears","wide","beads","bigbeads"]}},
+ {n:"沙悟淨",f:"蜀",z:"捲簾大將",t:"任勞任怨",wp:"降妖寶杖",wu:86,zh:70,ld:84,
+  fin:"金身羅漢",
+  p:{sk:"#4a5a72",ey:"calm",br:"bushy",bd:"full",bc:"#b03028",ht:"band",hc:"#a83030",ac:"#8a4634",at:"robe",ex:["scar","skulls","tattered"]}},
+ {n:"唐三藏",f:"蜀",z:"玄奘",t:"金蟬子轉世",wp:"九環錫杖",wu:22,zh:96,ld:92,
+  fin:"旃檀功德佛",
+  p:{sk:"#f2ddc0",ey:"gentle",br:"thin",bd:"none",bc:"#2a1d10",ht:"crown",hc:"#e0b83a",ac:"#9e2b2b",at:"robe",ex:["beads"]}},
+ {n:"白龍馬",f:"蜀",z:"敖烈",t:"西海三太子",wp:"龍鱗銀戟",wk:"lance",wu:84,zh:78,ld:80,
+  fin:"八部天龍廣力菩薩",
+  p:{sk:"#f0e6dc",ey:"sharp",br:"thin",bd:"none",bc:"#d8d2c8",ht:"helm",hc:"#dfe8f2",ac:"#e8eef5",at:"scale",ex:["horns","plume2"]}}
+];
+/* 25 名 Boss。sig 是招牌輪廓（獸耳/角/尾/翅），wv 是兵器外觀，
+   wk 是打擊手感。三者分開，才能一眼認出是誰、拿什麼。 */
+const BOSSES=[
+ {n:"白骨精",f:"群",z:"屍魔",t:"三次變身",wp:"白骨杖",wv:"bone",wk:"pole",sig:["bonecrown"],
+  p:{sk:"#ece4ea",ey:"sharp",br:"thin",bd:"none",bc:"#14101a",ht:"bun",hc:"#e8e2ee",ac:"#dcd6e4",at:"robe",ex:["fem","skullbelt"]}},
+ {n:"紅孩兒",f:"群",z:"聖嬰大王",t:"三昧真火",wp:"火尖槍",wv:"firespear",wk:"pole",sig:["flame"],
+  p:{sk:"#c08a5a",ey:"sharp",br:"angry",bd:"none",bc:"#1a1210",ht:"bun",hc:"#1c1410",ac:"#c8352a",at:"robe",ex:[]}},
+ {n:"鐵扇公主",f:"群",z:"羅剎女",t:"芭蕉扇",wp:"芭蕉扇",wv:"bigfan",wk:"fan",
+  p:{sk:"#f0d8b8",ey:"sharp",br:"thin",bd:"none",bc:"#1a1620",ht:"bun",hc:"#1f2a24",ac:"#22463a",at:"robe",ex:["fem"]}},
+ {n:"牛魔王",f:"群",z:"平天大聖",t:"變身巨牛",wp:"混鐵棍",wv:"ironbar",wk:"staff",sig:["horns_bull"],
+  p:{sk:"#8a5a3a",ey:"sharp",br:"angry",bd:"full",bc:"#1a1410",ht:"helm",hc:"#5a5048",ac:"#2e2a26",at:"scale",ex:["wide","scar"]}},
+ {n:"金角大王",f:"群",z:"金角",t:"紫金紅葫蘆",wp:"七星劍",wk:"sword",
+  p:{sk:"#c9945e",ey:"narrow",br:"angry",bd:"mo",bc:"#1a1410",ht:"goldhelm",hc:"#e0b83a",ac:"#6b4a7a",at:"armor",ex:["plume"]}},
+ {n:"六耳獼猴",f:"群",z:"假悟空",t:"與你一模一樣",wp:"隨心鐵桿兵",wk:"staff",sig:["ears_beast"],
+  p:{sk:"#9a9098",ey:"green",br:"angry",bd:"none",bc:"#4a4450",ht:"goldhelm",hc:"#6b5a8a",ac:"#4a3f5e",at:"armor",ex:["plume","wide","feather"]}},
+ {n:"觀音菩薩",f:"群",z:"大慈大悲",t:"救苦救難",wp:"淨瓶楊柳",wv:"vase",wk:"fan",sig:["halo"],
+  p:{sk:"#f6e4cc",ey:"gentle",br:"thin",bd:"none",bc:"#1a1620",ht:"guanjin",hc:"#f0ece4",ac:"#f2eee8",at:"robe",ex:["fem"]}},
+ {n:"銀角大王",f:"群",z:"銀角",t:"羊脂玉淨瓶",wp:"七星劍",wk:"sword",
+  p:{sk:"#b8875e",ey:"narrow",br:"angry",bd:"goatee",bc:"#d8d4cc",ht:"helm",hc:"#c0c6cf",ac:"#4a5566",at:"scale",ex:["plume"]}},
+ {n:"蜘蛛精",f:"群",z:"盤絲洞主",t:"蛛網纏字",wp:"銀絲爪",wv:"claw",wk:"sword",sig:["legs_spider"],
+  p:{sk:"#e4d4e4",ey:"sharp",br:"thin",bd:"none",bc:"#140e1c",ht:"bun",hc:"#140e1c",ac:"#3e2050",at:"robe",ex:["fem","gem"]}},
+ {n:"黃袍怪",f:"群",z:"奎木狼",t:"變身書生",wp:"鋼刀",wv:"saber",wk:"sword",
+  p:{sk:"#a87848",ey:"sharp",br:"angry",bd:"full",bc:"#1e1810",ht:"goldhelm",hc:"#c9a03c",ac:"#b8923a",at:"armor",ex:["wide","scar"]}},
+ {n:"大鵬金翅雕",f:"群",z:"雲程萬里鵬",t:"一展九萬里",wp:"方天畫戟",wv:"halberd",wk:"lance",sig:["wings"],
+  p:{sk:"#d8a83a",ey:"sharp",br:"angry",bd:"none",bc:"#8a6a20",ht:"goldhelm",hc:"#e0b83a",ac:"#2a4450",at:"scale",ex:["plume2"]}},
+ {n:"太上老君",f:"群",z:"道德天尊",t:"八卦爐",wp:"拂塵",wv:"whisk",wk:"fan",
+  p:{sk:"#e8d4bc",ey:"aged",br:"thin",bd:"long",bc:"#f0ece4",ht:"crown",hc:"#c9a03c",ac:"#e4dccc",at:"robe",ex:["oldlines"]}},
+ {n:"二郎神",f:"群",z:"顯聖真君",t:"額有三眼",wp:"三尖兩刃刀",wv:"trishula",wk:"lance",sig:["thirdeye"],
+  p:{sk:"#e8c8a8",ey:"sharp",br:"flat",bd:"none",bc:"#1a1410",ht:"crown",hc:"#dfe4ec",ac:"#2f5a68",at:"armor",ex:["plume"]}},
+ {n:"黑熊精",f:"群",z:"黑風大王",t:"偷袈裟",wp:"黑纓槍",wv:"tasselspear",wk:"pole",sig:["ears_beast"],
+  p:{sk:"#2e2824",ey:"calm",br:"bushy",bd:"full",bc:"#1a1512",ht:"band",hc:"#2f4a3a",ac:"#2f4a3a",at:"robe",ex:["wide"]}},
+ {n:"黃風怪",f:"群",z:"黃風大聖",t:"三昧神風",wp:"三股鋼叉",wv:"trident",wk:"pole",sig:["ears_mouse"],
+  p:{sk:"#c8a860",ey:"sharp",br:"angry",bd:"short",bc:"#8a6a30",ht:"helm",hc:"#7a6238",ac:"#5a4a30",at:"scale",ex:["wide"]}},
+ {n:"虎力大仙",f:"群",z:"虎力",t:"車遲國師",wp:"如意",wv:"ruyi",wk:"fan",sig:["ears_beast"],
+  p:{sk:"#d8944a",ey:"sharp",br:"angry",bd:"short",bc:"#f0ece4",ht:"crown",hc:"#c9a03c",ac:"#c8873a",at:"robe",ex:["wide"]}},
+ {n:"鹿力大仙",f:"群",z:"鹿力",t:"車遲國師",wp:"拂塵",wv:"whisk",wk:"fan",sig:["antlers_deer"],
+  p:{sk:"#dcbe96",ey:"narrow",br:"flat",bd:"goatee",bc:"#3a2c1c",ht:"crown",hc:"#b09048",ac:"#b8a070",at:"robe",ex:[]}},
+ {n:"羊力大仙",f:"群",z:"羊力",t:"車遲國師",wp:"玉笏",wv:"tablet",wk:"fan",sig:["horns_ram"],
+  p:{sk:"#d8d2c8",ey:"narrow",br:"thin",bd:"goatee",bc:"#e8e4dc",ht:"crown",hc:"#c0b8a8",ac:"#ccc4b4",at:"robe",ex:[]}},
+ {n:"靈感大王",f:"群",z:"通天河主",t:"金鱗化身",wp:"九瓣銅鎚",wv:"mace",wk:"glaive",sig:["fin"],
+  p:{sk:"#c8a03a",ey:"sharp",br:"angry",bd:"none",bc:"#8a6a20",ht:"helm",hc:"#c9a03c",ac:"#2a5a6b",at:"scale",ex:["wide"]}},
+ {n:"蠍子精",f:"群",z:"琵琶洞主",t:"倒馬毒樁",wp:"雙股叉",wv:"fork",wk:"sword",sig:["tail_scorpion","horns_gold"],
+  p:{sk:"#f2d8dc",ey:"sharp",br:"thin",bd:"none",bc:"#1c1020",ht:"bun",hc:"#1c1020",ac:"#7a2440",at:"robe",ex:["fem"]}},
+ {n:"多目怪",f:"群",z:"百眼魔君",t:"千眼金光",wp:"毒鏢",wv:"dart",wk:"bow",sig:["eyes_many"],
+  p:{sk:"#a89a7a",ey:"green",br:"thin",bd:"none",bc:"#1a1510",ht:"official",hc:"#2a2218",ac:"#3a3028",at:"robe",ex:["oldlines"]}},
+ {n:"青獅精",f:"群",z:"獅駝嶺大王",t:"一口吞天",wp:"偃月大刀",wv:"glaive",wk:"glaive",sig:["mane_lion"],
+  p:{sk:"#4a6b8a",ey:"sharp",br:"angry",bd:"full",bc:"#3a5a7a",ht:"goldhelm",hc:"#c9a03c",ac:"#2f4458",at:"scale",ex:["wide","plume"]}},
+ {n:"白象精",f:"群",z:"獅駝嶺二王",t:"鼻捲千斤",wp:"長鼻鋼槍",wv:"trunkspear",wk:"pole",sig:["trunk"],
+  p:{sk:"#d8d2c8",ey:"calm",br:"flat",bd:"none",bc:"#b8b0a4",ht:"goldhelm",hc:"#c9a03c",ac:"#8a3a2e",at:"scale",ex:["wide"]}},
+ {n:"老鼠精",f:"群",z:"金鼻白毛",t:"無底洞主",wp:"素銀細劍",wv:"slimsword",wk:"sword",sig:["ears_mouse"],
+  p:{sk:"#f6ecee",ey:"gentle",br:"thin",bd:"none",bc:"#e8e0e4",ht:"crown",hc:"#dcc898",ac:"#f0dee2",at:"robe",ex:["fem","furcollar"]}},
+  {n:"玉兔精",f:"群",z:"素娥",t:"月宮搗藥",wp:"搗藥杵",wv:"pestle",wk:"staff",sig:["ears_rabbit"],
+  p:{sk:"#f4ecf0",ey:"gentle",br:"thin",bd:"none",bc:"#eae4e8",ht:"crown",hc:"#e4e8f0",ac:"#eef2f6",at:"robe",ex:["fem","furcollar"]}}
+];
+
+/* 每位角色不再共用同一個紙娃娃比例。card 控制展示尺寸，sx/sy 控制體格，
+   head 控制頭身比；腳底仍固定在同一條基準線，方便直接比較。 */
+const BODY_PROFILE={
+  agile:  {label:'靈巧型',sx:.92,sy:1.02,head:.76,card:1.27},
+  standard:{label:'標準型',sx:1,sy:1,head:.78,card:1.25},
+  tall:   {label:'修長型',sx:.94,sy:1.08,head:.73,card:1.22},
+  compact:{label:'厚實型',sx:1.13,sy:.94,head:.82,card:1.19},
+  marshal:{label:'天蓬重將',sx:1.27,sy:1.06,head:.82,card:1.16},
+  heavy:  {label:'重甲型',sx:1.16,sy:1.04,head:.75,card:1.18},
+  giant:  {label:'巨獸型',sx:1.24,sy:1.09,head:.72,card:1.17},
+  youth:  {label:'少年型',sx:.86,sy:.91,head:.87,card:1.22},
+  divine: {label:'神將型',sx:.93,sy:1.10,head:.72,card:1.20},
+  graceful:{label:'柔身型',sx:.89,sy:1.05,head:.77,card:1.24}
+};
+const BODY_BY_NAME={
+  '孫悟空':'agile','六耳獼猴':'agile','黃風怪':'agile','老鼠精':'agile',
+  '豬八戒':'marshal','虎力大仙':'compact','羊力大仙':'compact',
+  '紅孩兒':'youth','玉兔精':'youth',
+  '唐三藏':'tall','沙悟淨':'tall','白龍馬':'divine','二郎神':'divine',
+  '觀音菩薩':'divine','太上老君':'tall','鹿力大仙':'tall','多目怪':'tall',
+  '牛魔王':'giant','黑熊精':'giant','青獅精':'giant','白象精':'giant',
+  '黃袍怪':'heavy','大鵬金翅雕':'heavy','靈感大王':'heavy',
+  '鐵扇公主':'graceful','白骨精':'graceful','蜘蛛精':'graceful','蠍子精':'graceful'
+};
+function bodyProfile(h){
+  const key=BODY_BY_NAME[h.n]||((h.p.ex||[]).includes('fem')?'graceful':'standard');
+  return Object.assign({key:key},BODY_PROFILE[key]);
+}
+function createCharacterModel(h){
+  return Object.freeze({
+    h:h,
+    body:Object.freeze(bodyProfile(h)),
+    rig:ATTACK_MODEL_RIG
+  });
+}
+function costumeProfile(h){
+  if(['孫悟空','六耳獼猴'].includes(h.n)) return '猴王披掛';
+  if(h.n==='唐三藏') return '金紅袈裟';
+  if(h.n==='沙悟淨'||h.n==='豬八戒') return '取經僧裝';
+  if(h.n==='白龍馬'||h.n==='二郎神') return '銀甲神將';
+  if(['鐵扇公主','白骨精','蜘蛛精','蠍子精','老鼠精','玉兔精'].includes(h.n)) return '妖姬長袍';
+  if(h.n==='觀音菩薩') return '白衣法相';
+  if(h.p.at==='robe') return '道袍法衣';
+  if(h.p.at==='scale') return '獸王鱗甲';
+  return '妖王戰甲';
+}
+function drawCostumeDetail(c,h,p,fem,dark,gold){
+  const n=h.n;
+  c.save();
+  if(n==='孫悟空'||n==='六耳獼猴'){
+    c.strokeStyle=n==='孫悟空'?'#a9362c':'#51406f'; c.lineWidth=4.2;
+    c.beginPath(); c.moveTo(-7,-58); c.lineTo(9,-38); c.moveTo(10,-58); c.lineTo(-5,-39); c.stroke();
+    c.fillStyle='#d7b34a'; c.beginPath(); c.arc(2,-47,3.3,0,TAU); c.fill();
+  } else if(n==='豬八戒'){
+    // 天蓬元帥式厚胸與護腹，保留重量但不是矮胖喜劇身形。
+    c.strokeStyle=shade(p.ac,42); c.lineWidth=3.3;
+    c.beginPath(); c.moveTo(-9,-56); c.quadraticCurveTo(2,-48,11,-56); c.stroke();
+    c.strokeStyle=shade(p.ac,28); c.lineWidth=2;
+    c.beginPath(); c.arc(2,-39,11,Math.PI*.14,Math.PI*.86); c.stroke();
+    c.fillStyle='#b89552'; c.strokeStyle=dark; c.lineWidth=1;
+    c.fillRect(-3,-43,10,7); c.strokeRect(-3,-43,10,7);
+  } else if(n==='唐三藏'){
+    c.strokeStyle='#e1b83f'; c.lineWidth=6;
+    c.beginPath(); c.moveTo(-7,-59); c.lineTo(10,-32); c.stroke();
+    c.strokeStyle='#f2d978'; c.lineWidth=1.3;
+    for(let y=-54;y<-34;y+=7){c.beginPath();c.moveTo(-5+(y+54)*.55,y);c.lineTo(3+(y+54)*.55,y);c.stroke();}
+  } else if(n==='沙悟淨'){
+    c.strokeStyle='#b7a36e'; c.lineWidth=3;
+    c.beginPath(); c.moveTo(-7,-58); c.lineTo(8,-39); c.moveTo(8,-58); c.lineTo(-6,-39); c.stroke();
+  } else if(n==='鐵扇公主'){
+    c.strokeStyle='#d7b75b'; c.lineWidth=1.5;
+    c.beginPath(); c.moveTo(-7,-55); c.quadraticCurveTo(2,-46,9,-55); c.stroke();
+    c.beginPath(); c.moveTo(-5,-42); c.quadraticCurveTo(2,-36,8,-42); c.stroke();
+    c.fillStyle='#65a88a'; c.beginPath(); c.arc(2,-47,2.5,0,TAU); c.fill();
+  } else if(n==='白骨精'){
+    c.strokeStyle='#c5bccb'; c.lineWidth=2;
+    c.beginPath(); c.moveTo(-7,-55); c.lineTo(10,-42); c.moveTo(-7,-42); c.lineTo(9,-55); c.stroke();
+  } else if(n==='蜘蛛精'){
+    c.strokeStyle='rgba(220,200,236,.72)'; c.lineWidth=.9;
+    for(let i=0;i<3;i++){c.beginPath();c.arc(2,-48,5+i*4,Math.PI*.12,Math.PI*.88);c.stroke();}
+    c.beginPath();c.moveTo(2,-48);c.lineTo(-8,-41);c.moveTo(2,-48);c.lineTo(11,-41);c.stroke();
+  } else if(n==='蠍子精'){
+    c.strokeStyle='#d6a050'; c.lineWidth=2;
+    c.beginPath(); c.moveTo(-7,-55); c.lineTo(9,-43); c.moveTo(-5,-39); c.lineTo(8,-39); c.stroke();
+    c.fillStyle='#8e2949'; c.beginPath(); c.moveTo(2,-52);c.lineTo(6,-47);c.lineTo(2,-42);c.lineTo(-2,-47);c.closePath();c.fill();
+  } else if(n==='觀音菩薩'){
+    c.strokeStyle='#9bc7c1'; c.lineWidth=3;
+    c.beginPath(); c.moveTo(-7,-58); c.quadraticCurveTo(2,-47,10,-58); c.stroke();
+    c.fillStyle='#d9c36e'; c.beginPath(); c.arc(2,-46,2.7,0,TAU); c.fill();
+  } else if(p.at==='scale'||p.at==='armor'){
+    c.strokeStyle=gold; c.lineWidth=1.5;
+    c.beginPath(); c.moveTo(-7,-56); c.lineTo(2,-48); c.lineTo(10,-56); c.stroke();
+    c.strokeStyle='rgba(0,0,0,.35)';
+    c.beginPath(); c.moveTo(2,-48); c.lineTo(2,-34); c.stroke();
+  } else if(fem){
+    c.strokeStyle=shade(p.ac,42); c.lineWidth=1.4;
+    c.beginPath(); c.moveTo(-6,-53); c.quadraticCurveTo(2,-43,9,-53); c.stroke();
+  }
+  c.restore();
+}
+
+function drawHeroP(c,model,x,y,dir,scale,motion,ri){
+  const h=model.h, p=h.p, fem=(p.ex||[]).indexOf('fem')>=0, bp=model.body, rig=model.rig;
+  const q=pose(motion,time+h.n.length*.31,fem);
+  const gold='#e5c04a', dark='#120f0b';
+  c.save(); c.translate(x,y); c.scale(dir*scale,scale); c.scale(bp.sx,bp.sy);
+  // 影子
+  const sg=c.createRadialGradient(0,2,2,0,2,17);
+  sg.addColorStop(0,'rgba(0,0,0,.42)'); sg.addColorStop(1,'rgba(0,0,0,0)');
+  c.fillStyle=sg; c.beginPath(); c.ellipse(0,2,19,6.5,0,0,TAU); c.fill();
+  c.translate(0,-q.bob);
+
+  // 披風只給甲胄角色；僧袍、道袍本身已有長下襬。
+  if(ri>=3 && p.at!=='robe'){
+    c.fillStyle=shade(p.ac,-45);
+    c.beginPath(); c.moveTo(-4,-58); c.lineTo(-20-q.walk*3,-6); c.lineTo(-2,-8); c.closePath(); c.fill();
+  }
+  // 腿：兩節骨架（大腿＋小腿），膝蓋朝前彎，支撐腳踩地不滑
+  const legW=fem?5:6, walking=motion==='march';
+  const gaitPhase=time*(fem?5.0:5.5)+h.n.length*.31;
+  const stride=fem?10.2:12.2, lift=fem?6.2:7.8;
+  let gA=walking?combatGait(gaitPhase,stride,lift):{x:-7,y:rig.footY,planted:true};
+  let gB=walking?combatGait(gaitPhase+Math.PI,stride,lift):{x:7,y:rig.footY,planted:true};
+  if(motion==='jump'){gA={x:-11,y:-13,planted:false};gB={x:10,y:-9,planted:false};}
+  if(motion==='fall'){gA={x:-9,y:-7,planted:false};gB={x:12,y:-4,planted:false};}
+  if(motion==='jumpHeavy'){gA={x:-14,y:-23-q.attack*3,planted:false};gB={x:13,y:-19-q.attack*5,planted:false};}
+  if(motion==='hurt'){gA={x:-12,y:0,planted:true};gB={x:7,y:0,planted:true};}
+  if(motion==='land'){gA={x:-12,y:0,planted:true};gB={x:12,y:0,planted:true};}
+  if(motion==='skill'){gA={x:-14,y:0,planted:true};gB={x:14,y:0,planted:true};}
+  const wsh=walking?(gA.planted?-1:1)*.5:0;
+  // 戰鬥身形保留長腿與寬肩，頭部恢復原版尺寸以維持角色辨識度。
+  const HIPY=rig.hipY+q.crouch*9, THIGH=rig.thigh, SHIN=rig.shin;
+  const jA=limb2(c,-2+wsh,HIPY,-2+gA.x,gA.y,THIGH,SHIN,'front',legW,shade(p.ac,-60));
+  const jB=limb2(c, 3+wsh,HIPY, 3+gB.x,gB.y,THIGH,SHIN,'front',legW,shade(p.ac,-40));
+  // 褲管：大腿上段包在衣料裡，比小腿粗
+  limb(c,-2+wsh,HIPY,(-2+wsh)*0.35+jA.jx*0.65,HIPY*0.35+jA.jy*0.65,legW+3.4,shade(p.ac,-34));
+  limb(c, 3+wsh,HIPY,( 3+wsh)*0.35+jB.jx*0.65,HIPY*0.35+jB.jy*0.65,legW+3.4,shade(p.ac,-20));
+  // 腳掌：貼地時平放，抬起時腳尖下垂
+  c.fillStyle=shade(p.ac,-70);
+  for(const g2 of [{g:gA,x:-2},{g:gB,x:3}]){
+    const fx3=g2.x+g2.g.x, fy3=g2.g.y;
+    c.save(); c.translate(fx3,fy3);
+    if(!g2.g.planted) c.rotate(motion==='jump'?-0.3:motion==='jumpHeavy'?-0.52:0.45);
+    c.fillRect(-2.6,-2.4,9,3.4);
+    c.restore();
+  }
+  // 上身整體抬高：腿變長了，軀幹以上的局部座標維持不變，只是往上移
+  c.translate(0,rig.torsoLift+q.crouch*8);
+
+  // 上身：揮擊時骨盆先擰、上身後帶再前送（預備動作），
+  // 重兵器另加反向抵抗，避免整個人像被平移的紙片
+  const heavy = (typeof WEAPON!=='undefined' && WEAPON[wpKind(h.wp,h)])
+                ? (WEAPON[wpKind(h.wp,h)].dmg>1 || WEAPON[wpKind(h.wp,h)].kb>1.6) : false;
+  const twist = q.attack*(fem?0.24:0.34)*(heavy?0.78:1);
+  const wind  = q.antic*(heavy?0.26:0.18);              // 起手先往後擰
+  const counter = heavy ? q.attack*0.10 : 0;            // 重兵器的上身抵抗
+  const guardTurn=0;
+  c.translate(0,-30);
+  c.rotate(-twist+wind+q.lean+counter-guardTurn+q.hurt*.12);
+  // 重心：先後坐蓄力，再隨揮擊前移
+  c.translate(q.sway*0.4 - q.antic*(heavy?3.2:2.2) + q.attack*(heavy?1.6:2.6)-q.recoil*4,30);
+  c.fillStyle=p.ac; c.strokeStyle=dark; c.lineWidth=2;
+  c.beginPath();
+  if(p.at==='robe'){
+    if(fem){ c.moveTo(-10,-28); c.lineTo(-8,-58); c.lineTo(10,-58); c.lineTo(12,-28); }
+    else { c.moveTo(-13,-28); c.lineTo(-13,-60); c.lineTo(13,-60); c.lineTo(14,-28); }
+  } else {
+    if(fem){ c.moveTo(-10,-30); c.lineTo(-8,-40); c.lineTo(-9,-58); c.lineTo(11,-58); c.lineTo(10,-40); c.lineTo(12,-30); }
+    else { c.moveTo(-13,-30); c.lineTo(-13,-62); c.lineTo(13,-62); c.lineTo(14,-30); }
+  }
+  c.closePath(); c.fill(); c.stroke();
+  // 裙擺／下襬：長袍飄，甲裙硬
+  {
+    // 半寬要蓋得住步幅（步幅 stride + 髖偏移），否則大腿一擺就露出來
+    // 半寬必須蓋得住膝在擺盪期的最前點（步幅變大後要一併放大）
+    const hemW = p.at==='robe' ? (fem?24:27) : (fem?23:26);
+    const hemBottom = p.at==='robe' ? 6 : 0;           // 腿變長，裙也要跟著加長
+    // 裙子跟著前腿走：腿往前送，裙擺跟著被帶開
+    const legLead = (gA.x+gB.x)*0.5*0.55;
+    const flow = (legLead+q.sway*0.8+Math.sin(time*2.2+h.n.length)*(fem?2.6:1.2));
+    c.fillStyle=shade(p.ac,-16); c.strokeStyle=dark; c.lineWidth=1.6;
+    c.beginPath();
+    c.moveTo(-10,-33); c.lineTo(12,-33);
+    if(p.at==='robe'){
+      c.quadraticCurveTo(hemW+flow, -14, hemW*0.88+flow, hemBottom);   // 長袍下襬會飄
+      c.lineTo(-hemW*0.88+flow*0.7, hemBottom);
+      c.quadraticCurveTo(-hemW+flow*0.7, -14, -10, -33);
+    } else {
+      c.lineTo(hemW+flow*0.5, hemBottom);                     // 甲裙短而硬，但要蓋住大腿
+      c.lineTo(-hemW+flow*0.5, hemBottom);
+    }
+    c.closePath(); c.fill(); c.stroke();
+    if(p.at!=='robe'){                                        // 甲裙分片
+      c.strokeStyle='rgba(0,0,0,.35)'; c.lineWidth=1.2;
+      for(let i=-2;i<=2;i++){ c.beginPath();
+        c.moveTo(i*6,-32); c.lineTo(i*6+flow*0.35,hemBottom+1); c.stroke(); }
+    }
+  }
+  // 鱗甲：畫成交錯的小鱗片而不是橫條
+  if(p.at==='scale'){
+    c.fillStyle='rgba(0,0,0,.18)';
+    for(let r2=0;r2<5;r2++) for(let cc=0;cc<4;cc++){
+      const xx=-8+cc*5+(r2%2?2.5:0), yy=-58+r2*6;
+      c.beginPath(); c.arc(xx,yy,2.2,0,Math.PI); c.fill();
+    }
+  }
+  // 札甲橫片：軍階越高片數越多
+  if(p.at==='armor'){
+    c.strokeStyle='rgba(0,0,0,.4)'; c.lineWidth=1.3;
+    const rowsN=2+Math.min(4,ri);
+    for(let i=0;i<rowsN;i++){ const yy=-58+i*(28/rowsN);
+      c.beginPath(); c.moveTo(-9,yy); c.lineTo(11,yy); c.stroke(); }
+  }
+  // 毛皮裙（孫悟空的虎皮）
+  if((p.ex||[]).indexOf('fur')>=0){
+    c.fillStyle=shade('#8a6a3a',0); c.strokeStyle=dark; c.lineWidth=1.3;
+    c.beginPath(); c.moveTo(-11,-34); c.lineTo(13,-34);
+    for(let i=0;i<5;i++){ const xx=13-i*6.2; c.lineTo(xx-2.4,-34+(i%2?11:7)); c.lineTo(xx-4.8,-34+3); }
+    c.closePath(); c.fill(); c.stroke();
+  }
+  // 破布下襬（沙悟淨的殘袍）
+  if((p.ex||[]).indexOf('tattered')>=0){
+    c.fillStyle=shade(p.ac,-30);
+    for(let i=0;i<5;i++){ const xx=-10+i*5.6;
+      c.beginPath(); c.moveTo(xx,-30); c.lineTo(xx+4.4,-30);
+      c.lineTo(xx+2.6+Math.sin(time*2+i)*2,-30+14+((i*7)%9)); c.closePath(); c.fill(); }
+  }
+  // 毛領（老鼠精、玉兔精的白裘）
+  if((p.ex||[]).indexOf('furcollar')>=0){
+    c.fillStyle='#f4f0ea';
+    for(let i=0;i<9;i++){
+      const a=Math.PI*0.08+i*(Math.PI*0.84/8);
+      c.beginPath();
+      c.arc(1+Math.cos(a)*13,-58+Math.sin(a)*9-3,4.4,0,TAU); c.fill();
+    }
+    c.strokeStyle='rgba(180,170,160,.6)'; c.lineWidth=0.9;
+    for(let i=0;i<9;i++){ const a=Math.PI*0.08+i*(Math.PI*0.84/8);
+      c.beginPath(); c.arc(1+Math.cos(a)*13,-58+Math.sin(a)*9-3,4.4,0,TAU); c.stroke(); }
+  }
+  // 骷髏腰飾（白骨精的骨帶）
+  if((p.ex||[]).indexOf('skullbelt')>=0){
+    c.fillStyle='#efe8dc'; c.strokeStyle=dark; c.lineWidth=0.9;
+    c.beginPath(); c.arc(2,-35,4.2,0,TAU); c.fill(); c.stroke();
+    c.fillStyle='#3a3440';
+    c.beginPath(); c.arc(0.6,-36,1.2,0,TAU); c.fill();
+    c.beginPath(); c.arc(3.6,-36,1.2,0,TAU); c.fill();
+    c.strokeStyle='#dcd4c8'; c.lineWidth=1.6;
+    c.beginPath(); c.moveTo(-9,-34); c.lineTo(-3,-35); c.moveTo(7,-35); c.lineTo(12,-34); c.stroke();
+  }
+  // 交領：漢服的斜襟，一眼看得出是東方服裝
+  {
+    c.strokeStyle=shade(p.ac,fem?42:-38); c.lineWidth=fem?3.2:2.6;
+    c.beginPath(); c.moveTo(-6,-60); c.lineTo(2,-46); c.lineTo(10,-58); c.stroke();
+    if(fem){                                                // 女角加內襯領
+      c.strokeStyle='rgba(255,255,255,.55)'; c.lineWidth=1.6;
+      c.beginPath(); c.moveTo(-4,-60); c.lineTo(2,-49); c.lineTo(8,-58); c.stroke();
+    }
+  }
+  drawCostumeDetail(c,h,p,fem,dark,gold);
+  // 念珠（豬八戒、唐三藏）：一大串掛在胸前
+  if((p.ex||[]).indexOf('beads')>=0){
+    const big=(p.ex||[]).indexOf('bigbeads')>=0;
+    const r0=big?3.1:2.2, R0=big?15:11;
+    c.fillStyle=big?'#6b4a2e':'#8a5a3a'; c.strokeStyle=dark; c.lineWidth=0.9;
+    for(let i=0;i<11;i++){
+      const a=Math.PI*0.12+i*(Math.PI*0.76/10);
+      const bx=1+Math.cos(a)*R0*0.92, by=-56+Math.sin(a)*R0+R0*0.34;
+      c.beginPath(); c.arc(bx,by,r0,0,TAU); c.fill(); c.stroke();
+    }
+  }
+  // 骷髏串（沙悟淨）
+  if((p.ex||[]).indexOf('skulls')>=0){
+    for(let i=0;i<5;i++){
+      const a=Math.PI*0.16+i*(Math.PI*0.66/4);
+      const bx=1+Math.cos(a)*12, by=-55+Math.sin(a)*13+5;
+      c.fillStyle='#e8e0cc'; c.strokeStyle=dark; c.lineWidth=0.9;
+      c.beginPath(); c.arc(bx,by,3.1,0,TAU); c.fill(); c.stroke();
+      c.fillStyle='#3a3028';
+      c.fillRect(bx-1.7,by-0.9,1.3,1.5); c.fillRect(bx+0.5,by-0.9,1.3,1.5);
+    }
+  }
+  // 袖口
+  c.fillStyle=shade(p.ac,26); c.strokeStyle=dark; c.lineWidth=1.2;
+  c.beginPath(); c.ellipse(12,-44,4.2,fem?6:5,0.3,0,TAU); c.fill(); c.stroke();
+  // 肩甲只屬於戰甲與鱗甲；僧袍、道袍保留布料肩線。
+  if(ri>=1 && p.at!=='robe'){
+    c.fillStyle=shade(p.ac,34); c.strokeStyle=dark; c.lineWidth=1.6;
+    c.beginPath(); c.ellipse(4,-59,9,6,0,Math.PI,TAU); c.fill(); c.stroke();
+  } else if(p.at==='robe'){
+    c.strokeStyle=shade(p.ac,34); c.lineWidth=1.4;
+    c.beginPath(); c.moveTo(-6,-58); c.quadraticCurveTo(2,-62,10,-57); c.stroke();
+  }
+  // 腰帶（屯長以上）＋ 腰帶結與飄帶
+  if(ri>=2){
+    c.fillStyle=ri>=4?gold:shade(p.ac,-30); c.fillRect(-10,-36,22,4);
+    c.fillStyle=ri>=4?shade(gold,-40):shade(p.ac,-52);
+    c.fillRect(-2,-37.5,7,7);                                // 結
+    const rb=(q.walk*4+q.sway*1.2+Math.sin(time*2.6+h.n.length)*(fem?4:2));
+    c.strokeStyle=ri>=4?gold:shade(p.ac,20); c.lineWidth=fem?2.6:2;
+    c.beginPath(); c.moveTo(0,-33);
+    c.quadraticCurveTo(-6+rb*0.5,-22,-3+rb,-9);              // 飄帶
+    c.stroke();
+    if(fem){ c.beginPath(); c.moveTo(3,-33);
+      c.quadraticCurveTo(-2+rb*0.6,-20,1+rb*1.3,-6); c.stroke(); }
+  }
+  // 描金（校尉以上）
+  if(ri>=4){
+    c.strokeStyle=gold; c.lineWidth=1.8;
+    c.beginPath(); c.moveTo(-9,-62); c.lineTo(11,-62); c.moveTo(-10,-30); c.lineTo(12,-30); c.stroke();
+  }
+  // 背纓（牙門將以上）
+  if(ri>=5){
+    c.fillStyle=gold;
+    for(let i=0;i<3;i++){ c.beginPath(); c.moveTo(-6,-58);
+      c.lineTo(-16-i*4,-74-Math.sin(time*5+i)*4); c.lineTo(-8,-56); c.closePath(); c.fill(); }
+  }
+
+  // ===== 手臂與兵器 =====
+  //  棍法：雙手握棍，攻擊時整根旋轉一圈，桿子從身體兩側都伸出去
+  //  釘耙：九齒耙頭，又寬又重
+  //  寶杖：月牙鏟，大型長兵
+  const sw=q.attack, wk=wpKind(h.wp,h), wv=wpView(h.wp,h);
+  const playable=Object.prototype.hasOwnProperty.call(WEAPON_FORMS,h.n);
+  const weaponLv=playable&&typeof save!=='undefined'?save.weapon:1;
+  const activeArtKey=playable&&typeof player!=='undefined'&&player&&player.model===model&&player.spellBuff?player.spellBuff.type:(typeof save!=='undefined'?save.equippedArt:'physical');
+  const weaponGlow=typeof ELEMENT_ARTS!=='undefined'&&ELEMENT_ARTS[activeArtKey]?ELEMENT_ARTS[activeArtKey].color:'#f4dd9a';
+  const ready=q.armLift;
+  const W2=(typeof WEAPON!=='undefined'?WEAPON[wk]:null)||{};
+  const twoHand = (wk==='staff'||wk==='rake'||wk==='pole'||wk==='glaive'||wk==='lance')
+                  && wv!=='claw' && wv!=='twin' && wv!=='dart';
+  // 輕擊固定從頭頂往前下方敲；重擊才讓武器繞身旋轉一整圈。
+  const swingA=q.variant===2 ? .9-sw*4.25 : q.variant===3 ? -2.6+sw*5.35 : -1.52+sw*2.62;
+  const spinA = -1.42 + sw*TAU*(q.skill?1.55:1.08);
+  const slamA = -1.62 + sw*3.6;
+  const an=q.antic;
+  let hx=9+ready*5+sw*(twoHand?15:30)-an*(twoHand?9:11),
+      hy=-44-ready*24-sw*(twoHand?14:26)+an*6;
+  if(q.slam){hx=7+sw*6;hy=-76+sw*52;}
+  if(q.hurt){hx=-7;hy=-38;}
+  if(q.air&&motion==='fall'){hx=18;hy=-55;}
+
+  // 揮擊殘影
+  if(sw>0.06 && wk!=='bow' && wk!=='sutra'){
+    c.save(); c.translate(9,-50);
+    const rr2=(wk==='sword'?52:(wk==='staff'?74:66))+ri*3;
+    const gg2=c.createLinearGradient(-rr2,0,rr2,0);
+    gg2.addColorStop(0,'rgba(127,233,255,0)');
+    gg2.addColorStop(.5,weaponLv>=3?weaponGlow:'rgba(223,246,255,'+(0.55*sw)+')');
+    gg2.addColorStop(1,'rgba(127,233,255,0)');
+    c.strokeStyle=gg2; c.lineWidth=(wk==='rake'?18:13)*sw; c.lineCap='round';
+    c.beginPath();
+    if(q.slam)c.arc(0,0,rr2,-1.62,slamA);
+    else if(q.heavy||q.skill) c.arc(0,0,rr2,-1.42,spinA);
+    else c.arc(0,0,rr2,-1.52,swingA);
+    c.stroke(); c.restore();
+  }
+
+  // 女角兵器走秀氣路線：桿身收細、加金絲纏繞與垂墜流蘇
+  const slim=fem;
+  const tassel=(tx,ty,col,n)=>{
+    c.strokeStyle=col||'#e0b83a'; c.lineWidth=1; c.lineCap='round';
+    for(let i=0;i<(n||4);i++){ const fl=Math.sin(time*3+i)*2.2;
+      c.beginPath(); c.moveTo(tx,ty);
+      c.quadraticCurveTo(tx-2+fl,ty+6+i,tx-4+fl*1.4,ty+12+i*1.6); c.stroke(); }
+    c.fillStyle=col||'#e0b83a'; c.beginPath(); c.arc(tx,ty,1.7,0,TAU); c.fill();
+  };
+  const filigree=(x1,y1,x2,y2,n)=>{                 // 桿身金絲纏繞
+    c.strokeStyle='rgba(224,184,58,.85)'; c.lineWidth=1;
+    for(let i=1;i<=(n||4);i++){ const u=i/((n||4)+1);
+      const mx=x1+(x2-x1)*u, my=y1+(y2-y1)*u;
+      c.beginPath(); c.ellipse(mx,my,2.6,1.5,Math.atan2(y2-y1,x2-x1),0,TAU); c.stroke(); }
+  };
+
+  const weaponAngle=wv==='claw' ? (-0.35+sw*(q.heavy?TAU:1.15))
+                    : (q.slam?slamA:((q.heavy||q.skill)&&wv!=='pestle' ? spinA : swingA));
+  c.save(); c.translate(hx,hy);
+  // 爪是戴在手上的，跟著手腕小幅擺動即可，不做長桿那種大迴旋
+  c.rotate(weaponAngle);
+  const longWeapon=twoHand||wk==='staff'||wk==='rake'||wk==='pole'||wk==='glaive'||wk==='lance'||wk==='sutra';
+  if(weaponLv>1)c.scale(1+(weaponLv-1)*.027,1+(weaponLv-1)*.014);
+  drawWeaponEvolution(c,weaponLv,weaponGlow,longWeapon,false);
+
+  if(wv==='bone'){
+    // 白骨杖：細長骨節杖 + 頂端彎月與小骷髏 + 垂墜珠串
+    c.strokeStyle='#efe8dc'; c.lineWidth=slim?2.8:4.4;
+    c.beginPath(); c.moveTo(-28,17); c.lineTo(30,-17); c.stroke();
+    c.fillStyle='#ded6c6'; c.strokeStyle=dark; c.lineWidth=0.9;
+    for(let i=0;i<5;i++){ const u=i/5;
+      c.beginPath(); c.ellipse(-28+58*u,17-34*u,slim?2.4:3.6,slim?1.5:2.4,-0.53,0,TAU);
+      c.fill(); c.stroke(); }
+    // 彎月刃
+    c.fillStyle='#f4f0e6'; c.strokeStyle=dark; c.lineWidth=1;
+    c.beginPath();
+    c.arc(33,-21,slim?11:13,-2.3,0.7);
+    c.quadraticCurveTo(35,-21,33,-32);
+    c.closePath(); c.fill(); c.stroke();
+    // 小骷髏綴飾
+    c.fillStyle='#f6f2e8';
+    c.beginPath(); c.arc(30,-16,slim?3.6:5,0,TAU); c.fill(); c.stroke();
+    c.fillStyle='#2a2430';
+    c.beginPath(); c.arc(29,-17,1.1,0,TAU); c.fill();
+    c.beginPath(); c.arc(32,-16.4,1.1,0,TAU); c.fill();
+    if(slim){ filigree(-24,15,26,-15,4); tassel(24,-11,'#cfc6d8',5); }
+  }
+  else if(wv==='bigfan'){
+    // 芭蕉扇：一整片巨大蕉葉，比人臉還大
+    c.strokeStyle='#6b5a3a'; c.lineWidth=3.4;
+    c.beginPath(); c.moveTo(-8,10); c.lineTo(10,-6); c.stroke();
+    const gf=c.createLinearGradient(10,-6,44,-34);
+    gf.addColorStop(0,'#5a7a3a'); gf.addColorStop(1,'#9ac06a');
+    c.fillStyle=gf; c.strokeStyle='#3a4a24'; c.lineWidth=1.6;
+    c.beginPath();
+    c.moveTo(10,-6);
+    c.quadraticCurveTo(30,-42,50,-26);
+    c.quadraticCurveTo(44,-4,10,-6);
+    c.closePath(); c.fill(); c.stroke();
+    c.strokeStyle='rgba(40,60,26,.55)'; c.lineWidth=1;
+    for(let i=1;i<6;i++){ c.beginPath(); c.moveTo(12,-8);
+      c.lineTo(16+i*6.4,-12-i*3.4); c.stroke(); }
+    if(slim){                                        // 金邊與扇墜
+      c.strokeStyle='rgba(224,184,58,.9)'; c.lineWidth=1.4;
+      c.beginPath(); c.moveTo(10,-6);
+      c.quadraticCurveTo(30,-42,50,-26); c.stroke();
+      tassel(6,-2,'#e0b83a',5);
+    }
+  }
+  else if(wv==='claw'){
+    // 銀絲爪：戴在手上的爪套，不是握著的兵器
+    // 護腕
+    const gwr=c.createLinearGradient(-14,-6,-2,6);
+    gwr.addColorStop(0,'#b8aac8'); gwr.addColorStop(1,'#6b5a7a');
+    c.fillStyle=gwr; c.strokeStyle=dark; c.lineWidth=1.1;
+    c.beginPath(); c.moveTo(-15,-6.4); c.lineTo(-3,-7.4);
+    c.lineTo(-2,7.4); c.lineTo(-14,6.4); c.closePath(); c.fill(); c.stroke();
+    c.strokeStyle='rgba(226,216,240,.7)'; c.lineWidth=0.8;
+    for(let i=0;i<3;i++){ c.beginPath(); c.moveTo(-13+i*4,-6.6); c.lineTo(-12+i*4,6.6); c.stroke(); }
+    // 手背金屬片與寶石
+    c.fillStyle='#8a7a9a'; c.strokeStyle=dark; c.lineWidth=1;
+    c.beginPath(); c.moveTo(-3,-6.6); c.lineTo(7,-5.2); c.lineTo(8,5.2); c.lineTo(-2,6.6);
+    c.closePath(); c.fill(); c.stroke();
+    c.fillStyle='#8a5ac8'; c.strokeStyle='#e0d8f0'; c.lineWidth=0.7;
+    c.beginPath(); c.moveTo(3,-3.4); c.lineTo(5.6,0); c.lineTo(3,3.4); c.lineTo(0.4,0);
+    c.closePath(); c.fill(); c.stroke();
+    // 五根指爪：從指節長出來，長度不一
+    const LEN=[15,20,22,19,13], YS=[-6.2,-3.2,0,3.2,6.2];
+    for(let i=0;i<5;i++){
+      const L=LEN[i]*(slim?1:1.15), y0=YS[i];
+      const gcl=c.createLinearGradient(7,y0,7+L,y0*1.5);
+      gcl.addColorStop(0,'#cfc4dc'); gcl.addColorStop(.6,'#f2eefa'); gcl.addColorStop(1,'#9a8ab0');
+      c.fillStyle=gcl; c.strokeStyle=dark; c.lineWidth=0.8;
+      c.beginPath();
+      c.moveTo(7,y0-1.7);
+      c.quadraticCurveTo(7+L*0.6,y0-2.4+y0*0.25,7+L,y0*1.55);      // 爪尖外彎
+      c.quadraticCurveTo(7+L*0.55,y0+1.6+y0*0.25,7,y0+1.7);
+      c.closePath(); c.fill(); c.stroke();
+      c.fillStyle='rgba(255,255,255,.5)';                          // 爪面高光
+      c.beginPath(); c.ellipse(7+L*0.42,y0-0.4+y0*0.12,L*0.22,0.7,y0*0.05,0,TAU); c.fill();
+      c.fillStyle='#3a2a4a';                                       // 指節
+      c.beginPath(); c.arc(7,y0,1.9,0,TAU); c.fill();
+    }
+    if(slim){                                                      // 爪間銀絲與絲珠
+      c.strokeStyle='rgba(226,216,240,.5)'; c.lineWidth=0.7;
+      for(let i=0;i<4;i++){
+        const L1=LEN[i]*1.0, L2=LEN[i+1]*1.0;
+        c.beginPath(); c.moveTo(7+L1,YS[i]*1.55);
+        c.quadraticCurveTo(7+(L1+L2)*0.4,(YS[i]+YS[i+1])*0.9+3,7+L2,YS[i+1]*1.55);
+        c.stroke();
+      }
+      c.fillStyle='#d8c8ea';
+      for(let i=0;i<3;i++){
+        const fl=Math.sin(time*2+i)*1.4;
+        c.beginPath(); c.arc(14+i*4,YS[i+1]*1.3+4+fl,1.15,0,TAU); c.fill();
+      }
+    }
+  }
+  else if(wv==='twin'){
+    // 雙劍／雙股叉：兩把交叉
+    for(const s of [-1,1]){
+      c.save(); c.rotate(s*0.3);
+      const gg=c.createLinearGradient(0,0,34,0);
+      gg.addColorStop(0,'#8fa3c8'); gg.addColorStop(1,'#eef6ff');
+      c.fillStyle=gg; c.fillRect(0,-2.2,34,4.4);
+      c.fillStyle=dark; c.fillRect(-9,-2.6,10,5.2);
+      c.restore();
+    }
+  }
+  else if(wv==='pestle'){
+    // 搗藥杵：細柄、雕花槌頭、繫一條緞帶
+    c.strokeStyle='#9a8a6a'; c.lineWidth=slim?3.2:5;
+    c.beginPath(); c.moveTo(-18,11); c.lineTo(24,-14); c.stroke();
+    if(slim) filigree(-14,9,20,-12,4);
+    const gp2=c.createLinearGradient(20,-16,38,-24);
+    gp2.addColorStop(0,'#e4d8b0'); gp2.addColorStop(1,'#b0a078');
+    c.fillStyle=gp2; c.strokeStyle=dark; c.lineWidth=1.1;
+    c.beginPath(); c.ellipse(30,-19,slim?9:11,slim?6.6:8,-0.53,0,TAU); c.fill(); c.stroke();
+    c.strokeStyle='rgba(180,160,110,.9)'; c.lineWidth=0.9;   // 槌頭雕花
+    for(let i=0;i<3;i++){ c.beginPath();
+      c.ellipse(30,-19,(slim?9:11)-i*2.6,(slim?6.6:8)-i*2,-0.53,0,TAU); c.stroke(); }
+    c.strokeStyle='rgba(255,255,255,.45)'; c.lineWidth=1;
+    c.beginPath(); c.arc(27,-21,3.4,0,Math.PI); c.stroke();
+    if(slim) tassel(20,-11,'#dfe4ec',5);
+  }
+  else if(wv==='vase'){
+    // 淨瓶楊柳：一手托瓶，柳枝斜出
+    c.fillStyle='#f4f2ee'; c.strokeStyle=dark; c.lineWidth=1.3;
+    c.beginPath(); c.moveTo(-4,6); c.quadraticCurveTo(-9,-4,-3,-11);
+    c.lineTo(5,-11); c.quadraticCurveTo(11,-4,6,6); c.closePath(); c.fill(); c.stroke();
+    c.fillStyle='#dcd6cc'; c.fillRect(-2,-15,6,5);
+    c.strokeStyle='#5a7a3a'; c.lineWidth=1.8;
+    c.beginPath(); c.moveTo(1,-15); c.quadraticCurveTo(14,-30,26,-30); c.stroke();
+    c.fillStyle='#7aa84a';
+    for(let i=0;i<5;i++){ const u=i/4;
+      c.beginPath(); c.ellipse(1+25*u,-15-15*u-Math.sin(u*3)*3,4,1.8,-0.5+u,0,TAU); c.fill(); }
+    if(slim){                                        // 瓶口甘露柔光
+      const gv=c.createRadialGradient(1,-15,0,1,-15,13);
+      gv.addColorStop(0,'rgba(255,250,220,.55)'); gv.addColorStop(1,'transparent');
+      c.fillStyle=gv; c.beginPath(); c.arc(1,-15,13,0,TAU); c.fill();
+      c.fillStyle='rgba(255,255,255,.75)';
+      for(let i=0;i<3;i++){ const dy=(time*14+i*9)%22;
+        c.beginPath(); c.arc(1+i*2-2,-13+dy,1.1,0,TAU); c.fill(); }
+    }
+  }
+  else if(wv==='whisk'){
+    // 拂塵：短柄 + 一大束白毛
+    c.strokeStyle='#5a4a3a'; c.lineWidth=3.4;
+    c.beginPath(); c.moveTo(-14,8); c.lineTo(8,-6); c.stroke();
+    c.fillStyle='#c9a03c'; c.fillRect(6,-9,6,6);
+    c.strokeStyle='#f2efe8'; c.lineWidth=1.5; c.lineCap='round';
+    for(let i=0;i<11;i++){
+      const a=-0.9+i*0.14;
+      c.beginPath(); c.moveTo(11,-6);
+      c.quadraticCurveTo(24,-6+Math.sin(a)*10,34+Math.sin(time*2+i)*2,-4+Math.sin(a)*22); c.stroke();
+    }
+  }
+  else if(wv==='firespear'){
+    // 火尖槍：槍尖帶火
+    c.strokeStyle='#5a2f2f'; c.lineWidth=4;
+    c.beginPath(); c.moveTo(-30,17); c.lineTo(30,-16); c.stroke();
+    c.fillStyle='#dfe8f2'; c.strokeStyle=dark; c.lineWidth=1.2;
+    c.beginPath(); c.moveTo(30,-16); c.lineTo(48,-26); c.lineTo(32,-10); c.closePath(); c.fill(); c.stroke();
+    for(let i=0;i<5;i++){
+      const fl=Math.sin(time*7+i)*4;
+      c.fillStyle=i%2?'rgba(255,140,40,.75)':'rgba(255,214,90,.7)';
+      c.beginPath(); c.moveTo(34+i*3,-14-i*2);
+      c.quadraticCurveTo(46+i*2+fl,-26-i*3,38+i*3,-30-i*3);
+      c.quadraticCurveTo(40+i*2,-20-i*2,34+i*3,-14-i*2); c.fill();
+    }
+  }
+  else if(wv==='trident'){
+    // 三股鋼叉／兩刃刀：分岔刃
+    c.strokeStyle='#4a4438'; c.lineWidth=4.2;
+    c.beginPath(); c.moveTo(-30,17); c.lineTo(28,-15); c.stroke();
+    c.save(); c.translate(28,-15); c.rotate(-0.5);
+    c.strokeStyle='#dfe8f2'; c.lineWidth=2.6; c.lineCap='round';
+    for(const s of [-1,0,1]){
+      c.beginPath(); c.moveTo(0,s*5); c.lineTo(20,s*9); c.stroke();
+    }
+    c.restore();
+  }
+  else if(wv==='mace'){
+    // 九瓣銅鎚：球頭帶瓣
+    c.strokeStyle='#4a3a28'; c.lineWidth=5;
+    c.beginPath(); c.moveTo(-26,15); c.lineTo(22,-12); c.stroke();
+    const gm=c.createRadialGradient(28,-16,2,28,-16,13);
+    gm.addColorStop(0,'#e8c96a'); gm.addColorStop(1,'#8a6a2a');
+    c.fillStyle=gm; c.strokeStyle=dark; c.lineWidth=1.4;
+    c.beginPath(); c.arc(28,-16,12,0,TAU); c.fill(); c.stroke();
+    c.strokeStyle='rgba(0,0,0,.4)'; c.lineWidth=1.2;
+    for(let i=0;i<5;i++){ const a=i*0.63;
+      c.beginPath(); c.moveTo(28,-16); c.lineTo(28+Math.cos(a)*12,-16+Math.sin(a)*12); c.stroke(); }
+  }
+  else if(wv==='halberd'){
+    // 方天畫戟：兩側都有月牙
+    c.strokeStyle='#4a3a28'; c.lineWidth=4.4;
+    c.beginPath(); c.moveTo(-32,18); c.lineTo(32,-17); c.stroke();
+    c.save(); c.translate(32,-17); c.rotate(-0.5);
+    c.fillStyle='#dfe8f2'; c.strokeStyle=dark; c.lineWidth=1.3;
+    c.beginPath(); c.moveTo(0,-3); c.lineTo(24,0); c.lineTo(0,3); c.closePath(); c.fill(); c.stroke();
+    for(const s of [-1,1]){
+      c.beginPath(); c.moveTo(0,s*3);
+      c.quadraticCurveTo(15,s*17,4,s*15);
+      c.quadraticCurveTo(6,s*8,0,s*3); c.closePath(); c.fill(); c.stroke();
+    }
+    c.restore();
+  }
+  else if(wv==='ruyi'){
+    // 如意：短柄 + 靈芝頭
+    c.strokeStyle='#8a6a3a'; c.lineWidth=3.6;
+    c.beginPath(); c.moveTo(-10,8); c.quadraticCurveTo(8,0,18,-10); c.stroke();
+    c.fillStyle='#c9a03c'; c.strokeStyle=dark; c.lineWidth=1.2;
+    c.beginPath(); c.ellipse(21,-13,8,5.4,-0.5,0,TAU); c.fill(); c.stroke();
+    c.beginPath(); c.ellipse(16,-8,4,3,-0.5,0,TAU); c.fill(); c.stroke();
+  }
+  else if(wv==='tablet'){
+    // 玉笏：一片長方玉板
+    const gt=c.createLinearGradient(0,-16,0,16);
+    gt.addColorStop(0,'#eef4ee'); gt.addColorStop(1,'#b8ccb8');
+    c.fillStyle=gt; c.strokeStyle=dark; c.lineWidth=1.3;
+    c.beginPath(); c.moveTo(-2,14); c.lineTo(-4,-14);
+    c.quadraticCurveTo(1,-19,6,-14); c.lineTo(4,14); c.closePath(); c.fill(); c.stroke();
+  }
+  else if(wv==='dart'){
+    // 毒鏢：手中三支飛鏢
+    for(let i=0;i<3;i++){
+      c.save(); c.rotate(-0.4+i*0.4);
+      c.fillStyle='#6b7a5a'; c.strokeStyle=dark; c.lineWidth=1;
+      c.beginPath(); c.moveTo(4,0); c.lineTo(20,-2.6); c.lineTo(20,2.6); c.closePath();
+      c.fill(); c.stroke(); c.restore();
+    }
+  }
+  else if(wv==='tasselspear'){
+    // 黑纓槍：長桿 + 尖鋒 + 紅纓
+    c.strokeStyle='#2a2420'; c.lineWidth=4.2;
+    c.beginPath(); c.moveTo(-30,17); c.lineTo(30,-16); c.stroke();
+    c.fillStyle='#dfe8f2'; c.strokeStyle=dark; c.lineWidth=1.2;
+    c.beginPath(); c.moveTo(30,-16); c.lineTo(48,-26); c.lineTo(32,-10); c.closePath(); c.fill(); c.stroke();
+    c.strokeStyle='#b03028'; c.lineWidth=1.6; c.lineCap='round';
+    for(let i=0;i<6;i++){ const fl=Math.sin(time*3+i)*3;
+      c.beginPath(); c.moveTo(29,-15);
+      c.quadraticCurveTo(22+fl,-8-i*1.2,16+fl,-2-i*1.6); c.stroke(); }
+  }
+  else if(wv==='ironbar'){
+    // 混鐵棍：又粗又黑的鐵棍，比金箍棒短而重
+    const L=44;
+    c.strokeStyle='#14120f'; c.lineWidth=11;
+    c.beginPath(); c.moveTo(-L,0); c.lineTo(L,0); c.stroke();
+    const gb=c.createLinearGradient(0,-6,0,6);
+    gb.addColorStop(0,'#5a5450'); gb.addColorStop(1,'#2a2622');
+    c.strokeStyle=gb; c.lineWidth=8; c.beginPath(); c.moveTo(-L,0); c.lineTo(L,0); c.stroke();
+    c.fillStyle='#8a7a5a';
+    for(const s of [-1,1]){ c.fillRect(s*L-(s>0?12:0),-6,12,12); }
+    c.strokeStyle='rgba(0,0,0,.5)'; c.lineWidth=1.4;
+    for(let i=-2;i<=2;i++){ c.beginPath(); c.moveTo(i*13,-5); c.lineTo(i*13,5); c.stroke(); }
+  }
+  else if(wv==='trishula'){
+    // 三尖兩刃刀：中間長鋒、兩側短刃，二郎神專屬
+    c.strokeStyle='#3a3a44'; c.lineWidth=4.4;
+    c.beginPath(); c.moveTo(-32,18); c.lineTo(30,-16); c.stroke();
+    c.save(); c.translate(30,-16); c.rotate(-0.5);
+    const gt2=c.createLinearGradient(0,-8,0,8);
+    gt2.addColorStop(0,'#f4f8ff'); gt2.addColorStop(1,'#9aa8bc');
+    c.fillStyle=gt2; c.strokeStyle=dark; c.lineWidth=1.3;
+    c.beginPath(); c.moveTo(0,-3.4); c.lineTo(30,0); c.lineTo(0,3.4); c.closePath(); c.fill(); c.stroke();
+    for(const s of [-1,1]){                        // 兩側彎刃
+      c.beginPath(); c.moveTo(2,s*3);
+      c.quadraticCurveTo(20,s*16,8,s*17);
+      c.quadraticCurveTo(9,s*8,2,s*3); c.closePath(); c.fill(); c.stroke();
+    }
+    c.restore();
+  }
+  else if(wv==='fork'){
+    // 雙股叉：細桿金齒，柄上鑲寶石
+    c.strokeStyle='#3a2a38'; c.lineWidth=slim?2.6:4;
+    c.beginPath(); c.moveTo(-28,16); c.lineTo(26,-14); c.stroke();
+    if(slim) filigree(-24,14,22,-12,5);
+    c.save(); c.translate(26,-14); c.rotate(-0.5);
+    const gfk=c.createLinearGradient(0,0,24,0);
+    gfk.addColorStop(0,'#e8c96a'); gfk.addColorStop(1,'#f6ecc8');
+    c.strokeStyle=gfk; c.lineWidth=slim?2.2:3; c.lineCap='round';
+    for(const s of [-1,1]){
+      c.beginPath(); c.moveTo(0,s*3.4);
+      c.quadraticCurveTo(14,s*9,24,s*6); c.stroke();
+    }
+    c.fillStyle='#e8c96a'; c.strokeStyle=dark; c.lineWidth=0.9;
+    c.beginPath(); c.ellipse(-2,0,4.4,5.4,0,0,TAU); c.fill(); c.stroke();
+    c.fillStyle='#8a2a4a';
+    c.beginPath(); c.arc(-2,0,2.2,0,TAU); c.fill();
+    c.restore();
+    if(slim) tassel(-20,12,'#c04a6a',4);
+  }
+  else if(wv==='saber'){
+    // 鋼刀：單邊開刃的彎刀
+    const gs=c.createLinearGradient(0,0,46,0);
+    gs.addColorStop(0,'#8fa3c8'); gs.addColorStop(1,'#eef6ff');
+    c.fillStyle=gs; c.strokeStyle=dark; c.lineWidth=1.2;
+    c.beginPath(); c.moveTo(0,-3);
+    c.quadraticCurveTo(28,-11,50,-6); c.quadraticCurveTo(30,-2,0,3);
+    c.closePath(); c.fill(); c.stroke();
+    c.fillStyle='#3a2f22'; c.fillRect(-12,-3.4,12,6.8);
+    c.fillStyle='#c9a03c'; c.fillRect(-1,-5.4,4,10.8);
+  }
+  else if(wv==='trunkspear'){
+    // 長鼻鋼槍：象鼻纏著的長槍
+    c.strokeStyle='#6b5a4a'; c.lineWidth=5.4;
+    c.beginPath(); c.moveTo(-30,18); c.lineTo(32,-17); c.stroke();
+    c.fillStyle='#dfe8f2'; c.strokeStyle=dark; c.lineWidth=1.3;
+    c.beginPath(); c.moveTo(32,-17); c.lineTo(50,-27); c.lineTo(34,-11); c.closePath(); c.fill(); c.stroke();
+    c.strokeStyle='#d8d2c8'; c.lineWidth=3.4;
+    c.beginPath(); c.moveTo(-6,6); c.quadraticCurveTo(4,-2,12,-8); c.stroke();
+  }
+  else if(wk==='staff'){
+    // ── 如意金箍棒：雙手握中段，兩端都露出來 ──
+    const L=54+ri*4;
+    c.strokeStyle='#3a2f22'; c.lineWidth=8.4;
+    c.beginPath(); c.moveTo(-L,0); c.lineTo(L,0); c.stroke();
+    const gg=c.createLinearGradient(-L,0,L,0);
+    gg.addColorStop(0,'#8a6a2a'); gg.addColorStop(.5,'#d8b45a'); gg.addColorStop(1,'#8a6a2a');
+    c.strokeStyle=gg; c.lineWidth=6; c.beginPath(); c.moveTo(-L,0); c.lineTo(L,0); c.stroke();
+    // 兩端金箍
+    c.fillStyle='#f0d68a';
+    c.fillRect(L-13,-4.6,11,9.2); c.fillRect(-L+2,-4.6,11,9.2);
+    c.strokeStyle=dark; c.lineWidth=1.2;
+    c.strokeRect(L-13,-4.6,11,9.2); c.strokeRect(-L+2,-4.6,11,9.2);
+    // 握把纏繩
+    c.strokeStyle='#5a2f2f'; c.lineWidth=2;
+    for(let i=-2;i<=2;i++){ c.beginPath(); c.moveTo(i*6-1,-3.4); c.lineTo(i*6+2,3.4); c.stroke(); }
+  }
+  else if(wk==='rake'){
+    // ── 九齒釘耙：長柄 + 九根釘齒 ──
+    c.strokeStyle='#4a3524'; c.lineWidth=5.4;
+    c.beginPath(); c.moveTo(-30,17); c.lineTo(30,-15); c.stroke();
+    c.save(); c.translate(30,-15); c.rotate(-0.49);
+    c.fillStyle='#b8a878'; c.strokeStyle=dark; c.lineWidth=1.5;
+    c.beginPath(); c.roundRect?c.roundRect(-3,-21,9,42,2):c.rect(-3,-21,9,42);
+    c.fill(); c.stroke();
+    const gg2=c.createLinearGradient(0,0,20,0);
+    gg2.addColorStop(0,'#dfe8f2'); gg2.addColorStop(1,'#9aa8bc');
+    for(let i=0;i<9;i++){                            // 九齒，一根都不能少
+      const yy=-19+i*4.75;
+      c.fillStyle=gg2; c.strokeStyle=dark; c.lineWidth=1;
+      c.beginPath(); c.moveTo(5,yy-1.5); c.lineTo(20,yy-0.4); c.lineTo(5,yy+1.9);
+      c.closePath(); c.fill(); c.stroke();
+    }
+    c.restore();
+  }
+  else if(wk==='pole'){
+    // ── 降妖寶杖：月牙鏟，一頭彎月一頭鏟尾 ──
+    c.strokeStyle='#3a3028'; c.lineWidth=5;
+    c.beginPath(); c.moveTo(-34,18); c.lineTo(36,-19); c.stroke();
+    c.fillStyle='#c9a03c';
+    c.beginPath(); c.arc(-32,17,4.4,0,TAU); c.fill();
+    c.save(); c.translate(36,-19); c.rotate(-0.49);
+    const gg3=c.createLinearGradient(0,-22,0,22);
+    gg3.addColorStop(0,'#f0f6ff'); gg3.addColorStop(1,'#8fa3c8');
+    c.fillStyle=gg3; c.strokeStyle=dark; c.lineWidth=1.6;
+    c.beginPath();                                   // 彎月刃
+    c.arc(0,0,22,-1.5,1.5);
+    c.quadraticCurveTo(9,0,0,-22);
+    c.closePath(); c.fill(); c.stroke();
+    c.fillStyle='#c9a03c'; c.fillRect(-6,-5,8,10);
+    c.restore();
+  }
+  else if(wk==='lance'){
+    // 龍鱗銀戟：細長桿身 + 雕花月牙側刃 + 尖鋒
+    c.strokeStyle='#4a4a58'; c.lineWidth=4.4;
+    c.beginPath(); c.moveTo(-34,19); c.lineTo(34,-18); c.stroke();
+    c.strokeStyle='#dfe8f2'; c.lineWidth=1.6;
+    c.beginPath(); c.moveTo(-34,19); c.lineTo(34,-18); c.stroke();
+    c.save(); c.translate(34,-18); c.rotate(-0.49);
+    const gl=c.createLinearGradient(0,-6,0,6);
+    gl.addColorStop(0,'#f4f8ff'); gl.addColorStop(1,'#9aa8bc');
+    c.fillStyle=gl; c.strokeStyle=dark; c.lineWidth=1.3;
+    c.beginPath(); c.moveTo(0,-3); c.lineTo(26,0); c.lineTo(0,3); c.closePath(); c.fill(); c.stroke();
+    c.beginPath();                                  // 側邊小月牙
+    c.moveTo(2,-2); c.quadraticCurveTo(13,-15,4,-13);
+    c.quadraticCurveTo(6,-7,2,-2); c.closePath(); c.fill(); c.stroke();
+    c.fillStyle='#c9a03c'; c.fillRect(-5,-4,7,8);
+    c.restore();
+  }
+  else if(wk==='glaive'){
+    c.strokeStyle='#5b4426'; c.lineWidth=4.6;
+    c.beginPath(); c.moveTo(-28,15); c.lineTo(34,-16); c.stroke();
+    c.fillStyle='#dfe8f2'; c.strokeStyle=dark; c.lineWidth=1.4;
+    c.beginPath(); c.moveTo(34,-16); c.quadraticCurveTo(56,-32,46,-4);
+    c.quadraticCurveTo(41,-7,34,-16); c.closePath(); c.fill(); c.stroke();
+  }
+  else if(wk==='bow'){
+    c.strokeStyle='#c99454'; c.lineWidth=2.6;
+    c.beginPath(); c.moveTo(6,-16); c.quadraticCurveTo(20,0,6,16); c.stroke();
+    c.strokeStyle='#efe0bf'; c.lineWidth=.9;
+    c.beginPath(); c.moveTo(6,-16); c.lineTo(8+sw*8,0); c.lineTo(6,16); c.stroke();
+  }
+  else if(wk==='sutra'){
+    c.strokeStyle='#3a3028'; c.lineWidth=4;
+    c.beginPath(); c.moveTo(-24,16); c.lineTo(24,-22); c.stroke();
+    c.strokeStyle='#e0b83a'; c.lineWidth=2.6;
+    c.beginPath(); c.arc(27,-26,7,0,TAU); c.stroke();
+    for(let i=0;i<3;i++){ c.beginPath(); c.arc(22+i*5,-19-i*2,3.2,0,TAU); c.stroke(); }
+    c.fillStyle='rgba(255,231,176,'+(0.4+0.5*Math.sin(time*4))+')';
+    c.font='13px "Hiragino Mincho ProN",serif'; c.textAlign='center';
+    c.fillText('經',34,-40);
+  }
+  else if(wk==='fan'){
+    c.fillStyle='#f0ead8'; c.strokeStyle=dark; c.lineWidth=1.3;
+    c.beginPath(); c.moveTo(4,4); c.quadraticCurveTo(26,-16,30,4); c.quadraticCurveTo(18,12,4,4);
+    c.closePath(); c.fill(); c.stroke();
+  }
+  else {
+    const gg=c.createLinearGradient(0,0,44,0);
+    gg.addColorStop(0,'#8fa3c8'); gg.addColorStop(.6,'#e8f6ff'); gg.addColorStop(1,'#7fe9ff');
+    c.fillStyle=gg; c.fillRect(0,-2.6,44+ri*3,5.2);
+    c.fillStyle=dark; c.fillRect(-10,-3,11,6);
+  }
+  drawWeaponEvolution(c,weaponLv,weaponGlow,longWeapon,true);
+  c.restore();
+
+  // 手臂：大型兵器要雙手握，才有份量
+  // 前手：肩→肘→手，肘朝後彎（人的手肘不會朝前折）
+  const shoulderFront=fem?11:12.5, shoulderBack=fem?-11:-12.5;
+  limb2(c,shoulderFront,-56,hx,hy,rig.upperArm,rig.forearm,'back',fem?4.2:5,p.sk);
+  let freeHand=null, rearGrip=null;
+  if(!twoHand){                                   // 空手負責平衡、起跳與受擊防護
+    const fa=(fem?-0.5:-.72)+Math.sin(time*1.7)*0.12+q.attack*0.5-q.armLift*.55+q.hurt*.9;
+    const armReach=fem?12:14;
+    const fx2=-11+Math.cos(fa)*armReach, fy2=-40+Math.sin(fa)*(fem?11:13)-q.armLift*9;
+    limb2(c,shoulderBack,-54,fx2,fy2,rig.freeUpperArm,rig.freeForearm,'back',fem?4:4.7,p.sk);
+    if(wv==='claw'){                              // 爪套是一雙，另一手也要有
+      c.save(); c.translate(fx2,fy2); c.rotate(Math.PI-fa*0.6); c.scale(0.82,0.82);
+      c.fillStyle='#8a7a9a'; c.strokeStyle=dark; c.lineWidth=0.9;
+      c.beginPath(); c.moveTo(-3,-5.4); c.lineTo(6,-4.2); c.lineTo(7,4.2); c.lineTo(-2,5.4);
+      c.closePath(); c.fill(); c.stroke();
+      const L2=[12,16,18,15,11], Y2=[-5,-2.5,0,2.5,5];
+      for(let i=0;i<5;i++){
+        c.fillStyle='#e4dcf0'; c.strokeStyle=dark; c.lineWidth=0.7;
+        c.beginPath(); c.moveTo(6,Y2[i]-1.3);
+        c.quadraticCurveTo(6+L2[i]*0.6,Y2[i]-1.8,6+L2[i],Y2[i]*1.5);
+        c.quadraticCurveTo(6+L2[i]*0.5,Y2[i]+1.3,6,Y2[i]+1.3);
+        c.closePath(); c.fill(); c.stroke();
+      }
+      c.restore();
+    } else {
+      freeHand={x:fx2,y:fy2,a:fa*.45};
+    }
+  }
+  if(twoHand){
+    const ga = wk==='staff' ? spinA : swingA;
+    const gx = hx+Math.cos(ga)*15, gy = hy+Math.sin(ga)*15;
+    limb2(c,shoulderBack,-52,gx,gy,rig.rearUpperArm,rig.rearForearm,'back',4.6,shade(p.sk,-18)); // 後手沿同一根武器桿握住
+    rearGrip={x:gx,y:gy,a:ga};
+  }
+  if(wv!=='claw') drawHand(c,hx,hy,weaponAngle,p.sk,p.ac,fem,true);
+  if(rearGrip) drawHand(c,rearGrip.x,rearGrip.y,rearGrip.a,p.sk,p.ac,fem,true);
+  if(freeHand) drawHand(c,freeHand.x,freeHand.y,freeHand.a,p.sk,p.ac,true,false);
+
+  // ===== 招牌輪廓（畫在身後）=====
+  const SG=h.sig||[];
+  const wob2=Math.sin(time*2.2+h.n.length);
+  if(SG.indexOf('wings')>=0){                      // 大鵬金翅
+    c.fillStyle='#d8a83a'; c.strokeStyle=dark; c.lineWidth=1.3;
+    for(const s of [1,-1]){
+      c.beginPath(); c.moveTo(-4,-58);
+      c.quadraticCurveTo(-40+s*6,-96+wob2*5,-16+s*4,-104+wob2*4);
+      c.quadraticCurveTo(-14,-78,-4,-58); c.closePath(); c.fill(); c.stroke();
+    }
+  }
+  if(SG.indexOf('tail_scorpion')>=0){              // 蠍尾
+    c.strokeStyle='#8a2a4a'; c.lineWidth=6; c.lineCap='round';
+    c.beginPath(); c.moveTo(-8,-34);
+    c.quadraticCurveTo(-34,-58+wob2*4,-16,-96+wob2*6); c.stroke();
+    c.fillStyle='#c04a6a'; c.strokeStyle=dark; c.lineWidth=1.2;
+    c.beginPath(); c.moveTo(-16,-96+wob2*6); c.lineTo(-4,-108+wob2*6); c.lineTo(-12,-92+wob2*6);
+    c.closePath(); c.fill(); c.stroke();
+  }
+  if(SG.indexOf('legs_spider')>=0){                // 蛛腳
+    c.strokeStyle='#3a2a4a'; c.lineWidth=3; c.lineCap='round';
+    for(let i=0;i<3;i++){ for(const s of [-1,1]){
+      const a=-0.5-i*0.5;
+      c.beginPath(); c.moveTo(s*4,-56);
+      c.quadraticCurveTo(s*(26+i*5),-72-i*6+wob2*3,s*(16+i*7),-96-i*7+wob2*4);
+      c.stroke(); } }
+  }
+  if(SG.indexOf('mane_lion')>=0){                  // 獅鬃
+    c.fillStyle=shade(p.sk,-18);
+    for(let i=0;i<12;i++){ const a=i/12*TAU;
+      c.beginPath(); c.ellipse(1+Math.cos(a)*17,-72+Math.sin(a)*17,7,5,a,0,TAU); c.fill(); }
+  }
+  if(SG.indexOf('bonecrown')>=0){                  // 白骨精：鹿角狀白骨冠
+    c.strokeStyle='#f2ece0'; c.lineWidth=2.6; c.lineCap='round';
+    for(const s of [-1,1]){
+      c.beginPath(); c.moveTo(1+s*7,-80); c.quadraticCurveTo(1+s*16,-98,1+s*11,-112); c.stroke();
+      c.beginPath(); c.moveTo(1+s*11,-92); c.lineTo(1+s*23,-100); c.stroke();
+      c.beginPath(); c.moveTo(1+s*12,-102); c.lineTo(1+s*5,-114); c.stroke();
+      c.beginPath(); c.moveTo(1+s*3,-84); c.lineTo(1+s*9,-99); c.stroke();
+    }
+    c.fillStyle='#e8e0ee';
+    for(let i=0;i<4;i++){ c.beginPath(); c.arc(1+(i-1.5)*7,-84,2.2,0,TAU); c.fill(); }
+  }
+  if(SG.indexOf('horns_gold')>=0){                 // 蠍子精：金色彎角冠
+    c.fillStyle='#e8c96a'; c.strokeStyle=dark; c.lineWidth=1.1;
+    for(const s of [-1,1]){ c.beginPath();
+      c.moveTo(1+s*6,-82);
+      c.quadraticCurveTo(1+s*18,-96,1+s*10,-106);
+      c.quadraticCurveTo(1+s*13,-93,1+s*2,-83);
+      c.closePath(); c.fill(); c.stroke(); }
+  }
+  if(SG.indexOf('halo')>=0){                       // 佛光
+    const gh=c.createRadialGradient(1,-72,10,1,-72,34);
+    gh.addColorStop(0,'rgba(255,247,214,.5)'); gh.addColorStop(1,'transparent');
+    c.fillStyle=gh; c.beginPath(); c.arc(1,-72,34,0,TAU); c.fill();
+    c.strokeStyle='rgba(255,231,160,.8)'; c.lineWidth=2;
+    c.beginPath(); c.arc(1,-72,26,0,TAU); c.stroke();
+  }
+
+  // ===== 頭 =====
+  const hyy=rig.headY, wide=(p.ex||[]).indexOf('wide')>=0;
+  // 頭部按比例縮小（含頭髮、頭飾、獸耳角等所有頭上的東西）
+  const HS=bp.head, headAspect=1;
+  c.save(); c.translate(1,hyy); c.scale(HS*headAspect,HS); c.translate(-1,-hyy);
+  const hair=shade(p.bc,p.bc==='#222'?18:0);
+  const hairFlow=(q.walk*3+q.sway*1.4+Math.sin(time*2.1+h.n.length)*(fem?3.4:1.4));
+  // 後髮：女角及腰長髮，男角短髮
+  {
+    c.fillStyle=hair; c.strokeStyle=dark; c.lineWidth=1.4;
+    c.beginPath();
+    if(fem){
+      c.moveTo(-6,hyy-8);
+      c.quadraticCurveTo(-20+hairFlow*0.6,hyy+6,-15+hairFlow,hyy+44);
+      c.quadraticCurveTo(-8+hairFlow*0.7,hyy+30,-4,hyy+4);
+    } else {
+      c.moveTo(-6,hyy-8);
+      c.quadraticCurveTo(-15+hairFlow*0.4,hyy-2,-11+hairFlow*0.6,hyy+14);
+      c.quadraticCurveTo(-7,hyy+6,-4,hyy+2);
+    }
+    c.closePath(); c.fill(); c.stroke();
+  }
+  if((p.ex||[]).indexOf('bigears')>=0){
+    c.fillStyle=p.sk; c.beginPath(); c.ellipse(-9,hyy+3,4,7,0,0,TAU); c.fill();
+  }
+  c.fillStyle=p.sk; c.strokeStyle=dark; c.lineWidth=fem?1.3:1.8;
+  if(fem){
+    // 額圓、頰收、下巴尖：小臉輪廓
+    c.beginPath();
+    c.moveTo(-9.5,hyy-2);
+    c.quadraticCurveTo(-9,hyy-13.5,1,hyy-13.5);
+    c.quadraticCurveTo(11,hyy-13.5,12,hyy-1);
+    c.quadraticCurveTo(12.6,hyy+7,7.5,hyy+12.6);
+    c.quadraticCurveTo(4.6,hyy+15.4,1.6,hyy+12.4);
+    c.quadraticCurveTo(-6,hyy+8,-9.5,hyy-2);
+    c.closePath(); c.fill(); c.stroke();
+    c.fillStyle='rgba(224,132,150,.30)';                 // 頰紅
+    c.beginPath(); c.ellipse(7.6,hyy+5.4,4.2,2.6,0,0,TAU); c.fill();
+    c.fillStyle=shade(p.sk,-14); c.fillRect(-1.5,hyy+11,6,7);   // 頸
+  } else {
+    c.beginPath(); c.ellipse(1,hyy,wide?14:11.5,13.5,0,0,TAU); c.fill(); c.stroke();
+  }
+  // ===== 招牌頭部特徵 =====
+  if(SG.indexOf('ears_rabbit')>=0){                // 兔耳
+    c.fillStyle='#f4eef0'; c.strokeStyle=dark; c.lineWidth=1.2;
+    for(const s of [-1,1]){ c.save(); c.translate(1+s*4,hyy-9); c.rotate(s*0.22+wob2*0.05);
+      c.beginPath(); c.ellipse(0,-17,4.4,17,0,0,TAU); c.fill(); c.stroke();
+      c.fillStyle='#f0c0cc'; c.beginPath(); c.ellipse(0,-17,2.2,12,0,0,TAU); c.fill();
+      c.fillStyle='#f4eef0'; c.restore(); }
+  }
+  if(SG.indexOf('ears_mouse')>=0){                 // 鼠耳
+    c.fillStyle='#f0e8ea'; c.strokeStyle=dark; c.lineWidth=1.2;
+    for(const s of [-1,1]){ c.beginPath(); c.arc(1+s*9,hyy-11,6.4,0,TAU); c.fill(); c.stroke();
+      c.fillStyle='#e8bcc4'; c.beginPath(); c.arc(1+s*9,hyy-11,3.4,0,TAU); c.fill();
+      c.fillStyle='#f0e8ea'; }
+  }
+  if(SG.indexOf('ears_beast')>=0){                 // 獸耳（熊／虎／猴）
+    c.fillStyle=shade(p.sk,-14); c.strokeStyle=dark; c.lineWidth=1.2;
+    for(const s of [-1,1]){ c.beginPath(); c.arc(1+s*11,hyy-8,5.4,0,TAU); c.fill(); c.stroke(); }
+  }
+  if(SG.indexOf('horns_bull')>=0){                 // 牛角
+    c.fillStyle='#cfc6b4'; c.strokeStyle=dark; c.lineWidth=1.3;
+    for(const s of [-1,1]){ c.beginPath();
+      c.moveTo(1+s*8,hyy-6);
+      c.quadraticCurveTo(1+s*26,hyy-16,1+s*22,hyy-32);
+      c.quadraticCurveTo(1+s*20,hyy-16,1+s*4,hyy-8);
+      c.closePath(); c.fill(); c.stroke(); }
+  }
+  if(SG.indexOf('horns_ram')>=0){                  // 羊角（捲）
+    c.strokeStyle='#d8d2c0'; c.lineWidth=4; c.lineCap='round';
+    for(const s of [-1,1]){ c.beginPath();
+      c.moveTo(1+s*8,hyy-6);
+      c.quadraticCurveTo(1+s*24,hyy-12,1+s*20,hyy+2);
+      c.quadraticCurveTo(1+s*12,hyy+8,1+s*13,hyy-2); c.stroke(); }
+  }
+  if(SG.indexOf('antlers_deer')>=0){               // 鹿角
+    c.strokeStyle='#b8a070'; c.lineWidth=2.6; c.lineCap='round';
+    for(const s of [-1,1]){
+      c.beginPath(); c.moveTo(1+s*6,hyy-8); c.lineTo(1+s*13,hyy-30); c.stroke();
+      c.beginPath(); c.moveTo(1+s*9,hyy-17); c.lineTo(1+s*20,hyy-22); c.stroke();
+      c.beginPath(); c.moveTo(1+s*11,hyy-24); c.lineTo(1+s*4,hyy-34); c.stroke();
+    }
+  }
+  if(SG.indexOf('trunk')>=0){                      // 象鼻與長牙
+    c.strokeStyle=shade(p.sk,-8); c.lineWidth=6.4; c.lineCap='round';
+    c.beginPath(); c.moveTo(11,hyy+4);
+    c.quadraticCurveTo(24,hyy+16,18,hyy+30+wob2*2); c.stroke();
+    c.fillStyle='#f0ece0'; c.strokeStyle=dark; c.lineWidth=1;
+    for(const s of [-1,1]){ c.beginPath();
+      c.moveTo(6+s*2,hyy+8); c.quadraticCurveTo(16,hyy+20,10+s*3,hyy+22);
+      c.closePath(); c.fill(); c.stroke(); }
+  }
+  if(SG.indexOf('eyes_many')>=0){                  // 多目
+    c.fillStyle='#e8c96a';
+    for(let i=0;i<6;i++){
+      const a=i/6*TAU+time*0.4;
+      c.beginPath(); c.arc(1+Math.cos(a)*8,hyy+Math.sin(a)*8,1.9,0,TAU); c.fill();
+    }
+  }
+  if(SG.indexOf('thirdeye')>=0){                   // 二郎神第三眼
+    c.fillStyle='#f4f8ff'; c.strokeStyle=dark; c.lineWidth=1;
+    c.beginPath(); c.ellipse(4,hyy-7,4.4,2.6,0,0,TAU); c.fill(); c.stroke();
+    c.fillStyle='#2a5a8a'; c.beginPath(); c.arc(4,hyy-7,1.6,0,TAU); c.fill();
+  }
+  if(SG.indexOf('fin')>=0){                        // 魚鰭
+    c.fillStyle='#3a7a8a'; c.strokeStyle=dark; c.lineWidth=1.1;
+    c.beginPath(); c.moveTo(-6,hyy-6);
+    for(let i=0;i<4;i++) c.lineTo(-10-i*4,hyy-16-i*3), c.lineTo(-8-i*4,hyy-6-i*2);
+    c.closePath(); c.fill(); c.stroke();
+  }
+  if(SG.indexOf('flame')>=0){                      // 火焰髮
+    for(let i=0;i<7;i++){
+      const fl=Math.sin(time*6+i)*4;
+      c.fillStyle=i%2?'rgba(255,120,40,.85)':'rgba(255,200,70,.8)';
+      c.beginPath(); c.moveTo(-9+i*3.4,hyy-8);
+      c.quadraticCurveTo(-7+i*3.4+fl,hyy-26,-10+i*3.4+fl,hyy-36);
+      c.quadraticCurveTo(-6+i*3.4,hyy-22,-5+i*3.4,hyy-8); c.fill();
+    }
+  }
+  // 瀏海
+  {
+    c.fillStyle=hair; c.beginPath();
+    c.moveTo(-11,hyy-4);
+    c.quadraticCurveTo(1,hyy-16,12,hyy-5);
+    c.quadraticCurveTo(6,hyy-9,1,hyy-7);
+    c.quadraticCurveTo(-4,hyy-6,-11,hyy-4);
+    c.closePath(); c.fill();
+  }
+  // 鼻與唇：側臉輪廓，女角唇色明顯
+  c.strokeStyle=shade(p.sk,-52); c.lineWidth=1.2; c.lineCap='round';
+  c.beginPath(); c.moveTo(11.5,hyy+2); c.lineTo(13.4,hyy+5); c.lineTo(10.6,hyy+5.6); c.stroke();
+  if(fem){
+    c.fillStyle='#c0485e';                                // 飽滿唇形
+    c.beginPath(); c.moveTo(8.6,hyy+8.2);
+    c.quadraticCurveTo(10.6,hyy+6.6,12.4,hyy+8.0);
+    c.quadraticCurveTo(10.6,hyy+10.4,8.6,hyy+8.2);
+    c.closePath(); c.fill();
+    c.fillStyle='rgba(255,220,224,.65)';
+    c.beginPath(); c.ellipse(10.6,hyy+7.7,1.1,0.5,0,0,TAU); c.fill();
+    // 額飾：一般是花鈿，gem 則是額心寶石
+    if((p.ex||[]).indexOf('gem')>=0){
+      c.fillStyle='#8a5ac8'; c.strokeStyle='#e0d8f0'; c.lineWidth=0.8;
+      c.beginPath(); c.moveTo(6,hyy-5); c.lineTo(8.6,hyy-1.8); c.lineTo(6,hyy+1.4);
+      c.lineTo(3.4,hyy-1.8); c.closePath(); c.fill(); c.stroke();
+    } else {
+      c.fillStyle='#c8496b';
+      c.beginPath(); c.arc(6,hyy-1.5,1.5,0,TAU); c.fill();
+    }
+    // 耳墜
+    c.strokeStyle=gold; c.lineWidth=1.2;
+    c.beginPath(); c.moveTo(-1,hyy+4); c.lineTo(-1.5,hyy+11+hairFlow*0.12); c.stroke();
+    c.fillStyle=gold; c.beginPath(); c.arc(-1.5,hyy+12.4+hairFlow*0.12,1.9,0,TAU); c.fill();
+  } else {
+    c.strokeStyle=shade(p.sk,-40); c.lineWidth=1.4;
+    c.beginPath(); c.moveTo(9.6,hyy+8.6); c.lineTo(12.4,hyy+8.4); c.stroke();
+  }
+  // 眉
+  c.strokeStyle=p.bc; c.lineCap='round';
+  const brW={angry:3.4,bushy:5,thin:1.8,flat:2.6}[p.br]||2.6;
+  c.lineWidth=fem?Math.min(brW,2.0):brW;
+  c.beginPath();
+  if(fem){                                       // 女角：細長彎眉
+    c.moveTo(3,-2.6+hyy); c.quadraticCurveTo(7.5,-5+hyy,11.5,-3.2+hyy);
+  } else if(p.br==='angry'){ c.moveTo(3,-4+hyy); c.lineTo(11,-1+hyy); }
+  else { c.moveTo(3,-3+hyy); c.lineTo(11,-3.6+hyy); }
+  c.stroke();
+  // 眼（側面只畫一隻）
+  c.fillStyle='#2a1a10'; c.strokeStyle='#2a1a10';
+  if(fem){
+    const IRIS={sharp:'#8a3050',gentle:'#8a6a4a',calm:'#4a6a8a',green:'#3f7a4f',
+                narrow:'#6a4a6a',round:'#7a4a3a',aged:'#5a5060'}[p.ey]||'#7a4a5a';
+    const ex1=8.4, ey1=hyy+1.4;
+    c.fillStyle='#fdfbfc'; c.strokeStyle='rgba(40,26,32,.5)'; c.lineWidth=0.7;
+    c.beginPath(); c.moveTo(ex1-4.6,ey1+0.6);
+    c.quadraticCurveTo(ex1-1,ey1-4.4,ex1+4,ey1-1.4);
+    c.quadraticCurveTo(ex1+1.4,ey1+3.4,ex1-4.6,ey1+0.6);
+    c.closePath(); c.fill(); c.stroke();
+    c.save(); c.clip();
+    c.fillStyle=IRIS; c.beginPath(); c.arc(ex1+0.6,ey1-0.5,3.2,0,TAU); c.fill();
+    c.fillStyle=shade(IRIS,-60); c.beginPath(); c.arc(ex1+0.8,ey1-0.4,1.7,0,TAU); c.fill();
+    c.fillStyle='rgba(255,255,255,.92)';
+    c.beginPath(); c.arc(ex1-0.6,ey1-1.9,1.25,0,TAU); c.fill();
+    c.beginPath(); c.arc(ex1+2.1,ey1+0.9,0.65,0,TAU); c.fill();
+    c.restore();
+    c.strokeStyle='#241820'; c.lineWidth=1.7; c.lineCap='round';
+    c.beginPath(); c.moveTo(ex1-4.8,ey1+0.4);
+    c.quadraticCurveTo(ex1-1,ey1-5,ex1+4.4,ey1-1.8); c.stroke();
+    c.lineWidth=1.2;
+    c.beginPath(); c.moveTo(ex1+4.2,ey1-1.9); c.lineTo(ex1+7,ey1-3.6); c.stroke();
+    c.strokeStyle='rgba(40,26,32,.45)'; c.lineWidth=0.8;
+    c.beginPath(); c.moveTo(ex1-3.4,ey1+1.6); c.quadraticCurveTo(ex1+0.4,ey1+3.2,ex1+3.4,ey1+1.2); c.stroke();
+    c.beginPath(); c.moveTo(ex1-4.2,ey1-1.8); c.quadraticCurveTo(ex1-0.6,ey1-6.2,ex1+4.6,ey1-3.2); c.stroke();
+  }
+  else if(p.ey==='narrow'){ c.lineWidth=2.6; c.beginPath(); c.moveTo(5,hyy+1); c.lineTo(11,hyy+1); c.stroke(); }
+  else if(p.ey==='sharp'){ c.beginPath(); c.moveTo(5,hyy+2); c.lineTo(12,hyy-1); c.lineTo(11,hyy+2); c.closePath(); c.fill(); }
+  else if(p.ey==='aged'){ c.lineWidth=2.2; c.beginPath(); c.moveTo(5,hyy+1); c.quadraticCurveTo(8,hyy-2,11,hyy+1); c.stroke(); }
+  else if(p.ey==='green'){ c.fillStyle='#3f7a4f'; c.beginPath(); c.ellipse(8,hyy+1,3,2,0,0,TAU); c.fill(); }
+  else { c.beginPath(); c.ellipse(8,hyy+1,2.6,2.4,0,0,TAU); c.fill(); }
+  // 眼罩
+  if((p.ex||[]).indexOf('eyepatch')>=0){ c.fillStyle='#1a1208'; c.fillRect(3,hyy-3,10,7); }
+  // 疤
+  if((p.ex||[]).indexOf('scar')>=0){ c.strokeStyle='#8a3a2e'; c.lineWidth=1.6;
+    c.beginPath(); c.moveTo(10,hyy-4); c.lineTo(8,hyy+5); c.stroke(); }
+  // 鬍
+  c.fillStyle=p.bc;
+  const cy=hyy+11;
+  if(p.bd==='long'){ c.beginPath(); c.moveTo(-2,cy); c.quadraticCurveTo(6,cy+26,2,cy+30);
+    c.quadraticCurveTo(10,cy+18,9,cy-1); c.closePath(); c.fill(); }
+  else if(p.bd==='full'){ c.beginPath(); c.moveTo(-3,cy-3); c.quadraticCurveTo(6,cy+16,10,cy-4);
+    c.quadraticCurveTo(6,cy+2,-3,cy-3); c.closePath(); c.fill();
+    c.beginPath(); c.ellipse(3,cy+5,8,7,0,0,TAU); c.fill(); }
+  else if(p.bd==='short'){ c.beginPath(); c.ellipse(4,cy+2,7,5,0,0,TAU); c.fill(); }
+  else if(p.bd==='goatee'){ c.beginPath(); c.moveTo(2,cy); c.lineTo(7,cy); c.lineTo(4,cy+12); c.closePath(); c.fill(); }
+  else if(p.bd==='mo'){ c.fillRect(3,cy-4,8,2.6); }
+  // 頭飾
+  c.fillStyle=p.hc; c.strokeStyle=dark; c.lineWidth=1.5;
+  if(p.ht==='helm'||p.ht==='goldhelm'){
+    c.beginPath(); c.ellipse(1,hyy-4,wide?15:12.5,10,0,Math.PI,TAU); c.fill(); c.stroke();
+    c.fillRect(-12,hyy-5,26,3.4);
+    if(p.ht==='goldhelm'){ c.fillStyle='#e8c96a'; c.beginPath();
+      c.moveTo(1,hyy-14); c.lineTo(5,hyy-26); c.lineTo(-3,hyy-26); c.closePath(); c.fill(); }
+  } else if(p.ht==='band'){
+    c.beginPath(); c.moveTo(-11,hyy-3); c.quadraticCurveTo(1,hyy-11,13,hyy-3);
+    c.lineTo(13,hyy-7); c.quadraticCurveTo(1,hyy-15,-11,hyy-7); c.closePath(); c.fill(); c.stroke();
+  } else if(p.ht==='guanjin'){
+    c.beginPath(); c.moveTo(-12,hyy-3); c.quadraticCurveTo(1,hyy-20,13,hyy-3); c.lineTo(13,hyy-9);
+    c.quadraticCurveTo(1,hyy-24,-12,hyy-9); c.closePath(); c.fill(); c.stroke();
+  } else if(p.ht==='official'){
+    c.fillRect(-11,hyy-14,24,7); c.fillRect(-6,hyy-20,14,7); c.strokeRect(-11,hyy-14,24,7);
+  } else if(p.ht==='crown'){
+    c.beginPath(); c.moveTo(-11,hyy-6); c.lineTo(13,hyy-6); c.lineTo(10,hyy-20);
+    c.lineTo(4,hyy-13); c.lineTo(-1,hyy-22); c.lineTo(-6,hyy-13); c.lineTo(-11,hyy-20);
+    c.closePath(); c.fill(); c.stroke();
+  } else if(p.ht==='cap'){
+    c.beginPath(); c.moveTo(-9,hyy-5); c.quadraticCurveTo(2,hyy-19,12,hyy-5); c.closePath(); c.fill(); c.stroke();
+  } else if(p.ht==='bun'){                     // 髮髻
+    c.beginPath(); c.ellipse(1,hyy-6,12,9,0,Math.PI,TAU); c.fill(); c.stroke();
+    c.beginPath(); c.arc(-1,hyy-19,6.5,0,TAU); c.fill(); c.stroke();
+    c.strokeStyle=shade(p.hc,50); c.lineWidth=1.6;
+    c.beginPath(); c.moveTo(-7,hyy-21); c.lineTo(6,hyy-17); c.stroke();
+  } else if(p.ht==='turban'){                  // 裹巾，尾巴會飄
+    c.beginPath(); c.ellipse(1,hyy-4,13,10,0,Math.PI,TAU); c.fill(); c.stroke();
+    c.beginPath(); c.moveTo(-11,hyy-6);
+    c.quadraticCurveTo(-24,hyy-2+Math.sin(time*4)*4,-19,hyy+9+Math.sin(time*4)*4);
+    c.quadraticCurveTo(-14,hyy+1,-9,hyy-3); c.closePath(); c.fill();
+  }
+  // 老紋
+  if((p.ex||[]).indexOf('oldlines')>=0){
+    c.strokeStyle='rgba(0,0,0,.28)'; c.lineWidth=1.2;
+    c.beginPath(); c.moveTo(6,hyy+5); c.quadraticCurveTo(9,hyy+7,6,hyy+9); c.stroke();
+  }
+  // 龍角（白龍馬）
+  if((p.ex||[]).indexOf('horns')>=0){
+    c.fillStyle='#e8eef5'; c.strokeStyle=dark; c.lineWidth=1.3;
+    for(const s of [-1,1]){
+      c.beginPath();
+      c.moveTo(1+s*5,hyy-9);
+      c.quadraticCurveTo(1+s*15,hyy-22,1+s*9,hyy-30);
+      c.quadraticCurveTo(1+s*11,hyy-20,1+s*2,hyy-10);
+      c.closePath(); c.fill(); c.stroke();
+    }
+  }
+  // 雉雞雙翎（孫悟空的紫金冠）
+  if((p.ex||[]).indexOf('feather')>=0){
+    for(const s of [-1,1]){
+      const bend=Math.sin(time*2.4+s)*4;
+      const gg4=c.createLinearGradient(0,hyy-14,0,hyy-46);
+      gg4.addColorStop(0,'#c8496b'); gg4.addColorStop(1,'#6b4a9a');
+      c.strokeStyle=gg4; c.lineWidth=3.2; c.lineCap='round';
+      c.beginPath(); c.moveTo(1+s*2,hyy-13);
+      c.quadraticCurveTo(1+s*9+bend,hyy-30,1+s*6+bend*1.6,hyy-46);
+      c.stroke();
+    }
+  }
+  // 盔纓（plume / plume2 / 軍階）
+  const exs=p.ex||[], hasP=exs.indexOf('plume')>=0, hasP2=exs.indexOf('plume2')>=0;
+  if(hasP||hasP2||ri>=3){
+    const n2=hasP2?7:4, len=hasP2?38:30;
+    c.fillStyle=(hasP||hasP2)?'#e8c96a':RANKS[ri].hc;
+    for(let i=0;i<n2;i++){ c.beginPath(); c.moveTo(1,hyy-13);
+      c.lineTo(-4+i*2.2,hyy-len-Math.sin(time*5+i)*3); c.lineTo(-2+i*2.2,hyy-13); c.closePath(); c.fill(); }
+  }
+  c.restore();                                  // 結束頭部縮放
+  c.restore();
+}
+
+/* ================= 取經傳橫向破關 =================
+   站立、移動、攻擊只切換 pose，角色始終引用同一個 model 物件。 */
+const RI=4, GAME_H=720, FLOOR_Y=620, DEMO_STAGE_COUNT=16;
+const canvas=document.getElementById('game'), ctx=canvas.getContext('2d');
+const selectScreen=document.getElementById('selectScreen'), heroGrid=document.getElementById('heroGrid');
+const stageSelect=document.getElementById('stageSelect'),journeyProgress=document.getElementById('journeyProgress'),startBtn=document.getElementById('startBtn');
+const hud=document.getElementById('hud'), touchControls=document.getElementById('touchControls');
+const bossHud=document.getElementById('bossHud'), endPanel=document.getElementById('endPanel');
+const storyPanel=document.getElementById('storyPanel'),shopPanel=document.getElementById('shopPanel'),creditsPanel=document.getElementById('creditsPanel');
+const messageEl=document.getElementById('message');
+const heroModels=new Map(HEROES.map(h=>[h.n,createCharacterModel(h)]));
+const bossModels=new Map(BOSSES.map(h=>[h.n,createCharacterModel(h)]));
+let cssW=innerWidth,cssH=innerHeight,viewW=1280,dpr=1;
+let state='select',paused=false,selectedHero=0,selectedStage=0,stageIndex=0,stage=null,player=null,cameraX=0;
+let enemies=[],projectiles=[],particles=[],impacts=[],items=[],stageTimer=0,shake=0,hitStop=0,gameClock=0,lastFrame=performance.now();
+let stageBossQueue=[],pendingStage=-1,deathCheckpoint=null,stageHazardT=0,stageFlags={};
+let audioCtx=null;
+const keys={left:false,right:false};
+const press={jump:false,attack:false,heavy:false,skill:false};
+let stickX=0,stickY=0,stickPointer=null,gamepadPrev=[],gamepadUiPrev={};
+let selectFocusEl=null,shopFocusEl=null,shopFocusKey='shop-weapon';
+
+const HERO_STATS={
+  '孫悟空':{hp:120,speed:300,jump:650,damage:18,skill:'七十二變・金箍風暴'},
+  '豬八戒':{hp:170,speed:235,jump:570,damage:25,skill:'天蓬震地'},
+  '沙悟淨':{hp:145,speed:260,jump:610,damage:21,skill:'流沙旋杖'},
+  '唐三藏':{hp:105,speed:250,jump:600,damage:13,skill:'佛光普照'},
+  '白龍馬':{hp:125,speed:330,jump:700,damage:17,skill:'銀龍突進'}
+};
+const PORTRAITS={
+  '孫悟空':'sun-wukong.webp','豬八戒':'zhu-bajie.webp','沙悟淨':'sha-wujing.webp','唐三藏':'tang-seng.webp','白龍馬':'bai-long-ma.webp',
+  '白骨精':'bai-gu-jing.webp','黑熊精':'hei-xiong-jing.webp','黃風怪':'huang-feng-guai.webp','黃袍怪':'huang-pao-guai.webp',
+  '金角大王':'jin-jiao.webp','銀角大王':'yin-jiao.webp','虎力大仙':'hu-li-daxian.webp','鹿力大仙':'lu-li-daxian.webp','羊力大仙':'yang-li-daxian.webp',
+  '紅孩兒':'hong-hai-er.webp','靈感大王':'ling-gan-dawang.webp','蠍子精':'xie-zi-jing.webp','六耳獼猴':'liu-er-mihou.webp',
+  '鐵扇公主':'tie-shan.webp','牛魔王':'niu-mo-wang.webp','蜘蛛精':'zhi-zhu-jing.webp','多目怪':'duo-mu-guai.webp',
+  '青獅精':'qing-shi.webp','白象精':'bai-xiang.webp','大鵬金翅雕':'da-peng.webp','老鼠精':'lao-shu-jing.webp','玉兔精':'yu-tu-jing.webp',
+  '觀音菩薩':'guan-yin.webp','二郎神':'er-lang-shen.webp','太上老君':'tai-shang-laojun.webp'
+};
+const PORTRAIT_ROOT='assets/xiyou-portraits/';
+const ENDING_ROLL=[
+  {name:'唐三藏',role:'取經人・第一百回',title:'旃檀功德佛',fate:'將真經送回長安、完成東傳後返回靈山。如來念其十四年取經功果，封為旃檀功德佛。'},
+  {name:'孫悟空',role:'取經人・第一百回',title:'鬥戰勝佛',fate:'一路降妖護師、全始全終，受封鬥戰勝佛；頭上緊箍也在功成之時自然消失。'},
+  {name:'豬八戒',role:'取經人・第一百回',title:'淨壇使者',fate:'因挑擔護經有功，受封淨壇使者，享用天下佛事供養，仍保留率真貪吃的本性。'},
+  {name:'沙悟淨',role:'取經人・第一百回',title:'金身羅漢',fate:'一路牽馬挑擔、守護師父，功成後受封金身羅漢，終於洗去流沙河中的前愆。'},
+  {name:'白龍馬',role:'取經人・第一百回',title:'八部天龍馬',fate:'馱負聖僧與真經往返東西，受封八部天龍馬；在化龍池褪去馬身，恢復金龍真相。'},
+  {name:'觀音菩薩',role:'護法・取經全篇',title:'功成仍歸南海',fate:'尋得取經人、安排徒眾並多次救難；五聖成真後仍居南海普陀落伽山，護持取經功業。'},
+  {name:'二郎神',role:'護法・多次助戰',title:'顯聖真君',fate:'曾參與擒悟空，也在取經路上協助降伏九頭蟲；原著沒有另改封號，仍為灌江口顯聖二郎真君。'},
+  {name:'太上老君',role:'護法・第三十五回',title:'攜童子寶物回兜率宮',fate:'現身說明金角、銀角原是看爐童子，收回五件寶物與二童，重返兜率宮。'},
+  {name:'白骨精',role:'白虎嶺・第二十七回',title:'三變終破',fate:'三次變化凡人迷惑唐僧，最終仍被悟空識破，一棒打死，現出白骨夫人本相。'},
+  {name:'黑熊精',role:'黑風山・第十七回',title:'落伽山守山大神',fate:'被觀音以禁箍收伏，願意皈依，隨菩薩回南海，成為落伽山守山大神。'},
+  {name:'黃風怪',role:'黃風嶺・第二十一回',title:'押回靈山',fate:'原是靈山腳下得道的黃毛貂鼠，違令成妖後被靈吉菩薩以飛龍杖收伏，帶回靈山見如來。'},
+  {name:'黃袍怪',role:'寶象國・第三十一回',title:'奎木狼歸天',fate:'本是二十八宿奎木狼，私下凡間十三年；被召回天庭後貶至兜率宮立功。'},
+  {name:'金角大王',role:'平頂山・第三十五回',title:'金爐童子歸位',fate:'被悟空收入寶物後化作仙氣，恢復太上老君看金爐童子身分，隨老君回兜率院。'},
+  {name:'銀角大王',role:'平頂山・第三十五回',title:'銀爐童子歸位',fate:'與金角同為試煉取經真心的看爐童子，最終恢復原身，連同寶物一起返回大羅天。'},
+  {name:'虎力大仙',role:'車遲國・第四十六回',title:'鬥法身亡',fate:'與悟空鬥砍頭失敗，真身死於車遲國，現出黃毛虎的本相。'},
+  {name:'鹿力大仙',role:'車遲國・第四十六回',title:'剖腹身亡',fate:'與悟空比剖腹挖心，內臟被鷹犬叼走，無法還原，最後現出白毛角鹿本相。'},
+  {name:'羊力大仙',role:'車遲國・第四十六回',title:'油鍋身亡',fate:'與悟空比下油鍋，護身冷龍被收走後葬身熱油，現出羚羊本相。'},
+  {name:'紅孩兒',role:'火雲洞・第四十三回',title:'善財童子',fate:'被觀音以金箍收伏，一步一拜前往落伽山，歸於正果，成為侍奉蓮臺的善財童子。'},
+  {name:'靈感大王',role:'通天河・第四十九回',title:'金魚歸南海',fate:'原是觀音蓮花池裡聽經的金魚，被魚籃收回，隨菩薩歸返南海。'},
+  {name:'蠍子精',role:'琵琶洞・第五十五回',title:'還原斃命',fate:'倒馬毒樁連如來都曾受痛；最後被昴日星官克制，現出蠍身，死於坡前。'},
+  {name:'六耳獼猴',role:'花果山・第五十八回',title:'真假終辨',fate:'能知千里、與悟空幾乎無別，終由如來辨明本相，逃跑時被悟空一棒打死。'},
+  {name:'鐵扇公主',role:'火焰山・第六十一回',title:'隱姓修行・後得正果',fate:'交出芭蕉扇，徹底搧滅火焰山火根；悟空守信還扇，她自此隱姓修行，後來也得正果。'},
+  {name:'牛魔王',role:'火焰山・第六十一回',title:'被牽往西方歸佛',fate:'遭悟空、八戒與天兵眾神圍困，現出大白牛原形，被哪吒與李天王擒住，牽往西方見佛。'},
+  {name:'蜘蛛精',role:'盤絲洞・第七十二回',title:'七蛛伏誅',fate:'七隻蜘蛛精以蛛絲困人，最終被悟空逐一打死，盤絲洞妖氣就此斷絕。'},
+  {name:'多目怪',role:'黃花觀・第七十三回',title:'千花洞看守門戶',fate:'本相是大蜈蚣，胸腹千眼能放金光；被毘藍婆菩薩收伏，帶回千花洞看守門戶。'},
+  {name:'青獅精',role:'獅駝嶺・第七十七回',title:'歸文殊座下',fate:'在如來眾聖包圍下現出青獅本相，被文殊菩薩收回，重新成為座騎。'},
+  {name:'白象精',role:'獅駝嶺・第七十七回',title:'歸普賢座下',fate:'與青獅同時被真言制伏，現出白象本相，由普賢菩薩收回座下。'},
+  {name:'大鵬金翅雕',role:'獅駝嶺・第七十七回',title:'靈山護法',fate:'被如來親自困住金翅，無法飛遁，只得皈依；此後留在佛光中成為護法。'},
+  {name:'老鼠精',role:'無底洞・第八十三回',title:'押回天庭候旨',fate:'身為李天王義女仍下界作亂，被哪吒與天兵以縛妖索捆住，押回天庭聽候發落。'},
+  {name:'玉兔精',role:'天竺國・第九十五回',title:'重返廣寒宮',fate:'假扮公主欲招唐僧為駙馬，最後由太陰星君認回，現出玉兔原身，返回月宮搗藥。'}
+];
+function layout(seed,width){
+  const p=[];for(let i=0;i<5+(seed%3);i++)p.push({x:300+i*330+(i%2)*45,y:[525,455,505,425][(i+seed)%4],w:180+((i+seed)%3)*35});return p.filter(x=>x.x+x.w<width-650);
+}
+function stageOf(title,bosses,theme,minions,story,gimmick,seed,width=2700){
+  return {title,bosses,theme,minions,story,gimmick,width,platforms:layout(seed,width),
+    spawns:Array.from({length:15+seed%3},(_,i)=>350+i*175+(i%3)*22).filter(x=>x<width-620)};
+}
+const STAGES=[
+  stageOf('第一難・白虎嶺',['白骨精'],'bone',['蜘蛛精','老鼠精','蠍子精','白骨精'],
+    '山嶺中接連出現求救的旅人，悟空的火眼金睛卻看見同一縷白骨妖氣。三次幻形之後，真正的屍魔將破土而出。','illusion',1,3200),
+  stageOf('第二難・黑風山',['黑熊精'],'bear',['虎力大仙','鹿力大仙','羊力大仙','黑熊精'],
+    '錦斕袈裟在夜裡失竊，黑風洞的妖兵封住山路。追入洞府，黑熊精將褪去道袍，現出巨熊真身。','dark',2,3400),
+  stageOf('第三難・黃風嶺',['黃風怪'],'sand',['老鼠精','黃風怪','羊力大仙','虎力大仙'],
+    '三昧神風捲走路標，也遮住妖兵。聽風辨位、逆風前行，才能在沙暴中心找出黃風怪。','wind',3,3600),
+  stageOf('第四難・寶象國',['黃袍怪'],'palace',['黃袍怪','鹿力大仙'],
+    '宮門內外真假難辨，書生與妖將交錯出現。擊破假身，奎木狼的星宿之力才會顯露。','fake',4,2800),
+  stageOf('第五難・平頂山',['金角大王','銀角大王'],'relic',['金角大王','銀角大王'],
+    '紫金葫蘆與羊脂玉淨瓶輪番收人。金角主攻、銀角封路，兄弟二王將接連守住蓮花洞。','relic',5,2850),
+  stageOf('第六難・車遲國',['虎力大仙','鹿力大仙','羊力大仙'],'trial',['虎力大仙','鹿力大仙','羊力大仙'],
+    '三位國師設下鬥法擂台。虎力強攻、鹿力施術、羊力設陣，三場連戰沒有喘息。','trial',6,2900),
+  stageOf('第七難・火雲洞',['紅孩兒'],'fire',['紅孩兒','黃風怪'],
+    '聖嬰大王擄走唐僧，五行車噴出三昧真火。打破火盾後，紅孩兒將化為烈焰魔相。','fire',7,2850),
+  stageOf('第八難・通天河',['靈感大王'],'water',['靈感大王','黃風怪'],
+    '冰面碎裂，河水倒灌。眾人踏著浮冰追擊，靈感大王在水中力量倍增。','water',8,3000),
+  stageOf('第九難・琵琶洞',['蠍子精'],'poison',['蠍子精','蜘蛛精'],
+    '琵琶洞滿布紫霧，蠍尾毒針會削弱護體真氣。必須速戰速決，不讓毒勢累積。','poison',9,2750),
+  stageOf('第十難・花果山',['六耳獼猴'],'mirror',['六耳獼猴','黃風怪'],
+    '真假美猴王在水簾洞前交鋒。六耳能照搬所選角色的招式，唯有改變節奏才能打破鏡像。','mirror',10,2900),
+  stageOf('第十一難・火焰山',['鐵扇公主','牛魔王'],'fan',['鐵扇公主','牛魔王'],
+    '芭蕉扇一揮便退五百里。奪扇熄火後，牛魔王披甲攔路，最終化為巨牛決戰。','fan',11,3100),
+  stageOf('第十二難・盤絲洞',['蜘蛛精','多目怪'],'web',['蜘蛛精','多目怪'],
+    '蛛網封住洞口，多目怪以金光守住出口。先斷蛛絲，再避開百眼齊放的光束。','web',12,3000),
+  stageOf('第十三難・獅駝嶺',['青獅精','白象精','大鵬金翅雕'],'gauntlet',['青獅精','白象精','大鵬金翅雕'],
+    '獅駝三王各守一城：青獅震地、白象衝陣、大鵬制空。這是西行最艱難的三連戰。','gauntlet',13,3300),
+  stageOf('第十四難・無底洞',['老鼠精'],'maze',['老鼠精','蜘蛛精'],
+    '地道交錯、燈火忽明忽暗。金鼻白毛老鼠精以雙劍突襲，擊破分身才能走出迷宮。','maze',14,2950),
+  stageOf('第十五難・天竺國',['玉兔精'],'moon',['玉兔精','老鼠精'],
+    '月下的新娘並非公主。玉兔以搗藥杵引動月華，最後一戰將在滿月升起時開始。','moon',15,2850),
+  stageOf('第十六難・靈山授記',['觀音菩薩'],'heaven',[],
+    '八十一難化為十六卷功德，取經人終於抵達靈山。觀音引路，鐘聲與蓮光同時升起；這一關不再以武力分勝負，而是為一路累積的慈悲、勇氣與智慧受記。','ending',16,2400)
+];
+const ELEMENT_ARTS={
+  physical:{label:'本命兵器',color:'#f4dd9a'},thunder:{label:'雷霆',color:'#ffe56a'},fire:{label:'真火',color:'#ff713d'},
+  ice:{label:'玄冰',color:'#8fe8ff'},earth:{label:'落石',color:'#d5aa67'},sand:{label:'飛沙',color:'#d8b46a'},
+  wind:{label:'狂風',color:'#6ee7db'},poison:{label:'百毒',color:'#b56cff'}
+};
+const DEFAULT_SAVE={coins:0,weapon:1,magic:1,armor:1,hpPotion:1,mpPotion:1,unlocked:1,unlockedArts:['physical'],equippedArt:'physical',artMastery:{physical:1}};
+let save=loadSave();
+selectedStage=clamp(Math.floor(Number(save.unlocked)||1)-1,0,DEMO_STAGE_COUNT-1);
+function loadSave(){try{const s=Object.assign({},DEFAULT_SAVE,JSON.parse(localStorage.getItem('xiyouSideSave')||'{}'));s.unlocked=clamp(Math.floor(Number(s.unlocked)||1),1,DEMO_STAGE_COUNT);s.unlockedArts=Array.isArray(s.unlockedArts)?s.unlockedArts:['physical'];if(!s.unlockedArts.includes('physical'))s.unlockedArts.unshift('physical');s.artMastery=Object.assign({physical:1},s.artMastery||{});if(!s.unlockedArts.includes(s.equippedArt))s.equippedArt='physical';return s;}catch(_){return Object.assign({},DEFAULT_SAVE,{unlockedArts:['physical'],artMastery:{physical:1}});}}
+function saveGame(){localStorage.setItem('xiyouSideSave',JSON.stringify(save));}
+
+function resize(){
+  cssW=Math.max(320,innerWidth);cssH=Math.max(320,innerHeight);dpr=Math.min(devicePixelRatio||1,2);
+  canvas.width=Math.round(cssW*dpr);canvas.height=Math.round(cssH*dpr);viewW=GAME_H*cssW/cssH;
+}
+addEventListener('resize',resize,{passive:true});resize();
+
+function buildHeroCards(){
+  HEROES.forEach((h,i)=>{
+    const b=document.createElement('button');b.className='hero-card'+(i===0?' selected':'');b.dataset.uiId='hero-'+i;
+    b.innerHTML='<canvas></canvas><strong>'+h.n+'</strong><span>'+h.z+'・'+h.wp+'</span>';
+    b.addEventListener('click',()=>{selectedHero=i;[...heroGrid.children].forEach((x,j)=>x.classList.toggle('selected',j===i));setUiFocus(selectScreen,b);});
+    heroGrid.appendChild(b);
+  });
+}
+buildHeroCards();
+
+function stageShortName(s){return (s.title.split('・')[1]||s.title).replace('授記','');}
+function refreshStageSelect(){
+  const openCount=clamp(Math.floor(Number(save.unlocked)||1),1,DEMO_STAGE_COUNT);
+  selectedStage=clamp(selectedStage,0,openCount-1);journeyProgress.textContent='已開放 '+openCount+' / '+DEMO_STAGE_COUNT;
+  stageSelect.innerHTML='';
+  STAGES.forEach((s,i)=>{
+    const open=i<openCount,b=document.createElement('button');b.className='stage-card'+(i===selectedStage?' selected':'');
+    b.dataset.stageIndex=i;b.dataset.uiId='stage-'+i;b.disabled=!open;
+    b.innerHTML='<span>第'+String(i+1).padStart(2,'0')+'難</span><b>'+stageShortName(s)+'</b><small>'+(open?'可挑戰':'未解鎖')+'</small>';
+    b.addEventListener('click',()=>{selectedStage=i;updateStageSelection();setUiFocus(selectScreen,b);});stageSelect.appendChild(b);
+  });
+  updateStageSelection();
+}
+function updateStageSelection(){
+  [...stageSelect.children].forEach((b,i)=>b.classList.toggle('selected',i===selectedStage));
+  const s=STAGES[selectedStage];startBtn.textContent=selectedStage===DEMO_STAGE_COUNT-1?'前往靈山・接受授記':'從第'+(selectedStage+1)+'難・'+stageShortName(s)+'出發';
+}
+
+function uiButtons(scope){return [...scope.querySelectorAll('button:not(:disabled)')].filter(b=>b.offsetParent!==null);}
+function setUiFocus(scope,el,scroll=true){
+  scope.querySelectorAll('.ui-focus').forEach(x=>x.classList.remove('ui-focus'));if(!el)return;
+  el.classList.add('ui-focus');if(scope===selectScreen)selectFocusEl=el;else if(scope===shopPanel){shopFocusEl=el;shopFocusKey=el.dataset.uiId||shopFocusKey;}
+  if(scroll)el.scrollIntoView({block:'nearest',inline:'nearest'});
+}
+function moveUiFocus(scope,current,dx,dy){
+  const list=uiButtons(scope);if(!list.length)return null;if(!current||!list.includes(current)){setUiFocus(scope,list[0]);return list[0];}
+  const a=current.getBoundingClientRect(),ax=a.left+a.width/2,ay=a.top+a.height/2;let best=null,bestScore=Infinity;
+  for(const el of list){if(el===current)continue;const r=el.getBoundingClientRect(),vx=r.left+r.width/2-ax,vy=r.top+r.height/2-ay;
+    if(dx<0&&vx>=-4||dx>0&&vx<=4||dy<0&&vy>=-4||dy>0&&vy<=4)continue;
+    const main=Math.abs(dx?vx:vy),cross=Math.abs(dx?vy:vx),score=main+cross*2.35+Math.hypot(vx,vy)*.08;
+    if(score<bestScore){bestScore=score;best=el;}
+  }
+  if(best)setUiFocus(scope,best);return best||current;
+}
+function restoreShopFocus(){
+  const list=uiButtons(shopPanel),preferred=list.find(b=>b.dataset.uiId===shopFocusKey)||list[0];setUiFocus(shopPanel,preferred,false);
+}
+refreshStageSelect();setUiFocus(selectScreen,heroGrid.children[selectedHero],false);
+
+function drawHeroCards(now){
+  if(state!=='select')return;
+  [...heroGrid.children].forEach((b,i)=>{
+    const cv=b.querySelector('canvas'),c=cv.getContext('2d'),w=cv.clientWidth,h=cv.clientHeight,dd=Math.min(devicePixelRatio||1,2);
+    if(cv.width!==Math.round(w*dd)||cv.height!==Math.round(h*dd)){cv.width=Math.round(w*dd);cv.height=Math.round(h*dd);}
+    c.setTransform(dd,0,0,dd,0,0);c.clearRect(0,0,w,h);c.fillStyle=i===selectedHero?'#171b27':'#0b1019';c.fillRect(0,0,w,h);
+    c.strokeStyle='rgba(255,211,106,.16)';c.beginPath();c.moveTo(8,h-11);c.lineTo(w-8,h-11);c.stroke();
+    time=now/1000+i*.2;
+    const model=heroModels.get(HEROES[i].n),sc=Math.min(1.34,h/(130*model.body.sy));
+    drawHeroP(c,model,w*.5,h-11,1,sc,'idle',RI);
+  });
+}
+
+function makePlayer(h){
+  const s=HERO_STATS[h.n];
+  const maxHp=s.hp+(save.armor-1)*18;
+  return {name:h.n,model:heroModels.get(h.n),x:120,y:FLOOR_Y,vx:0,vy:0,dir:1,onGround:true,hurt:0,
+    hp:maxHp,maxHp,energy:0,speed:s.speed,jump:s.jump,damage:s.damage*(1+(save.weapon-1)*.16),defense:Math.min(.42,(save.armor-1)*.07),
+    magic:1+(save.magic-1)*.2,spellBuff:null,skillName:s.skill,attackT:0,attackElapsed:0,attackKind:'normal',attackVariant:0,
+    attackHit:false,invuln:0,landT:0,jumpHeavyArmed:false,combo:0,slowT:0,snareT:0,poisonT:0,poisonTick:0,scale:1.82};
+}
+function enemyOf(name,x,boss=false,tier='small'){
+  const model=bossModels.get(name),base=boss?240:tier==='medium'?Math.max(30,player.damage*1.75):Math.max(10,player.damage*.7);
+  return {name,model,x,y:FLOOR_Y,vx:0,vy:0,dir:-1,hp:base,maxHp:base,boss,tier,phase2:false,dead:false,defeated:false,rewarded:false,
+    attackT:0,attackElapsed:0,attackKind:'normal',attackHit:false,cooldown:.4+Math.random(),hurt:0,invuln:0,slowT:0,blindT:0,poisonT:0,poisonTick:0,poisonDamage:0,
+    scale:boss?2.28:tier==='medium'?1.62:1.28,damage:boss?18:tier==='medium'?12:7,speed:boss?95:tier==='medium'?68:98,shield:0,shieldMax:0};
+}
+function configureBoss(e,order=0){
+  if(stageIndex>=6){e.maxHp=e.hp=Math.round(310+stageIndex*28+order*34);e.damage=20+stageIndex*.8;e.speed=98+stageIndex*2.2;}
+  if(e.name==='紅孩兒'){e.shieldMax=e.shield=Math.round(e.maxHp*.3);}
+  if(e.name==='白象精'||e.name==='牛魔王')e.scale*=1.12;
+  if(e.name==='大鵬金翅雕')e.speed*=1.22;
+  return e;
+}
+function startGame(){
+  ensureAudio();
+  player=makePlayer(HEROES[selectedHero]);stageIndex=selectedStage;pendingStage=-1;selectScreen.classList.add('hidden');endPanel.classList.add('hidden');
+  hud.classList.remove('hidden');state='playing';paused=false;startStage(selectedStage);
+}
+function showJourneySelect(){
+  endPanel.classList.add('hidden');shopPanel.classList.add('hidden');storyPanel.classList.add('hidden');creditsPanel.classList.add('hidden');hud.classList.add('hidden');touchControls.classList.add('hidden');
+  document.getElementById('creditsRoll').classList.remove('playing');
+  selectedStage=clamp(Math.floor(Number(save.unlocked)||1)-1,0,DEMO_STAGE_COUNT-1);refreshStageSelect();selectScreen.classList.remove('hidden');state='select';paused=false;
+  setUiFocus(selectScreen,heroGrid.children[selectedHero],false);
+}
+function startStage(index){
+  stageIndex=index;stage=STAGES[index];cameraX=0;projectiles=[];particles=[];impacts=[];items=[];stageTimer=0;stageHazardT=1.4;stageFlags={};
+  player.x=110;player.y=FLOOR_Y;player.vx=player.vy=0;player.onGround=true;player.attackT=0;player.invuln=1;player.slowT=player.snareT=player.poisonT=player.poisonTick=0;
+  // 小妖維持主戰場密度，中妖每四隻出現一隻，負責變化節奏與掉落法術。
+  enemies=stage.gimmick==='ending'?[]:stage.spawns.map((x,i)=>{const e=enemyOf(stage.minions[i%stage.minions.length],x,false,i%4===3?'medium':'small');if((stage.gimmick==='fake'||stage.gimmick==='maze')&&i%3===1)e.illusion=true;return e;});
+  [stage.width*.38,stage.width*.62].forEach((x,i)=>{if(Math.random()<.68||i===0)items.push({type:'heal',x,y:FLOOR_Y-170,vy:0,life:999,color:'#ff6560',label:'蟠桃'});});
+  if(stage.gimmick==='ending'){
+    stageBossQueue=[];enemies=[];
+  }else if(stage.gimmick==='relic'){
+    stageBossQueue=[];stage.bosses.forEach((name,i)=>enemies.push(configureBoss(enemyOf(name,stage.width-390+i*205,true),i)));
+  }else{
+    stageBossQueue=stage.bosses.slice(1);enemies.push(configureBoss(enemyOf(stage.bosses[0],stage.width-260,true),0));
+  }
+  document.getElementById('stageName').textContent=stage.title;openStory(stage);updateHud();
+}
+function showMessage(text,seconds=1.2){messageEl.textContent=text;stageTimer=Math.max(stageTimer,seconds);}
+function endGame(win){
+  if(!win&&player)deathCheckpoint={stageIndex,x:player.x,cameraX};else if(win)deathCheckpoint=null;
+  state=win?'won':'lost';touchControls.classList.add('hidden');bossHud.classList.add('hidden');
+  document.getElementById('endTitle').textContent=win?'功德圓滿':'西行受阻';
+  document.getElementById('endText').textContent=win?'十六難功德圓滿，取經人已破幻魔、越火海、渡水劫，最終於靈山受記。':'保留目前戰況，從倒下的位置重新站起。';
+  document.getElementById('restartBtn').textContent=win?'返回十六關選單':'原地接關';endPanel.classList.remove('hidden');
+}
+function continueFromDeath(){
+  if(!deathCheckpoint||!player)return;
+  endPanel.classList.add('hidden');state='playing';paused=false;touchControls.classList.remove('hidden');hud.classList.remove('hidden');
+  player.x=clamp(deathCheckpoint.x,55,stage.width-70);player.y=FLOOR_Y;player.vx=player.vy=0;player.onGround=true;
+  player.hp=player.maxHp;player.energy=Math.max(50,player.energy);player.hurt=0;player.invuln=2.25;player.attackT=0;player.attackElapsed=0;player.attackHit=false;player.jumpHeavyArmed=false;
+  player.slowT=player.snareT=player.poisonT=player.poisonTick=0;
+  cameraX=deathCheckpoint.cameraX;projectiles=[];hitStop=0;shake=0;
+  for(const e of enemies){if(!e.dead&&!e.defeated&&Math.abs(e.x-player.x)<150){const away=e.x>=player.x?1:-1;e.x=clamp(e.x+away*165,35,stage.width-35);e.attackT=0;e.attackHit=false;e.cooldown=1.2;}}
+  deathCheckpoint=null;showMessage('原地復起・金身護體',1.4);updateHud();
+}
+function openStory(s){
+  state='story';touchControls.classList.add('hidden');bossHud.classList.add('hidden');storyPanel.classList.remove('hidden');
+  const boss=s.bosses[0],file=PORTRAITS[boss];document.getElementById('storyPortrait').src=file?PORTRAIT_ROOT+file:'';
+  const parts=s.title.split('・');document.getElementById('storyChapter').textContent=parts[0];document.getElementById('storyTitle').textContent=parts[1]||s.title;
+  document.getElementById('storyText').textContent=s.story;document.getElementById('storyBtn').textContent=s.gimmick==='ending'?'登上靈山・接受授記':s.gimmick==='relic'?'迎戰金銀雙王':s.bosses.length>1?'迎接連戰':'迎戰 '+boss;
+}
+function resumeStory(){
+  storyPanel.classList.add('hidden');
+  if(stage.gimmick==='ending'){startEndingCredits();return;}
+  touchControls.classList.remove('hidden');state='playing';showMessage(stage.title,1.25);
+}
+function buildCreditsRoll(){
+  const roll=document.getElementById('creditsRoll');
+  const entries=ENDING_ROLL.map((entry,index)=>{
+    const file=PORTRAITS[entry.name]||'';
+    return '<article class="credits-entry" data-credit="'+(index+1)+'">'+
+      '<img src="'+PORTRAIT_ROOT+file+'" alt="'+entry.name+'">'+
+      '<div class="credits-copy"><small>'+entry.role+'</small><h3>'+entry.name+'</h3><b>'+entry.title+'</b><p>'+entry.fate+'</p></div></article>';
+  }).join('');
+  roll.innerHTML='<section class="credits-intro"><small>取經傳・十六難</small><h2>功德圓滿</h2><p>一路相逢的人、神、佛與妖，都在西行之後走向各自的歸宿。</p></section>'+
+    entries+
+    '<section class="credits-final"><small>THE END</small><h2>五聖成真・經歸東土</h2><p>山高路遠，故事至此圓滿。<br>但每一次重新出發，仍會是一段新的西行。</p></section>';
+}
+function startEndingCredits(){
+  save.unlocked=Math.max(save.unlocked,DEMO_STAGE_COUNT);saveGame();deathCheckpoint=null;
+  selectScreen.classList.add('hidden');storyPanel.classList.add('hidden');endPanel.classList.add('hidden');shopPanel.classList.add('hidden');
+  hud.classList.add('hidden');touchControls.classList.add('hidden');bossHud.classList.add('hidden');
+  buildCreditsRoll();creditsPanel.classList.remove('hidden');state='credits';paused=false;
+  const roll=document.getElementById('creditsRoll');
+  roll.classList.remove('playing');roll.style.animationDuration=(ENDING_ROLL.length*7+45)+'s';void roll.offsetHeight;roll.classList.add('playing');
+}
+function nextBoss(){
+  const name=stageBossQueue.shift();if(!name)return false;
+  const e=configureBoss(enemyOf(name,stage.width-250,true),stage.bosses.indexOf(name));enemies.push(e);player.x=Math.min(player.x,stage.width-520);
+  const line={'牛魔王':'鐵扇退陣，牛魔王踏碎山門！','多目怪':'蛛網崩解，千眼金光照亮洞府！','白象精':'青獅負傷，白象王正面衝陣！','大鵬金翅雕':'雲翼遮天，獅駝嶺最後一王降臨！'}[name]||name+'・接戰';
+  showMessage(line,1.8);return true;
+}
+const SHOP_ITEMS=[
+  {id:'weapon',name:'神兵鍛造',desc:'重擊發射棍波或劍氣；三級後每第三次輕擊發波，五級進化為雙重波。',cost:l=>150+l*120,max:5},
+  {id:'magic',name:'法術修練',desc:'提高元素攻擊波威力，讓閃電、火、冰、岩、沙、風與毒術持續更久。',cost:l=>160+l*125,max:5},
+  {id:'armor',name:'護身甲胄',desc:'增加生命上限並降低受到的傷害。',cost:l=>140+l*110,max:5},
+  {id:'hpPotion',name:'九轉血藥',desc:'戰鬥中恢復 45% 生命。',cost:()=>60,max:9,stack:true},
+  {id:'mpPotion',name:'聚靈法藥',desc:'戰鬥中恢復 55 點法力。',cost:()=>70,max:9,stack:true}
+];
+function openShop(){
+  state='shop';touchControls.classList.add('hidden');shopPanel.classList.remove('hidden');shopFocusKey='shop-weapon';renderShop();
+}
+function renderShop(){
+  document.getElementById('shopCoins').textContent=save.coins;const grid=document.getElementById('shopGrid');grid.innerHTML='';
+  for(const item of SHOP_ITEMS){
+    const level=save[item.id],cost=item.cost(level),full=level>=item.max,b=document.createElement('button');b.className='shop-item';b.dataset.uiId='shop-'+item.id;b.disabled=full||save.coins<cost;
+    const stateText=item.stack?'持有 '+level:item.id==='weapon'?'等級 '+level+'・'+weaponFormName(player.name,level):'等級 '+level+(level>=3?'・已進化':'');
+    b.innerHTML='<b>'+item.name+'</b><span>'+item.desc+'<br>'+stateText+'</span><em>'+(full?'已達上限':cost+' 盤纏')+'</em>';
+    b.addEventListener('click',()=>buyItem(item));grid.appendChild(b);
+  }
+  renderArtForge();restoreShopFocus();
+}
+function renderArtForge(){
+  const forge=document.getElementById('artForge');forge.innerHTML='<h3>神兵進擊・法術核心</h3><p>擊敗中妖取得核心；重複取得可提高該屬性熟練度。</p>';
+  const list=document.createElement('div');list.className='art-list';
+  for(const [type,art] of Object.entries(ELEMENT_ARTS)){
+    const unlocked=save.unlockedArts.includes(type),b=document.createElement('button');b.className='art-chip'+(save.equippedArt===type?' equipped':'');b.dataset.uiId='art-'+type;b.disabled=!unlocked;
+    const level=save.artMastery[type]||1,form=level>=5?'真形':level>=3?'進化':'初醒';
+    b.style.color=save.equippedArt===type?'#161006':art.color;b.textContent=unlocked?art.label+' Lv.'+level+'・'+form:'尚未取得';
+    b.addEventListener('click',()=>{save.equippedArt=type;shopFocusKey='art-'+type;saveGame();renderArtForge();showMessage('神兵切換・'+art.label,.65);});list.appendChild(b);
+  }forge.appendChild(list);if(state==='shop')restoreShopFocus();
+}
+function buyItem(item){
+  const level=save[item.id],cost=item.cost(level);if(level>=item.max||save.coins<cost)return;
+  save.coins-=cost;save[item.id]++;saveGame();
+  const oldHp=player.hp,oldMax=player.maxHp;const fresh=makePlayer(HEROES[selectedHero]);
+  player.damage=fresh.damage;player.defense=fresh.defense;player.magic=fresh.magic;player.maxHp=fresh.maxHp;player.hp=Math.min(player.maxHp,oldHp+(fresh.maxHp-oldMax));
+  showMessage(item.name+'完成',.8);renderShop();updateHud();
+}
+function leaveShop(){
+  shopPanel.classList.add('hidden');if(pendingStage>=DEMO_STAGE_COUNT){endGame(true);return;}
+  player.hp=Math.min(player.maxHp,player.hp+Math.ceil(player.maxHp*.22));state='playing';startStage(pendingStage);
+}
+function usePotion(kind){
+  if(!player||state!=='playing')return;
+  if(kind==='hpPotion'&&save.hpPotion>0&&player.hp<player.maxHp){save.hpPotion--;player.hp=Math.min(player.maxHp,player.hp+Math.ceil(player.maxHp*.45));showMessage('生命恢復',.65);}
+  else if(kind==='mpPotion'&&save.mpPotion>0&&player.energy<100){save.mpPotion--;player.energy=Math.min(100,player.energy+55);showMessage('法力恢復',.65);}else return;
+  saveGame();updateHud();
+}
+
+function moveAxis(){
+  let x=(keys.right?1:0)-(keys.left?1:0)+stickX;
+  const gp=pollGamepad();if(Math.abs(gp.x)>Math.abs(x))x=gp.x;
+  return clamp(x,-1,1);
+}
+function activeGamepad(){return navigator.getGamepads?[...navigator.getGamepads()].find(Boolean):null;}
+function pollGamepad(){
+  const out={x:0},gp=activeGamepad();if(!gp)return out;
+  const left=gp.buttons[14]&&gp.buttons[14].pressed,right=gp.buttons[15]&&gp.buttons[15].pressed;
+  out.x=(right?1:0)-(left?1:0);if(Math.abs(gp.axes[0]||0)>.18)out.x=gp.axes[0];
+  const map=[0,2,1,3,9,4,5];
+  map.forEach((bi,i)=>{const on=!!(gp.buttons[bi]&&gp.buttons[bi].pressed);if(on&&!gamepadPrev[i]){
+    if(i===0)press.jump=true;if(i===1)press.attack=true;if(i===2)press.heavy=true;if(i===3)press.skill=true;
+    if(i===5)usePotion('hpPotion');if(i===6)usePotion('mpPotion');}
+    gamepadPrev[i]=on;});
+  return out;
+}
+function activateUiFocus(){
+  if(state==='select'){const el=selectFocusEl&&selectFocusEl.offsetParent!==null?selectFocusEl:heroGrid.children[selectedHero];if(el)el.click();}
+  else if(state==='shop'){const el=shopFocusEl&&shopFocusEl.offsetParent!==null&&!shopFocusEl.disabled?shopFocusEl:uiButtons(shopPanel)[0];if(el)el.click();}
+  else if(state==='story')document.getElementById('storyBtn').click();
+  else if(state==='won'||state==='lost')document.getElementById('restartBtn').click();
+  else if(state==='credits')document.getElementById('creditsExitBtn').click();
+}
+function pollUiGamepad(){
+  const gp=activeGamepad();if(!gp)return;
+  const axisX=gp.axes[0]||0,axisY=gp.axes[1]||0;
+  const now={
+    left:!!(gp.buttons[14]&&gp.buttons[14].pressed)||axisX<-.55,right:!!(gp.buttons[15]&&gp.buttons[15].pressed)||axisX>.55,
+    up:!!(gp.buttons[12]&&gp.buttons[12].pressed)||axisY<-.55,down:!!(gp.buttons[13]&&gp.buttons[13].pressed)||axisY>.55,
+    confirm:!!(gp.buttons[0]&&gp.buttons[0].pressed)||!!(gp.buttons[9]&&gp.buttons[9].pressed),back:!!(gp.buttons[1]&&gp.buttons[1].pressed)
+  };
+  const scope=state==='select'?selectScreen:state==='shop'?shopPanel:null;let current=state==='select'?selectFocusEl:shopFocusEl;
+  if(scope){if(now.left&&!gamepadUiPrev.left)current=moveUiFocus(scope,current,-1,0);if(now.right&&!gamepadUiPrev.right)current=moveUiFocus(scope,current,1,0);
+    if(now.up&&!gamepadUiPrev.up)current=moveUiFocus(scope,current,0,-1);if(now.down&&!gamepadUiPrev.down)current=moveUiFocus(scope,current,0,1);}
+  if(now.confirm&&!gamepadUiPrev.confirm)activateUiFocus();
+  if(now.back&&!gamepadUiPrev.back){if(state==='shop')leaveShop();else if(state==='credits'||state==='won')showJourneySelect();}
+  gamepadUiPrev=now;
+}
+function beginAttack(kind){
+  if(!player||player.attackT>0||state!=='playing')return;
+  if(kind==='skill'){
+    if(player.energy<50){showMessage('奧義尚未蓄滿',.65);return;}
+    player.energy-=50;player.attackT=1.05;player.attackKind='skill';showUltimate(player.name,player.skillName);
+  }else if(kind==='heavy'){
+    const aerial=!player.onGround;
+    player.attackT=aerial?.82:.94;player.attackKind=aerial?'jumpHeavy':'heavy';player.attackVariant=aerial?5:4;player.jumpHeavyArmed=aerial;
+    if(aerial)showMessage('墜天重擊',.42);
+  }else{
+    player.attackT=.52;player.attackKind='light';player.attackVariant=1;player.combo=(player.combo||0)+1;
+  }
+  player.attackElapsed=0;player.attackHit=false;
+}
+const ULTIMATE_GLYPH={'孫悟空':'鬥','豬八戒':'震','沙悟淨':'流','唐三藏':'佛','白龍馬':'龍'};
+function showUltimate(name,skill){
+  const box=document.getElementById('ultimateBanner');document.getElementById('ultimateGlyph').textContent=ULTIMATE_GLYPH[name]||'仙';
+  document.getElementById('ultimateName').textContent=skill;box.classList.remove('show');void box.offsetWidth;box.classList.add('show');
+}
+function flashImpact(){const f=document.getElementById('impactFlash');f.classList.remove('flash');void f.offsetWidth;f.classList.add('flash');}
+function ensureAudio(){
+  if(audioCtx)return;const AC=window.AudioContext||window.webkitAudioContext;if(AC)try{audioCtx=new AC();}catch(_){}
+}
+function playImpact(strength=1){
+  if(!audioCtx)return;if(audioCtx.state==='suspended')audioCtx.resume();
+  const now=audioCtx.currentTime,osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+  osc.type=strength>1.2?'square':'triangle';osc.frequency.setValueAtTime(125*strength,now);osc.frequency.exponentialRampToValueAtTime(42,now+.09);
+  gain.gain.setValueAtTime(Math.min(.12,.055*strength),now);gain.gain.exponentialRampToValueAtTime(.001,now+.11);
+  osc.connect(gain).connect(audioCtx.destination);osc.start(now);osc.stop(now+.12);
+  const crack=audioCtx.createOscillator(),cg=audioCtx.createGain();crack.type='sawtooth';crack.frequency.setValueAtTime(720+strength*180,now);crack.frequency.exponentialRampToValueAtTime(105,now+.055);
+  cg.gain.setValueAtTime(Math.min(.055,.016*strength),now);cg.gain.exponentialRampToValueAtTime(.001,now+.065);crack.connect(cg).connect(audioCtx.destination);crack.start(now);crack.stop(now+.07);
+}
+function impactEffect(x,y,dir,strength,color){
+  impacts.push({x,y,dir,life:.2,max:.2,size:22+strength*17,color:color||'#fff2b0'});
+  hitStop=Math.max(hitStop,.04+strength*.046);shake=Math.max(shake,5+strength*6.5);playImpact(strength);
+}
+function applyBossShield(e,amount,color='#ff7a3d'){
+  if(!e.boss||e.shield<=0)return amount;
+  const before=e.shield;e.shield=Math.max(0,e.shield-amount);const spill=Math.max(0,amount-before);
+  burst(e.x,e.y-92,color,16);impacts.push({text:true,label:e.shield>0?'火盾 '+Math.ceil(e.shield):'火盾破碎',x:e.x,y:e.y-158,life:.56,max:.56,size:e.shield>0?18:28,color:'#ffb15b'});
+  if(before>0&&e.shield===0){showMessage('三昧火盾破碎！',1.1);impactEffect(e.x,e.y-92,1,1.5,'#ff9148');}
+  return spill;
+}
+function playerAttackHit(){
+  const special=player.attackKind==='skill',jumpHeavy=player.attackKind==='jumpHeavy',heavy=player.attackKind==='heavy'||jumpHeavy;
+  let range=special?325:jumpHeavy?225:heavy?205:142;
+  let damage=player.damage*(special?2.45*player.magic:jumpHeavy?2.38:heavy?1.72:1);let knock=special?480:jumpHeavy?520:heavy?410:205;
+  const art=currentWeaponArt(),element=ELEMENT_ARTS[art.type]?art.type:'physical',artLevel=save.artMastery[element]||1;
+  if(element==='wind'){range+=48+artLevel*5;knock+=85+artLevel*7;}
+  if(element==='thunder')damage*=1.1+artLevel*.018;
+  if(element==='fire')damage*=1.08+artLevel*.015;
+  if(element==='earth')knock+=55+artLevel*8;
+  if(player.name==='豬八戒'&&special)range=330;
+  if(player.name==='唐三藏'&&special){player.hp=Math.min(player.maxHp,player.hp+38);range=420;damage=26;}
+  if(player.name==='白龍馬'&&special){player.vx=player.dir*520;range=300;}
+  let landed=0;const wk=WEAPON[wpKind(player.model.h.wp,player.model.h)]||{dmg:1,kb:1};
+  for(const e of enemies){
+    if(e.dead||e.defeated||e.invuln>0)continue;const dx=e.x-player.x;
+    if(Math.abs(dx)<range&&(special||jumpHeavy||Math.sign(dx||player.dir)===player.dir)&&Math.abs(e.y-player.y)<(jumpHeavy?235:130)){
+      const hitDamage=special?e.maxHp*rnd(.30,.50):damage,actualDamage=applyBossShield(e,hitDamage);
+      if(e.illusion){e.illusion=false;burst(e.x,e.y-105,'#e9e4ff',18);impacts.push({text:true,label:'破幻',x:e.x,y:e.y-155,life:.58,max:.58,size:24,color:'#efe7ff'});}
+      e.hp-=actualDamage;e.hurt=.22;e.invuln=.1;e.vx=player.dir*knock*(e.boss?.45:1);player.energy=Math.min(100,player.energy+(e.boss?12:8));
+      if(actualDamage>0&&element==='ice')e.slowT=Math.max(e.slowT,1.35+artLevel*.22);
+      if(actualDamage>0&&element==='poison'){e.poisonT=Math.max(e.poisonT,2.4+artLevel*.25);e.poisonDamage=Math.max(e.poisonDamage,actualDamage*(.045+artLevel*.012));e.poisonTick=0;}
+      if(actualDamage>0&&element==='sand'){e.blindT=Math.max(e.blindT,1.15+artLevel*.2);e.cooldown=Math.max(e.cooldown,.7+artLevel*.1);}
+      e.lastHitPower=special?2.4:jumpHeavy?2.15:heavy?1.7:1;burst(e.x,e.y-95,element==='physical'?(special?'#ffd36a':jumpHeavy?'#ffe08a':heavy?'#ffb45d':'#e9f2ff'):art.color,special?34:jumpHeavy?30:heavy?23:14);
+      if(actualDamage>0)impacts.push({text:true,label:(special?'仙術 ':jumpHeavy?'暴擊 ':'')+Math.ceil(actualDamage),x:e.x,y:e.y-145,life:.64,max:.64,size:special?32:jumpHeavy?27:heavy?23:19,color:element==='physical'?(special?'#fff3a8':jumpHeavy?'#ffe39a':'#ffffff'):art.color});landed++;
+      if(e.hp<=0)killEnemy(e);
+    }
+  }
+  if(landed){
+    const strength=special?2.8:jumpHeavy?2.35:heavy?1.85:(wk.dmg>1||wk.kb>1.5?1.35:.9);
+    if(!jumpHeavy)impactEffect(player.x+player.dir*Math.min(range*.7,125),player.y-92,player.dir,strength,special?'#fff7b5':heavy?'#ffc16b':'#eef8ff');
+    if(special){flashImpact();impacts.push({x:player.x,y:player.y-90,dir:1,life:.38,max:.38,size:155,color:'#ffd95d'});}
+  }
+  return landed;
+}
+function killEnemy(e){
+  if(e.rewarded)return;e.rewarded=true;e.hp=0;burst(e.x,e.y-70,e.boss?'#ffbe55':'#d9e8f2',e.boss?34:15);
+  const power=e.lastHitPower||1;
+  if(!e.boss){
+    e.defeated=true;e.deathState='air';e.deathT=1.4;e.deathAngle=0;e.deathAlpha=1;e.bounces=0;
+    e.vx=player.dir*(e.tier==='small'?430+power*125:270+power*55);e.vy=e.tier==='small'?-390-power*90:-250-power*35;e.deathSpin=player.dir*(e.tier==='small'?6+power*2:3);
+    if(e.tier==='small'){save.coins+=8+stageIndex*2;burst(e.x,e.y-82,'#ffd36a',9);}
+    else spawnSpellDrop(e);
+    player.energy=Math.min(100,player.energy+(e.tier==='medium'?18:10));saveGame();return;
+  }
+  e.defeated=true;e.deathState='air';e.deathT=1.8;e.deathAngle=0;e.deathAlpha=1;e.bounces=0;e.bossCompletionHandled=false;
+  e.vx=player.dir*(180+power*70);e.vy=-330-power*80;e.deathSpin=player.dir*(2.6+power);
+  save.coins+=120+stageIndex*15;saveGame();bossHud.classList.add('hidden');
+}
+function completeBossDefeat(e){
+  if(e.bossCompletionHandled)return;e.bossCompletionHandled=true;e.dead=true;
+  const otherBoss=enemies.some(x=>x!==e&&x.boss&&!x.dead&&!x.defeated);
+  if(otherBoss){showMessage('一王已破・另一王仍在',1.15);return;}
+  if(nextBoss())return;
+  save.unlocked=Math.max(save.unlocked,stageIndex+2);saveGame();pendingStage=stageIndex+1;state='stageClear';stageTimer=2.4;showMessage('降妖成功',2.2);
+}
+function spellForEnemy(name){
+  if(/蜘蛛|蠍|多目|老鼠/.test(name))return{type:'poison',label:'百毒瘴',color:'#b56cff'};
+  if(/白骨|靈感|白象/.test(name))return{type:'ice',label:'玄冰訣',color:'#8fe8ff'};
+  if(/紅孩|金角|牛魔/.test(name))return{type:'fire',label:'真火訣',color:'#ff713d'};
+  if(/黃風/.test(name))return{type:'sand',label:'飛沙訣',color:'#d8b46a'};
+  if(/鹿|大鵬/.test(name))return{type:'wind',label:'御風訣',color:'#6ee7db'};
+  if(/羊|虎/.test(name))return{type:'thunder',label:'雷光術',color:'#ffe56a'};
+  return{type:'earth',label:'護體罡氣',color:'#e0a65d'};
+}
+function spawnSpellDrop(e){const s=spellForEnemy(e.name);items.push({type:'spell',spell:s.type,label:s.label,color:s.color,x:e.x,y:e.y-95,vy:-230,life:14});}
+function absorbWeaponArt(it){
+  const type=it.spell;if(!ELEMENT_ARTS[type])return;
+  const fresh=!save.unlockedArts.includes(type);if(fresh){save.unlockedArts.push(type);save.equippedArt=type;}
+  save.artMastery[type]=Math.min(5,(save.artMastery[type]||0)+1);saveGame();
+  showMessage(fresh?'神兵覺醒・'+ELEMENT_ARTS[type].label:ELEMENT_ARTS[type].label+'熟練提升',1.1);
+}
+function bossAttackKind(e,dist){
+  if(dist<118&&Math.random()<.38)return'bossMelee';
+  if(e.name==='紅孩兒')return'bossFire';
+  if(e.name==='靈感大王')return'bossWater';
+  if(e.name==='蠍子精')return'bossPoison';
+  if(e.name==='六耳獼猴')return'bossMirror';
+  if(e.name==='鐵扇公主')return'bossFan';
+  if(e.name==='牛魔王')return Math.random()<.55?'bossCharge':'bossEarth';
+  if(e.name==='蜘蛛精')return'bossWeb';
+  if(e.name==='多目怪')return'bossEyes';
+  if(e.name==='青獅精')return'bossRoar';
+  if(e.name==='白象精')return'bossCharge';
+  if(e.name==='大鵬金翅雕')return'bossDive';
+  if(e.name==='老鼠精')return'bossBlink';
+  if(e.name==='玉兔精')return'bossMoon';
+  if(e.name==='白骨精')return'bossVolley';
+  if(e.name==='黑熊精')return'bossCharge';
+  if(e.name==='黃風怪'||e.name==='鹿力大仙')return'bossWind';
+  if(e.name==='黃袍怪')return Math.random()<.5?'bossCharge':'bossVolley';
+  if(e.name==='金角大王')return'bossFire';
+  if(e.name==='銀角大王')return'bossRelic';
+  if(e.name==='虎力大仙')return'bossThunder';
+  if(e.name==='羊力大仙')return'bossEarth';
+  return'bossMelee';
+}
+function spawnSpellPattern(e,shape,count,spread,speed,color,gravity=0,damage=e.damage){
+  const ox=e.x+e.dir*58,oy=e.y-94,base=Math.atan2((player.y-78)-oy,player.x-ox);
+  for(let i=0;i<count;i++){
+    const a=base+(i-(count-1)/2)*spread;
+    const spinning=['wind','earth','sand','web','shadow'].includes(shape);
+    projectiles.push({x:ox,y:oy,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,life:3,damage,color,shape,radius:shape==='earth'?15:12,gravity,spin:spinning?e.dir*(shape==='wind'?8:4):0,age:0});
+  }
+  burst(ox,oy,color,10+count*2);
+}
+function performBossAttack(e,dist){
+  const kind=e.attackKind,boost=e.phase2?1.18:1;
+  if(kind==='bossCharge'){
+    e.x=clamp(e.x+e.dir*(e.phase2?235:180),35,stage.width-35);impactEffect(e.x,e.y-58,e.dir,e.phase2?1.7:1.3,'#d4b06c');
+    if(Math.abs(player.x-e.x)<125&&Math.abs(player.y-e.y)<145)hurtPlayer(e.damage*boost,e.x);
+  }else if(kind==='bossWind')spawnSpellPattern(e,'wind',e.phase2?5:3,.17,355,'#90e5dc',0,e.damage*boost);
+  else if(kind==='bossVolley')spawnSpellPattern(e,'shadow',e.phase2?4:3,.2,300,'#b98aff',0,e.damage*boost);
+  else if(kind==='bossFire')spawnSpellPattern(e,'fire',e.phase2?6:4,.18,350,'#ff6a32',34,e.damage*boost);
+  else if(kind==='bossWater')spawnSpellPattern(e,'water',e.phase2?6:4,.14,365,'#70d9ff',0,e.damage*boost);
+  else if(kind==='bossPoison')spawnSpellPattern(e,'poison',e.phase2?5:3,.2,305,'#b56cff',-10,e.damage*boost);
+  else if(kind==='bossMirror'){
+    const copied=player.attackKind==='skill'?'thunder':player.attackKind==='jumpHeavy'||player.attackKind==='heavy'?'earth':currentWeaponArt().type;
+    spawnSpellPattern(e,copied==='physical'?'swordQi':copied,e.phase2?5:3,.13,390,ELEMENT_ARTS[copied]?.color||'#d8c8ff',copied==='earth'?32:0,e.damage*boost);
+    impacts.push({text:true,label:'鏡像・'+(player.attackKind==='skill'?'奧義':player.attackKind==='heavy'?'重擊':'連擊'),x:e.x,y:e.y-155,life:.65,max:.65,size:24,color:'#c7a2ff'});
+  }
+  else if(kind==='bossFan'){spawnSpellPattern(e,'wind',e.phase2?7:5,.12,430,'#6ee7db',0,e.damage*boost);player.vx-=e.dir*260;}
+  else if(kind==='bossWeb')spawnSpellPattern(e,'web',e.phase2?5:3,.18,285,'#d9c7ee',-18,e.damage*boost);
+  else if(kind==='bossEyes'){
+    for(let i=0;i<(e.phase2?7:5);i++){const a=-.48+i*(.96/(e.phase2?6:4));projectiles.push({x:e.x+e.dir*42,y:e.y-95,vx:e.dir*Math.cos(a)*470,vy:Math.sin(a)*470,life:1.35,damage:e.damage*boost,color:'#ffd86b',shape:'thunder',radius:10,gravity:0,spin:0,age:0});}
+    impacts.push({text:true,label:'百眼金光',x:e.x,y:e.y-158,life:.62,max:.62,size:25,color:'#ffe69b'});
+  }
+  else if(kind==='bossRoar'){
+    for(let i=0;i<(e.phase2?4:3);i++)projectiles.push({x:e.x+e.dir*(48+i*28),y:FLOOR_Y-23,vx:e.dir*(330+i*55),vy:-12,life:2,damage:e.damage*boost,color:'#6da0c4',shape:'earth',radius:15+i*2,gravity:20,spin:e.dir*6,age:0});
+    shake=18;impacts.push({text:true,label:'獅吼震地',x:e.x,y:e.y-158,life:.62,max:.62,size:26,color:'#9dd6ff'});
+  }
+  else if(kind==='bossDive'){
+    e.x=clamp(player.x-e.dir*85,45,stage.width-45);e.y=FLOOR_Y;burst(e.x,e.y-40,'#f2c955',24);impactEffect(e.x,e.y-25,e.dir,2,'#ffe385');
+    if(dist<500)hurtPlayer(e.damage*1.3,e.x);
+  }
+  else if(kind==='bossBlink'){
+    burst(e.x,e.y-75,'#f1d9ef',16);e.x=clamp(player.x-player.dir*95,40,stage.width-40);e.dir=player.x>e.x?1:-1;burst(e.x,e.y-75,'#ffffff',16);
+    if(Math.abs(player.x-e.x)<125)hurtPlayer(e.damage*1.12,e.x);
+  }
+  else if(kind==='bossMoon')spawnSpellPattern(e,'moon',e.phase2?6:4,.16,320,'#e6efff',-28,e.damage*boost);
+  else if(kind==='bossRelic')spawnSpellPattern(e,'shadow',e.phase2?3:2,.12,270,'#dbe9ff',-8,e.damage*boost);
+  else if(kind==='bossThunder'){
+    for(let i=0;i<(e.phase2?3:2);i++)projectiles.push({x:player.x+(i-(e.phase2?1:.5))*105,y:120-i*38,vx:0,vy:455,life:2,damage:e.damage*boost,color:'#fff08a',shape:'thunder',radius:14,gravity:0,spin:0,age:0});
+  }else if(kind==='bossEarth'){
+    for(let i=0;i<(e.phase2?3:2);i++)projectiles.push({x:e.x+e.dir*(50+i*34),y:FLOOR_Y-24,vx:e.dir*(290+i*35),vy:-18,life:2.5,damage:e.damage*boost,color:'#d4aa62',shape:'earth',radius:17,gravity:26,spin:e.dir*7,age:0});
+  }else if(dist<(e.phase2?190:150)&&Math.abs(e.y-player.y)<135)hurtPlayer(e.damage*boost,e.x);
+}
+function hurtPlayer(dmg,fromX){
+  if(player.invuln>0||state!=='playing')return;
+  const earth=player.spellBuff&&player.spellBuff.type==='earth'?.55:1;
+  player.hp=Math.max(0,player.hp-dmg*(1-player.defense)*earth);player.invuln=1.15;player.hurt=.28;player.vy=-280;player.vx=(player.x<fromX?-1:1)*300;
+  burst(player.x,player.y-85,'#ff675f',14);impactEffect(player.x,player.y-82,player.x<fromX?-1:1,1.25,'#ff746c');if(player.hp<=0)endGame(false);
+}
+
+function updatePlayer(dt){
+  const axis=moveAxis();
+  const moveMod=player.snareT>0?.34:player.slowT>0?.6:1;
+  if(Math.abs(axis)>.12&&player.hurt<=0){player.vx=axis*player.speed*moveMod;player.dir=axis>0?1:-1;}
+  else player.vx*=Math.pow(.002,dt);
+  if(press.jump&&player.onGround){player.vy=-player.jump;player.onGround=false;burst(player.x,player.y,'#becbd2',6);}
+  if(press.attack)beginAttack('light');if(press.heavy)beginAttack('heavy');if(press.skill)beginAttack('skill');
+  if(player.attackKind==='jumpHeavy'&&player.attackT>0&&player.attackElapsed>.16)player.vy=Math.max(player.vy,360+player.attackElapsed*340);
+  player.x+=player.vx*dt;player.x=clamp(player.x,34,stage.width-45);
+  const wasGround=player.onGround,prevY=player.y;player.vy+=(stage.gimmick==='water'?1050:stage.gimmick==='moon'?1120:1550)*dt;player.y+=player.vy*dt;player.onGround=false;
+  let floor=FLOOR_Y;
+  for(const p of stage.platforms){if(player.x>p.x-18&&player.x<p.x+p.w+18&&player.vy>=0&&prevY<=p.y&&player.y>=p.y)floor=Math.min(floor,p.y);}
+  if(player.y>=floor){player.y=floor;player.vy=0;player.onGround=true;}
+  if(!wasGround&&player.onGround){
+    player.landT=.18;burst(player.x,player.y,'#b8c4c6',7);
+    if(player.jumpHeavyArmed){
+      player.jumpHeavyArmed=false;player.attackKind='jumpHeavy';
+      if(!player.attackHit){player.attackHit=true;playerAttackHit();spawnPlayerAttackWave('jumpHeavy');}
+      burst(player.x,player.y-18,'#ffe0a0',30);impactEffect(player.x,player.y-20,player.dir,2.35,'#ffe3a2');
+      impacts.push({groundWave:true,x:player.x,y:player.y-13,dir:1,life:.48,max:.48,size:168,color:'#ffe6a6'});
+      impacts.push({groundWave:true,x:player.x,y:player.y-12,dir:1,life:.33,max:.33,size:112,color:'#ffffff'});
+    }
+  }
+  if(player.y>GAME_H+100){player.hp=Math.max(0,player.hp-30);player.x=Math.max(100,player.x-240);player.y=FLOOR_Y-220;player.vy=0;player.invuln=1.4;if(player.hp<=0)endGame(false);}
+  if(player.invuln>0)player.invuln-=dt;
+  if(player.hurt>0)player.hurt-=dt;
+  if(player.landT>0)player.landT-=dt;
+  if(player.slowT>0)player.slowT-=dt;if(player.snareT>0)player.snareT-=dt;
+  if(player.poisonT>0){player.poisonT-=dt;player.poisonTick+=dt;if(player.poisonTick>=.65){player.poisonTick-=.65;player.hp=Math.max(0,player.hp-(3+stageIndex*.25));burst(player.x,player.y-78,'#b56cff',5);if(player.hp<=0){endGame(false);return;}}}
+  if(player.spellBuff){player.spellBuff.time-=dt;if(player.spellBuff.time<=0){showMessage(player.spellBuff.label+'消散',.55);player.spellBuff=null;}}
+  if(player.attackT>0){
+    player.attackT-=dt;player.attackElapsed+=dt;
+    const impact=player.attackKind==='skill'?.36:player.attackKind==='heavy'?.39:.15;
+    if(player.attackKind!=='jumpHeavy'&&!player.attackHit&&player.attackElapsed>=impact){player.attackHit=true;playerAttackHit();spawnPlayerAttackWave(player.attackKind);}
+  }
+}
+function updateEnemies(dt){
+  for(const e of enemies){
+    if(e.dead)continue;
+    if(e.defeated){
+      if(e.deathState==='air'){
+        e.x+=e.vx*dt;e.y+=e.vy*dt;e.vy+=1250*dt;e.deathAngle+=e.deathSpin*dt;
+        if(e.y>=FLOOR_Y){e.y=FLOOR_Y;e.bounces++;burst(e.x,FLOOR_Y-10,'#aab2ae',10);impactEffect(e.x,FLOOR_Y-18,e.dir,e.boss?1.1:.55,'#d4c5a0');
+          if(e.bounces<2){e.vy=-Math.abs(e.vy)*.22;e.vx*=.38;e.deathSpin*=.5;}else{e.deathState='ground';e.deathT=e.boss?.9:.55;e.vx=e.vy=0;e.deathAngle=e.dir>0?1.48:-1.48;}}
+      }else{
+        e.deathT-=dt;e.deathAlpha=clamp(e.deathT/(e.boss?.9:.55),0,1);
+        if(e.deathT<=0){burst(e.x,e.y-45,e.boss?'#ffd36a':'#a9c7d1',e.boss?28:12);if(e.boss)completeBossDefeat(e);else e.dead=true;}
+      }continue;
+    }
+    if(e.invuln>0)e.invuln-=dt;if(e.hurt>0)e.hurt-=dt;if(e.cooldown>0)e.cooldown-=dt;if(e.slowT>0)e.slowT-=dt;if(e.blindT>0)e.blindT-=dt;
+    if(e.poisonT>0){e.poisonT-=dt;e.poisonTick+=dt;if(e.poisonTick>=.5){e.poisonTick-=.5;e.hp-=e.poisonDamage;burst(e.x,e.y-70,'#b56cff',4);if(e.hp<=0){killEnemy(e);continue;}}}
+    const dx=player.x-e.x,dist=Math.abs(dx),active=e.boss?player.x>stage.width-900:dist<650;
+    if(!active)continue;e.dir=dx>=0?1:-1;const moveMod=e.slowT>0?.52:1;
+    if(e.boss&&!e.phase2&&e.hp<=e.maxHp*.5){
+      e.phase2=true;e.speed*=1.45;e.damage+=7;e.scale*=1.12;e.invuln=.65;showMessage(e.name+'・現出原形',1.4);burst(e.x,e.y-105,'#ffb34d',28);shake=15;
+      if(e.name==='紅孩兒'){e.shieldMax=Math.round(e.maxHp*.16);e.shield=e.shieldMax;showMessage('烈焰魔相・火盾再燃',1.25);}
+      if(e.name==='老鼠精'&&!e.clonesSpawned){
+        e.clonesSpawned=true;for(const d of [-1,1]){const clone=enemyOf('老鼠精',clamp(e.x+d*165,45,stage.width-45),false,'medium');clone.hp=clone.maxHp=Math.round(e.maxHp*.16);clone.illusion=true;clone.scale=1.48;enemies.push(clone);}
+        showMessage('金鼻分身・辨明真身',1.25);
+      }
+    }
+    if(e.attackT>0){
+      e.vx=0;e.attackT-=dt;e.attackElapsed+=dt;
+      const impact=e.boss?.48:e.tier==='medium'?.46:.28;
+      if(!e.attackHit&&e.attackElapsed>=impact){
+        e.attackHit=true;
+        if(e.boss)performBossAttack(e,dist);
+        else if(e.tier==='medium')spawnMediumSpell(e);
+        else if(dist<(e.boss&&e.phase2?185:e.boss?145:86)&&Math.abs(e.y-player.y)<130)hurtPlayer(e.damage,e.x);
+      }
+    }else if(e.hurt<=0){
+      if(e.tier==='medium'&&!e.boss){
+        if(dist>390){e.vx=e.dir*e.speed*moveMod;e.x+=e.vx*dt;}
+        else if(dist<175){e.vx=-e.dir*e.speed*.78*moveMod;e.x+=e.vx*dt;}
+        else if(e.cooldown<=0){e.vx=0;e.attackT=.86;e.attackElapsed=0;e.attackKind='mediumSpell';e.attackHit=false;e.cooldown=1.55+Math.random()*.7;}
+        else e.vx=0;
+      }else if(e.boss){
+        if(dist>380){e.vx=e.dir*e.speed*(e.phase2?1.08:1)*moveMod;e.x+=e.vx*dt;}
+        else if(e.cooldown<=0){e.vx=0;e.attackT=.96;e.attackElapsed=0;e.attackKind=bossAttackKind(e,dist);e.attackHit=false;e.cooldown=e.phase2?.9:1.25+Math.random()*.35;}
+        else e.vx=0;
+      }else{
+        const range=e.boss?130:74;
+        if(dist>range){e.vx=e.dir*e.speed*(e.phase2?1.08:1)*moveMod;e.x+=e.vx*dt;}
+        else if(e.cooldown<=0){e.vx=0;e.attackT=e.boss?.9:.7;e.attackElapsed=0;e.attackKind='normal';e.attackHit=false;e.cooldown=e.boss?(e.phase2?1.0:1.35):1.15+Math.random()*.5;}
+      }
+    }
+    e.x=clamp(e.x,30,stage.width-35);
+  }
+}
+function spawnBossShot(e){
+  projectiles.push({x:e.x+e.dir*55,y:e.y-105,vx:e.dir*(e.name==='紅孩兒'?430:310),vy:e.name==='白骨精'?-70:0,
+    life:2.5,damage:e.name==='紅孩兒'?16:12,color:e.name==='白骨精'?'#c8e8f2':e.name==='黑熊精'?'#a49a84':'#ff5b31',shape:'boss',radius:11,gravity:e.name==='紅孩兒'?40:90,spin:0,age:0});
+}
+function spawnMediumSpell(e){
+  const spell=spellForEnemy(e.name),shape=spell.type,speed=shape==='thunder'?410:shape==='wind'?345:shape==='shadow'?285:255;
+  const ox=e.x+e.dir*58,oy=e.y-92,tx=player.x,ty=player.y-76,dx=tx-ox,dy=ty-oy,len=Math.max(1,Math.hypot(dx,dy));
+  projectiles.push({x:ox,y:oy,vx:dx/len*speed,vy:dy/len*speed,life:2.8,damage:e.damage,color:spell.color,
+    shape,radius:shape==='earth'?13:11,gravity:shape==='earth'?115:0,spin:e.dir*5,age:0});
+  burst(ox,oy,spell.color,9);playImpact(.42);
+}
+function currentWeaponArt(){
+  const active=player.spellBuff&&ELEMENT_ARTS[player.spellBuff.type]?player.spellBuff.type:save.equippedArt;
+  if(active&&active!=='physical')return{type:active,...ELEMENT_ARTS[active]};
+  const wk=wpKind(player.model.h.wp,player.model.h),type=(wk==='staff'||wk==='rake')?'staffWave':'swordQi';
+  return{type,label:type==='staffWave'?'破空棍波':'斬妖劍氣',color:type==='staffWave'?'#ffd879':'#bdeeff'};
+}
+function spawnPlayerAttackWave(kind){
+  if(kind==='light'&&(save.weapon<3||(player.combo||0)%3!==0))return;
+  const art=currentWeaponArt(),element=ELEMENT_ARTS[art.type]?art.type:'physical',mastery=save.artMastery[element]||1;
+  const cfg={staffWave:[380,0,18],swordQi:[450,0,14],thunder:[500,0,13],fire:[370,26,15],ice:[350,0,16],earth:[300,36,18],sand:[330,8,18],wind:[470,0,15],poison:[310,-8,16]}[art.type]||[380,0,15];
+  const base=kind==='skill'?1.12:kind==='jumpHeavy'?.92:kind==='heavy'?.78:.5;
+  const damage=player.damage*base*(1+(save.magic-1)*.08)*(1+(mastery-1)*.12),power=1+(save.weapon-1)*.11;
+  let dirs=kind==='jumpHeavy'?[1,-1]:[player.dir],shots=kind==='skill'?3:save.weapon>=5?2:1;
+  for(const dir of dirs)for(let i=0;i<shots;i++){
+    const spread=shots===1?0:(i-(shots-1)/2)*.12,ground=kind==='jumpHeavy';
+    projectiles.push({owner:'player',x:player.x+dir*58,y:ground?player.y-32:player.y-82+i*5,vx:dir*cfg[0]*power,vy:ground?-8:spread*cfg[0],
+      life:2.25,damage,color:art.color,shape:art.type,radius:cfg[2]+save.weapon*1.2,gravity:cfg[1],spin:dir*((art.type==='staffWave'||art.type==='earth'||art.type==='sand')?8:0),age:0,
+      element,pierce:art.type==='wind'?5:art.type==='sand'?4:2+Math.floor(save.weapon/2),hitTargets:[]});
+  }
+  if(kind!=='light')showMessage(art.label,.34);
+}
+function hitEnemyWithWave(e,p){
+  const actualDamage=applyBossShield(e,p.damage,p.color);e.hp-=actualDamage;e.hurt=.2;e.invuln=.08;e.lastHitPower=1.35;e.x=clamp(e.x+Math.sign(p.vx)*(e.boss?12:30),30,stage.width-35);
+  burst(e.x,e.y-86,p.color,p.element==='fire'?18:12);player.energy=Math.min(100,player.energy+(e.boss?7:4));
+  if(actualDamage>0&&p.element==='ice')e.slowT=Math.max(e.slowT,2.6);
+  if(actualDamage>0&&p.element==='poison'){e.poisonT=Math.max(e.poisonT,3.6);e.poisonDamage=Math.max(e.poisonDamage,actualDamage*.12);e.poisonTick=0;}
+  if(actualDamage>0&&p.element==='sand'){e.blindT=Math.max(e.blindT,2.4);e.cooldown=Math.max(e.cooldown,1.4);}
+  if(p.element==='earth')e.x=clamp(e.x+Math.sign(p.vx)*(e.boss?24:62),30,stage.width-35);
+  if(p.element==='fire')for(const x of enemies){if(x!==e&&!x.dead&&!x.defeated&&Math.abs(x.x-e.x)<82){x.hp-=p.damage*.28;x.hurt=.14;burst(x.x,x.y-75,'#ff8a45',7);if(x.hp<=0)killEnemy(x);}}
+  if(p.element==='thunder'){
+    const x=enemies.filter(x=>x!==e&&!x.dead&&!x.defeated&&!p.hitTargets.includes(x)).sort((a,b)=>Math.abs(a.x-e.x)-Math.abs(b.x-e.x))[0];
+    if(x&&Math.abs(x.x-e.x)<220){x.hp-=p.damage*.42;x.hurt=.18;burst(x.x,x.y-92,'#fff08a',15);impacts.push({x:(e.x+x.x)/2,y:e.y-92,dir:1,life:.18,max:.18,size:52,color:'#fff08a'});if(x.hp<=0)killEnemy(x);}
+  }
+  if(actualDamage>0)impacts.push({text:true,label:Math.ceil(actualDamage),x:e.x,y:e.y-138,life:.5,max:.5,size:18,color:p.color});
+  if(e.hp<=0)killEnemy(e);
+}
+function updateProjectiles(dt){
+  for(const p of projectiles){p.life-=dt;p.age=(p.age||0)+dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=(p.gravity||0)*dt;p.spin=(p.spin||0);
+    const r=p.radius||10;
+    if(p.owner==='player'){
+      for(const e of enemies){if(p.life<=0||e.dead||e.defeated||e.invuln>0||p.hitTargets.includes(e))continue;
+        if(Math.abs(p.x-e.x)<24+r*1.35&&Math.abs(p.y-(e.y-78))<50+r){p.hitTargets.push(e);hitEnemyWithWave(e,p);p.pierce--;if(p.pierce<=0)p.life=0;}}
+    }else if(p.life>0&&Math.abs(p.x-player.x)<22+r&&Math.abs(p.y-(player.y-78))<42+r){
+      const vulnerable=player.invuln<=0;p.life=0;burst(p.x,p.y,p.color,11);hurtPlayer(p.damage,p.x);
+      if(vulnerable&&p.shape==='poison'){player.poisonT=Math.max(player.poisonT,4.2);player.poisonTick=0;showMessage('中毒・持續失血',.7);}
+      if(vulnerable&&p.shape==='web'){player.snareT=Math.max(player.snareT,1.75);showMessage('蛛絲纏足',.65);}
+      if(vulnerable&&(p.shape==='ice'||p.shape==='water'||p.shape==='moon'))player.slowT=Math.max(player.slowT,1.5);
+      if(vulnerable&&p.shape==='wind')player.vx=Math.sign(p.vx||player.x-p.x)*430;
+    }
+  }
+  projectiles=projectiles.filter(p=>p.life>0);
+}
+function burst(x,y,color,n){for(let i=0;i<n;i++)particles.push({x,y,vx:rnd(-190,190),vy:rnd(-240,50),life:rnd(.25,.7),color,size:rnd(2,6)});}
+function updateParticles(dt){for(const p of particles){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=480*dt;}particles=particles.filter(p=>p.life>0);}
+function updateImpacts(dt){for(const p of impacts)p.life-=dt;impacts=impacts.filter(p=>p.life>0);}
+function updateItems(dt){
+  for(const it of items){if(it.dead)continue;it.life-=dt;it.vy+=720*dt;it.y+=it.vy*dt;if(it.y>FLOOR_Y-20){it.y=FLOOR_Y-20;it.vy*=-.28;}
+    if(Math.abs(it.x-player.x)<42&&Math.abs(it.y-(player.y-55))<72){
+      if(it.type==='heal'){player.hp=Math.min(player.maxHp,player.hp+Math.ceil(player.maxHp*.34));showMessage('取得 '+it.label,.75);}
+      else{player.energy=Math.min(100,player.energy+32);absorbWeaponArt(it);player.spellBuff={type:it.spell,label:it.label,time:10+save.magic*2};}
+      burst(it.x,it.y,it.color,14);it.dead=true;
+    }
+  }items=items.filter(it=>!it.dead&&it.life>0);
+}
+
+function updateStageMechanics(dt){
+  if(!stage||stage.gimmick==='ending')return;
+  if(stage.gimmick==='water'&&player.onGround){player.x=clamp(player.x+Math.sin(gameClock*1.4)*34*dt,34,stage.width-45);}
+  if(stage.gimmick==='fan'&&player.x>stage.width*.58){player.x=clamp(player.x-24*dt,34,stage.width-45);}
+  stageHazardT-=dt;if(stageHazardT>0)return;
+  const px=player.x,level=stageIndex;
+  if(stage.gimmick==='fire'){
+    for(let i=0;i<2;i++)projectiles.push({x:clamp(px+rnd(-160,330),45,stage.width-45),y:FLOOR_Y-8,vx:rnd(-35,35),vy:-430-i*45,life:1.65,damage:9+level*.45,color:'#ff6a32',shape:'fire',radius:17,gravity:620,spin:0,age:0});
+    showMessage('五行車・火脈噴發',.55);stageHazardT=3.8;
+  }else if(stage.gimmick==='water'){
+    const dir=Math.sin(gameClock*.7)>0?1:-1,x=dir>0?cameraX-40:cameraX+viewW+40;
+    for(let i=0;i<3;i++)projectiles.push({x,y:FLOOR_Y-34-i*25,vx:dir*390,vy:0,life:3,damage:8+level*.4,color:'#70d9ff',shape:'water',radius:14+i*2,gravity:0,spin:0,age:0});
+    showMessage('通天河潮・躍上浮冰',.55);stageHazardT=4.5;
+  }else if(stage.gimmick==='poison'){
+    for(let i=0;i<4;i++)projectiles.push({x:px-210+i*140,y:85-rnd(0,70),vx:rnd(-18,18),vy:245+rnd(0,75),life:3,damage:7+level*.35,color:'#b56cff',shape:'poison',radius:11,gravity:38,spin:0,age:0});
+    showMessage('琵琶毒霧・不可久留',.55);stageHazardT=4.8;
+  }else if(stage.gimmick==='fan'){
+    for(let i=0;i<5;i++)projectiles.push({x:cameraX+viewW+25,y:FLOOR_Y-60-i*55,vx:-455-i*18,vy:rnd(-16,16),life:3,damage:8+level*.35,color:'#6ee7db',shape:'wind',radius:14,gravity:0,spin:-8,age:0});
+    showMessage('芭蕉狂風・順風躍進',.55);stageHazardT=5.2;
+  }else if(stage.gimmick==='web'){
+    for(let i=0;i<3;i++)projectiles.push({x:px-150+i*150,y:70-rnd(0,80),vx:rnd(-20,20),vy:285,life:2.8,damage:6+level*.3,color:'#d9c7ee',shape:'web',radius:15,gravity:18,spin:2,age:0});
+    showMessage('盤絲落網・快速換位',.55);stageHazardT=4.6;
+  }else if(stage.gimmick==='gauntlet'){
+    const dir=player.dir;for(let i=0;i<3;i++)projectiles.push({x:px-dir*(230+i*70),y:FLOOR_Y-22,vx:dir*(340+i*45),vy:-12,life:2.4,damage:10+level*.35,color:'#a8b8c8',shape:'earth',radius:15+i*2,gravity:20,spin:dir*6,age:0});
+    stageHazardT=5;
+  }else if(stage.gimmick==='maze'){
+    const x=clamp(px+(Math.random()<.5?-1:1)*rnd(150,260),45,stage.width-45);projectiles.push({x,y:120,vx:0,vy:360,life:2.4,damage:9+level*.3,color:'#d7b5e8',shape:'shadow',radius:16,gravity:20,spin:4,age:0});
+    showMessage('無底洞・暗門移位',.5);stageHazardT=4.2;
+  }else if(stage.gimmick==='moon'){
+    for(let i=0;i<4;i++)projectiles.push({x:px-220+i*145,y:72-rnd(0,80),vx:rnd(-25,25),vy:225+rnd(0,55),life:3.2,damage:9+level*.3,color:'#e6efff',shape:'moon',radius:13+i%2*3,gravity:-12,spin:1.5,age:0});
+    showMessage('滿月落華・輕身閃避',.55);stageHazardT=4.4;
+  }else stageHazardT=4;
+}
+
+function update(dt){
+  if(stageTimer>0){stageTimer-=dt;if(stageTimer<=0)messageEl.textContent='';}
+  if(state==='stageClear'){
+    gameClock+=dt;updateParticles(dt);updateImpacts(dt);if(stageTimer<=0){if(pendingStage>=DEMO_STAGE_COUNT)endGame(true);else openShop();}return;
+  }
+  if(state!=='playing'||paused)return;
+  if(hitStop>0){hitStop-=dt;updateParticles(dt*.12);updateImpacts(dt*.12);shake=Math.max(0,shake-18*dt);return;}
+  gameClock+=dt;
+  updatePlayer(dt);updateEnemies(dt);updateProjectiles(dt);updateStageMechanics(dt);updateItems(dt);updateParticles(dt);
+  updateImpacts(dt);
+  const target=player.x-viewW*.4;cameraX+=(clamp(target,0,Math.max(0,stage.width-viewW))-cameraX)*Math.min(1,dt*7);
+  if(player.x>stage.width-820)cameraX=Math.max(cameraX,stage.width-Math.min(viewW,900));
+  shake=Math.max(0,shake-35*dt);updateHud();
+  press.jump=press.attack=press.heavy=press.skill=false;
+}
+
+function mountainLayer(c,parallax,baseY,color,height,step,seed){
+  const shift=-((cameraX*parallax)%(step*6))-step*2;c.save();c.translate(shift,0);c.fillStyle=color;c.beginPath();c.moveTo(-step,baseY);
+  for(let i=-1;i<Math.ceil(viewW/step)+9;i++){
+    const x=i*step,peak=baseY-height*(.58+.34*Math.sin((i+seed)*1.73));
+    c.quadraticCurveTo(x+step*.2,baseY-height*.22,x+step*.48,peak);
+    c.quadraticCurveTo(x+step*.76,baseY-height*.12,x+step,baseY);
+  }c.lineTo(viewW+step*8,GAME_H);c.lineTo(-step,GAME_H);c.closePath();c.fill();c.restore();
+}
+function inkCloud(c,x,y,s,alpha){c.save();c.translate(x,y);c.scale(s,s);c.globalAlpha=alpha;c.fillStyle='#dbe2df';
+  for(const p of [[0,0,28,9],[26,-5,32,12],[57,1,27,9],[84,-3,21,8]]){c.beginPath();c.ellipse(p[0],p[1],p[2],p[3],0,0,TAU);c.fill();}c.restore();}
+function drawPagoda(c,x,y,s,color){c.save();c.translate(x,y);c.scale(s,s);c.fillStyle=color;c.strokeStyle='#0b1011';c.lineWidth=2;
+  c.fillRect(-16,-92,32,92);for(let i=0;i<3;i++){const yy=-88+i*29;c.fillRect(-12,yy,24,22);c.beginPath();c.moveTo(-31,yy);c.lineTo(0,yy-12);c.lineTo(31,yy);c.lineTo(19,yy+3);c.lineTo(-19,yy+3);c.closePath();c.fill();c.stroke();}
+  c.beginPath();c.moveTo(-16,0);c.lineTo(16,0);c.lineTo(24,7);c.lineTo(-24,7);c.closePath();c.fill();c.restore();}
+function drawPine(c,x,y,s,color){c.save();c.translate(x,y);c.scale(s,s);c.strokeStyle=color;c.fillStyle=color;c.lineWidth=7;c.beginPath();c.moveTo(0,0);c.quadraticCurveTo(-8,-62,7,-132);c.stroke();
+  for(let i=0;i<5;i++){const yy=-55-i*18,side=i%2?1:-1;c.beginPath();c.ellipse(side*(17+i*2),yy,30,10,side*.15,0,TAU);c.fill();}c.restore();}
+function drawBackground(c,theme){
+  const palette=theme==='bear'?['#738887','#243d3a','#132623','#091513']
+    :theme==='sand'?['#c9a36a','#80613b','#4d3827','#241d18']
+    :theme==='palace'?['#9b7562','#583535','#2b2028','#140f18']
+    :theme==='relic'?['#75678f','#3e315d','#241d3d','#100c1c']
+    :theme==='trial'?['#9b8766','#55483c','#2b2929','#131619']
+    :theme==='fire'?['#6c3028','#3e1819','#241013','#10090c']
+    :theme==='water'?['#7298a4','#315a68','#173744','#091c27']
+    :theme==='poison'?['#685778','#3b294a','#24172f','#100b18']
+    :theme==='mirror'?['#667f72','#2d514b','#183632','#0b1d20']
+    :theme==='fan'?['#853e2f','#4d2628','#2b171c','#120b0e']
+    :theme==='web'?['#65556d','#392b42','#22172b','#100a15']
+    :theme==='gauntlet'?['#7b665c','#463731','#282323','#120f11']
+    :theme==='maze'?['#514861','#2a2438','#191626','#090811']
+    :theme==='moon'?['#7b86a8','#3d486d','#202a4b','#0b1025']
+    :theme==='heaven'?['#d8c99d','#8ea8a9','#4e7379','#25434b']
+    :['#667486','#303b52','#1c2638','#0c131e'];
+  const sky=c.createLinearGradient(0,0,0,GAME_H);sky.addColorStop(0,palette[0]);sky.addColorStop(.62,palette[1]);sky.addColorStop(1,palette[3]);c.fillStyle=sky;c.fillRect(0,0,viewW,GAME_H);
+  // 月、遠山、雲霧、中景與近景分層移動，形成古風卷軸的景深。
+  c.save();c.globalAlpha=theme==='sand'?.34:.72;c.fillStyle=theme==='sand'?'#f2d19b':'#e8edf0';c.beginPath();c.arc(viewW*.78-cameraX*.025,112,theme==='sand'?58:46,0,TAU);c.fill();c.restore();
+  mountainLayer(c,.05,430,palette[1],250,270,1);mountainLayer(c,.12,520,palette[2],220,230,3);
+  inkCloud(c,90-(cameraX*.08%900),205,1.25,theme==='sand'?.16:.28);inkCloud(c,700-(cameraX*.1%1200),285,.92,theme==='sand'?.12:.22);
+  if(theme==='bone'){
+    drawPagoda(c,viewW*.68-(cameraX*.22%1200),520,1.35,'#18202b');
+    for(let i=0;i<6;i++)drawPine(c,i*290-(cameraX*.36%580),FLOOR_Y,1+(i%2)*.18,'#101b20');
+  }else if(theme==='bear'){
+    drawPagoda(c,viewW*.56-(cameraX*.2%1100),500,1.7,'#152520');
+    for(let i=0;i<8;i++)drawPine(c,i*220-(cameraX*.38%660),FLOOR_Y,1.15+(i%3)*.12,'#0a1714');
+  }else if(theme==='sand'){
+    const gx=viewW*.64-(cameraX*.28%1300);c.fillStyle='#372a20';c.fillRect(gx-52,390,104,185);c.fillRect(gx-82,382,164,18);c.beginPath();c.moveTo(gx-94,382);c.lineTo(gx,350);c.lineTo(gx+94,382);c.closePath();c.fill();
+    c.fillStyle='rgba(225,188,119,.16)';for(let i=0;i<20;i++){const x=(i*149+gameClock*60)%Math.max(viewW,1000);c.fillRect(x,250+(i%7)*43,28+(i%4)*12,2);}
+  }else if(theme==='palace'){
+    const gx=viewW*.58-(cameraX*.24%1500);c.fillStyle='#25181d';c.fillRect(gx-180,355,360,220);c.fillStyle='#7b302d';c.fillRect(gx-132,405,264,170);
+    c.fillStyle='#c99a55';for(const d of [-1,1])c.fillRect(gx+d*112,405,12,170);c.beginPath();c.moveTo(gx-205,355);c.lineTo(gx,310);c.lineTo(gx+205,355);c.lineTo(gx+170,372);c.lineTo(gx-170,372);c.closePath();c.fillStyle='#311c23';c.fill();
+    for(let i=0;i<5;i++){c.fillStyle='rgba(248,204,112,.42)';c.fillRect(gx-120+i*60,430,22,34);}
+  }else if(theme==='relic'){
+    const gx=viewW*.66-(cameraX*.2%1400);c.strokeStyle='#171225';c.lineWidth=54;c.beginPath();c.arc(gx,520,205,Math.PI,TAU);c.stroke();
+    c.fillStyle='rgba(197,151,255,.16)';for(let i=0;i<8;i++){const x=gx-160+i*46;c.beginPath();c.moveTo(x,250+(i%3)*22);c.lineTo(x+14,292+(i%2)*18);c.lineTo(x-9,292);c.closePath();c.fill();}
+    c.fillStyle='rgba(242,214,116,.22)';c.beginPath();c.ellipse(gx,458,38,57,0,0,TAU);c.fill();c.fillRect(gx-11,389,22,27);
+  }else if(theme==='trial'){
+    const gx=viewW*.56-(cameraX*.22%1500);c.fillStyle='#242728';c.fillRect(gx-230,455,460,120);c.fillStyle='#7c643b';c.fillRect(gx-255,442,510,18);
+    for(const d of [-1,1]){c.fillStyle='#4e2727';c.fillRect(gx+d*205,315,8,140);c.fillStyle='#b55b3e';c.fillRect(gx+d*201,325,d*65,82);}
+    c.fillStyle='rgba(245,214,143,.16)';for(let i=0;i<4;i++){c.beginPath();c.arc(gx-135+i*90,420,22,Math.PI,TAU);c.fill();}
+  }else if(theme==='water'){
+    c.fillStyle='rgba(165,226,241,.22)';for(let i=0;i<9;i++){const x=i*180-(cameraX*.38%360);c.beginPath();c.ellipse(x,FLOOR_Y-42-(i%2)*18,95,13,0,0,TAU);c.fill();}
+    c.strokeStyle='rgba(220,250,255,.42)';c.lineWidth=3;for(let i=0;i<7;i++){c.beginPath();c.moveTo(i*230-(cameraX*.52%460),FLOOR_Y-8-i%2*13);c.quadraticCurveTo(i*230+65,FLOOR_Y-30,i*230+140,FLOOR_Y-8);c.stroke();}
+  }else if(theme==='poison'){
+    const gx=viewW*.68-(cameraX*.2%1200);c.fillStyle='#171020';c.beginPath();c.ellipse(gx,475,210,160,0,Math.PI,TAU);c.fill();
+    c.fillStyle='rgba(181,108,255,.12)';for(let i=0;i<14;i++){const x=(i*137+gameClock*18)%Math.max(viewW,900);c.beginPath();c.arc(x,520-(i%5)*72,15+(i%4)*8,0,TAU);c.fill();}
+  }else if(theme==='mirror'){
+    const gx=viewW*.72-(cameraX*.17%1300);c.fillStyle='#142b2b';c.fillRect(gx-125,230,250,350);c.fillStyle='rgba(166,230,222,.28)';for(let i=0;i<8;i++)c.fillRect(gx-95+i*27,245,13,330);
+    c.fillStyle='#263e35';for(let i=0;i<6;i++){c.beginPath();c.arc(i*245-(cameraX*.34%490),FLOOR_Y-15,82,Math.PI,TAU);c.fill();}
+  }else if(theme==='fan'){
+    const gx=viewW*.73-(cameraX*.16%1400);c.fillStyle='#2b1515';c.beginPath();c.moveTo(gx-180,550);c.lineTo(gx,235);c.lineTo(gx+190,550);c.closePath();c.fill();
+    c.fillStyle='rgba(255,96,42,.25)';c.beginPath();c.moveTo(gx-45,315);c.lineTo(gx,245);c.lineTo(gx+58,320);c.closePath();c.fill();
+    c.strokeStyle='rgba(110,231,219,.16)';c.lineWidth=9;for(let i=0;i<4;i++){c.beginPath();c.arc(viewW*.48,350+i*52,viewW*.48+i*30,.12,2.78);c.stroke();}
+  }else if(theme==='web'){
+    const gx=viewW*.6-(cameraX*.2%1100);c.strokeStyle='rgba(222,211,236,.28)';c.lineWidth=2;for(let i=0;i<9;i++){const a=i*TAU/9;c.beginPath();c.moveTo(gx,370);c.lineTo(gx+Math.cos(a)*230,370+Math.sin(a)*190);c.stroke();}
+    for(let r=35;r<210;r+=38){c.beginPath();c.arc(gx,370,r,0,TAU);c.stroke();}
+  }else if(theme==='gauntlet'){
+    const gx=viewW*.62-(cameraX*.2%1500);c.fillStyle='#21191a';c.fillRect(gx-255,330,510,245);for(let i=-2;i<=2;i++){c.fillRect(gx+i*112-38,265+(i%2)*25,76,310);c.beginPath();c.moveTo(gx+i*112-48,270+(i%2)*25);c.lineTo(gx+i*112,220+(i%2)*25);c.lineTo(gx+i*112+48,270+(i%2)*25);c.closePath();c.fill();}
+    c.fillStyle='rgba(214,70,50,.28)';for(let i=0;i<6;i++)c.fillRect(gx-215+i*84,365,34,55);
+  }else if(theme==='maze'){
+    c.fillStyle='#110e19';for(let i=0;i<8;i++){const x=i*245-(cameraX*.42%490);c.beginPath();c.arc(x,FLOOR_Y-10,120,Math.PI,TAU);c.lineTo(x+120,FLOOR_Y);c.lineTo(x-120,FLOOR_Y);c.closePath();c.fill();}
+    c.fillStyle='rgba(218,181,232,.16)';for(let i=0;i<7;i++){const x=i*203-(cameraX*.28%609);c.fillRect(x,FLOOR_Y-185-(i%2)*40,5,185);}
+  }else if(theme==='moon'){
+    const gx=viewW*.72-cameraX*.025;c.fillStyle='rgba(239,245,255,.88)';c.beginPath();c.arc(gx,135,78,0,TAU);c.fill();c.fillStyle='rgba(82,94,132,.18)';c.beginPath();c.arc(gx-20,120,18,0,TAU);c.arc(gx+25,155,12,0,TAU);c.fill();
+    drawPagoda(c,viewW*.6-(cameraX*.18%1400),545,1.7,'#17203b');c.fillStyle='rgba(224,234,255,.18)';for(let i=0;i<18;i++){c.beginPath();c.arc((i*157+gameClock*9)%Math.max(viewW,1100),170+(i%6)*58,2+(i%3),0,TAU);c.fill();}
+  }else if(theme==='heaven'){
+    for(let i=0;i<8;i++)inkCloud(c,i*210-(cameraX*.1%420),430-(i%3)*80,1.4,.58);
+    drawPagoda(c,viewW*.62,520,2.1,'#8c7650');c.fillStyle='rgba(255,238,163,.32)';for(let i=0;i<7;i++){c.beginPath();c.arc(viewW*.62,430,36+i*22,0,TAU);c.fill();}
+  }else{
+    for(let i=0;i<18;i++){const x=(i*173+gameClock*22)%Math.max(viewW,1100);c.fillStyle='rgba(255,91,42,.35)';c.beginPath();c.arc(x,560-(i%6)*78,2+(i%3),0,TAU);c.fill();}
+  }
+  const floorColor=theme==='sand'?'#34281f':theme==='fire'||theme==='fan'?'#34231f':theme==='water'?'#173d48':theme==='moon'?'#202a4b':theme==='poison'||theme==='web'?'#21152b':'#172221';
+  const edgeColor=theme==='sand'?'#92704a':theme==='fire'||theme==='fan'?'#96533a':theme==='water'?'#74afbb':theme==='moon'?'#8799c8':theme==='poison'||theme==='web'?'#785c86':'#62716d';
+  c.fillStyle=floorColor;c.fillRect(0,FLOOR_Y,viewW,GAME_H-FLOOR_Y);c.fillStyle=edgeColor;c.fillRect(0,FLOOR_Y,viewW,8);
+}
+function drawPlatforms(c){
+  for(const p of stage.platforms){const x=p.x-cameraX;if(x>viewW+50||x+p.w<-50)continue;
+    c.fillStyle=stage.theme==='fire'?'#4a2b2b':'#263237';c.fillRect(x,p.y,p.w,22);c.fillStyle='#71807c';c.fillRect(x,p.y,p.w,5);
+    c.strokeStyle='rgba(0,0,0,.35)';for(let q=24;q<p.w;q+=46){c.beginPath();c.moveTo(x+q,p.y+5);c.lineTo(x+q-8,p.y+22);c.stroke();}}
+}
+function actorMotion(a){
+  if(a.hurt>0)return'hurt';
+  if(a.attackT>0){
+    if(/^boss/.test(a.attackKind||'')){
+      if(a.attackKind==='bossCharge')return'attack2';
+      if(a.attackKind==='bossMelee')return'attack';
+      return a.attackElapsed<.48?'cast':'attack3';
+    }
+    if(a.attackKind==='mediumSpell')return a.attackElapsed<.46?'cast':'attack3';
+    if(a.attackKind==='skill')return a.attackElapsed<.27?'cast':'skill';
+    if(a.attackKind==='jumpHeavy')return'jumpHeavy';
+    if(a.attackKind==='heavy')return'heavy';
+    if(a.attackKind==='light')return'light';
+    return a.attackVariant>1?'attack'+a.attackVariant:'attack';
+  }
+  if(a.onGround===false)return a.vy<0?'jump':'fall';
+  if(a.landT>0)return'land';
+  if(Math.abs(a.vx)>28)return'march';return'idle';
+}
+const ORIGINAL_BOSSES=new Set(['白骨精','黑熊精','紅孩兒','黃風怪','靈感大王','蠍子精','六耳獼猴','牛魔王','蜘蛛精','多目怪','青獅精','白象精','大鵬金翅雕','老鼠精','玉兔精']);
+function drawActor(c,a,isPlayer=false){
+  if(a.dead)return;const sx=a.x-cameraX;if(sx<-180||sx>viewW+180)return;
+  c.save();
+  if(a.defeated){
+    c.globalAlpha=a.deathAlpha==null?1:a.deathAlpha;c.translate(sx,a.y-66);c.rotate(a.deathAngle||0);time=gameClock;
+    if(a.boss&&a.phase2&&ORIGINAL_BOSSES.has(a.name))drawOriginalBoss(c,a,0,66);
+    else drawHeroP(c,a.model,0,66,a.dir,a.scale,'hurt',RI);c.restore();return;
+  }
+  if(a.illusion)c.globalAlpha=.62+Math.sin(gameClock*9+a.x)*.14;
+  if(a.hurt>0||isPlayer&&a.invuln>0&&Math.floor(gameClock*16)%2)c.globalAlpha=.48;
+  const motion=actorMotion(a),oldTime=time;
+  const attackDuration=a.attackKind==='skill'?1.05:a.attackKind==='jumpHeavy'?.82:a.attackKind==='heavy'?.94:a.attackKind==='light'?.52:a.attackKind==='mediumSpell'?.86:a.boss?.96:.72;
+  time=a.attackT>0?Math.min(1.5,(a.attackElapsed/attackDuration)*1.5)
+    :motion==='land'?Math.max(0,.18-a.landT):gameClock+(a.x%100)*.01;
+  if(motion==='cast'||motion==='skill'){
+    const medium=a.tier==='medium'&&!a.boss,spell=medium?spellForEnemy(a.name):null,glow=spell?spell.color:'#ffd36a';
+    const charge=motion==='cast'?1.12:1,rad=(medium?52:78)+Math.sin(gameClock*18)*(medium?4:7)*charge;
+    const aura=c.createRadialGradient(sx,a.y-76,8,sx,a.y-76,rad);aura.addColorStop(0,medium?glow:'rgba(255,238,150,.34)');aura.addColorStop(.56,medium?'rgba(255,255,255,.08)':'rgba(255,201,72,.15)');aura.addColorStop(1,'rgba(255,190,62,0)');
+    c.fillStyle=aura;c.beginPath();c.arc(sx,a.y-76,rad,0,TAU);c.fill();
+    c.save();c.translate(sx,a.y-76);c.rotate(gameClock*(motion==='cast'?2.8:5.2));c.fillStyle=medium?glow:'rgba(255,232,139,.88)';c.font='900 '+(medium?13:18)+'px serif';c.textAlign='center';c.textBaseline='middle';
+    const runes=medium?['妖','氣','聚','法']:['天','地','玄','黃','破','邪'];
+    for(let i=0;i<runes.length;i++){c.save();c.rotate(i*TAU/runes.length);c.translate(0,-rad*.82);c.rotate(-i*TAU/runes.length-gameClock*(motion==='cast'?2.8:5.2));c.fillText(runes[i],0,0);c.restore();}c.restore();
+  }
+  if(a.boss&&a.phase2&&ORIGINAL_BOSSES.has(a.name))drawOriginalBoss(c,a,sx,a.y);
+  else drawHeroP(c,a.model,sx,a.y,a.dir,a.scale,motion,RI);
+  if(a.slowT>0||a.snareT>0||a.poisonT>0){
+    const statusColor=a.poisonT>0?'#b56cff':a.snareT>0?'#d9c7ee':'#8fe8ff';c.strokeStyle=statusColor;c.lineWidth=2;c.globalAlpha=.72;
+    c.beginPath();c.ellipse(sx,a.y-10,30+a.scale*5,7,0,0,TAU);c.stroke();
+    for(let i=0;i<4;i++){const ang=gameClock*(a.poisonT>0?2.8:-2.2)+i*TAU/4;c.fillStyle=statusColor;c.beginPath();c.arc(sx+Math.cos(ang)*(24+a.scale*5),a.y-74+Math.sin(ang)*18,2.5+(i%2),0,TAU);c.fill();}
+  }
+  time=oldTime;c.restore();
+}
+function drawLateOriginalBoss(c,e){
+  const n=e.name,late=['靈感大王','蠍子精','六耳獼猴','牛魔王','蜘蛛精','多目怪','青獅精','白象精','大鵬金翅雕','老鼠精','玉兔精'];
+  if(!late.includes(n))return false;
+  const grad=(a,b,y1=-130,y2=-8)=>{const g=c.createLinearGradient(0,y1,0,y2);g.addColorStop(0,a);g.addColorStop(1,b);return g;};
+  c.save();c.lineJoin='round';c.lineCap='round';c.strokeStyle='#110d0c';c.lineWidth=2.2;
+  if(n==='靈感大王'){
+    c.fillStyle=grad('#d6ae45','#245d70');c.beginPath();c.ellipse(0,-60,34,57,0,0,TAU);c.fill();c.stroke();
+    c.beginPath();c.moveTo(-27,-82);c.lineTo(-47,-108);c.lineTo(-39,-65);c.closePath();c.fill();c.stroke();c.beginPath();c.moveTo(27,-82);c.lineTo(47,-108);c.lineTo(39,-65);c.closePath();c.fill();c.stroke();
+    c.fillStyle='#d8a83a';for(let y=-88;y<-26;y+=13)for(let x=-18;x<20;x+=12){c.beginPath();c.arc(x+(y%2?5:0),y,5,0,Math.PI);c.fill();}
+    c.fillStyle='#9cdff2';c.beginPath();c.arc(-10,-108,3,0,TAU);c.arc(10,-108,3,0,TAU);c.fill();
+  }else if(n==='蠍子精'){
+    c.fillStyle=grad('#8d3158','#35172c');c.beginPath();c.ellipse(0,-55,31,45,0,0,TAU);c.fill();c.stroke();
+    for(const d of [-1,1])for(let i=0;i<3;i++){c.strokeStyle='#71304d';c.lineWidth=6;c.beginPath();c.moveTo(d*18,-68+i*18);c.lineTo(d*(42+i*4),-72+i*24);c.lineTo(d*(55+i*4),-55+i*26);c.stroke();}
+    c.strokeStyle='#762b4b';c.lineWidth=13;c.beginPath();c.moveTo(8,-92);c.quadraticCurveTo(52,-137,64,-86);c.quadraticCurveTo(72,-55,52,-42);c.stroke();c.fillStyle='#c95778';c.beginPath();c.moveTo(52,-42);c.lineTo(66,-31);c.lineTo(54,-58);c.closePath();c.fill();c.stroke();
+    c.fillStyle='#f2d6e2';c.beginPath();c.arc(-9,-93,3,0,TAU);c.arc(9,-93,3,0,TAU);c.fill();
+  }else if(n==='六耳獼猴'){
+    c.fillStyle=grad('#87818d','#30273d');c.beginPath();c.ellipse(0,-57,32,48,0,0,TAU);c.fill();c.stroke();c.beginPath();c.arc(0,-105,25,0,TAU);c.fill();c.stroke();
+    for(const d of [-1,1])for(let i=0;i<3;i++){c.beginPath();c.ellipse(d*(25+i*5),-108+i*8,8,12,d*.25,0,TAU);c.fill();c.stroke();}
+    c.fillStyle='#b49bad';c.beginPath();c.ellipse(0,-98,15,12,0,0,TAU);c.fill();c.fillStyle='#b56cff';c.beginPath();c.arc(-8,-110,3,0,TAU);c.arc(8,-110,3,0,TAU);c.fill();
+    c.strokeStyle='#75658d';c.lineWidth=9;c.beginPath();c.moveTo(-24,-67);c.quadraticCurveTo(-58,-46,-50,-12);c.stroke();c.beginPath();c.moveTo(24,-67);c.quadraticCurveTo(56,-48,48,-10);c.stroke();
+  }else if(n==='牛魔王'){
+    c.fillStyle=grad('#8f5d3c','#2b201d');c.beginPath();c.ellipse(0,-54,42,55,0,0,TAU);c.fill();c.stroke();c.beginPath();c.ellipse(0,-108,33,27,0,0,TAU);c.fill();c.stroke();
+    c.fillStyle='#4a3a32';for(const d of [-1,1]){c.beginPath();c.moveTo(d*20,-123);c.quadraticCurveTo(d*50,-154,d*62,-128);c.quadraticCurveTo(d*45,-134,d*27,-111);c.closePath();c.fill();c.stroke();}
+    c.fillStyle='#c99a72';c.beginPath();c.ellipse(0,-98,17,11,0,0,TAU);c.fill();c.fillStyle='#ff6a32';c.beginPath();c.arc(-10,-111,3,0,TAU);c.arc(10,-111,3,0,TAU);c.fill();
+    c.strokeStyle='#2d211d';c.lineWidth=15;for(const d of [-1,1]){c.beginPath();c.moveTo(d*28,-78);c.lineTo(d*48,-28);c.stroke();c.beginPath();c.moveTo(d*20,-18);c.lineTo(d*29,0);c.stroke();}
+  }else if(n==='蜘蛛精'){
+    c.fillStyle=grad('#6f3381','#21122b');c.beginPath();c.ellipse(0,-48,36,42,0,0,TAU);c.fill();c.stroke();c.beginPath();c.arc(0,-96,23,0,TAU);c.fill();c.stroke();
+    for(const d of [-1,1])for(let i=0;i<4;i++){c.strokeStyle='#4b2459';c.lineWidth=7-i*.6;c.beginPath();c.moveTo(d*22,-77+i*18);c.lineTo(d*(48+i*5),-93+i*20);c.lineTo(d*(63+i*7),-76+i*29);c.stroke();}
+    c.fillStyle='#d9b8e8';for(let i=0;i<6;i++){const a=-.75+i*.3;c.beginPath();c.arc(Math.sin(a)*13,-101+Math.cos(a)*6,2.5,0,TAU);c.fill();}
+  }else if(n==='多目怪'){
+    c.fillStyle=grad('#786343','#211a18');c.beginPath();c.ellipse(0,-62,28,60,0,0,TAU);c.fill();c.stroke();
+    for(let y=-105;y<-20;y+=16)for(let x=-12;x<=12;x+=12){c.fillStyle='#d6a83c';c.beginPath();c.ellipse(x,y,5,3.5,0,0,TAU);c.fill();c.fillStyle='#17120d';c.beginPath();c.arc(x,y,1.7,0,TAU);c.fill();}
+    c.strokeStyle='#665236';c.lineWidth=4;for(const d of [-1,1])for(let i=0;i<4;i++){c.beginPath();c.moveTo(d*20,-95+i*20);c.lineTo(d*42,-105+i*25);c.stroke();}
+  }else if(n==='青獅精'){
+    c.fillStyle=grad('#587b98','#263848');c.beginPath();c.ellipse(0,-52,40,52,0,0,TAU);c.fill();c.stroke();c.beginPath();c.arc(0,-104,31,0,TAU);c.fill();c.stroke();
+    c.strokeStyle='#304e68';c.lineWidth=13;for(let i=0;i<13;i++){const a=i*TAU/13;c.beginPath();c.moveTo(Math.cos(a)*23,-104+Math.sin(a)*23);c.lineTo(Math.cos(a)*40,-104+Math.sin(a)*40);c.stroke();}
+    c.fillStyle='#ecdfca';c.beginPath();c.moveTo(-12,-92);c.lineTo(-7,-77);c.lineTo(-2,-93);c.closePath();c.fill();c.beginPath();c.moveTo(12,-92);c.lineTo(7,-77);c.lineTo(2,-93);c.closePath();c.fill();
+  }else if(n==='白象精'){
+    c.fillStyle=grad('#e2ddd4','#7f756d');c.beginPath();c.ellipse(0,-54,44,54,0,0,TAU);c.fill();c.stroke();c.beginPath();c.arc(0,-108,32,0,TAU);c.fill();c.stroke();
+    for(const d of [-1,1]){c.beginPath();c.ellipse(d*31,-106,19,27,d*.15,0,TAU);c.fill();c.stroke();c.fillStyle='#eee5d7';c.beginPath();c.moveTo(d*13,-96);c.quadraticCurveTo(d*22,-63,d*30,-48);c.lineTo(d*19,-92);c.closePath();c.fill();c.stroke();c.fillStyle=grad('#e2ddd4','#7f756d');}
+    c.strokeStyle='#b8ada2';c.lineWidth=15;c.beginPath();c.moveTo(0,-103);c.quadraticCurveTo(8,-70,-5,-38);c.quadraticCurveTo(-15,-20,-2,-7);c.stroke();
+  }else if(n==='大鵬金翅雕'){
+    c.fillStyle=grad('#dbad3e','#294a58');c.beginPath();c.ellipse(0,-58,30,53,0,0,TAU);c.fill();c.stroke();c.beginPath();c.arc(0,-112,22,0,TAU);c.fill();c.stroke();
+    for(const d of [-1,1]){c.beginPath();c.moveTo(d*18,-92);c.quadraticCurveTo(d*78,-142,d*88,-63);c.quadraticCurveTo(d*62,-72,d*26,-45);c.closePath();c.fill();c.stroke();}
+    c.fillStyle='#f3c750';c.beginPath();c.moveTo(0,-107);c.lineTo(31,-101);c.lineTo(4,-94);c.closePath();c.fill();c.fillStyle='#c9ecff';c.beginPath();c.arc(-7,-116,3,0,TAU);c.fill();
+  }else if(n==='老鼠精'){
+    c.fillStyle=grad('#f2eef0','#9b8894');c.beginPath();c.ellipse(0,-48,31,45,0,0,TAU);c.fill();c.stroke();c.beginPath();c.arc(0,-95,24,0,TAU);c.fill();c.stroke();
+    for(const d of [-1,1]){c.beginPath();c.arc(d*20,-113,13,0,TAU);c.fill();c.stroke();}c.fillStyle='#d7a7b5';c.beginPath();c.arc(0,-87,4,0,TAU);c.fill();c.strokeStyle='#e5dce2';c.lineWidth=6;c.beginPath();c.moveTo(-25,-45);c.quadraticCurveTo(-62,-34,-50,-3);c.stroke();
+  }else if(n==='玉兔精'){
+    c.fillStyle=grad('#f8f5f6','#b7bfd3');c.beginPath();c.ellipse(0,-50,31,47,0,0,TAU);c.fill();c.stroke();c.beginPath();c.arc(0,-100,24,0,TAU);c.fill();c.stroke();
+    for(const d of [-1,1]){c.beginPath();c.ellipse(d*10,-135,8,34,d*.08,0,TAU);c.fill();c.stroke();}c.fillStyle='#f0a9c3';c.beginPath();c.arc(-8,-104,3,0,TAU);c.arc(8,-104,3,0,TAU);c.fill();
+    c.strokeStyle='#c9c3b5';c.lineWidth=10;c.beginPath();c.moveTo(-26,-67);c.lineTo(43,-22);c.stroke();c.fillStyle='#e8e3d8';c.beginPath();c.ellipse(46,-19,14,19,-.55,0,TAU);c.fill();c.stroke();
+  }
+  c.restore();return true;
+}
+function drawOriginalBoss(c,e,x,y){
+  const s=e.scale*1.04,bob=Math.sin(gameClock*3)*3;c.save();c.translate(x,y+bob);c.scale(e.dir*s,s);
+  c.fillStyle='rgba(0,0,0,.38)';c.beginPath();c.ellipse(0,2,34,9,0,0,TAU);c.fill();
+  if(drawLateOriginalBoss(c,e)){c.restore();return;}
+  if(e.name==='白骨精'){
+    c.strokeStyle='#d9e1e7';c.fillStyle='#c8d0d8';c.lineWidth=4;
+    c.beginPath();c.arc(0,-78,18,0,TAU);c.fill();c.stroke();c.fillStyle='#161722';c.beginPath();c.arc(-7,-80,4,0,TAU);c.arc(7,-80,4,0,TAU);c.fill();
+    c.strokeStyle='#d9e1e7';c.lineWidth=6;c.beginPath();c.moveTo(0,-62);c.lineTo(0,-22);c.stroke();
+    for(let i=0;i<4;i++){c.lineWidth=3;c.beginPath();c.arc(0,-56+i*9,18-i*2,.15,Math.PI-.15);c.stroke();}
+    for(const d of [-1,1]){c.lineWidth=5;c.beginPath();c.moveTo(d*5,-54);c.lineTo(d*29,-31);c.lineTo(d*39,-5);c.stroke();}
+    c.fillStyle='rgba(170,224,242,.18)';c.beginPath();c.arc(0,-45,42,0,TAU);c.fill();
+  }else if(e.name==='黑熊精'){
+    c.fillStyle='#211d1b';c.strokeStyle='#090807';c.lineWidth=3;c.beginPath();c.ellipse(0,-45,34,47,0,0,TAU);c.fill();c.stroke();
+    c.beginPath();c.arc(0,-93,27,0,TAU);c.fill();c.stroke();for(const d of [-1,1]){c.beginPath();c.arc(d*20,-113,10,0,TAU);c.fill();c.stroke();}
+    c.fillStyle='#aa8064';c.beginPath();c.ellipse(0,-88,14,10,0,0,TAU);c.fill();c.fillStyle='#f5d36d';c.beginPath();c.arc(-8,-99,2.6,0,TAU);c.arc(8,-99,2.6,0,TAU);c.fill();
+    c.strokeStyle='#211d1b';c.lineWidth=14;for(const d of [-1,1]){c.beginPath();c.moveTo(d*23,-66);c.lineTo(d*41,-28);c.stroke();c.beginPath();c.moveTo(d*18,-12);c.lineTo(d*25,0);c.stroke();}
+  }else if(e.name==='黃風怪'){
+    c.fillStyle='#8b713c';c.strokeStyle='#251e12';c.lineWidth=3;
+    c.beginPath();c.ellipse(0,-50,31,45,-.08,0,TAU);c.fill();c.stroke();
+    c.beginPath();c.ellipse(0,-96,25,22,0,0,TAU);c.fill();c.stroke();
+    for(const d of [-1,1]){c.beginPath();c.ellipse(d*19,-113,11,15,d*.25,0,TAU);c.fill();c.stroke();}
+    c.fillStyle='#1a130b';c.beginPath();c.arc(-8,-100,3,0,TAU);c.arc(8,-100,3,0,TAU);c.fill();
+    c.fillStyle='#c59b74';c.beginPath();c.arc(0,-88,5,0,TAU);c.fill();
+    c.strokeStyle='#d4c39a';c.lineWidth=1;for(const d of [-1,1])for(let i=-1;i<=1;i++){c.beginPath();c.moveTo(d*5,-89+i*3);c.lineTo(d*34,-94+i*7);c.stroke();}
+    c.strokeStyle='#60461e';c.lineWidth=11;c.beginPath();c.moveTo(19,-66);c.lineTo(44,-31);c.stroke();
+    c.strokeStyle='#b08a4a';c.lineWidth=5;c.beginPath();c.moveTo(-34,-78);c.lineTo(42,-17);c.stroke();
+    c.fillStyle='rgba(220,178,82,.2)';for(let i=0;i<13;i++){c.beginPath();c.arc(rnd(-48,48),rnd(-132,-8),rnd(2,6),0,TAU);c.fill();}
+  }else{
+    const flame=(xx,yy,rr,col)=>{c.fillStyle=col;c.beginPath();c.moveTo(xx,yy-rr);c.quadraticCurveTo(xx+rr,yy,xx,yy+rr);c.quadraticCurveTo(xx-rr,yy,xx,yy-rr);c.fill();};
+    c.fillStyle='#8e241d';c.strokeStyle='#2a0d0b';c.lineWidth=3;c.beginPath();c.moveTo(-25,-15);c.lineTo(-20,-82);c.quadraticCurveTo(0,-112,22,-82);c.lineTo(28,-15);c.closePath();c.fill();c.stroke();
+    c.fillStyle='#b94a2e';c.beginPath();c.arc(0,-98,22,0,TAU);c.fill();c.fillStyle='#ffe17a';c.beginPath();c.arc(-8,-101,3,0,TAU);c.arc(8,-101,3,0,TAU);c.fill();
+    for(let i=-2;i<=2;i++)flame(i*10,-126-Math.abs(i)*3,18-i%2*3,i%2?'#ffbd39':'#ff5a2c');
+    c.strokeStyle='#d3a44a';c.lineWidth=5;c.beginPath();c.moveTo(-42,-72);c.lineTo(48,-28);c.stroke();c.fillStyle='#ff9f34';c.beginPath();c.moveTo(45,-37);c.lineTo(63,-19);c.lineTo(41,-22);c.closePath();c.fill();
+  }
+  c.restore();
+}
+function drawProjectiles(c){for(const p of projectiles){const x=p.x-cameraX,r=p.radius||10;c.save();c.translate(x,p.y);c.rotate((p.age||0)*(p.spin||0));c.fillStyle=p.color;c.strokeStyle=p.color;c.shadowColor=p.color;c.shadowBlur=18;
+  if(p.shape==='staffWave'){c.lineWidth=9;c.beginPath();c.arc(0,0,r*1.45,-1.25,1.25);c.stroke();c.lineWidth=3;c.strokeStyle='#fff4c4';c.beginPath();c.arc(-5,0,r*1.8,-1.05,1.05);c.stroke();}
+  else if(p.shape==='swordQi'){c.rotate(Math.atan2(p.vy,p.vx));c.beginPath();c.moveTo(-r*1.6,-3);c.quadraticCurveTo(0,-r*.85,r*1.8,0);c.quadraticCurveTo(0,r*.42,-r*1.6,3);c.closePath();c.fill();c.strokeStyle='#f4fdff';c.lineWidth=2;c.stroke();}
+  else if(p.shape==='wind'){c.lineWidth=6;c.beginPath();c.arc(0,0,r,-1.25,1.25);c.stroke();c.lineWidth=2;c.beginPath();c.arc(-5,0,r+7,-1.1,1.1);c.stroke();}
+  else if(p.shape==='thunder'){c.beginPath();c.moveTo(-r,-r*.3);c.lineTo(-2,-r);c.lineTo(2,-3);c.lineTo(r,r*.2);c.lineTo(1,r);c.lineTo(-2,3);c.closePath();c.fill();}
+  else if(p.shape==='fire'){for(let i=0;i<3;i++){c.beginPath();c.moveTo(-r+i*7,r*.65);c.quadraticCurveTo(-r*.2+i*6,-r*1.5,r*.9+i*4,r*.55);c.quadraticCurveTo(0,r*1.05,-r+i*7,r*.65);c.fill();}}
+  else if(p.shape==='ice'){for(let i=0;i<4;i++){c.rotate(TAU/4);c.beginPath();c.moveTo(0,-r*1.5);c.lineTo(r*.38,-2);c.lineTo(0,r*.45);c.lineTo(-r*.38,-2);c.closePath();c.fill();c.strokeStyle='#effcff';c.lineWidth=1.5;c.stroke();}}
+  else if(p.shape==='sand'){for(let i=0;i<11;i++){const a=i*2.4+(p.age||0)*7,rr=4+(i%4)*5;c.globalAlpha=.38+(i%3)*.22;c.beginPath();c.arc(Math.cos(a)*rr,Math.sin(a)*rr*.65,2+(i%3),0,TAU);c.fill();}c.globalAlpha=1;}
+  else if(p.shape==='poison'){c.beginPath();c.arc(0,0,r,0,TAU);c.fill();c.fillStyle='rgba(235,220,255,.55)';for(let i=0;i<4;i++){c.beginPath();c.arc(-r*.5+i*r*.34,-r*.25+(i%2)*6,2.5,0,TAU);c.fill();}}
+  else if(p.shape==='water'){c.rotate(Math.atan2(p.vy,p.vx));c.lineWidth=5;c.beginPath();c.arc(0,4,r*1.35,Math.PI*1.08,Math.PI*1.92);c.stroke();c.strokeStyle='rgba(238,253,255,.78)';c.lineWidth=2;c.beginPath();c.arc(-3,4,r*1.7,Math.PI*1.12,Math.PI*1.88);c.stroke();}
+  else if(p.shape==='web'){c.strokeStyle=p.color;c.lineWidth=1.4;for(let i=0;i<8;i++){c.rotate(TAU/8);c.beginPath();c.moveTo(0,0);c.lineTo(r*1.35,0);c.stroke();}for(let rr=r*.42;rr<r*1.4;rr+=r*.42){c.beginPath();c.arc(0,0,rr,0,TAU);c.stroke();}}
+  else if(p.shape==='moon'){const mg=c.createRadialGradient(-r*.28,-r*.35,1,0,0,r*1.3);mg.addColorStop(0,'#ffffff');mg.addColorStop(.55,p.color);mg.addColorStop(1,'rgba(210,225,255,0)');c.fillStyle=mg;c.beginPath();c.arc(0,0,r*1.3,0,TAU);c.fill();c.strokeStyle='rgba(255,255,255,.7)';c.lineWidth=1.5;c.beginPath();c.arc(0,0,r*.8,0,TAU);c.stroke();}
+  else if(p.shape==='shadow'){c.beginPath();c.arc(0,0,r,0,TAU);c.fill();for(let i=0;i<3;i++){c.rotate(TAU/3);c.beginPath();c.arc(r+5,0,3,0,TAU);c.fill();}}
+  else if(p.shape==='earth'){c.beginPath();for(let i=0;i<7;i++){const a=i*TAU/7,rr=r*(i%2?1:.78);c.lineTo(Math.cos(a)*rr,Math.sin(a)*rr);}c.closePath();c.fill();c.strokeStyle='rgba(255,241,190,.55)';c.lineWidth=2;c.stroke();}
+  else{c.beginPath();c.arc(0,0,r,0,TAU);c.fill();}
+  c.shadowBlur=0;c.restore();}}
+function drawItems(c){for(const it of items){const x=it.x-cameraX,bob=Math.sin(gameClock*4+it.x)*4;c.save();c.translate(x,it.y+bob);
+  c.shadowColor=it.color;c.shadowBlur=18;c.fillStyle=it.color;
+  if(it.type==='heal'){
+    c.beginPath();c.arc(-7,0,10,0,TAU);c.arc(7,0,10,0,TAU);c.fill();c.fillStyle='#60a64f';c.fillRect(-2,-16,5,9);
+  }else{
+    c.beginPath();c.arc(0,0,13,0,TAU);c.fill();c.shadowBlur=0;c.fillStyle='#10131a';c.font='900 12px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(it.label[0],0,1);
+  }c.restore();}}
+function drawParticles(c){for(const p of particles){c.globalAlpha=clamp(p.life*2,0,1);c.fillStyle=p.color;c.fillRect(p.x-cameraX,p.y,p.size,p.size);}c.globalAlpha=1;}
+function drawImpacts(c){for(const p of impacts){
+  const u=1-p.life/p.max,x=p.x-cameraX,dir=p.dir||1;c.save();c.translate(x,p.y);c.scale(dir,1);c.globalAlpha=1-u;
+  if(p.text){c.scale(dir,1);c.translate(0,-u*38);c.fillStyle=p.color;c.font='900 '+p.size+'px "Noto Serif TC",serif';c.textAlign='center';c.textBaseline='middle';c.shadowColor='#4a160d';c.shadowBlur=8;c.fillText(p.label,0,0);c.restore();continue;}
+  if(p.groundWave){c.scale(1,.24);c.strokeStyle=p.color;c.lineWidth=9*(1-u)+2;c.shadowColor=p.color;c.shadowBlur=18;c.beginPath();c.arc(0,0,p.size*(.22+u),0,TAU);c.stroke();c.restore();continue;}
+  c.strokeStyle=p.color;c.lineWidth=5*(1-u)+1;c.beginPath();c.arc(0,0,p.size*(.35+u),-.9,.9);c.stroke();
+  c.lineWidth=2;for(let i=-2;i<=2;i++){c.beginPath();c.moveTo(8,i*6);c.lineTo(28+p.size*u,i*12);c.stroke();}c.restore();}c.globalAlpha=1;}
+function drawStageAtmosphere(c){
+  if(!stage)return;c.save();
+  if(stage.gimmick==='poison'){
+    const fog=c.createLinearGradient(0,330,0,GAME_H);fog.addColorStop(0,'rgba(90,45,112,0)');fog.addColorStop(1,'rgba(115,55,135,.23)');c.fillStyle=fog;c.fillRect(0,300,viewW,GAME_H-300);
+  }else if(stage.gimmick==='maze'){
+    const px=player.x-cameraX,vg=c.createRadialGradient(px,player.y-70,90,px,player.y-70,Math.max(viewW*.62,430));vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(.55,'rgba(0,0,0,.18)');vg.addColorStop(1,'rgba(0,0,0,.72)');c.fillStyle=vg;c.fillRect(0,0,viewW,GAME_H);
+  }else if(stage.gimmick==='water'){
+    c.fillStyle='rgba(80,174,196,.12)';c.fillRect(0,FLOOR_Y-8,viewW,GAME_H-FLOOR_Y+8);
+  }else if(stage.gimmick==='moon'){
+    c.fillStyle='rgba(182,202,255,.07)';c.fillRect(0,0,viewW,GAME_H);
+  }
+  c.restore();
+}
+function render(){
+  ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,canvas.width,canvas.height);
+  const unit=cssH/GAME_H;ctx.setTransform(dpr*unit,0,0,dpr*unit,0,0);
+  const sx=shake?rnd(-shake,shake):0,sy=shake?rnd(-shake*.5,shake*.5):0;ctx.save();ctx.translate(sx,sy);
+  drawBackground(ctx,stage?stage.theme:'bone');
+  if(stage){drawPlatforms(ctx);drawItems(ctx);for(const e of enemies)drawActor(ctx,e,false);drawActor(ctx,player,true);drawProjectiles(ctx);drawParticles(ctx);drawImpacts(ctx);drawStageAtmosphere(ctx);}
+  ctx.restore();
+  if(paused&&state==='playing'){ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(0,0,viewW,GAME_H);ctx.fillStyle='#fff';ctx.font='900 34px sans-serif';ctx.textAlign='center';ctx.fillText('暫停',viewW/2,GAME_H/2);}
+}
+function updateHud(){
+  if(!player)return;document.getElementById('playerName').textContent=player.name;document.getElementById('hpText').textContent=Math.ceil(player.hp);
+  document.getElementById('hpFill').style.width=(player.hp/player.maxHp*100)+'%';document.getElementById('energyFill').style.width=player.energy+'%';
+  document.getElementById('coinText').textContent=save.coins;document.getElementById('hpPotionText').textContent=save.hpPotion;document.getElementById('mpPotionText').textContent=save.mpPotion;
+  const art=currentWeaponArt(),element=ELEMENT_ARTS[art.type]?art.type:'physical',artLevel=save.artMastery[element]||1;
+  document.getElementById('spellText').textContent=player.spellBuff?player.spellBuff.label+' '+Math.ceil(player.spellBuff.time)+'秒':art.label+' Lv.'+artLevel;
+  const boss=enemies.find(e=>e.boss&&!e.dead);
+  if(boss&&player.x>stage.width-980){bossHud.classList.remove('hidden');document.getElementById('bossName').textContent=boss.name;
+    document.getElementById('bossPhase').textContent=boss.shield>0?'火盾 '+Math.ceil(boss.shield/boss.shieldMax*100)+'%':boss.phase2?'原形':'人形';document.getElementById('bossFill').style.width=(boss.hp/boss.maxHp*100)+'%';}
+  else bossHud.classList.add('hidden');
+}
+function frame(now){
+  const dt=Math.min(.034,(now-lastFrame)/1000);lastFrame=now;
+  if(state==='select')drawHeroCards(now);else update(dt);
+  if(state==='select'||state==='shop'||state==='story'||state==='won'||state==='lost'||state==='credits')pollUiGamepad();
+  render();requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+function keyName(e){return(e.key||'').toLowerCase();}
+addEventListener('keydown',e=>{
+  const k=keyName(e),uiState=state==='select'||state==='shop';
+  if(uiState&&['arrowleft','arrowright','arrowup','arrowdown','enter',' '].includes(k)){
+    e.preventDefault();if(e.repeat)return;
+    const scope=state==='select'?selectScreen:shopPanel;let current=state==='select'?selectFocusEl:shopFocusEl;
+    if(k==='arrowleft')current=moveUiFocus(scope,current,-1,0);else if(k==='arrowright')current=moveUiFocus(scope,current,1,0);
+    else if(k==='arrowup')current=moveUiFocus(scope,current,0,-1);else if(k==='arrowdown')current=moveUiFocus(scope,current,0,1);else activateUiFocus();
+    return;
+  }
+  if(state==='story'&&!e.repeat&&(k==='enter'||k===' ')){e.preventDefault();resumeStory();return;}
+  if(state==='credits'&&!e.repeat&&(k==='enter'||k===' '||k==='escape')){e.preventDefault();showJourneySelect();return;}
+  if((state==='won'||state==='lost')&&!e.repeat&&(k==='enter'||k===' ')){e.preventDefault();document.getElementById('restartBtn').click();return;}
+  if(state==='shop'&&k==='escape'){e.preventDefault();leaveShop();return;}
+  if(['arrowleft','arrowright','arrowup',' ','a','d','w','j','k','l','q','e'].includes(k))e.preventDefault();
+  if(k==='a'||k==='arrowleft')keys.left=true;if(k==='d'||k==='arrowright')keys.right=true;
+  if(!e.repeat&&(k==='w'||k==='arrowup'||k===' '))press.jump=true;if(!e.repeat&&k==='j')press.attack=true;if(!e.repeat&&k==='l')press.heavy=true;if(!e.repeat&&k==='k')press.skill=true;
+  if(!e.repeat&&k==='q')usePotion('hpPotion');if(!e.repeat&&k==='e')usePotion('mpPotion');
+  if(k==='escape'&&state==='playing')togglePause();
+},{passive:false});
+addEventListener('keyup',e=>{const k=keyName(e);if(k==='a'||k==='arrowleft')keys.left=false;if(k==='d'||k==='arrowright')keys.right=false;});
+
+const stickArea=document.getElementById('stickArea'),stickKnob=document.getElementById('stickKnob');
+function updateStick(e){
+  const r=stickArea.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),lim=r.width*.31;
+  stickX=clamp(dx/lim,-1,1);stickY=clamp(dy/lim,-1,1);const len=Math.hypot(stickX,stickY);if(len>1){stickX/=len;stickY/=len;}
+  stickKnob.style.transform='translate('+(stickX*lim)+'px,'+(stickY*lim)+'px)';if(stickY<-.62&&player&&player.onGround)press.jump=true;
+}
+stickArea.addEventListener('pointerdown',e=>{stickPointer=e.pointerId;stickArea.setPointerCapture(e.pointerId);updateStick(e);});
+stickArea.addEventListener('pointermove',e=>{if(e.pointerId===stickPointer)updateStick(e);});
+function releaseStick(e){if(e.pointerId!==stickPointer)return;stickPointer=null;stickX=stickY=0;stickKnob.style.transform='';}
+stickArea.addEventListener('pointerup',releaseStick);stickArea.addEventListener('pointercancel',releaseStick);
+function bindAction(id,kind){const b=document.getElementById(id);b.addEventListener('pointerdown',e=>{e.preventDefault();b.classList.add('down');press[kind]=true;});
+  const up=()=>b.classList.remove('down');b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('pointerleave',up);}
+bindAction('jumpBtn','jump');bindAction('attackBtn','attack');bindAction('heavyBtn','heavy');bindAction('skillBtn','skill');
+document.getElementById('hpPotionBtn').addEventListener('pointerdown',e=>{e.preventDefault();usePotion('hpPotion');});
+document.getElementById('mpPotionBtn').addEventListener('pointerdown',e=>{e.preventDefault();usePotion('mpPotion');});
+function togglePause(){if(state!=='playing')return;paused=!paused;document.getElementById('pauseBtn').textContent=paused?'▶':'Ⅱ';}
+document.getElementById('pauseBtn').addEventListener('click',togglePause);
+document.getElementById('fullBtn').addEventListener('click',async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen();}catch(_){}});
+document.getElementById('startBtn').addEventListener('click',startGame);
+document.getElementById('storyBtn').addEventListener('click',resumeStory);
+document.getElementById('leaveShopBtn').addEventListener('click',leaveShop);
+document.getElementById('creditsExitBtn').addEventListener('click',showJourneySelect);
+document.getElementById('restartBtn').addEventListener('click',()=>{
+  if(state==='lost'){continueFromDeath();return;}
+  showJourneySelect();
+});
+</script>
+<script src="offline-register.js" defer></script>
+</body></html>
