@@ -1,0 +1,23 @@
+﻿果蠅腦 Windows x64 可攜版
+
+使用方式：
+1. 將 ZIP 完整解壓縮，再把整個「啟動果蠅腦」資料夾複製到 Windows 電腦。
+2. 雙擊「啟動果蠅腦.exe」。不需另外安裝 Python 或編譯器。
+3. 等待完整腦載入完成，會自動開啟本機「果蠅腦陀螺實驗室」。
+4. 按「果蠅模擬實驗」，觀察「完整腦讀出」。
+5. 使用期間保留服務視窗。關閉前可按「儲存果蠅記憶」。
+6. 關閉服务視窗即可停止；不會安裝常駐系統服務。
+
+請勿只複製 EXE；data、web、_internal 都必須保留。
+本機網址：http://127.0.0.1:8765/gyro-fly-lab.html
+記憶位置：runs/gyro-fly-lab/brain-memory.npz，下次按「載入上次記憶」。
+移動電腦時連同 runs 一起複製。不會帶入原 Mac 的舊記憶。
+若啟動失敗，保留視窗錯誤訊息；確認沒有另一個果蠅腦占用 8765 或 8766。
+
+本包保留完整模型圖譜；情緒儀表是工程化數值，不代表主觀感受。
+Windows x64 雲端測試不等於所有學校電腦實測；實機表現取決於記憶體和處理器。
+
+原始碼建置：Windows x64 + Python 3.12 + Visual Studio C++ Build Tools。
+在 x64 Native Tools 環境執行 powershell -ExecutionPolicy Bypass -File build-windows.ps1。
+若缺少腦資料，建置腳本會從鎖定的官方來源下載並重建，驗證與 Mac 圖譜陣列一致。
+使用端啟動不需要下載資料或安裝 Python。
