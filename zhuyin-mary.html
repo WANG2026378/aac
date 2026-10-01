@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>注音小瑪莉</title>
+<style>
+:root{--bg:#2a0f14;--cab:#7a1420;--cell:#fff3d6;--line:#f2b134;--hi:#ff2d3d;--ink:#fff3d6;--dark:#3b1117;--btn:#f2b134;--btnink:#3b1117;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#140608;--cab:#5c0f19;--cell:#f6e7c1;--dark:#240a0e}}
+:root[data-theme="dark"]{--bg:#140608;--cab:#5c0f19;--cell:#f6e7c1;--dark:#240a0e}
+html,body{height:100%;margin:0}
+body{background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:"PingFang TC","Noto Sans TC",system-ui,sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none;touch-action:manipulation}
+#hd{display:flex;gap:6px;align-items:center;max-width:100vw;overflow-x:auto;padding:2px 8px;box-sizing:border-box}
+#hd button{flex:none;border:2px solid var(--line);background:var(--dark);color:var(--ink);border-radius:999px;padding:5px 11px;font:inherit;font-size:14px;font-weight:800;cursor:pointer}
+#hd button.on{background:var(--btn);color:var(--btnink)}
+#pg{flex:none;font-size:14px;font-weight:800;padding:0 4px;white-space:nowrap}
+#m{width:min(100vw,calc(100svh - 64px));aspect-ratio:1;container-type:inline-size;display:grid;grid-template:repeat(7,1fr)/repeat(7,1fr);gap:.8cqw;padding:1.2cqw;background:var(--cab);border-radius:4cqw;box-sizing:border-box}
+.c{display:grid;place-items:center;border-radius:1.6cqw;background:var(--cell);font-size:8cqw;font-weight:900;border:.5cqw solid var(--line);line-height:1}
+.c.on{background:var(--hi);color:#fff!important;transform:scale(1.1);box-shadow:0 0 3cqw var(--hi);z-index:2}
+.c.nL{font-size:7cqw}
+#ctr{grid-area:2/2/7/7;display:flex;flex-direction:column;gap:1cqw;background:var(--dark);border-radius:2.4cqw;padding:1.4cqw}
+#top{display:flex;justify-content:space-between;align-items:center;font-size:4.2cqw;font-weight:800;gap:1cqw}
+#ms{font-size:3.2cqw;color:var(--btn);text-align:center;flex:1;line-height:1.15}
+#cmb{font-size:3cqw;text-align:center;color:var(--btn);font-weight:700}
+#bets{flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:1cqw}
+.b{border:.4cqw solid var(--line);background:var(--cell);color:var(--k);border-radius:1.6cqw;display:flex;flex-direction:column;align-items:center;justify-content:center;font:inherit;font-weight:900;font-size:7.6cqw;padding:0;line-height:1;cursor:pointer}
+.b small{font-size:2.3cqw;color:#c58a00;letter-spacing:-.1cqw}.b i{font-style:normal;font-size:3.4cqw;font-weight:900;color:#d00018;min-height:3.6cqw}
+.b.w{background:var(--hi);color:#fff}.b.w i,.b.w small{color:#fff}
+#ctl{display:grid;grid-template-columns:1fr 1.5fr 1.4fr;gap:1cqw}
+#ctl button{border:0;border-radius:1.6cqw;padding:1.6cqw 0;font:inherit;font-size:4cqw;font-weight:900;background:var(--cell);color:#3b1117;cursor:pointer}
+#go{background:var(--btn)!important}
+#dbl{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:1.6cqw}
+#dt{font-size:5cqw;font-weight:900}#dd{font-size:8cqw;font-weight:900;min-height:9cqw}
+#dr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.4cqw;width:100%}
+#dr button{border:0;border-radius:1.6cqw;padding:2.6cqw 0;font:inherit;font-size:5cqw;font-weight:900;background:var(--cell);color:#3b1117;cursor:pointer}
+#dtake{background:var(--btn)!important}
+button:focus-visible{outline:.6cqw solid #fff;outline-offset:1px}
+button:disabled{opacity:.5}
+</style>
+</head>
+<body>
+<div id="hd"></div>
+<div id="m">
+  <div id="ctr">
+    <div id="top"><span>💰<b id="cr">0</b></span><span id="ms"></span><span>🏆<b id="wn">0</b></span></div>
+    <div id="cmb"></div>
+    <div id="bets"></div>
+    <div id="dbl"><div id="dt"></div><div id="dd">🎲</div><div id="dr"><button id="dsmall">小 2-6</button><button id="dtake">收分</button><button id="dbig">大 8-12</button></div></div>
+    <div id="ctl"><button id="clr">清除</button><button id="qz">🎧 聽音</button><button id="go">開始</button></div>
+  </div>
+</div>
+<script>
+// [符號, 例字, 圖]
+const Z=[['ㄅ','爸','👨'],['ㄆ','蘋','🍎'],['ㄇ','媽','👩'],['ㄈ','飛','✈️'],['ㄉ','大','🐘'],['ㄊ','兔','🐰'],['ㄋ','牛','🐮'],['ㄌ','老','🐯'],
+['ㄍ','狗','🐶'],['ㄎ','可','🥤'],['ㄏ','河','🦛'],['ㄐ','雞','🐔'],['ㄑ','汽','🚗'],['ㄒ','西','🍉'],['ㄓ','豬','🐷'],['ㄔ','吃','🍚'],
+['ㄕ','獅','🦁'],['ㄖ','日','☀️'],['ㄗ','早','🍳'],['ㄘ','草','🌿'],['ㄙ','傘','☂️'],['ㄧ','衣','👕'],['ㄨ','烏','🐢'],['ㄩ','魚','🐟'],
+['ㄚ','鴨','🦆'],['ㄛ','哦','😮'],['ㄜ','鵝','🦢'],['ㄝ','耶','✌️'],['ㄞ','愛','❤️'],['ㄟ','欸','🙋'],['ㄠ','熬','🍲'],['ㄡ','偶','🧸'],
+['ㄢ','安','🏠'],['ㄣ','恩','🙏'],['ㄤ','羊','🐑'],['ㄥ','燈','💡'],['ㄦ','耳','👂']];
+const LV=['ㄅ–ㄌ','ㄍ–ㄔ','ㄕ–ㄩ','ㄚ–ㄡ','ㄢ–ㄦ','複習'];
+const RING=['A','O','B','R','W','A','L','O','S','A','B','W','M','O','7','A','M','O','B','W','S','M','L','7'];
+const KEYS=['A','O','M','B','W','S','7','R'];
+const ODD={A:5,O:5,M:7,B:7,W:7,S:11,'7':11,R:22};
+const COL={A:'#d62828',O:'#e07a00',M:'#2a8a3a',B:'#1b5fd0',W:'#8a2be2',S:'#c2185b','7':'#007c89',R:'#5d4037'};
+const $=id=>document.getElementById(id);
+let credit=100,bets={},last={},win=0,busy=false,cur=0,ac=null,chainN=0,quiz=null,lv=0,sy={},mast={};
+try{const v=parseInt(localStorage.getItem('zl_credit'));if(v>=0)credit=v;mast=JSON.parse(localStorage.getItem('zl_mast')||'{}');lv=parseInt(localStorage.getItem('zl_lv'))||0}catch(e){}
+const M=k=>mast[Z[sy[k]][0]]||0;
+const sum=o=>Object.values(o).reduce((a,b)=>a+b,0);
+function save(){try{localStorage.setItem('zl_credit',credit+sum(bets));localStorage.setItem('zl_mast',JSON.stringify(mast));localStorage.setItem('zl_lv',lv)}catch(e){}}
+function pos(i){if(i<=6)return[1,i+1];if(i<=12)return[i-5,7];if(i<=18)return[7,19-i];return[25-i,1]}
+const cells=RING.map((k,i)=>{const d=document.createElement('div');d.className='c n'+k;const[r,c]=pos(i);d.style.gridRow=r;d.style.gridColumn=c;$('m').appendChild(d);return d});
+const btns={};
+KEYS.forEach(k=>{const b=document.createElement('button');b.className='b';b.style.setProperty('--k',COL[k]);b.onclick=()=>tap(k);$('bets').appendChild(b);btns[k]=b});
+function tone(f,d=60,t='square',v=.05){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d/1000)}catch(e){}}
+function buzz(n){try{navigator.vibrate&&navigator.vibrate(n)}catch(e){}}
+function say(s){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(s[0]+'，'+s[1]);u.lang='zh-TW';u.rate=.8;speechSynthesis.speak(u)}catch(e){}}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const msg=t=>$('ms').textContent=t;
+const stars=n=>'★'.repeat(n)+'☆'.repeat(3-n);
+function render(){
+  $('cmb').textContent=chainN>0?`🔥連中 ${chainN}`:'中獎後燈號可能再連跳，最多 3 次';
+  $('cr').textContent=credit;$('wn').textContent=win;
+  KEYS.forEach(k=>{btns[k].innerHTML=`${Z[sy[k]][0]}<small>${stars(M(k))}</small><i>${bets[k]||''}</i>`});
+  cells.forEach((c,i)=>{const k=RING[i];if(k!=='L'){c.textContent=Z[sy[k]][0];c.style.color=COL[k]}else c.textContent='🍀'});
+  const got=Z.filter(z=>(mast[z[0]]||0)>=3).length;
+  $('hd').innerHTML='';LV.forEach((n,i)=>{const b=document.createElement('button');
+    const done=i<5&&Z.slice(i*8,i===4?37:i*8+8).every(z=>(mast[z[0]]||0)>=3);
+    b.textContent=n+(done?' ✓':'');b.className=i===lv?'on':'';b.onclick=()=>setLevel(i);$('hd').appendChild(b)});
+  const p=document.createElement('span');p.id='pg';p.textContent=`已學會 ${got}/37`;$('hd').appendChild(p);
+}
+function setLevel(n){
+  if(busy)return;for(const k in bets)credit+=bets[k];bets={};quiz=null;$('qz').textContent='🎧 聽音';
+  lv=n;const all=Z.map((_,i)=>i),weak=a=>a.slice().sort((a,b)=>(mast[Z[a][0]]||0)-(mast[Z[b][0]]||0)||Math.random()-.5);
+  let idx;
+  if(n<4)idx=all.slice(n*8,n*8+8);
+  else if(n===4)idx=[32,33,34,35,36].concat(weak(all.slice(0,32)).slice(0,3));
+  else idx=weak(all).slice(0,8).sort(()=>Math.random()-.5);
+  KEYS.forEach((k,i)=>sy[k]=idx[i]);
+  msg('點符號聽聲音，也可以押注');render();save();
+}
+function tap(k){
+  if(busy)return;
+  if(quiz){answer(k);return}
+  if(credit>=1&&(bets[k]||0)<99){bets[k]=(bets[k]||0)+1;credit--;tone(700,30)}
+  const s=Z[sy[k]];msg(`${s[0]} ${s[1]} ${s[2]}`);say(s);render();
+}
+function ask(){const t=KEYS.slice().sort((a,b)=>M(a)-M(b)||Math.random()-.5).slice(0,4);return t[Math.floor(Math.random()*t.length)]}
+$('qz').onclick=()=>{
+  if(busy)return;
+  if(quiz){say(Z[sy[quiz]]);return}
+  quiz=ask();$('qz').textContent='🔁 再聽';msg('🎧 聽聲音，按出正確的符號！');say(Z[sy[quiz]]);
+};
+function answer(k){
+  const t=quiz,s=Z[sy[t]];quiz=null;$('qz').textContent='🎧 聽音';
+  if(k===t){mast[s[0]]=Math.min(3,(mast[s[0]]||0)+1);credit+=3;msg(`答對了！${s[0]} ${s[1]} ${s[2]}　+3`);[700,900,1200].forEach((f,j)=>setTimeout(()=>tone(f,110,'triangle',.08),j*100));buzz([40,30,40])}
+  else{mast[s[0]]=Math.max(0,(mast[s[0]]||0)-1);msg(`正確是 ${s[0]} ${s[1]} ${s[2]}`);tone(200,250,'sawtooth')}
+  btns[t].classList.add('w');setTimeout(()=>say(s),500);render();save();
+  setTimeout(()=>btns[t].classList.remove('w'),1600);
+}
+$('clr').onclick=()=>{if(busy)return;for(const k in bets)credit+=bets[k];bets={};render();msg('已清除')};
+function light(i){cells.forEach(c=>c.classList.remove('on'));cells[i].classList.add('on')}
+function run(base=48,fast=false){const target=Math.floor(Math.random()*24),steps=base+((target-cur+24)%24);
+return new Promise(res=>{let n=0;(function t(){cur=(cur+1)%24;light(cur);tone(500+(n%12)*20,25);n++;if(n>=steps)return res(cur);const left=steps-n;setTimeout(t,left<10?(fast?40:60)+(10-left)*(fast?14:30):(fast?24:40))})()})}
+function askDouble(amt){return new Promise(res=>{let p=amt,r=0,lock=false;const d=$('dbl');
+ $('bets').style.display=$('ctl').style.display='none';d.style.display='flex';
+ const upd=()=>{$('dt').textContent=`比倍 ${p}　(${r}/5)`};
+ const done=()=>{d.style.display='none';$('bets').style.display='';$('ctl').style.display='';res(p)};
+ const pick=async side=>{if(lock)return;lock=true;
+  for(let n=0;n<8;n++){$('dd').textContent='🎲 '+(1+Math.random()*6|0)+' + '+(1+Math.random()*6|0);tone(400+n*30,30);await sleep(70)}
+  const a=1+Math.random()*6|0,b=1+Math.random()*6|0,t=a+b;$('dd').textContent=`🎲 ${a}+${b}=${t}`;await sleep(600);
+  if((side==='big'&&t>7)||(side==='small'&&t<7)){p*=2;r++;tone(1000,150,'triangle',.08);buzz(40);upd();if(r>=5){msg('比倍滿 5 輪，自動收分');setTimeout(done,700)}else lock=false}
+  else{p=0;msg(t===7?'開 7，莊家通吃':'猜錯了');tone(160,300,'sawtooth');setTimeout(done,800)}};
+ $('dsmall').onclick=()=>pick('small');$('dbig').onclick=()=>pick('big');$('dtake').onclick=()=>{if(!lock)done()};
+ $('dd').textContent='🎲';upd();msg('要比大小翻倍嗎？7 通吃')})}
+$('go').onclick=async()=>{
+  if(busy)return;quiz=null;$('qz').textContent='🎧 聽音';
+  if(!sum(bets)){msg('請先點符號押注！');buzz(20);return}
+  busy=true;$('go').disabled=true;last={...bets};win=0;render();msg('轉轉轉…');
+  let i=await run(),s=RING[i],k=0;
+  while(s==='L'&&k++<3){msg('🍀 LUCKY！免費再轉');buzz([30,40,30]);await sleep(700);i=await run();s=RING[i]}
+  let w=0,p=.35;chainN=0;
+  while(true){
+    const z=s==='L'?null:Z[sy[s]],base=z?(bets[s]||0)*ODD[s]:0;
+    if(z)say(z);
+    if(base<=0){msg(w>0?`連中結束，共 ${w}`:z?`開出 ${z[0]} ${z[1]} ${z[2]}，沒中`:'沒中');if(w<=0)tone(180,300,'sawtooth',.05);break}
+    w+=base;btns[s].classList.add('w');render();buzz([60,40,60]);
+    msg(`${chainN?`連中 ${chainN}！`:'中獎 '}${z[0]} ${z[1]} ${z[2]} +${base}`);
+    [600,750,900,1200].forEach((f,j)=>setTimeout(()=>tone(f+chainN*120,110,'triangle',.08),j*100));
+    if(chainN<3&&Math.random()<p){chainN++;p-=.1;render();await sleep(1100);i=await run(8,true);s=RING[i]}
+    else break;
+  }
+  bets={};render();
+  if(w>0){await sleep(900);w=await askDouble(w)}
+  credit+=w;win=w;chainN=0;render();save();
+  await sleep(300);Object.values(btns).forEach(b=>b.classList.remove('w'));
+  if(credit<1){credit=100;msg('點數補充 +100');render();save()}
+  busy=false;$('go').disabled=false;
+};
+setLevel(lv);light(0);
+</script>
+</body>
+</html>
